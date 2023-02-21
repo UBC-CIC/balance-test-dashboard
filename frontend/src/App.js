@@ -4,7 +4,12 @@ import PatientPage from "./components/patient/PatientPage";
 import EventsTable from "./components/patient/EventsTable";
 import "@aws-amplify/ui-react/styles.css";
 import "./App.css";
-import ScoreChart from "./components/patient/Chart";
+import ScoreChart from "./components/patient/Charts";
+import { Container } from "@mui/system";
+import Patient from "./pages/patient";
+import Navbar from "./components/nav/Navbar";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { TestDetails } from "./pages/TestDetails";
 
 function App() {
   // [authState, setAuthState] = useState();
@@ -37,7 +42,17 @@ function App() {
   //     </Authenticator>
   //   </div>
   // );
-  return <PatientPage />;
+  const theme = createTheme();
+  return (
+    <ThemeProvider theme={theme}>
+      <Navbar />
+
+      <Container maxWidth="lg">
+        {/* <PatientPage /> */}
+        <TestDetails />
+      </Container>
+    </ThemeProvider>
+  );
   // return <EventsTable />;
   // return <ScoreChart />;
 }
