@@ -10,6 +10,8 @@ import Patient from "./pages/patient";
 import Navbar from "./components/nav/Navbar";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { TestDetails } from "./pages/TestDetails";
+import SignIn from "./components/nav/SignIn";
+import SignUp from "./components/nav/SignUp";
 
 function App() {
   // [authState, setAuthState] = useState();
@@ -43,16 +45,17 @@ function App() {
   //   </div>
   // );
   const theme = createTheme();
-  return (
-    <ThemeProvider theme={theme}>
-      <Navbar />
+  // return (
+  //   <ThemeProvider theme={theme}>
+  //     <Navbar />
 
-      <Container maxWidth="lg">
-        {/* <PatientPage /> */}
-        <TestDetails />
-      </Container>
-    </ThemeProvider>
-  );
+  //     <Container maxWidth="lg">
+  //       {/* <PatientPage /> */}
+  //       <TestDetails />
+  //     </Container>
+  //   </ThemeProvider>
+  // );
+  return <SignUp />;
   // return <EventsTable />;
   // return <ScoreChart />;
 }
