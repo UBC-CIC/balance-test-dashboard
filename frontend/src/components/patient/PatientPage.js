@@ -10,19 +10,38 @@ import TextField from "@mui/material/TextField";
 import * as React from "react";
 import dayjs from "dayjs";
 import { DataGrid } from "@mui/x-data-grid";
+import { ScoreChart } from "./Charts";
+import Grid from "@mui/material/Grid";
+import TestEventsTable from "./EventsTable";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
+import Typography from "@mui/material/Typography";
+import {
+  SIT_STAND_DATA,
+  ONE_FOOT_STAND_DATA,
+  SIT_UNSUPPORTED_DATA,
+  TEST_TYPES,
+} from "../mockData/data";
+import { useNavigate } from "react-router";
 
 function PatientPage({ patient_id }) {
-  const [movementTestSelected, setMovementTestSelected] = React.useState();
-  const [fromDate, setFromDate] = React.useState(dayjs("2014-08-18T21:11:54"));
-  const [toDate, setToDate] = React.useState(dayjs("2014-08-18T21:11:54"));
+  const [movementTestSelected, setMovementTestSelected] =
+    React.useState("Sit to Stand");
+  const [fromDate, setFromDate] = React.useState(dayjs().subtract(7, "day"));
+  const [toDate, setToDate] = React.useState(dayjs());
+
+  let navigate = useNavigate();
 
   const handleChangeFromDate = (newValue) => {
     setFromDate(newValue);
+    console.log(fromDate);
   };
 
   const handleChangeToDate = (newValue) => {
     setToDate(newValue);
   };
+
+  const [openNewTest, setOpenNewTest] = React.useState(false);
 
   const columns = [
     {
@@ -116,82 +135,139 @@ function PatientPage({ patient_id }) {
     },
   ];
 
+  const scoreDataMapping = {
+    "Sit to Stand": SIT_STAND_DATA,
+    "One-foot Stand": ONE_FOOT_STAND_DATA,
+    "Sitting with Back Unsupported": SIT_UNSUPPORTED_DATA,
+  };
+
   return (
-    <div>
-      <Button>Back</Button>
-      {/* analytics */}
-      <div>
-        <AnalyticsCard value={90} title="7-day average" change={12} />
-        <AnalyticsCard value={85} title="monthly average" change={0 - 5} />
-      </div>
-      {/* graph */}
-      <div>
-        {/* select group */}
-        <div>
-          <TestSelection />
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DesktopDatePicker
-              label="From Date"
-              inputFormat="MM/DD/YYYY"
-              value={fromDate}
-              onChange={handleChangeFromDate}
-              renderInput={(params) => <TextField {...params} />}
+    <Grid
+      container
+      direction="row"
+      justifyContent="space-evenly"
+      alignItems="flex-start"
+      spacing={4}
+    >
+      <Grid
+        item
+        container
+        direction="column"
+        justifyContent="center"
+        alignItems="stretch"
+        spacing={5}
+      >
+        <Grid item>
+          <Button
+            onClick={() => {
+              navigate("/");
+            }}
+          >
+            Back
+          </Button>
+        </Grid>
+        <Grid item>
+          <Typography variant="h5" gutterBottom>
+            Statistics for John Doe (1289946324)
+          </Typography>
+        </Grid>
+        {/* analytics */}
+
+        <Grid
+          item
+          container
+          direction="row"
+          justifyContent="space-evenly"
+          alignItems="flex-start"
+        >
+          <AnalyticsCard value={90} title="7-day average" change={12} />
+          <AnalyticsCard value={85} title="monthly average" change={0 - 5} />
+        </Grid>
+        {/* graph */}
+        <Grid item>
+          {/* select group */}
+
+          <Grid
+            container
+            direction="row"
+            justifyContent="flex-start"
+            alignItems="flex-end"
+            pl={10}
+          >
+            <TestSelection
+              movementTestSelected={movementTestSelected}
+              setMovementTestSelected={setMovementTestSelected}
             />
-            <DesktopDatePicker
-              label="To Date"
-              inputFormat="MM/DD/YYYY"
-              value={toDate}
-              onChange={handleChangeToDate}
-              renderInput={(params) => <TextField {...params} />}
-            />
-          </LocalizationProvider>
-        </div>
-        {/* chart */}
-      </div>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DesktopDatePicker
+                label="From Date"
+                inputFormat="MM/DD/YYYY"
+                value={fromDate}
+                onChange={handleChangeFromDate}
+                renderInput={(params) => <TextField size="small" {...params} />}
+              />
+              <DesktopDatePicker
+                label="To Date"
+                inputFormat="MM/DD/YYYY"
+                value={toDate}
+                onChange={handleChangeToDate}
+                renderInput={(params) => <TextField size="small" {...params} />}
+              />
+            </LocalizationProvider>
+          </Grid>
+          {/* chart */}
+          <ScoreChart
+            data={scoreDataMapping[movementTestSelected].filter(
+              (i) =>
+                dayjs(i.date).isAfter(fromDate) &&
+                dayjs(i.date).isBefore(toDate)
+            )}
+          />
+        </Grid>
+      </Grid>
       {/* table */}
-      <div style={{ height: 700, width: "100%" }}>
-        {/* table options */}
-        {/* actual table */}
-        <DataGrid
-          rows={rows}
-          columns={columns}
-          pageSize={20}
-          rowsPerPageOptions={[20]}
-          checkboxSelection
+      <Grid item style={{ height: 700, width: "100%" }}>
+        <TestEventsTable
+          openNewTest={openNewTest}
+          setOpenNewTest={setOpenNewTest}
         />
-      </div>
-    </div>
+      </Grid>
+    </Grid>
   );
 }
 
 function TestSelection({
-  testTypes = [
-    "Sit to Stand",
-    "One-foot Stand",
-    "Sitting with Back Unsupported",
-  ],
+  movementTestSelected = TEST_TYPES[0],
   setMovementTestSelected,
 }) {
+  // const [age, setAge] = React.useState("");
+
+  const handleChange = (event) => {
+    setMovementTestSelected(event.target.value);
+  };
+
   return (
-    <FormControl fullWidth>
-      <InputLabel variant="standard" htmlFor="uncontrolled-native">
-        Type of Movement Test
-      </InputLabel>
-      <NativeSelect
-        defaultValue={30}
-        inputProps={{
-          name: "age",
-          id: "uncontrolled-native",
-        }}
-      >
-        {testTypes.map((test, index) => (
-          <option value={10}>{test}</option>
-        ))}
-        {/* <option value={10}>Ten</option>
-        <option value={20}>Twenty</option>
-        <option value={30}>Thirty</option> */}
-      </NativeSelect>
-    </FormControl>
+    <div>
+      <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
+        <InputLabel id="demo-simple-select-standard-label">
+          Type of Movement Test
+        </InputLabel>
+        <Select
+          labelId="demo-simple-select-standard-label"
+          id="demo-simple-select-standard"
+          value={movementTestSelected}
+          onChange={handleChange}
+          label="Type of Movement Test"
+        >
+          {TEST_TYPES.map((t) => (
+            <MenuItem value={t}>{t}</MenuItem>
+          ))}
+          {/* <MenuItem value={10}>Ten</MenuItem>
+          <MenuItem value={20}>Twenty</MenuItem>
+          <MenuItem value={30}>Thirty</MenuItem> */}
+        </Select>
+      </FormControl>
+    </div>
   );
 }
 
