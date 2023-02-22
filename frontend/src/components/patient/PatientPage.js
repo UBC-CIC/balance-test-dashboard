@@ -22,12 +22,15 @@ import {
   SIT_UNSUPPORTED_DATA,
   TEST_TYPES,
 } from "../mockData/data";
+import { useNavigate } from "react-router";
 
 function PatientPage({ patient_id }) {
   const [movementTestSelected, setMovementTestSelected] =
     React.useState("Sit to Stand");
   const [fromDate, setFromDate] = React.useState(dayjs().subtract(7, "day"));
   const [toDate, setToDate] = React.useState(dayjs());
+
+  let navigate = useNavigate();
 
   const handleChangeFromDate = (newValue) => {
     setFromDate(newValue);
@@ -155,7 +158,13 @@ function PatientPage({ patient_id }) {
         spacing={5}
       >
         <Grid item>
-          <Button>Back</Button>
+          <Button
+            onClick={() => {
+              navigate("/");
+            }}
+          >
+            Back
+          </Button>
         </Grid>
         <Grid item>
           <Typography variant="h5" gutterBottom>

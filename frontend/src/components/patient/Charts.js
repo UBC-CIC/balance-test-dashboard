@@ -34,7 +34,12 @@ export const ScoreChart = ({ data }) => {
         <ReferenceLine y={60} label="Low" stroke="red" position="end" />
         <ReferenceLine y={40} label="Very Low" stroke="red" position="end" />
 
-        <Line type="monotone" dataKey="score" stroke="black" />
+        <Line
+          type="monotone"
+          dataKey="score"
+          stroke="black"
+          isAnimationActive={false}
+        />
       </LineChart>
     </ResponsiveContainer>
   );
@@ -42,10 +47,10 @@ export const ScoreChart = ({ data }) => {
 
 export const SensorChart = ({ data }) => {
   return (
-    <ResponsiveContainer width="100%" height={350}>
+    <ResponsiveContainer width="100%" height={300}>
       <LineChart
         width={500}
-        height={300}
+        height={600}
         data={data}
         margin={{
           top: 20,
@@ -56,11 +61,16 @@ export const SensorChart = ({ data }) => {
       >
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="timestamp" />
-        <YAxis />
+        <YAxis domain={[-5, 5]} />
         {/* <Tooltip /> */}
         {/* <Legend /> */}
 
-        <Line type="monotone" dataKey="measurement" stroke="black" />
+        <Line
+          type="monotone"
+          dataKey="measurement"
+          stroke="black"
+          isAnimationActive={false}
+        />
       </LineChart>
     </ResponsiveContainer>
   );

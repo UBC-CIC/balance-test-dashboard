@@ -27,4 +27,18 @@
   }
   console.log(arr);
   console.log("Hello World!");
+
+  var now = new Date();
+  console.log(now);
+  const array = [];
+  for (let i = 0; i < 100; i++) {
+    now.setSeconds(now.getSeconds() + 1); // timestamp
+    now = new Date(now); // Date object
+    arr.push({
+      id: i,
+      measurement: (Math.random() * (5.0 + 5.0) - 5.0).toFixed(4),
+      timestamp: now.toLocaleString(),
+    });
+  }
+  console.log(array);
 })();

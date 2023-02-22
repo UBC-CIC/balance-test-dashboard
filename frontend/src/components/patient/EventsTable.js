@@ -31,6 +31,7 @@ import {
 } from "../mockData/data";
 import MenuItem from "@mui/material/MenuItem";
 import NewTestDialog from "./NewTestDialog";
+import { Navigate, useNavigate } from "react-router";
 
 function createData(name, calories, fat, carbs, protein) {
   return {
@@ -42,101 +43,9 @@ function createData(name, calories, fat, carbs, protein) {
   };
 }
 
-const columns = [
-  {
-    // field: "id",
-    field: "score",
-    headerName: "score",
-    sortable: false,
-    width: 70,
-  },
-  { field: "id", field: "movement", headerName: "Movement", width: 130 },
-  { field: "id", field: "date", headerName: "Date", width: 200 },
-  {
-    field: "id",
-    field: "notes",
-    headerName: "Notes",
-    sortable: false,
-    width: 130,
-  },
-];
-
 const rows = SIT_STAND_DATA.concat(
   ONE_FOOT_STAND_DATA.concat(SIT_UNSUPPORTED_DATA)
 );
-
-// const rows = [
-//   {
-//     id: 1,
-//     score: 85,
-//     movement: "Sit to Stand",
-//     date: "9/17/2022, 1:21 PM",
-//     notes: "",
-//   },
-//   {
-//     id: 2,
-//     score: 85,
-//     movement: "Sit to Stand",
-//     date: "9/17/2022, 1:21 PM",
-//     notes: "",
-//   },
-//   {
-//     id: 3,
-//     score: 85,
-//     movement: "Sit to Stand",
-//     date: "9/17/2022, 1:21 PM",
-//     notes: "",
-//   },
-//   {
-//     id: 4,
-//     score: 85,
-//     movement: "Sit to Stand",
-//     date: "9/17/2022, 1:21 PM",
-//     notes: "",
-//   },
-//   {
-//     id: 5,
-//     score: 85,
-//     movement: "Sit to Stand",
-//     date: "9/17/2022, 1:21 PM",
-//     notes: "",
-//   },
-//   {
-//     id: 6,
-//     score: 85,
-//     movement: "Sit to Stand",
-//     date: "9/17/2022, 1:21 PM",
-//     notes: "",
-//   },
-//   {
-//     id: 7,
-//     score: 85,
-//     movement: "Sit to Stand",
-//     date: "9/17/2022, 1:21 PM",
-//     notes: "",
-//   },
-//   {
-//     id: 8,
-//     score: 85,
-//     movement: "Sit to Stand",
-//     date: "9/17/2022, 1:21 PM",
-//     notes: "",
-//   },
-//   {
-//     id: 9,
-//     score: 85,
-//     movement: "Sit to Stand",
-//     date: "9/17/2022, 1:21 PM",
-//     notes: "",
-//   },
-//   {
-//     id: 10,
-//     score: 85,
-//     movement: "Sit to Stand",
-//     date: "9/17/2022, 1:21 PM",
-//     notes: "",
-//   },
-// ];
 
 function descendingComparator(a, b, orderBy) {
   if (orderBy == "date") {
@@ -313,6 +222,8 @@ export default function TestEventsTable({ openNewTest, setOpenNewTest }) {
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
+  const navigate = useNavigate();
+
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === "asc";
     setOrder(isAsc ? "desc" : "asc");
@@ -329,6 +240,7 @@ export default function TestEventsTable({ openNewTest, setOpenNewTest }) {
   };
 
   const handleClick = (event, name) => {
+    navigate("/testDetails");
     // const selectedIndex = selected.indexOf(name);
     // let newSelected = [];
     // if (selectedIndex === -1) {
