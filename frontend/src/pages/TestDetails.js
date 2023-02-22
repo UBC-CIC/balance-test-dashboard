@@ -62,12 +62,20 @@ export function TestDetails() {
           </Table>
         </Grid>
       </Grid>
-      <Grid item>
+      <Grid
+        item
+        container
+        spacing={5}
+        direction="column"
+        justifyContent="center"
+      >
         {MEASUREMENT_TYPES.map((m) => (
-          <div>
+          <Grid item>
+            {/* <div> */}
             {m}
             <SensorChart data={MEASUREMENT_DATA} />
-          </div>
+            {/* </div> */}
+          </Grid>
         ))}
       </Grid>
     </Grid>
