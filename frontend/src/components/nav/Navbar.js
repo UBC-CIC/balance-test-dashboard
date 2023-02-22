@@ -12,6 +12,7 @@ import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
+import { Link, useNavigate } from "react-router-dom";
 
 const pages = ["Patients"];
 const settings = ["Profile", "Logout"];
@@ -19,6 +20,8 @@ const settings = ["Profile", "Logout"];
 function ResponsiveAppBar() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
+
+  let navigate = useNavigate();
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
@@ -28,6 +31,7 @@ function ResponsiveAppBar() {
   };
 
   const handleCloseNavMenu = () => {
+    navigate("patientTable");
     setAnchorElNav(null);
   };
 
@@ -89,7 +93,9 @@ function ResponsiveAppBar() {
             >
               {pages.map((page) => (
                 <MenuItem key={page} onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center">{page}</Typography>
+                  <Typography textAlign="center">
+                    {<Link to="/">{page}</Link>}
+                  </Typography>
                 </MenuItem>
               ))}
             </Menu>
