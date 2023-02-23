@@ -1,0 +1,62 @@
+type Patient {
+  patient_id: String!
+  name: String
+  email: String
+}
+
+type PatientCareprovider{
+  patient_id: String!
+  care_provider_id: String!
+}
+
+type Query {
+  # getters
+  getPatientById(patient_id: String!): Patient
+  getPatients(care_provider_id: String!): [Patient]
+  getTestEvents(
+    patient_id: String!
+    test_type: String
+    start_time: AWSDateTime
+    end_time: AWSDateTime
+    if_completed: Boolean
+    count: Int
+  ): [TestEvent]
+  # analytics
+  getWeeklyAverageBalanceScore(patientId: String!): Int
+
+}
+
+type Mutation{
+  createPatient(patient_id: String!, email: String, name: String)
+  createCareProvider(care_provider_id: String!, email: String!)
+  addPatientToCareProvider(care_provider_id: String! patient_id: String!): PatientCareprovider
+  CreateAndAssignTest(patient_id: String!, test_type: String, notes: String): TestEvent
+}
+
+type TestEvent {
+  test_event_id: String!
+  patient_id: String!
+  test_type: String!
+  if_completed: Boolean!
+  balance_score: Int
+  doctor_score: Int
+  notes: String
+  start_time: AWSDateTime
+  end_time: AWSDateTime
+}
+
+# Welcome to AWS AppSync!
+#
+# Use this editor to define the structure of your API with the GraphQL
+# schema definition language (SDL).
+#
+# Getting started is easy!
+#
+# 1. Uncomment (cmd/ctrl + /) the schema below and click save.
+# 2. Click provision resources to deploy a DynamoDB table and connect it with queries.
+# 3. Go to the queries tab and query DynamoDB with GraphQL.
+#
+schema {
+  query: Query
+  mutation: Mutation
+}
