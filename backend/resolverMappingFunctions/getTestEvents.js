@@ -14,11 +14,31 @@ import { util } from "@aws-appsync/utils";
 export function request(ctx) {
   console.log("request ctx", ctx);
   const {
-    arguments: { patient_id },
+    arguments: {
+      patient_id,
+      test_type,
+      start_time,
+      end_time,
+      if_completed,
+      sort,
+      count,
+    },
   } = ctx;
+  let testTypeSql = !test_type ? "" : `t.test_type='${test_type}'` + "and";
+  let startTimeSql = !start_time ? "" : `t.start_time=${start_time}` + "and";
+  let endTimeSql = !end_time ? "" : `t.end_time=${end_time}` + "and";
+  let ifCompletedSql = !if_completed
+    ? ""
+    : `t.if_completed=${if_completed}+'and`;
+  let sortSql = !sort ? "" : `order by date ${sort}`;
+  let countSql = !count ? "" : `limit ${count}`;
   return {
     payload: {
-      sql: `select * from "Patient" where patient_id='${patient_id}'`,
+      sql: `select * 
+            from "TestEvent" t
+            where ${testTypeSql} ${startTimeSql} ${endTimeSql} ${ifCompletedSql}
+              t.patient_id='${patient_id}'
+            ${sortSql} ${countSql}`,
     },
   };
 }
@@ -39,5 +59,5 @@ export function request(ctx) {
 export function response(ctx) {
   console.log("response ctx", ctx);
   let res = ctx.prev.result.body;
-  return res[0];
+  return res;
 }

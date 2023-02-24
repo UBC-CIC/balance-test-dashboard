@@ -6,14 +6,14 @@ CREATE TABLE "TestEvent" (
   "balance_score" integer,
   "doctor_score" integer,
   "notes" text,
-  "start_time" timestamp NOT NULL,
-  "end_time" timestamp NOT NULL
+  "start_time" timestamp,
+  "end_time" timestamp
 );
 
 CREATE TABLE "Patient" (
   "patient_id" varchar PRIMARY KEY,
   "name" varchar NOT NULL,
-  "email" varchar UNIQUE NOT NULL
+  "email" varchar
 );
 
 CREATE TABLE "CareProvider" (

@@ -14,11 +14,12 @@ import { util } from "@aws-appsync/utils";
 export function request(ctx) {
   console.log("request ctx", ctx);
   const {
-    arguments: { patient_id },
+    arguments: { care_provider_id, email },
   } = ctx;
+  let sql = `insert into "CareProvider" (care_provider_id, email) values ('${care_provider_id}', '${email}');`;
   return {
     payload: {
-      sql: `select * from "Patient" where patient_id='${patient_id}'`,
+      sql: sql,
     },
   };
 }
