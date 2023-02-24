@@ -6,22 +6,65 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 
-//may need to remake format depending on how the data is retrieved
-let searchPopOutData = [
-    {patient_id: 29235305, patient_name: 'Amanda Spence'},
-    {patient_id: 23897593, patient_name: 'Jane Doe'},
-    {patient_id: 19285239, patient_name: 'John Doe'},
-    {patient_id: 90258044, patient_name: 'Robbie Mac'},
-    
+import { v4 as uuidv4, v5 as uuidv5 } from "uuid";
+
+const searchPopOutData = [
+    {
+        user_id: 19285239,
+        patient_name: "John Doe",
+        assigned_test_num: 1,
+        last_movement_tested: "Sit-to-Stand",
+        last_test_score: 65,
+      },
+      {
+        user_id: 23897593,
+        patient_name: "Jane Doe",
+        assigned_test_num: 1,
+        last_movement_tested: "Sit-to-Stand",
+        last_test_score: 45,
+      },
+      {
+        user_id: 90258044,
+        patient_name: "Robbie Mac",
+        assigned_test_num: 1,
+        last_movement_tested: "Sit-to-Stand",
+        last_test_score: 56,
+      },
+      {
+        user_id: 29235305,
+        patient_name: "Amanda Spence",
+        assigned_test_num: 1,
+        last_movement_tested: "Sit-to-Stand",
+        last_test_score: 23,
+      }
 ]
+
+//may need to remake format depending on how the data is retrieved
 
 function createPatientInfoObj(patientName) {
     console.log("New Patient Name: " + patientName);
+
+    const newUserID = uuidv5(patientName, uuidv4()); //make a uuid with a name and random uuid
+
     let newPatientObj = {
-        patient_id: 12345678,
+        user_id: newUserID,
+        patient_name: patientName,
+        assigned_test_num: 0,
+        last_movement_tested: '-',
+        last_test_score: '-'
+    };
+    // let newPatientObj = //retrieve data from array, or figure out how to get index of data
+    
+    return newPatientObj;
+}
+
+//remake this when you have retrieved data from AWS
+function retrievePatientInfo(patientName, userID) {
+    console.log("Added Patient from DB: " + patientName + " " + userID);
+    let newPatientObj = {
+        user_id: userID,
         patient_name: patientName,
         assigned_test_num: 0,
         last_movement_tested: '-',
@@ -31,36 +74,60 @@ function createPatientInfoObj(patientName) {
     return newPatientObj;
 }
 
-//next step: make search bar pop up placeholder names, select placeholder name and add its info into the table
+
 function SearchPatient(props) {
     const [inputName, setInputName] = React.useState("");
-    const { itemsArr, updateTableState, setAddPatientModalOpen, searchPatientModalOpen, setSearchPatientModalOpen } = props;
+    const [inputInfo, setInputInfo] = React.useState({});
+    const [addPatientDisabled, setAddPatientDisabled] = React.useState(true);
+    const { patientDataRowsArr, updatePatientDataRowsArr, setAddPatientModalOpen, searchPatientModalOpen, setSearchPatientModalOpen } = props;
     
+    let currPatientNamesArr = patientDataRowsArr.map((patientDataRow) => (patientDataRow.patient_name));
+    let currUserIDArr = patientDataRowsArr.map((patientDataRow) => (patientDataRow.user_id));
+
     const handleCloseModal = () => {
         setSearchPatientModalOpen(false)
         setAddPatientModalOpen(false);
+        setAddPatientDisabled(true);
+        setInputName("");
+        setInputInfo({});
     }
 
     const handleOpenAddPatientModal = () => {
         setInputName("");
+        setInputInfo({});
 
+        setAddPatientDisabled(true);
         setAddPatientModalOpen(true);
         setSearchPatientModalOpen(false);
     }
 
     const handlePatientNameInput = (event, value) => {
-        let textInput = value
-        setInputName(value);
+        setInputName(value.patient_name);
+        setInputInfo(value);
+        setAddPatientDisabled(false);
+
         console.log("Current Text: " + event.target.value)
         console.log("Current Value: " + value)
     }
 
     const handleAddPatientClick = () => {
         handleCloseModal();
-        console.log("Input: " + inputName);
+        console.log("Name: " + inputName);
+        console.log("Input Info: " + inputInfo.patient_name + " " + inputInfo.user_id)
 
+        if (!(currPatientNamesArr.includes(inputName) && currUserIDArr.includes(inputInfo.user_id))) {
+            let retrievedPatientInfo = retrievePatientInfo(inputInfo.patient_name, inputInfo.user_id)
+            patientDataRowsArr.push(retrievedPatientInfo);
 
+            let updatedArr = patientDataRowsArr.slice(); //make copy of array
+            updatePatientDataRowsArr(updatedArr); //add to table by changing state
+
+            console.log("Unique Entry of: " + inputName);
+        }
+        
+        setAddPatientDisabled(true);
         setInputName("");
+        setInputInfo({});
     }
 
     return (
@@ -77,8 +144,10 @@ function SearchPatient(props) {
                         autoSelect
                         disableClearable
                         noOptionsText='No Patients Listed'
-                        options={searchPopOutData.map((item) => (item.patient_name + " (ID: " + item.patient_id + ")"))}
+                        getOptionLabel={(option) => (option.patient_name + " (ID: " + option.user_id + ")")}
+                        options={searchPopOutData}
                         onChange={handlePatientNameInput}
+                        ListboxProps={{style: {maxHeight: 200, overflow: 'auto' }}}
                         renderInput={(params) => (
                             <TextField 
                                 {...params}
@@ -94,38 +163,12 @@ function SearchPatient(props) {
                                 }}
                             />
                         )}
-                        renderOptions={(props, option, state) => {}}
                     />
-                    {/* <Autocomplete
-                        autoSelect
-                        disableClearable
-                        noOptionsText='No Patients Listed'
-                        options={searchPopOutData.map((item) => (item.patient_name + " (ID: " + item.patient_id + ")"))}
-                        onChange={handlePatientNameInput}
-                        onInputChange={handlePatientNameInput}
-                        renderInput={(params) => (
-                            <TextField 
-                                {...params}
-                                autoFocus
-                                id="patient_name"
-                                label="Patient Name"
-                                value={inputName}
-                                fullWidth
-                                variant="standard"
-                                InputProps={{
-                                    ...params.InputProps,
-                                    type: 'search'
-                                }}
-                            />
-                        )}
-                        renderOptions={(props, option, state) => {}}
-                    /> */}
-
             </DialogContent>
             <DialogActions>
                 <Button onClick={handleOpenAddPatientModal}>Manually Add New Patient</Button>
                 <Button onClick={handleCloseModal}>Cancel</Button>
-                <Button onClick={handleAddPatientClick}>Add Selected Patient</Button> 
+                <Button disabled={addPatientDisabled} onClick={handleAddPatientClick}>Add Selected Patient</Button> 
                 {/* Modify the onClick function later for Add Patient button */}
             </DialogActions>
         </Dialog>
@@ -134,23 +177,33 @@ function SearchPatient(props) {
 
 function ManualAddPatient(props) {
     const [inputName, setInputName] = React.useState("");
-    const { itemsArr, updateTableState, addPatientModalOpen, setAddPatientModalOpen, setSearchPatientModalOpen } = props;
+    const [addPatientDisabled, setAddPatientDisabled] = React.useState(true);
+    const { patientDataRowsArr, updatePatientDataRowsArr, addPatientModalOpen, setAddPatientModalOpen, setSearchPatientModalOpen } = props;
 
     const handleCloseModal = () => {
         setSearchPatientModalOpen(false)
         setAddPatientModalOpen(false);
+        setAddPatientDisabled(true);
     }
 
     const handleOpenSearchPatientModal = () => {
         setInputName("");
         setSearchPatientModalOpen(true); 
         setAddPatientModalOpen(false);
+        setAddPatientDisabled(true);
     }
 
     const handlePatientNameInput = (event) => {
         let textInput = event.target.value
         setInputName(textInput);
         console.log("Current Text: " + textInput)
+
+        if (textInput.trim().length > 0) {
+            setAddPatientDisabled(false);
+        
+        } else {
+            setAddPatientDisabled(true);
+        }
     }
 
     // Modify the onClick function later for Add Patient button
@@ -160,12 +213,13 @@ function ManualAddPatient(props) {
 
         let newPatientObj = createPatientInfoObj(inputName);
         
-        itemsArr.push(newPatientObj);
-        let updatedArr = itemsArr.slice();
-        updateTableState(updatedArr); 
+        patientDataRowsArr.push(newPatientObj);
+        let updatedArr = patientDataRowsArr.slice(); //make copy of array
+        updatePatientDataRowsArr(updatedArr); //add to table by changing state
         
         console.log("New Patient Info: " + newPatientObj);
 
+        setAddPatientDisabled(true);
         setInputName("");
     }
 
@@ -192,14 +246,14 @@ function ManualAddPatient(props) {
             <DialogActions>
                 <Button onClick={handleOpenSearchPatientModal}>Search for Patient</Button>
                 <Button onClick={handleCloseModal}>Cancel</Button>
-                <Button onClick={handleAddPatientClick}>Add New Patient</Button> 
+                <Button disabled={addPatientDisabled} onClick={handleAddPatientClick}>Add New Patient</Button> 
             </DialogActions>
         </Dialog>
         
     );
 }
 
-export default function AddPatientFullModal({ itemsArr, updateTableState }) {
+export default function AddPatientFullModal({ patientDataRowsArr, updatePatientDataRowsArr }) {
     const [searchPatientModalOpen, setSearchPatientModalOpen] = React.useState(false);
     const [addPatientModalOpen, setAddPatientModalOpen] = React.useState(false);
 
@@ -215,17 +269,17 @@ export default function AddPatientFullModal({ itemsArr, updateTableState }) {
 
     return (
         <div>
-            <Button onClick={handleOpenSearchPatientModal}>Add Patient</Button>
+            <Button onClick={handleOpenSearchPatientModal} variant='outlined'>Add Patient</Button>
             <SearchPatient 
-                itemsArr={itemsArr} 
-                updateTableState={updateTableState} 
+                patientDataRowsArr={patientDataRowsArr} 
+                updatePatientDataRowsArr={updatePatientDataRowsArr} 
                 setAddPatientModalOpen={setAddPatientModalOpen}
                 searchPatientModalOpen={searchPatientModalOpen}
                 setSearchPatientModalOpen={setSearchPatientModalOpen}
             />
             <ManualAddPatient 
-                itemsArr={itemsArr} 
-                updateTableState={updateTableState} 
+                patientDataRowsArr={patientDataRowsArr} 
+                updatePatientDataRowsArr={updatePatientDataRowsArr} 
                 addPatientModalOpen={addPatientModalOpen} 
                 setAddPatientModalOpen={setAddPatientModalOpen}
                 setSearchPatientModalOpen={setSearchPatientModalOpen}
@@ -233,70 +287,3 @@ export default function AddPatientFullModal({ itemsArr, updateTableState }) {
         </div>
     );
 }
-
-// export default function AddPatient({  itemsArr, updateTableState }) {
-//     const [modalOpen, setModalOpen] = React.useState(false);
-//     const [inputName, setInputName] = React.useState("");
-
-//     const { itemsArr, updateTableState, setAddPatientModalOpen, setSearchPatientModalOpen } = props;
-
-//     const handleOpenModal = () => {
-//         setModalOpen(true);
-//     };
-
-//     const handleCloseModal = () => {
-//         setModalOpen(false);
-//     };
-
-//     const handlePatientNameInput = (event) => {
-//         let textInput = event.target.value
-//         setInputName(textInput);
-//         console.log("Current Text: " + textInput)
-//     };
-
-//     const handleAddPatientClick = () => {
-//         setModalOpen(false);
-//         console.log("Input: " + inputName);
-
-//         let newPatientObj = createPatientInfoObj(inputName);
-        
-//         itemsArr.push(newPatientObj);
-//         let updatedArr = itemsArr.slice();
-//         updateTableState(updatedArr); 
-        
-//         console.log("New Patient Info: " + newPatientObj);
-
-//         setInputName("");
-//     };
-
-//     return (
-//         <div>
-//             <Button onClick={handleOpenModal}>Add Patient</Button>
-//             <Dialog open={modalOpen} onClose={handleCloseModal} maxWidth='sm' fullWidth={true}> 
-            
-//                 <DialogTitle>Add a Patient</DialogTitle>
-//                 <DialogContent>
-//                     <DialogContentText sx={{padding: '0 0 20px 0'}}>
-//                         Manually add a new patient.
-//                     </DialogContentText>
-//                     <TextField 
-//                         autoFocus
-//                         id="new_patient_name"
-//                         label="New Patient Name"
-//                         value={inputName}
-//                         onChange={handlePatientNameInput}
-//                         fullWidth
-//                         variant="standard"
-//                     />
-                    
-//                 </DialogContent>
-//                 <DialogActions>
-//                     <Button>Search for Patient</Button>
-//                     <Button onClick={handleCloseModal}>Cancel</Button>
-//                     <Button onClick={handleAddPatientClick}>Add New Patient</Button> 
-//                     {/* Modify the onClick function later for Add Patient button */}
-//                 </DialogActions>
-//             </Dialog>
-//         </div>
-//     );
-// }
