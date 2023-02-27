@@ -27,8 +27,8 @@ type Query {
   getTestEvents(
     patient_id: String!
     test_type: String
-    start_time: AWSDateTime
-    end_time: AWSDateTime
+    from_time: AWSDateTime
+    to_time: AWSDateTime
     if_completed: Boolean
     sort: SortDirection
     count: Int

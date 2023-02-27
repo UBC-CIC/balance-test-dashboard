@@ -79,9 +79,13 @@ function App() {
         <Container maxWidth="lg">
           <Routes>
             {/* <Route path="/" element={<SignIn />}> */}
-            <Route index element={<PatientsTable />} />
+            <Route index element={<PatientsTable careProviderId="1" />} />
             <Route path="patient" element={<PatientPage />} />
-            <Route path="patientTable" element={<PatientsTable />} />
+            <Route
+              path="patientTable"
+              // 1 is current hard-coded care_provider_id
+              element={<PatientsTable careProviderId="1" />}
+            />
             <Route path="signIn" element={<SignIn />} />
             <Route path="signUp" element={<SignUp />} />
             <Route path="testDetails" element={<TestDetails />} />

@@ -17,26 +17,26 @@ export function request(ctx) {
     arguments: {
       patient_id,
       test_type,
-      start_time,
-      end_time,
+      from_time,
+      to_time,
       if_completed,
       sort,
       count,
     },
   } = ctx;
-  let testTypeSql = !test_type ? "" : `t.test_type='${test_type}'` + "and";
-  let startTimeSql = !start_time ? "" : `t.start_time=${start_time}` + "and";
-  let endTimeSql = !end_time ? "" : `t.end_time=${end_time}` + "and";
+  let testTypeSql = !test_type ? "" : `t.test_type='${test_type}'` + " and";
+  let fromTimeSql = !from_time ? "" : `t.start_time>=${from_time}` + " and";
+  let toTimeSql = !to_time ? "" : `t.start_time<=${to_time}` + " and";
   let ifCompletedSql = !if_completed
     ? ""
-    : `t.if_completed=${if_completed}+'and`;
-  let sortSql = !sort ? "" : `order by date ${sort}`;
+    : `t.if_completed=${if_completed}` + " and";
+  let sortSql = !sort ? "" : `order by t.start_time ${sort}`;
   let countSql = !count ? "" : `limit ${count}`;
   return {
     payload: {
       sql: `select * 
             from "TestEvent" t
-            where ${testTypeSql} ${startTimeSql} ${endTimeSql} ${ifCompletedSql}
+            where ${testTypeSql} ${fromTimeSql} ${toTimeSql} ${ifCompletedSql}
               t.patient_id='${patient_id}'
             ${sortSql} ${countSql}`,
     },
