@@ -50,3 +50,32 @@ export const createAndAssignTest = /* GraphQL */ `
     }
   }
 `;
+export const putTestResult = /* GraphQL */ `
+  mutation PutTestResult(
+    $test_event_id: String!
+    $test_type: String!
+    $balance_score: Int
+    $doctor_score: Int
+    $start_time: AWSDateTime
+    $end_time: AWSDateTime
+  ) {
+    putTestResult(
+      test_event_id: $test_event_id
+      test_type: $test_type
+      balance_score: $balance_score
+      doctor_score: $doctor_score
+      start_time: $start_time
+      end_time: $end_time
+    ) {
+      test_event_id
+      patient_id
+      test_type
+      if_completed
+      balance_score
+      doctor_score
+      notes
+      start_time
+      end_time
+    }
+  }
+`;

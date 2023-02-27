@@ -31,8 +31,8 @@ export const getTestEvents = /* GraphQL */ `
   query GetTestEvents(
     $patient_id: String!
     $test_type: String
-    $from_time: AWSDateTime
-    $to_time: AWSDateTime
+    $start_time: AWSDateTime
+    $end_time: AWSDateTime
     $if_completed: Boolean
     $sort: SortDirection
     $count: Int
@@ -40,8 +40,8 @@ export const getTestEvents = /* GraphQL */ `
     getTestEvents(
       patient_id: $patient_id
       test_type: $test_type
-      from_time: $from_time
-      to_time: $to_time
+      start_time: $start_time
+      end_time: $end_time
       if_completed: $if_completed
       sort: $sort
       count: $count
@@ -58,8 +58,8 @@ export const getTestEvents = /* GraphQL */ `
     }
   }
 `;
-export const getAverageBalanceScore = /* GraphQL */ `
-  query GetAverageBalanceScore($patientId: String!, $numDays: Int!) {
-    getAverageBalanceScore(patientId: $patientId, numDays: $numDays)
+export const getWeeklyAverageBalanceScore = /* GraphQL */ `
+  query GetWeeklyAverageBalanceScore($patientId: String!) {
+    getWeeklyAverageBalanceScore(patientId: $patientId)
   }
 `;

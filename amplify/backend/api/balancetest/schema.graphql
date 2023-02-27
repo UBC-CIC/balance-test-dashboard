@@ -1,8 +1,3 @@
-# This "input" configures a global authorization rule to enable public access to
-# all models in this schema. Learn more about authorization rules here: https://docs.amplify.aws/cli/graphql/authorization-rules
-input AMPLIFY {
-  globalAuthRule: AuthRule = { allow: public }
-} # FOR TESTING ONLY!
 type Patient {
   patient_id: String!
   name: String
@@ -27,14 +22,14 @@ type Query {
   getTestEvents(
     patient_id: String!
     test_type: String
-    from_time: AWSDateTime
-    to_time: AWSDateTime
+    start_time: AWSDateTime
+    end_time: AWSDateTime
     if_completed: Boolean
     sort: SortDirection
     count: Int
   ): [TestEvent]
   # analytics
-  getAverageBalanceScore(patientId: String!, numDays: Int!): Int
+  getWeeklyAverageBalanceScore(patientId: String!): Int
 }
 
 type Mutation {
@@ -49,6 +44,15 @@ type Mutation {
     patient_id: String!
     test_type: String!
     notes: String
+  ): TestEvent
+  putTestResult(
+    test_event_id: String!
+    test_type: String!
+    balance_score: Int
+    doctor_score: Int
+    start_time: AWSDateTime
+    end_time: AWSDateTime
+    if_completed: Boolean
   ): TestEvent
 }
 

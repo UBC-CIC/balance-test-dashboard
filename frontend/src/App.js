@@ -4,7 +4,7 @@ import PatientPage from "./components/patient/PatientPage";
 import EventsTable from "./components/patient/EventsTable";
 import "@aws-amplify/ui-react/styles.css";
 import "./App.css";
-import ScoreChart from "./components/patient/Charts";
+import ScoreChart, { RangeChart } from "./components/patient/Charts";
 import { Container } from "@mui/system";
 import Patient from "./pages/patient";
 import Navbar from "./components/nav/Navbar";
@@ -89,6 +89,7 @@ function App() {
             <Route path="signIn" element={<SignIn />} />
             <Route path="signUp" element={<SignUp />} />
             <Route path="testDetails" element={<TestDetails />} />
+            <Route path="chart" element={<RangeChart />} />
 
             {/* Using path="*"" means "match anything", so this route
                 acts like a catch-all for URLs that we don't have explicit
