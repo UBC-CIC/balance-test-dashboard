@@ -19,7 +19,7 @@ export function request(ctx) {
   let sql = `insert into "TestEvent" 
                 (test_event_id, patient_id, test_type, if_completed, balance_score, doctor_score, notes, start_time, end_time) 
             values 
-                ('${test_event_id}', '${patient_id}', '${test_type}', false, null, null, '${notes}', null, null)`;
+                ('${test_event_id}', '${patient_id}', '${test_type}', false, null, null, '${notes}', null, null) returning *`;
   return {
     payload: {
       sql: sql,

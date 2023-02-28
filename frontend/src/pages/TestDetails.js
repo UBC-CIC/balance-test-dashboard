@@ -14,7 +14,7 @@ import {
   MEASUREMENT_TYPES,
 } from "../components/mockData/data";
 
-export function TestDetails() {
+export function TestDetails({ patient_id, patient_name }) {
   let navigate = useNavigate();
   return (
     <Grid container direction={"column"} spacing={4}>
@@ -29,7 +29,7 @@ export function TestDetails() {
       </Grid>
       <Grid item container direction="row" justifyContent="space-between">
         <Typography variant="h5" gutterBottom inline>
-          Test Event Details, John Doe (1289946324)
+          Test Event Details, {patient_name} ({patient_id})
         </Typography>
         <Grid>
           <Button variant="outlined">Delete</Button>
@@ -56,7 +56,7 @@ export function TestDetails() {
                 //   key={row.name}
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
               >
-                <TableCell align="left">Sit to Stand</TableCell>
+                <TableCell align="left">sit to stand</TableCell>
                 <TableCell align="left">80</TableCell>
                 <TableCell align="left">2023/2/18</TableCell>
                 <TableCell align="left">54 s</TableCell>

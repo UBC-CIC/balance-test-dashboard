@@ -72,7 +72,7 @@ export const handler = async (event) => {
       body: res.rows,
     };
   } catch (e) {
-    response = { statusCode: 200, body: err };
+    response = { statusCode: 200, body: e };
   }
   return response;
 };

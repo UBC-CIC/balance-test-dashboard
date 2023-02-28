@@ -4,7 +4,8 @@ import PatientPage from "./components/patient/PatientPage";
 import EventsTable from "./components/patient/EventsTable";
 import "@aws-amplify/ui-react/styles.css";
 import "./App.css";
-import ScoreChart from "./components/patient/Charts";
+import ScoreChart, { RangeChart } from "./components/patient/Charts";
+import Execute from "./components/mockData/populateDBScript";
 import { Container } from "@mui/system";
 import Patient from "./pages/patient";
 import Navbar from "./components/nav/Navbar";
@@ -80,7 +81,15 @@ function App() {
           <Routes>
             {/* <Route path="/" element={<SignIn />}> */}
             <Route index element={<PatientsTable careProviderId="1" />} />
-            <Route path="patient" element={<PatientPage />} />
+            <Route
+              path="patient"
+              element={
+                <PatientPage
+                  patient_id={"217016f5-3dbf-41b3-8438-b414c2a95f0d"}
+                  patient_name={"Albert Pham"}
+                />
+              }
+            />
             <Route
               path="patientTable"
               // 1 is current hard-coded care_provider_id
@@ -88,7 +97,16 @@ function App() {
             />
             <Route path="signIn" element={<SignIn />} />
             <Route path="signUp" element={<SignUp />} />
-            <Route path="testDetails" element={<TestDetails />} />
+            <Route
+              path="testDetails"
+              element={
+                <TestDetails
+                  patient_id={"217016f5-3dbf-41b3-8438-b414c2a95f0d"}
+                  patient_name={"Albert Pham"}
+                />
+              }
+            />
+            <Route path="executeApi" element={<Execute />} />
 
             {/* Using path="*"" means "match anything", so this route
                 acts like a catch-all for URLs that we don't have explicit

@@ -25,8 +25,8 @@ export function request(ctx) {
     },
   } = ctx;
   let testTypeSql = !test_type ? "" : `t.test_type='${test_type}'` + " and";
-  let fromTimeSql = !from_time ? "" : `t.start_time>=${from_time}` + " and";
-  let toTimeSql = !to_time ? "" : `t.start_time<=${to_time}` + " and";
+  let fromTimeSql = !from_time ? "" : `t.start_time>='${from_time}'` + " and";
+  let toTimeSql = !to_time ? "" : `t.start_time<='${to_time}'` + " and";
   let ifCompletedSql = !if_completed
     ? ""
     : `t.if_completed=${if_completed}` + " and";

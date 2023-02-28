@@ -17,8 +17,9 @@ export function request(ctx) {
     arguments: { patient_id, name, email },
   } = ctx;
   let sql = !email
-    ? `insert into "Patient" (patient_id, name, email) values ('${patient_id}', '${name}', null);`
+    ? `insert into "Patient" (patient_id, name, email) values ('${patient_id}', '${name}', null)`
     : `insert into "Patient" (patient_id, name, email) values ('${patient_id}', '${name}', '${email}')`;
+  sql += ` returning *;`;
   return {
     payload: {
       sql: sql,
