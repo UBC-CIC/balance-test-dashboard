@@ -8,7 +8,7 @@
   //     arr.push({name: curDate.toLocaleString(), score: Math.floor(Math.random() * 101)})
   // }
   let test = [
-    "Sit to Stand",
+    "sit to stand",
     "One-foot Stand",
     "Sitting with Back Unsupported",
   ];

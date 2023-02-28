@@ -16,6 +16,7 @@ import Chart from "react-apexcharts";
 import { MEASUREMENT_RANGE_DATA } from "../mockData/data";
 
 export const ScoreChart = ({ data }) => {
+  console.log("chartdata", data);
   return (
     <ResponsiveContainer width="100%" height={350}>
       <LineChart
@@ -30,7 +31,7 @@ export const ScoreChart = ({ data }) => {
         }}
       >
         <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="date" />
+        <XAxis dataKey="start_time" />
         <YAxis />
         {/* <Tooltip /> */}
         {/* <Legend /> */}
@@ -40,7 +41,7 @@ export const ScoreChart = ({ data }) => {
 
         <Line
           type="monotone"
-          dataKey="score"
+          dataKey="balance_score"
           stroke="black"
           isAnimationActive={false}
         />

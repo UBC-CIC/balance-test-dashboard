@@ -16,7 +16,6 @@ export function request(ctx) {
   const {
     arguments: {
       test_event_id,
-      test_type,
       balance_score,
       doctor_score,
       start_time,
@@ -30,8 +29,8 @@ export function request(ctx) {
   let doctorScoreSql = !doctor_score
     ? ""
     : `doctor_score = ${doctor_score}` + ",";
-  let startTimeSql = !start_time ? "" : `start_time = ${start_time}` + ",";
-  let endTimeSql = !end_time ? "" : `end_time = ${end_time}` + ",";
+  let startTimeSql = !start_time ? "" : `start_time = '${start_time}'` + ",";
+  let endTimeSql = !end_time ? "" : `end_time = '${end_time}'` + ",";
   let ifCompletedSql = !if_completed
     ? ""
     : `if_completed = ${if_completed}` + ",";
@@ -62,7 +61,8 @@ export function request(ctx) {
 
   let sql = `UPDATE "TestEvent" 
             SET ${sqlSetStatement}
-            WHERE test_event_id = '${test_event_id}' and test_type = '${test_type}';`;
+            WHERE test_event_id = '${test_event_id}'
+            RETURNING *;`;
   return {
     payload: {
       sql: sql,

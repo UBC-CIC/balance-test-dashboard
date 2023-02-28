@@ -24,14 +24,43 @@ import {
   MEASUREMENT_TYPES,
 } from "../mockData/data";
 import { useNavigate } from "react-router";
+import { getTestEvents } from "../../graphql/queries";
+
+const { Amplify, API, graphqlOperation } = require("aws-amplify");
+const awsconfig = require("../../aws-exports");
+const {
+  createAndAssignTest,
+  createPatient,
+  putTestResult,
+} = require("../../graphql/mutations");
+Amplify.configure(awsconfig);
 
 function PatientPage({ patient_id }) {
   const [movementTestSelected, setMovementTestSelected] =
-    React.useState("Sit to Stand");
+    React.useState("sit to stand");
   const [fromDate, setFromDate] = React.useState(dayjs("2023-02-03"));
   const [toDate, setToDate] = React.useState(dayjs("2023-02-10"));
 
   let navigate = useNavigate();
+  const [data, setData] = React.useState([]);
+
+  React.useEffect(() => {
+    (async () => {
+      let response = await API.graphql(
+        graphqlOperation(getTestEvents, {
+          patient_id: patient_id,
+          test_type: movementTestSelected,
+          from_time: dayjs(fromDate).format("YYYY-MM-DD hh:mm:ss"),
+          to_time: dayjs(toDate).format("YYYY-MM-DD hh:mm:ss"),
+          if_completed: true,
+        })
+      );
+
+      console.log(response);
+      setData(response.data.getTestEvents);
+      console.log("data", data);
+    })();
+  }, [fromDate, toDate]);
 
   const handleChangeFromDate = (newValue) => {
     setFromDate(newValue);
@@ -63,81 +92,8 @@ function PatientPage({ patient_id }) {
     },
   ];
 
-  const rows = [
-    {
-      id: 1,
-      score: 85,
-      movement: "Sit to Stand",
-      date: "9/17/2022, 1:21 PM",
-      notes: "",
-    },
-    {
-      id: 2,
-      score: 85,
-      movement: "Sit to Stand",
-      date: "9/17/2022, 1:21 PM",
-      notes: "",
-    },
-    {
-      id: 3,
-      score: 85,
-      movement: "Sit to Stand",
-      date: "9/17/2022, 1:21 PM",
-      notes: "",
-    },
-    {
-      id: 4,
-      score: 85,
-      movement: "Sit to Stand",
-      date: "9/17/2022, 1:21 PM",
-      notes: "",
-    },
-    {
-      id: 5,
-      score: 85,
-      movement: "Sit to Stand",
-      date: "9/17/2022, 1:21 PM",
-      notes: "",
-    },
-    {
-      id: 6,
-      score: 85,
-      movement: "Sit to Stand",
-      date: "9/17/2022, 1:21 PM",
-      notes: "",
-    },
-    {
-      id: 7,
-      score: 85,
-      movement: "Sit to Stand",
-      date: "9/17/2022, 1:21 PM",
-      notes: "",
-    },
-    {
-      id: 8,
-      score: 85,
-      movement: "Sit to Stand",
-      date: "9/17/2022, 1:21 PM",
-      notes: "",
-    },
-    {
-      id: 9,
-      score: 85,
-      movement: "Sit to Stand",
-      date: "9/17/2022, 1:21 PM",
-      notes: "",
-    },
-    {
-      id: 10,
-      score: 85,
-      movement: "Sit to Stand",
-      date: "9/17/2022, 1:21 PM",
-      notes: "",
-    },
-  ];
-
   const scoreDataMapping = {
-    "Sit to Stand": SIT_STAND_DATA,
+    "sit to stand": SIT_STAND_DATA,
     "One-foot Stand": ONE_FOOT_STAND_DATA,
     "Sitting with Back Unsupported": SIT_UNSUPPORTED_DATA,
   };
@@ -220,11 +176,15 @@ function PatientPage({ patient_id }) {
           {/* chart */}
           <Grid item>
             <ScoreChart
-              data={scoreDataMapping[movementTestSelected].filter(
-                (i) =>
-                  dayjs(i.date).isAfter(fromDate) &&
-                  dayjs(i.date).isBefore(toDate)
-              )}
+              data={
+                movementTestSelected == "sit to stand"
+                  ? data
+                  : scoreDataMapping[movementTestSelected].filter(
+                      (i) =>
+                        dayjs(i.date).isAfter(fromDate) &&
+                        dayjs(i.date).isBefore(toDate)
+                    )
+              }
             />
           </Grid>
           {/* measurement select */}
