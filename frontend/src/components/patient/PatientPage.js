@@ -35,7 +35,7 @@ const {
 } = require("../../graphql/mutations");
 Amplify.configure(awsconfig);
 
-function PatientPage({ patient_id }) {
+function PatientPage({ patient_id, patient_name }) {
   const [movementTestSelected, setMovementTestSelected] =
     React.useState("sit to stand");
   const [fromDate, setFromDate] = React.useState(dayjs("2023-02-03"));
@@ -46,6 +46,7 @@ function PatientPage({ patient_id }) {
 
   React.useEffect(() => {
     (async () => {
+      // query test events for the graph
       let response = await API.graphql(
         graphqlOperation(getTestEvents, {
           patient_id: patient_id,
@@ -53,6 +54,7 @@ function PatientPage({ patient_id }) {
           from_time: dayjs(fromDate).format("YYYY-MM-DD hh:mm:ss"),
           to_time: dayjs(toDate).format("YYYY-MM-DD hh:mm:ss"),
           if_completed: true,
+          sort: "asc",
         })
       );
 
@@ -127,7 +129,7 @@ function PatientPage({ patient_id }) {
         {/* page title */}
         <Grid item>
           <Typography variant="h5" gutterBottom>
-            Statistics for John Doe (1289946324)
+            Statistics for {patient_name} ({patient_id})
           </Typography>
         </Grid>
         {/* analytics */}

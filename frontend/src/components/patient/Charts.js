@@ -157,6 +157,22 @@ export const RangeChart = () => {
     tooltip: { enabled: false },
     xaxis: { labels: { trim: true, rotate: 15 }, tickAmount: 6 },
     grid: { show: false },
+    annotations: {
+      yaxis: [
+        {
+          y: 0.2,
+          borderColor: "gray",
+          label: {
+            borderColor: "gray",
+            style: {
+              color: "#fff",
+              background: "gray",
+            },
+            text: "median: 0.2",
+          },
+        },
+      ],
+    },
   };
 
   // let state = {

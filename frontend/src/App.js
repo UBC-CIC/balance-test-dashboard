@@ -86,6 +86,7 @@ function App() {
               element={
                 <PatientPage
                   patient_id={"217016f5-3dbf-41b3-8438-b414c2a95f0d"}
+                  patient_name={"Albert Pham"}
                 />
               }
             />
@@ -96,7 +97,15 @@ function App() {
             />
             <Route path="signIn" element={<SignIn />} />
             <Route path="signUp" element={<SignUp />} />
-            <Route path="testDetails" element={<TestDetails />} />
+            <Route
+              path="testDetails"
+              element={
+                <TestDetails
+                  patient_id={"217016f5-3dbf-41b3-8438-b414c2a95f0d"}
+                  patient_name={"Albert Pham"}
+                />
+              }
+            />
             <Route path="executeApi" element={<Execute />} />
 
             {/* Using path="*"" means "match anything", so this route

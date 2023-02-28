@@ -16,7 +16,7 @@ export function request(ctx) {
   const {
     arguments: { patient_id, care_provider_id },
   } = ctx;
-  let sql = `insert into "PatientCareProvider" (patient_id, care_provider_id) values (${patient_id}, ${care_provider_id})`;
+  let sql = `insert into "PatientCareProvider" (patient_id, care_provider_id) values ('${patient_id}', '${care_provider_id}') returning *`;
   return {
     payload: {
       sql: sql,

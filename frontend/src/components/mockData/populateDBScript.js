@@ -93,20 +93,24 @@ function handleExecute() {
   console.log(startDate.format("YYYY-MM-DD hh:mm:ss"));
   // const startDate = startDate;
 
-  for (let t in tests) {
+  for (let t = 0; t < tests.length; t++) {
+    console.log("startdate", startDate);
     API.graphql(
       graphqlOperation(putTestResult, {
         test_event_id: tests[t],
         balance_score: Math.floor(Math.random() * 101),
-        start_time: startDate.format("YYYY-MM-DD hh:mm:ss"),
-        end_time: startDate.add(60, "seconds").format("YYYY-MM-DD hh:mm:ss"),
+        start_time: startDate.add(t, "day").format("YYYY-MM-DD hh:mm:ss"),
+        end_time: startDate
+          .add(t, "day")
+          .add(60, "seconds")
+          .format("YYYY-MM-DD hh:mm:ss"),
         if_completed: true,
       })
     ).then((res) => {
       console.log(res);
+      // startDate.add(1, "day");
       // tests.push(res.data.createAndAssignTest.test_event_id);
     });
-    startDate.add(1, "day");
   }
 }
 
