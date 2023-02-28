@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 // import { useNavigate } from 'react-router-dom';
 import { ReactDOM } from "react";
 import Box from "@mui/material/Box";
@@ -20,16 +20,21 @@ import SearchForPatients from "./FindPatients";
 
 import { v4 as uuidv4 } from "uuid";
 
+import { Amplify, API, graphqlOperation } from "aws-amplify";
+import awsconfig from "../../aws-exports";
+import { getPatients, getTestEvents } from "../../graphql/queries";
+Amplify.configure(awsconfig);
+
 const headerColumns = [
   {
     id: "patient_name",
     className: "header-column-text",
     label: "Patient Name",
   },
-  { 
-    id: "user_id", 
-    className: "header-column-text", 
-    label: "User ID" 
+  {
+    id: "user_id",
+    className: "header-column-text",
+    label: "User ID",
   },
   {
     id: "assigned_test_num",
@@ -222,7 +227,7 @@ const testRows = [
     assigned_test_num: 1,
     last_movement_tested: "Sit-to-Stand",
     last_test_score: 23,
-  }
+  },
 ];
 
 function FixedHeaderRow() {
@@ -233,7 +238,7 @@ function FixedHeaderRow() {
           variant="head"
           key={headerColumn.id}
           className={headerColumn.className}
-          sx={{ fontWeight: "bold", whiteSpace: 'nowrap' }}
+          sx={{ fontWeight: "bold", whiteSpace: "nowrap" }}
         >
           {headerColumn.label}
         </TableCell>
@@ -242,7 +247,12 @@ function FixedHeaderRow() {
   );
 }
 
-function DisplayRows({ tablePage, rowsPerTablePage, patientDataRowsArr, updatePatientDataRowsArr }) {
+function DisplayRows({
+  tablePage,
+  rowsPerTablePage,
+  patientDataRowsArr,
+  updatePatientDataRowsArr,
+}) {
   //need to figure out which hooks are needed to make and use
   const [numTestsAssigned, setNumTestsAssigned] = React.useState(0);
   // const [lastMovementTested, setLastMovementTested] = React.useState("-");
@@ -250,7 +260,7 @@ function DisplayRows({ tablePage, rowsPerTablePage, patientDataRowsArr, updatePa
 
   let navigate = useNavigate();
 
-  console.log("Display All Patients.")
+  console.log("Display All Patients.");
 
   if (patientDataRowsArr.length === 0) {
     return (
@@ -261,7 +271,8 @@ function DisplayRows({ tablePage, rowsPerTablePage, patientDataRowsArr, updatePa
       </TableRow>
     );
   } else {
-    return patientDataRowsArr.slice(
+    return patientDataRowsArr
+      .slice(
         tablePage * rowsPerTablePage,
         tablePage * rowsPerTablePage + rowsPerTablePage
       )
@@ -333,13 +344,14 @@ function DisplayRows({ tablePage, rowsPerTablePage, patientDataRowsArr, updatePa
                       {column.label === "Movement Tests"
                         ? obj_value + " Tests Assigned "
                         : obj_value}
-                      {column.label === "Movement Tests" && 
-                      <ManageTests 
-                            rowNum={patientDataRowsArr.indexOf(row)} 
-                            user_id={row.user_id} 
-                            patientDataRowsArr={patientDataRowsArr} 
-                            updatePatientDataRowsArr={updatePatientDataRowsArr} 
-                      />}
+                      {column.label === "Movement Tests" && (
+                        <ManageTests
+                          rowNum={patientDataRowsArr.indexOf(row)}
+                          user_id={row.user_id}
+                          patientDataRowsArr={patientDataRowsArr}
+                          updatePatientDataRowsArr={updatePatientDataRowsArr}
+                        />
+                      )}
                     </TableCell>
                   );
                 }
@@ -351,11 +363,18 @@ function DisplayRows({ tablePage, rowsPerTablePage, patientDataRowsArr, updatePa
   }
 }
 
-function DisplaySearchResults({ tablePage, rowsPerTablePage, searchResults, setSearchResults, patientDataRowsArr, updatePatientDataRowsArr }) {
+function DisplaySearchResults({
+  tablePage,
+  rowsPerTablePage,
+  searchResults,
+  setSearchResults,
+  patientDataRowsArr,
+  updatePatientDataRowsArr,
+}) {
   const [numTestsAssigned, setNumTestsAssigned] = React.useState(0);
 
   let navigate = useNavigate();
-  console.log("Display Search Results.")
+  console.log("Display Search Results.");
 
   if (searchResults.length === 0) {
     return (
@@ -366,7 +385,8 @@ function DisplaySearchResults({ tablePage, rowsPerTablePage, searchResults, setS
       </TableRow>
     );
   } else {
-    return searchResults.slice(
+    return searchResults
+      .slice(
         tablePage * rowsPerTablePage,
         tablePage * rowsPerTablePage + rowsPerTablePage
       )
@@ -438,13 +458,14 @@ function DisplaySearchResults({ tablePage, rowsPerTablePage, searchResults, setS
                       {column.label === "Movement Tests"
                         ? obj_value + " Tests Assigned "
                         : obj_value}
-                      {column.label === "Movement Tests" && 
-                      <ManageTests 
-                            rowNum={patientDataRowsArr.indexOf(row)} 
-                            user_id={row.user_id} 
-                            patientDataRowsArr={patientDataRowsArr} 
-                            updatePatientDataRowsArr={updatePatientDataRowsArr} 
-                      />}
+                      {column.label === "Movement Tests" && (
+                        <ManageTests
+                          rowNum={patientDataRowsArr.indexOf(row)}
+                          user_id={row.user_id}
+                          patientDataRowsArr={patientDataRowsArr}
+                          updatePatientDataRowsArr={updatePatientDataRowsArr}
+                        />
+                      )}
                     </TableCell>
                   );
                 }
@@ -456,9 +477,9 @@ function DisplaySearchResults({ tablePage, rowsPerTablePage, searchResults, setS
   }
 }
 
-
-export function PatientsTable({ care_provider_id }) {
-  let data = testRows;
+export function PatientsTable({ careProviderId }) {
+  let data = [];
+  // let data = testRows;
 
   const [patientDataRowsArr, updatePatientDataRowsArr] = React.useState(data);
 
@@ -470,6 +491,49 @@ export function PatientsTable({ care_provider_id }) {
   const handleChangePage = (event, newTablePage) => {
     setTablePage(newTablePage);
   };
+
+  const fetchData = async () => {};
+
+  useEffect(() => {
+    (async () => {
+      let response = await API.graphql(
+        graphqlOperation(getPatients, {
+          care_provider_id: careProviderId,
+        })
+      );
+
+      let patientsInfo = response.data.getPatients;
+      console.log("patientsInfo", patientsInfo);
+
+      for (const p in patientsInfo) {
+        let res1 = await API.graphql(
+          graphqlOperation(getTestEvents, {
+            patient_id: patientsInfo[p].patient_id,
+            if_completed: false,
+          })
+        );
+        console.log("res1", res1);
+        let res2 = await API.graphql(
+          graphqlOperation(getTestEvents, {
+            patient_id: patientsInfo[p].patient_id,
+            if_completed: true,
+            sort: "desc",
+          })
+        );
+        console.log("res2", res2);
+
+        data.push({
+          user_id: patientsInfo[p].patient_id,
+          patient_name: patientsInfo[p].name,
+          assigned_test_num: res1.data.getTestEvents.length,
+          last_movement_tested: res2.data.getTestEvents[0]?.test_type,
+          last_test_score: res2.data.getTestEvents[0]?.balance_score,
+        });
+      }
+      console.log(data);
+      updatePatientDataRowsArr(data);
+    })();
+  }, []);
 
   const handleChangeRowsPerPage = (event) => {
     setRowsPerTablePage(+event.target.value);
@@ -491,9 +555,12 @@ export function PatientsTable({ care_provider_id }) {
       }}
     >
       <div className="above-table-row">
-        <AddPatientFullModal patientDataRowsArr={patientDataRowsArr} updatePatientDataRowsArr={updatePatientDataRowsArr} />
-        <SearchForPatients 
-          patientDataRowsArr={patientDataRowsArr} 
+        <AddPatientFullModal
+          patientDataRowsArr={patientDataRowsArr}
+          updatePatientDataRowsArr={updatePatientDataRowsArr}
+        />
+        <SearchForPatients
+          patientDataRowsArr={patientDataRowsArr}
           updatePatientDataRowsArr={updatePatientDataRowsArr}
           searchResults={searchResults}
           setSearchResults={setSearchResults}
@@ -516,8 +583,21 @@ export function PatientsTable({ care_provider_id }) {
             <TableHead>{FixedHeaderRow()}</TableHead>
 
             <TableBody>
-              {searchResults.length > 0 ? DisplaySearchResults({ tablePage, rowsPerTablePage, searchResults, setSearchResults, patientDataRowsArr, updatePatientDataRowsArr }) :
-               DisplayRows({ tablePage, rowsPerTablePage, patientDataRowsArr, updatePatientDataRowsArr })}
+              {searchResults.length > 0
+                ? DisplaySearchResults({
+                    tablePage,
+                    rowsPerTablePage,
+                    searchResults,
+                    setSearchResults,
+                    patientDataRowsArr,
+                    updatePatientDataRowsArr,
+                  })
+                : DisplayRows({
+                    tablePage,
+                    rowsPerTablePage,
+                    patientDataRowsArr,
+                    updatePatientDataRowsArr,
+                  })}
             </TableBody>
           </Table>
 

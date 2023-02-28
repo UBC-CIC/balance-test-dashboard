@@ -27,10 +27,14 @@ export function TestDetails() {
           Back
         </Button>
       </Grid>
-      <Grid item>
-        <Typography variant="h5" gutterBottom>
+      <Grid item container direction="row" justifyContent="space-between">
+        <Typography variant="h5" gutterBottom inline>
           Test Event Details, John Doe (1289946324)
         </Typography>
+        <Grid>
+          <Button variant="outlined">Delete</Button>
+          <Button variant="contained">Download</Button>
+        </Grid>
       </Grid>
       <Grid item container justifyContent="center">
         <Grid item>
