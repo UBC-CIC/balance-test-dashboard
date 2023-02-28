@@ -45,6 +45,14 @@ type Mutation {
     test_type: String!
     notes: String
   ): TestEvent
+  putTestResult(
+    test_event_id: String!
+    test_type: String!
+    balance_score: Int!
+    doctor_score: Int
+    start_time: AWSDateTime
+    end_time: AWSDateTime
+  ): TestEvent
 }
 
 type TestEvent {

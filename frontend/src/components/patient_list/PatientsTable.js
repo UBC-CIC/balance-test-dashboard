@@ -492,10 +492,11 @@ export function PatientsTable({ careProviderId }) {
     setTablePage(newTablePage);
   };
 
-  const fetchData = async () => {};
-
-  useEffect(() => {
-    (async () => {
+  async function fetchData() {
+    let data = [];
+    console.log("in fetchdata");
+    try {
+      console.log("in fetchdata try block");
       let response = await API.graphql(
         graphqlOperation(getPatients, {
           care_provider_id: careProviderId,
@@ -505,7 +506,8 @@ export function PatientsTable({ careProviderId }) {
       let patientsInfo = response.data.getPatients;
       console.log("patientsInfo", patientsInfo);
 
-      for (const p in patientsInfo) {
+      for (let p = 0; p < patientsInfo.length; p++) {
+        console.log(p);
         let res1 = await API.graphql(
           graphqlOperation(getTestEvents, {
             patient_id: patientsInfo[p].patient_id,
@@ -530,9 +532,19 @@ export function PatientsTable({ careProviderId }) {
           last_test_score: res2.data.getTestEvents[0]?.balance_score,
         });
       }
-      console.log(data);
-      updatePatientDataRowsArr(data);
-    })();
+      console.log("data", data);
+      return data;
+      // return new Promise((resolve, reject) => resolve(data));
+    } catch (err) {
+      console.log(err);
+      return new Promise((resolve, reject) => reject(err));
+    }
+  }
+
+  useEffect(() => {
+    console.log("in useeffect");
+    // console.log(fetchData());
+    fetchData().then((data) => updatePatientDataRowsArr(data));
   }, []);
 
   const handleChangeRowsPerPage = (event) => {

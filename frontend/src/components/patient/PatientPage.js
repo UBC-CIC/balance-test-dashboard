@@ -10,7 +10,7 @@ import TextField from "@mui/material/TextField";
 import * as React from "react";
 import dayjs from "dayjs";
 import { DataGrid } from "@mui/x-data-grid";
-import { ScoreChart } from "./Charts";
+import { RangeChart, ScoreChart } from "./Charts";
 import Grid from "@mui/material/Grid";
 import TestEventsTable from "./EventsTable";
 import Select from "@mui/material/Select";
@@ -21,16 +21,48 @@ import {
   ONE_FOOT_STAND_DATA,
   SIT_UNSUPPORTED_DATA,
   TEST_TYPES,
+  MEASUREMENT_TYPES,
 } from "../mockData/data";
 import { useNavigate } from "react-router";
+import { getTestEvents } from "../../graphql/queries";
 
-function PatientPage({ patient_id }) {
+const { Amplify, API, graphqlOperation } = require("aws-amplify");
+const awsconfig = require("../../aws-exports");
+const {
+  createAndAssignTest,
+  createPatient,
+  putTestResult,
+} = require("../../graphql/mutations");
+Amplify.configure(awsconfig);
+
+function PatientPage({ patient_id, patient_name }) {
   const [movementTestSelected, setMovementTestSelected] =
-    React.useState("Sit to Stand");
-  const [fromDate, setFromDate] = React.useState(dayjs().subtract(7, "day"));
-  const [toDate, setToDate] = React.useState(dayjs());
+    React.useState("sit to stand");
+  const [fromDate, setFromDate] = React.useState(dayjs("2023-02-03"));
+  const [toDate, setToDate] = React.useState(dayjs("2023-02-10"));
 
   let navigate = useNavigate();
+  const [data, setData] = React.useState([]);
+
+  React.useEffect(() => {
+    (async () => {
+      // query test events for the graph
+      let response = await API.graphql(
+        graphqlOperation(getTestEvents, {
+          patient_id: patient_id,
+          test_type: movementTestSelected,
+          from_time: dayjs(fromDate).format("YYYY-MM-DD hh:mm:ss"),
+          to_time: dayjs(toDate).format("YYYY-MM-DD hh:mm:ss"),
+          if_completed: true,
+          sort: "asc",
+        })
+      );
+
+      console.log(response);
+      setData(response.data.getTestEvents);
+      console.log("data", data);
+    })();
+  }, [fromDate, toDate]);
 
   const handleChangeFromDate = (newValue) => {
     setFromDate(newValue);
@@ -62,81 +94,8 @@ function PatientPage({ patient_id }) {
     },
   ];
 
-  const rows = [
-    {
-      id: 1,
-      score: 85,
-      movement: "Sit to Stand",
-      date: "9/17/2022, 1:21 PM",
-      notes: "",
-    },
-    {
-      id: 2,
-      score: 85,
-      movement: "Sit to Stand",
-      date: "9/17/2022, 1:21 PM",
-      notes: "",
-    },
-    {
-      id: 3,
-      score: 85,
-      movement: "Sit to Stand",
-      date: "9/17/2022, 1:21 PM",
-      notes: "",
-    },
-    {
-      id: 4,
-      score: 85,
-      movement: "Sit to Stand",
-      date: "9/17/2022, 1:21 PM",
-      notes: "",
-    },
-    {
-      id: 5,
-      score: 85,
-      movement: "Sit to Stand",
-      date: "9/17/2022, 1:21 PM",
-      notes: "",
-    },
-    {
-      id: 6,
-      score: 85,
-      movement: "Sit to Stand",
-      date: "9/17/2022, 1:21 PM",
-      notes: "",
-    },
-    {
-      id: 7,
-      score: 85,
-      movement: "Sit to Stand",
-      date: "9/17/2022, 1:21 PM",
-      notes: "",
-    },
-    {
-      id: 8,
-      score: 85,
-      movement: "Sit to Stand",
-      date: "9/17/2022, 1:21 PM",
-      notes: "",
-    },
-    {
-      id: 9,
-      score: 85,
-      movement: "Sit to Stand",
-      date: "9/17/2022, 1:21 PM",
-      notes: "",
-    },
-    {
-      id: 10,
-      score: 85,
-      movement: "Sit to Stand",
-      date: "9/17/2022, 1:21 PM",
-      notes: "",
-    },
-  ];
-
   const scoreDataMapping = {
-    "Sit to Stand": SIT_STAND_DATA,
+    "sit to stand": SIT_STAND_DATA,
     "One-foot Stand": ONE_FOOT_STAND_DATA,
     "Sitting with Back Unsupported": SIT_UNSUPPORTED_DATA,
   };
@@ -144,10 +103,10 @@ function PatientPage({ patient_id }) {
   return (
     <Grid
       container
-      direction="row"
+      direction="column"
       justifyContent="space-evenly"
       alignItems="flex-start"
-      spacing={4}
+      spacing={2}
     >
       <Grid
         item
@@ -157,6 +116,7 @@ function PatientPage({ patient_id }) {
         alignItems="stretch"
         spacing={5}
       >
+        {/* back button */}
         <Grid item>
           <Button
             onClick={() => {
@@ -166,13 +126,13 @@ function PatientPage({ patient_id }) {
             Back
           </Button>
         </Grid>
+        {/* page title */}
         <Grid item>
           <Typography variant="h5" gutterBottom>
-            Statistics for John Doe (1289946324)
+            Statistics for {patient_name} ({patient_id})
           </Typography>
         </Grid>
         {/* analytics */}
-
         <Grid
           item
           container
@@ -216,13 +176,32 @@ function PatientPage({ patient_id }) {
             </LocalizationProvider>
           </Grid>
           {/* chart */}
-          <ScoreChart
-            data={scoreDataMapping[movementTestSelected].filter(
-              (i) =>
-                dayjs(i.date).isAfter(fromDate) &&
-                dayjs(i.date).isBefore(toDate)
-            )}
-          />
+          <Grid item>
+            <ScoreChart
+              data={
+                movementTestSelected == "sit to stand"
+                  ? data
+                  : scoreDataMapping[movementTestSelected].filter(
+                      (i) =>
+                        dayjs(i.date).isAfter(fromDate) &&
+                        dayjs(i.date).isBefore(toDate)
+                    )
+              }
+            />
+          </Grid>
+          {/* measurement select */}
+          <Grid
+            container
+            direction="row"
+            justifyContent="flex-start"
+            alignItems="flex-end"
+            pl={10}
+          >
+            <MeasurementSelect />
+          </Grid>
+          <Grid item pl={5}>
+            <RangeChart />
+          </Grid>
         </Grid>
       </Grid>
       {/* table */}
@@ -268,6 +247,38 @@ function TestSelection({
         </Select>
       </FormControl>
     </div>
+  );
+}
+
+function MeasurementSelect({ measurementSelected = MEASUREMENT_TYPES[0] }) {
+  // const [age, setAge] = React.useState("");
+
+  const handleChange = (event) => {
+    // setMovementTestSelected(event.target.value);
+  };
+
+  return (
+    // <div>
+    <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
+      <InputLabel id="demo-simple-select-standard-label">
+        Type of Measurement
+      </InputLabel>
+      <Select
+        labelId="demo-simple-select-standard-label"
+        id="demo-simple-select-standard"
+        value={measurementSelected}
+        onChange={handleChange}
+        label="Type of Measurement"
+      >
+        {MEASUREMENT_TYPES.map((t) => (
+          <MenuItem value={t}>{t}</MenuItem>
+        ))}
+        {/* <MenuItem value={10}>Ten</MenuItem>
+          <MenuItem value={20}>Twenty</MenuItem>
+          <MenuItem value={30}>Thirty</MenuItem> */}
+      </Select>
+    </FormControl>
+    // </div>
   );
 }
 

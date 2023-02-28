@@ -14,9 +14,55 @@ import { util } from "@aws-appsync/utils";
 export function request(ctx) {
   console.log("request ctx", ctx);
   const {
-    arguments: { patient_id, care_provider_id },
+    arguments: {
+      test_event_id,
+      balance_score,
+      doctor_score,
+      start_time,
+      end_time,
+      if_completed,
+    },
   } = ctx;
-  let sql = `insert into "PatientCareProvider" (patient_id, care_provider_id) values ('${patient_id}', '${care_provider_id}') returning *`;
+  let balanceScoreSql = !balance_score
+    ? ""
+    : `balance_score = ${balance_score}` + ",";
+  let doctorScoreSql = !doctor_score
+    ? ""
+    : `doctor_score = ${doctor_score}` + ",";
+  let startTimeSql = !start_time ? "" : `start_time = '${start_time}'` + ",";
+  let endTimeSql = !end_time ? "" : `end_time = '${end_time}'` + ",";
+  let ifCompletedSql = !if_completed
+    ? ""
+    : `if_completed = ${if_completed}` + ",";
+
+  // let sqlSetStatements = [];
+  let sqlSetStatement =
+    balanceScoreSql +
+    doctorScoreSql +
+    startTimeSql +
+    endTimeSql +
+    ifCompletedSql;
+  sqlSetStatement = sqlSetStatement.substring(0, sqlSetStatement.length - 1);
+  // if (balance_score) {
+  //   sqlSetStatements.push(`balance_score = ${balance_score}`);
+  //   sqlSetStatements.push(`if_completed = false`);
+  // }
+  // if (doctor_score) sqlSetStatements.push(`doctor_score = ${doctor_score}`);
+  // if (start_time) sqlSetStatements.push(`start_time = ${start_time}`);
+  // if (end_time) sqlSetStatements.push(`end_time = ${end_time}`);
+
+  // for (let i = 0; i < sqlSetStatements.length; i++) {
+  //   if (i == sqlSetStatements.length - 1) {
+  //     sqlSetStatement += sqlSetStatements[i];
+  //   } else {
+  //     sqlSetStatement += sqlSetStatements[i] + ",";
+  //   }
+  // }
+
+  let sql = `UPDATE "TestEvent" 
+            SET ${sqlSetStatement}
+            WHERE test_event_id = '${test_event_id}'
+            RETURNING *;`;
   return {
     payload: {
       sql: sql,

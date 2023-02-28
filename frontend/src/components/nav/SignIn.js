@@ -14,6 +14,8 @@ import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useNavigate } from "react-router";
 
+import { Amplify, API, Auth } from "aws-amplify";
+
 const theme = createTheme();
 
 export default function SignIn() {
@@ -25,6 +27,9 @@ export default function SignIn() {
       email: data.get("email"),
       password: data.get("password"),
     });
+    Auth.signIn(data.get("email"), data.get("password"))
+      .then((user) => console.log(user))
+      .catch((err) => console.log(err));
   };
 
   return (
