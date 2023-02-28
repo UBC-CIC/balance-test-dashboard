@@ -81,7 +81,7 @@ function App() {
             {/* <Route path="/" element={<SignIn />}> */}
             <Route index element={<PatientsTable />} />
             <Route path="patient" element={<PatientPage />} />
-            <Route path="patientTable" element={<PatientsTable />} />
+            <Route path="patientsTable" element={<PatientsTable />} />
             <Route path="signIn" element={<SignIn />} />
             <Route path="signUp" element={<SignUp />} />
             <Route path="testDetails" element={<TestDetails />} />
