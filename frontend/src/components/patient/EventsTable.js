@@ -33,6 +33,11 @@ import MenuItem from "@mui/material/MenuItem";
 import NewTestDialog from "./NewTestDialog";
 import { Navigate, useNavigate } from "react-router";
 
+const { Amplify, API, graphqlOperation } = require("aws-amplify");
+const awsconfig = require("../../aws-exports");
+const { getTestEvents } = require("../../graphql/queries");
+Amplify.configure(awsconfig);
+
 function createData(name, calories, fat, carbs, protein) {
   return {
     name,
@@ -49,6 +54,12 @@ const rows = SIT_STAND_DATA.concat(
 
 function descendingComparator(a, b, orderBy) {
   if (orderBy == "date") {
+    if (a[orderBy] == null) {
+      return 1;
+    }
+    if (b[orderBy] == null) {
+      return 1;
+    }
     if (dayjs(b[orderBy]).isBefore(dayjs(a[orderBy]))) {
       return 1;
     } else {
@@ -214,15 +225,36 @@ EnhancedTableToolbar.propTypes = {
   numSelected: PropTypes.number.isRequired,
 };
 
-export default function TestEventsTable({ openNewTest, setOpenNewTest }) {
+export default function TestEventsTable({
+  openNewTest,
+  setOpenNewTest,
+  patient_id,
+}) {
   const [order, setOrder] = React.useState("asc");
   const [orderBy, setOrderBy] = React.useState("date");
   const [selected, setSelected] = React.useState([]);
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [rows, setRows] = React.useState([]);
 
   const navigate = useNavigate();
+
+  const fetchData = async () => {
+    let resTestEvents = await API.graphql(
+      graphqlOperation(getTestEvents, {
+        patient_id: patient_id,
+        sort: "asc",
+      })
+    );
+
+    console.log("restestevents", resTestEvents);
+    setRows(resTestEvents.data.getTestEvents);
+  };
+
+  React.useEffect(() => {
+    fetchData();
+  }, []);
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === "asc";
@@ -331,24 +363,29 @@ export default function TestEventsTable({ openNewTest, setOpenNewTest }) {
                       scope="row"
                       padding="none"
                       sx={
-                        row.score >= 50 ? { color: "green" } : { color: "red" }
+                        // row.balance_score >= 50
+                        //   ? { color: "green" }
+                        //   : { color: "red" }
                         // !row.score ? { color: "black" } : {row.score>= 50 ? { color: "green" } : { color: "red" }}
-                        // () => {
-                        //   if (!row.score) {
-                        //     return { color: "black" };
-                        //   }
-                        //   if (row.score >= 50) {
-                        //     return { color: "green" };
-                        //   } else {
-                        //     return { color: "red" };
-                        //   }
-                        // }
+                        () => {
+                          if (!row.balance_score) {
+                            return { color: "black" };
+                          } else if (row.balance_score >= 50) {
+                            return { color: "green" };
+                          } else {
+                            return { color: "red" };
+                          }
+                        }
                       }
                     >
-                      {row.score}
+                      {!row.balance_score ? "---" : row.balance_score}
                     </TableCell>
-                    <TableCell align="left">{row.movement}</TableCell>
-                    <TableCell align="left">{row.date}</TableCell>
+                    <TableCell align="left">{row.test_type}</TableCell>
+                    <TableCell align="left">
+                      {!row.start_time
+                        ? "Test has not been completed"
+                        : dayjs(row.start_time).format("YYYY-MM-DD HH:mm")}
+                    </TableCell>
                     <TableCell align="left">{row.notes}</TableCell>
                   </TableRow>
                 );

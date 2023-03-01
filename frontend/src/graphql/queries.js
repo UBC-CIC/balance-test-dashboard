@@ -63,3 +63,23 @@ export const getWeeklyAverageBalanceScore = /* GraphQL */ `
     getWeeklyAverageBalanceScore(patientId: $patientId)
   }
 `;
+export const getMeasurementRange = /* GraphQL */ `
+  query GetMeasurementRange(
+    $test_event_id: String!
+    $test_type: String!
+    $from_date: String
+    $to_date: String
+  ) {
+    getMeasurementRange(
+      test_event_id: $test_event_id
+      test_type: $test_type
+      from_date: $from_date
+      to_date: $to_date
+    )
+  }
+`;
+export const getMeasurementData = /* GraphQL */ `
+  query GetMeasurementData($test_event_id: String!, $test_type: String!) {
+    getMeasurementData(test_event_id: $test_event_id, test_type: $test_type)
+  }
+`;

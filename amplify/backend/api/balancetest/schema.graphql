@@ -30,6 +30,16 @@ type Query {
   ): [TestEvent]
   # analytics
   getWeeklyAverageBalanceScore(patientId: String!): Int
+
+  # measurements
+  getMeasurementRange(
+    test_event_id: String!
+    test_type: String!
+    from_date: String
+    to_date: String
+  ): String
+
+  getMeasurementData(test_event_id: String!, test_type: String!): String
 }
 
 type Mutation {
@@ -53,7 +63,7 @@ type Mutation {
     end_time: String
     if_completed: Boolean
   ): TestEvent
-  test: String
+  test1: String
 }
 
 type TestEvent {

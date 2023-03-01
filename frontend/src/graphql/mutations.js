@@ -86,8 +86,8 @@ export const putTestResult = /* GraphQL */ `
     }
   }
 `;
-export const test = /* GraphQL */ `
-  mutation Test {
-    test
+export const test1 = /* GraphQL */ `
+  mutation Test1 {
+    test1
   }
 `;

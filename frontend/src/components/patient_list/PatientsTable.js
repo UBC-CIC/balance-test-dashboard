@@ -252,6 +252,7 @@ function DisplayRows({
   rowsPerTablePage,
   patientDataRowsArr,
   updatePatientDataRowsArr,
+  loading,
 }) {
   //need to figure out which hooks are needed to make and use
   const [numTestsAssigned, setNumTestsAssigned] = React.useState(0);
@@ -266,7 +267,9 @@ function DisplayRows({
     return (
       <TableRow>
         <TableCell colSpan={headerColumns.length} sx={{ textAlign: "center" }}>
-          No Patients Found - Add a Patient.
+          {!loading
+            ? "No Patients Found - Add a Patient."
+            : "Loading patients..."}
         </TableCell>
       </TableRow>
     );
@@ -292,6 +295,8 @@ function DisplayRows({
                       <Button
                         onClick={() => {
                           navigate("/patient");
+                          // console.log("row", row);
+                          // navigate(`/patient:${row.user_id}`);
                         }}
                       >
                         See Patient Data
@@ -405,7 +410,9 @@ function DisplaySearchResults({
                     {column.id === "see_patient_data" && (
                       <Button
                         onClick={() => {
-                          navigate("/patient");
+                          // console.log("row.patient_id", row.patient_id);
+                          // navigate(`/patient:${row.patient_id}`);
+                          navigate(`/patient`);
                         }}
                       >
                         See Patient Data
@@ -485,6 +492,7 @@ export function PatientsTable({ careProviderId }) {
 
   const [tablePage, setTablePage] = React.useState(0);
   const [rowsPerTablePage, setRowsPerTablePage] = React.useState(10);
+  const [loading, setLoading] = useState(true);
 
   const [searchResults, setSearchResults] = React.useState([]);
 
@@ -533,6 +541,7 @@ export function PatientsTable({ careProviderId }) {
         });
       }
       console.log("data", data);
+      setLoading(false);
       return data;
       // return new Promise((resolve, reject) => resolve(data));
     } catch (err) {
@@ -609,6 +618,7 @@ export function PatientsTable({ careProviderId }) {
                     rowsPerTablePage,
                     patientDataRowsArr,
                     updatePatientDataRowsArr,
+                    loading,
                   })}
             </TableBody>
           </Table>
