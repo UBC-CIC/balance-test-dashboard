@@ -478,8 +478,8 @@ function DisplaySearchResults({
 }
 
 export function PatientsTable({ careProviderId }) {
-  let data = [];
-  // let data = testRows;
+  // let data = [];
+  let data = testRows;
 
   const [patientDataRowsArr, updatePatientDataRowsArr] = React.useState(data);
 
@@ -534,7 +534,7 @@ export function PatientsTable({ careProviderId }) {
       }
       console.log("data", data);
       return data;
-      // return new Promise((resolve, reject) => resolve(data));
+      
     } catch (err) {
       console.log(err);
       return new Promise((resolve, reject) => reject(err));
@@ -543,8 +543,10 @@ export function PatientsTable({ careProviderId }) {
 
   useEffect(() => {
     console.log("in useeffect");
-    // console.log(fetchData());
-    fetchData().then((data) => updatePatientDataRowsArr(data));
+    // fetchData().then((data) => updatePatientDataRowsArr(data));
+
+    data = testRows;
+    updatePatientDataRowsArr(data);
   }, []);
 
   const handleChangeRowsPerPage = (event) => {
