@@ -32,28 +32,11 @@ export const addPatientToCareProvider = /* GraphQL */ `
     }
   }
 `;
-export const createAndAssignTest = /* GraphQL */ `
-  mutation CreateAndAssignTest(
-    $test_event_id: String!
-    $patient_id: String!
-    $test_type: String!
-    $notes: String
-  ) {
-    createAndAssignTest(
-      test_event_id: $test_event_id
-      patient_id: $patient_id
-      test_type: $test_type
-      notes: $notes
-    ) {
-      test_event_id
+export const assignTestToPatient = /* GraphQL */ `
+  mutation AssignTestToPatient($patient_id: String!, $test_type: String!) {
+    assignTestToPatient(patient_id: $patient_id, test_type: $test_type) {
       patient_id
       test_type
-      if_completed
-      balance_score
-      doctor_score
-      notes
-      start_time
-      end_time
     }
   }
 `;
@@ -86,8 +69,20 @@ export const putTestResult = /* GraphQL */ `
     }
   }
 `;
-export const test1 = /* GraphQL */ `
-  mutation Test1 {
-    test1
+export const addTestType = /* GraphQL */ `
+  mutation AddTestType(
+    $test_type: String!
+    $instructions: String
+    $duration_in_seconds: Int
+  ) {
+    addTestType(
+      test_type: $test_type
+      instructions: $instructions
+      duration_in_seconds: $duration_in_seconds
+    ) {
+      test_type
+      instructions
+      duration_in_seconds
+    }
   }
 `;

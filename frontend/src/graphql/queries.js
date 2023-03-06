@@ -18,9 +18,18 @@ export const getPatientById = /* GraphQL */ `
     }
   }
 `;
-export const getPatients = /* GraphQL */ `
-  query GetPatients($care_provider_id: String!) {
-    getPatients(care_provider_id: $care_provider_id) {
+export const getPatientsForCareprovider = /* GraphQL */ `
+  query GetPatientsForCareprovider($care_provider_id: String!) {
+    getPatientsForCareprovider(care_provider_id: $care_provider_id) {
+      patient_id
+      name
+      email
+    }
+  }
+`;
+export const getAllPatients = /* GraphQL */ `
+  query GetAllPatients {
+    getAllPatients {
       patient_id
       name
       email
@@ -33,7 +42,6 @@ export const getTestEvents = /* GraphQL */ `
     $test_type: String
     $from_time: String
     $to_time: String
-    $if_completed: Boolean
     $sort: SortDirection
     $count: Int
   ) {
@@ -42,7 +50,6 @@ export const getTestEvents = /* GraphQL */ `
       test_type: $test_type
       from_time: $from_time
       to_time: $to_time
-      if_completed: $if_completed
       sort: $sort
       count: $count
     ) {
@@ -55,6 +62,24 @@ export const getTestEvents = /* GraphQL */ `
       notes
       start_time
       end_time
+    }
+  }
+`;
+export const getPatientAssignedTests = /* GraphQL */ `
+  query GetPatientAssignedTests($patient_id: String!) {
+    getPatientAssignedTests(patient_id: $patient_id) {
+      test_type
+      instructions
+      duration_in_seconds
+    }
+  }
+`;
+export const getAllAvailableTests = /* GraphQL */ `
+  query GetAllAvailableTests {
+    getAllAvailableTests {
+      test_type
+      instructions
+      duration_in_seconds
     }
   }
 `;

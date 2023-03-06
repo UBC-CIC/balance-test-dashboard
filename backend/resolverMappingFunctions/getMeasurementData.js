@@ -14,23 +14,13 @@ import { util } from "@aws-appsync/utils";
 export function request(ctx) {
   console.log("request ctx", ctx);
   const {
-    arguments: { patient_id, test_type, from_time, to_time, sort, count },
+    arguments: { test_event_id, test_type, patient_id, year, month, day },
   } = ctx;
-  let testTypeSql = !test_type ? "" : `t.test_type='${test_type}'` + " and";
-  let fromTimeSql = !from_time ? "" : `t.start_time>='${from_time}'` + " and";
-  let toTimeSql = !to_time ? "" : `t.start_time<='${to_time}'` + " and";
-  // let ifCompletedSql = !if_completed
-  //   ? ""
-  //   : `t.if_completed=${if_completed}` + " and";
-  let sortSql = !sort ? "" : `order by t.start_time ${sort}`;
-  let countSql = !count ? "" : `limit ${count}`;
   return {
     payload: {
-      sql: `select * 
-            from "TestEvent" t
-            where ${testTypeSql} ${fromTimeSql} ${toTimeSql}
-              t.patient_id='${patient_id}'
-            ${sortSql} ${countSql}`,
+      s3QueryParams: {
+        key: `s3://json-to-parquet-poc-bucket/parquet_data/patient_tests/user_id=${patient_id}/${test_type}/year=${year}/month=${month}/day=${day}/test_event_id=${test_event_id}/test_event_${test_event_id}.parquet`,
+      },
     },
   };
 }

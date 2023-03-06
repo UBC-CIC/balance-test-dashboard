@@ -1,4 +1,10 @@
 import pg from "pg";
+import AWS from "aws-sdk";
+// const AWS = require("aws-sdk");
+const s3 = new AWS.S3();
+// const bucketName = process.env.BUCKET_NAME;
+const bucketName = "json-to-parquet-poc-bucket";
+// todo: err handling, env var
 
 const PROXY_ENDPOINT =
   "postgres-proxy.proxy-coyl0mh3hp8c.ca-central-1.rds.amazonaws.com";
@@ -59,18 +65,38 @@ const connectDb = async () => {
 export const handler = async (event) => {
   let response;
   try {
-    console.log("event", event);
-    let sql = event.payload.sql;
-    // let sql=`select * from "Patient"`;
-    await connectDb();
-    console.log(`about to execute sql: `, sql);
-    let res = await pool.query(sql);
-    console.log("sql execution result", res);
+    if (event.payload.sql) {
+      console.log("event", event);
+      let sql = event.payload.sql;
+      // let sql=`select * from "Patient"`;
+      await connectDb();
+      console.log(`about to execute sql: `, sql);
+      let res = await pool.query(sql);
+      console.log("sql execution result", res);
 
-    response = {
-      statusCode: 200,
-      body: res.rows,
-    };
+      response = {
+        statusCode: 200,
+        body: res.rows,
+      };
+    } else if (event.payload.s3QueryParams) {
+      const params = {
+        Bucket: bucketName,
+        Key: s3QueryParams.key,
+      };
+      console.log(
+        "Retrieving object from bucket: " +
+          bucketName +
+          ", s3 params: " +
+          JSON.stringify(params)
+      );
+      const data = await s3.getObject(params).promise();
+      console.log("data", data);
+      const content = data.Body.toString("utf-8");
+      console.log("content", content);
+      resp = {
+        content: content,
+      };
+    }
   } catch (e) {
     response = { statusCode: 200, body: e };
   }
