@@ -85,6 +85,7 @@ function App() {
               path="patient"
               element={
                 <PatientPage
+                  // 217016f5-3dbf-41b3-8438-b414c2a95f0d
                   patient_id={"217016f5-3dbf-41b3-8438-b414c2a95f0d"}
                   patient_name={"Albert Pham"}
                 />

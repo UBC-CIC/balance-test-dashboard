@@ -23,7 +23,7 @@ import {
   TEST_TYPES,
   MEASUREMENT_TYPES,
 } from "../mockData/data";
-import { useNavigate } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { getTestEvents } from "../../graphql/queries";
 
 const { Amplify, API, graphqlOperation } = require("aws-amplify");
@@ -36,6 +36,7 @@ const {
 Amplify.configure(awsconfig);
 
 function PatientPage({ patient_id, patient_name }) {
+  const { id } = useParams();
   const [movementTestSelected, setMovementTestSelected] =
     React.useState("sit to stand");
   const [fromDate, setFromDate] = React.useState(dayjs("2023-02-03"));
@@ -44,24 +45,27 @@ function PatientPage({ patient_id, patient_name }) {
   let navigate = useNavigate();
   const [data, setData] = React.useState([]);
 
-  React.useEffect(() => {
-    (async () => {
-      // query test events for the graph
-      let response = await API.graphql(
-        graphqlOperation(getTestEvents, {
-          patient_id: patient_id,
-          test_type: movementTestSelected,
-          from_time: dayjs(fromDate).format("YYYY-MM-DD hh:mm:ss"),
-          to_time: dayjs(toDate).format("YYYY-MM-DD hh:mm:ss"),
-          if_completed: true,
-          sort: "asc",
-        })
-      );
+  const fetchData = async () => {
+    console.log("id", id);
+    // query test events for the graph
+    let resEventsGraph = await API.graphql(
+      graphqlOperation(getTestEvents, {
+        patient_id: patient_id,
+        test_type: movementTestSelected,
+        from_time: dayjs(fromDate).format("YYYY-MM-DD hh:mm:ss"),
+        to_time: dayjs(toDate).format("YYYY-MM-DD hh:mm:ss"),
+        if_completed: true,
+        sort: "asc",
+      })
+    );
 
-      console.log(response);
-      setData(response.data.getTestEvents);
-      console.log("data", data);
-    })();
+    console.log(resEventsGraph);
+    setData(resEventsGraph.data.getTestEvents);
+    console.log("data", data);
+  };
+
+  React.useEffect(() => {
+    fetchData();
   }, [fromDate, toDate]);
 
   const handleChangeFromDate = (newValue) => {
@@ -209,6 +213,7 @@ function PatientPage({ patient_id, patient_name }) {
         <TestEventsTable
           openNewTest={openNewTest}
           setOpenNewTest={setOpenNewTest}
+          patient_id={patient_id}
         />
       </Grid>
     </Grid>
