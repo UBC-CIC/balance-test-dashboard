@@ -5,6 +5,11 @@ import Button from '@mui/material/Button';
 import IconButton from "@mui/material/IconButton";
 import TextField from '@mui/material/TextField';
 
+import { Amplify, API, graphqlOperation } from "aws-amplify";
+import awsconfig from "../../aws-exports";
+import { getAllPatients, getTestEvents } from "../../graphql/queries";
+Amplify.configure(awsconfig);
+
 export default function SearchForPatients(props) {
     const [inputName, setInputName] = React.useState("");
     const [searchButtonDisabled, setSearchButtonDisabled] = React.useState(true);

@@ -22,7 +22,7 @@ import { v4 as uuidv4 } from "uuid";
 
 import { Amplify, API, graphqlOperation } from "aws-amplify";
 import awsconfig from "../../aws-exports";
-import { getPatients, getTestEvents } from "../../graphql/queries";
+import { getAllPatients, getTestEvents } from "../../graphql/queries";
 Amplify.configure(awsconfig);
 
 const headerColumns = [
@@ -485,8 +485,8 @@ function DisplaySearchResults({
 }
 
 export function PatientsTable({ careProviderId }) {
-  // let data = [];
-  let data = testRows;
+  let data = [];
+  // let data = testRows;
 
   const [patientDataRowsArr, updatePatientDataRowsArr] = React.useState(data);
 
@@ -501,17 +501,17 @@ export function PatientsTable({ careProviderId }) {
   };
 
   async function fetchData() {
-    let data = [];
+    // let data = [];
     console.log("in fetchdata");
     try {
       console.log("in fetchdata try block");
       let response = await API.graphql(
-        graphqlOperation(getPatients, {
+        graphqlOperation(getAllPatients, {
           care_provider_id: careProviderId,
         })
       );
 
-      let patientsInfo = response.data.getPatients;
+      let patientsInfo = response.data.getAllPatients;
       console.log("patientsInfo", patientsInfo);
 
       for (let p = 0; p < patientsInfo.length; p++) {

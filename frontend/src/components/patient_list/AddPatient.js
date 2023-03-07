@@ -10,6 +10,11 @@ import TextField from '@mui/material/TextField';
 
 import { v4 as uuidv4, v5 as uuidv5 } from "uuid";
 
+import { Amplify, API, graphqlOperation } from "aws-amplify";
+import awsconfig from "../../aws-exports";
+import { getAllPatients, getTestEvents } from "../../graphql/queries";
+Amplify.configure(awsconfig);
+
 const searchPopOutData = [
     {
         user_id: 19285239,
