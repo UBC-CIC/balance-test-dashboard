@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "aws-amplify": "^5.0.16",
+    "dayjs": "^1.11.7"
+  }
+}

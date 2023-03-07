@@ -26,7 +26,7 @@ export default function FormDialog({ open, setOpen }) {
 
   const [testsSelected, setTestsSelected] = React.useState([]);
   const scoreDataMapping = {
-    "Sit to Stand": SIT_STAND_DATA,
+    "sit to stand": SIT_STAND_DATA,
     "One-foot Stand": ONE_FOOT_STAND_DATA,
     "Sitting with Back Unsupported": SIT_UNSUPPORTED_DATA,
   };

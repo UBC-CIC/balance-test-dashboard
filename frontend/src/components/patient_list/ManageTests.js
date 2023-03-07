@@ -9,20 +9,65 @@ import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 
-import "./ManageTests.css"
+import "./ManageTests.css";
 
-const movement_tests = ["Sit-to-Stand", "Movement 2", "Movement 3"]
+const movement_tests = ["Sit-to-Stand", "Movement 2", "Movement 3"]; // modify the movement names if needed
 
-// next step: select movements and assign them to a patient, change "# Tests Assigned" value, 
-export default function ManageTests({ patient_id }) {
+
+export default function ManageTests({ rowNum, user_id, patientDataRowsArr, updatePatientDataRowsArr }) {
     const [modalOpen, setModalOpen] = React.useState(false);
+    const [sendButtonDisabled, setSendButtonDisabled] = React.useState(true);
+    
+    const checkboxInitStateObj = {}
+    for (let i in movement_tests) {
+        checkboxInitStateObj[movement_tests[i]] = false;
+    }
+
+    const [checkboxStates, setCheckboxStates] = React.useState(checkboxInitStateObj);
+    
+    React.useEffect(() => {
+        if (Object.values(checkboxStates).filter(Boolean).length > 0) {
+            setSendButtonDisabled(false);
+
+        } else {
+            setSendButtonDisabled(true);
+        }
+    }, [checkboxStates]);
 
     const handleOpenModal = () => {
+        setCheckboxStates(checkboxInitStateObj);
         setModalOpen(true);
+        setSendButtonDisabled(true);
     }
 
     const handleCloseModal = () => {
+        setCheckboxStates(checkboxInitStateObj);
         setModalOpen(false);
+        setSendButtonDisabled(true);
+    }
+
+    const handleCheckbox = (event) => {
+        setCheckboxStates({
+            ...checkboxStates,
+            [event.target.name]: event.target.checked
+        });
+
+        console.log("Checked: " + event.target.checked);
+        console.log("Checkbox Label: " + event.target.name);
+    }
+
+    const handleSendToPatient = () => {
+        let countTrues = Object.values(checkboxStates).filter(Boolean).length;
+
+        //need to specify what tests should be sent to the patient here and save the tests accordingly
+
+        patientDataRowsArr[rowNum].assigned_test_num = patientDataRowsArr[rowNum].assigned_test_num + countTrues;
+        let updatedArr = patientDataRowsArr.slice();
+        updatePatientDataRowsArr(updatedArr);
+        
+        setCheckboxStates(checkboxInitStateObj);
+        setModalOpen(false);
+        setSendButtonDisabled(true);
     }
 
     return (
@@ -37,7 +82,10 @@ export default function ManageTests({ patient_id }) {
                     {movement_tests.map((movement_test) => {
                         return(
                             <FormGroup key={movement_test}>
-                                <FormControlLabel control={<Checkbox />} label={movement_test} />
+                                <FormControlLabel 
+                                    control={<Checkbox checked={checkboxStates[movement_test]} name={movement_test} />} 
+                                    label={movement_test} 
+                                    onChange={handleCheckbox} />
                             </FormGroup>
                         )
                     })}
@@ -45,8 +93,7 @@ export default function ManageTests({ patient_id }) {
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleCloseModal}>Cancel</Button>
-                    <Button onClick={handleCloseModal}>Send to Patient</Button> 
-                    {/* Modify the onClick function later for Send to Patient button */}
+                    <Button disabled={sendButtonDisabled} onClick={handleSendToPatient}>Send to Patient</Button> 
                 </DialogActions>
             </Dialog>
         </div>
