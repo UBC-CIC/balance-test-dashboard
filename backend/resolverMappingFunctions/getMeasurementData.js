@@ -14,13 +14,20 @@ import { util } from "@aws-appsync/utils";
 export function request(ctx) {
   console.log("request ctx", ctx);
   const {
-    arguments: { test_event_id, test_type, patient_id, year, month, day },
+    arguments: {
+      test_event_id,
+      test_type,
+      measurement,
+      patient_id,
+      year,
+      month,
+      day,
+    },
   } = ctx;
   return {
     payload: {
-      s3QueryParams: {
-        key: `s3://json-to-parquet-poc-bucket/parquet_data/patient_tests/user_id=${patient_id}/${test_type}/year=${year}/month=${month}/day=${day}/test_event_id=${test_event_id}/test_event_${test_event_id}.parquet`,
-      },
+      s3key: `parquet_data/patient_tests/user_id=${patient_id}/${test_type}/year=${year}/month=${month}/day=${day}/test_event_id=${test_event_id}/test_event_${test_event_id}.parquet`,
+      measurement: measurement,
     },
   };
 }

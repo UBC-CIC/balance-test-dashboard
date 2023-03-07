@@ -83,28 +83,24 @@ export const getAllAvailableTests = /* GraphQL */ `
     }
   }
 `;
-export const getWeeklyAverageBalanceScore = /* GraphQL */ `
-  query GetWeeklyAverageBalanceScore($patientId: String!) {
-    getWeeklyAverageBalanceScore(patientId: $patientId)
-  }
-`;
-export const getMeasurementRange = /* GraphQL */ `
-  query GetMeasurementRange(
+export const getMeasurementData = /* GraphQL */ `
+  query GetMeasurementData(
     $test_event_id: String!
     $test_type: String!
-    $from_date: String
-    $to_date: String
+    $measurement: Measurement!
+    $patient_id: String!
+    $year: Int!
+    $month: Int!
+    $day: Int!
   ) {
-    getMeasurementRange(
+    getMeasurementData(
       test_event_id: $test_event_id
       test_type: $test_type
-      from_date: $from_date
-      to_date: $to_date
+      measurement: $measurement
+      patient_id: $patient_id
+      year: $year
+      month: $month
+      day: $day
     )
-  }
-`;
-export const getMeasurementData = /* GraphQL */ `
-  query GetMeasurementData($test_event_id: String!, $test_type: String!) {
-    getMeasurementData(test_event_id: $test_event_id, test_type: $test_type)
   }
 `;
