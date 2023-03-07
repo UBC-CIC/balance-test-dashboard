@@ -37,7 +37,10 @@
         "balancetest": {}
       },
       "storage": {
-        "balancetest89613ef5": {}
+        "balancetest89613ef5": {
+          "bucketName": "json-to-parquet-poc-bucket",
+          "region": "ca-central-1"
+        }
       }
     }
   }

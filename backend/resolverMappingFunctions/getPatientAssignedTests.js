@@ -18,7 +18,7 @@ export function request(ctx) {
   } = ctx;
   return {
     payload: {
-      sql: `select t.test_type, t.duration_in_seconds, t.instructions from "Test" t, "PatientTestAssignment" pt where pt.patient_id='${patient_id}'`,
+      sql: `select t.test_type, t.duration_in_seconds, t.instructions from "Test" t, "PatientTestAssignment" pt where pt.patient_id='${patient_id}' and pt.test_type=t.test_type`,
     },
   };
 }

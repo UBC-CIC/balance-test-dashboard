@@ -146,6 +146,22 @@
           "resourceName": "balancetest6a22503d"
         }
       ]
+    },
+    "AMPLIFY_storage_balancetest89613ef5_bucketName": {
+      "usedBy": [
+        {
+          "category": "storage",
+          "resourceName": "balancetest89613ef5"
+        }
+      ]
+    },
+    "AMPLIFY_storage_balancetest89613ef5_region": {
+      "usedBy": [
+        {
+          "category": "storage",
+          "resourceName": "balancetest89613ef5"
+        }
+      ]
     }
   },
   "storage": {

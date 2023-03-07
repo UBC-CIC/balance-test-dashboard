@@ -14,22 +14,9 @@ import { util } from "@aws-appsync/utils";
 export function request(ctx) {
   console.log("request ctx", ctx);
   const {
-    arguments: {
-      test_event_id,
-      patient_id,
-      test_type,
-      doctor_score,
-      start_time,
-      end_time,
-      notes,
-    },
+    arguments: { test_type, instructions, duration_in_seconds },
   } = ctx;
-
-  let notesSql = !notes ? "" : notes;
-  let doctorScoreSql = !doctor_score ? "null" : doctor_score;
-
-  let sql = `INSERT INTO "TestEvent" (test_event_id, patient_id, test_type, doctor_score, notes, start_time, end_time)
-    VALUES ('${test_event_id}', '${patient_id}', '${test_type}', ${doctorScoreSql}, '${notesSql}', '${start_time}', '${end_time}') returning *;`;
+  let sql = `insert into "Test" (test_type, instructions, duration_in_seconds) values ('${test_type}', '${instructions}', ${duration_in_seconds}) returning *`;
   return {
     payload: {
       sql: sql,

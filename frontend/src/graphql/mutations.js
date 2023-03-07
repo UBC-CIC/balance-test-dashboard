@@ -40,22 +40,47 @@ export const assignTestToPatient = /* GraphQL */ `
     }
   }
 `;
+export const removeTestFromPatient = /* GraphQL */ `
+  mutation RemoveTestFromPatient($patient_id: String!, $test_type: String!) {
+    removeTestFromPatient(patient_id: $patient_id, test_type: $test_type)
+  }
+`;
 export const putTestResult = /* GraphQL */ `
   mutation PutTestResult(
     $test_event_id: String!
-    $balance_score: Int
+    $patient_id: String!
+    $test_type: String!
     $doctor_score: Int
-    $start_time: String
-    $end_time: String
-    $if_completed: Boolean
+    $start_time: String!
+    $end_time: String!
+    $notes: String
   ) {
     putTestResult(
       test_event_id: $test_event_id
-      balance_score: $balance_score
+      patient_id: $patient_id
+      test_type: $test_type
       doctor_score: $doctor_score
       start_time: $start_time
       end_time: $end_time
-      if_completed: $if_completed
+      notes: $notes
+    ) {
+      test_event_id
+      patient_id
+      test_type
+      if_completed
+      balance_score
+      doctor_score
+      notes
+      start_time
+      end_time
+    }
+  }
+`;
+export const putBalanceScore = /* GraphQL */ `
+  mutation PutBalanceScore($test_event_id: String!, $balance_score: Int!) {
+    putBalanceScore(
+      test_event_id: $test_event_id
+      balance_score: $balance_score
     ) {
       test_event_id
       patient_id
