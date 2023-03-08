@@ -14,20 +14,11 @@ import { util } from "@aws-appsync/utils";
 export function request(ctx) {
   console.log("request ctx", ctx);
   const {
-    arguments: {
-      test_event_id,
-      test_type,
-      measurement,
-      patient_id,
-      year,
-      month,
-      day,
-    },
+    arguments: { test_event_id },
   } = ctx;
   return {
     payload: {
-      s3key: `parquet_data/patient_tests/user_id=${patient_id}/movement=${test_type}/year=${year}/month=${month}/day=${day}/test_event_id=${test_event_id}/test_event_${test_event_id}.parquet`,
-      measurement: measurement,
+      sql: `select * from "TestEvent" where test_event_id='${test_event_id}'`,
     },
   };
 }
@@ -48,5 +39,5 @@ export function request(ctx) {
 export function response(ctx) {
   console.log("response ctx", ctx);
   let res = ctx.prev.result.body;
-  return res;
+  return res[0];
 }

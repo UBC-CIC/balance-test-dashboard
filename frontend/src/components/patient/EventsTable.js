@@ -271,8 +271,8 @@ export default function TestEventsTable({
     setSelected([]);
   };
 
-  const handleClick = (event, name) => {
-    navigate("/testDetails");
+  const handleClick = (event, test_event_id) => {
+    navigate(`/testDetails/${patient_id}/${test_event_id}`);
     // const selectedIndex = selected.indexOf(name);
     // let newSelected = [];
     // if (selectedIndex === -1) {
@@ -340,7 +340,7 @@ export default function TestEventsTable({
                 return (
                   <TableRow
                     hover
-                    onClick={(event) => handleClick(event, row.name)}
+                    onClick={(event) => handleClick(event, row.test_event_id)}
                     role="checkbox"
                     aria-checked={isItemSelected}
                     tabIndex={-1}
@@ -378,7 +378,9 @@ export default function TestEventsTable({
                         }
                       }
                     >
-                      {!row.balance_score ? "---" : row.balance_score}
+                      {!row.balance_score
+                        ? "Calculating score ..."
+                        : row.balance_score}
                     </TableCell>
                     <TableCell align="left">{row.test_type}</TableCell>
                     <TableCell align="left">

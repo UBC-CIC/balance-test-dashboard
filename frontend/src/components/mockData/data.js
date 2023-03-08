@@ -1176,6 +1176,11 @@ export const MEASUREMENT_DATA = [
   },
 ];
 
+export const MEASUREMENT_DATA_SMALL = [
+  { ax: "-3.0879", timestamp: "2/22/2023, 2:07:54 AM" },
+  { ax: "-2.9991", timestamp: "2/22/2023, 2:07:55 AM" },
+];
+
 export const MEASUREMENT_RANGE_DATA = [
   {
     data: [
@@ -1290,7 +1295,7 @@ export const TEST_TYPES = [
 
 export const MEASUREMENT_TYPES = [
   "Accelerometer x axis",
-  "accelerometer y axis",
+  "Accelerometer y axis",
   "Accelerometer z axis",
   "Gyroscope x axis",
   "Gyroscope y axis",
@@ -1299,3 +1304,15 @@ export const MEASUREMENT_TYPES = [
   "Magnetometer y axis",
   "Magnetometer z axis",
 ];
+
+export const MEASUREMENT_MAPPING = {
+  "Accelerometer x axis": "ax",
+  "Accelerometer y axis": "ay",
+  "Accelerometer z axis": "az",
+  "Gyroscope x axis": "gx",
+  "Gyroscope y axis": "gy",
+  "Gyroscope z axis": "gz",
+  "Magnetometer x axis": "mx",
+  "Magnetometer y axis": "my",
+  "Magnetometer z axis": "mz",
+};

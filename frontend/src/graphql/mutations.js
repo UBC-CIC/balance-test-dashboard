@@ -67,7 +67,6 @@ export const putTestResult = /* GraphQL */ `
       test_event_id
       patient_id
       test_type
-      if_completed
       balance_score
       doctor_score
       notes
@@ -85,7 +84,6 @@ export const putBalanceScore = /* GraphQL */ `
       test_event_id
       patient_id
       test_type
-      if_completed
       balance_score
       doctor_score
       notes

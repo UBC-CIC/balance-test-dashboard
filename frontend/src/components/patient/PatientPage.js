@@ -24,7 +24,7 @@ import {
   MEASUREMENT_TYPES,
 } from "../mockData/data";
 import { useNavigate, useParams } from "react-router";
-import { getTestEvents } from "../../graphql/queries";
+import { getPatientById, getTestEvents } from "../../graphql/queries";
 
 const { Amplify, API, graphqlOperation } = require("aws-amplify");
 const awsconfig = require("../../aws-exports");
@@ -35,8 +35,10 @@ const {
 } = require("../../graphql/mutations");
 Amplify.configure(awsconfig);
 
-function PatientPage({ patient_id, patient_name }) {
-  const { id } = useParams();
+function PatientPage() {
+  // { patient_id, patient_name }
+  const { patient_id } = useParams();
+  const [patientName, setPatientName] = React.useState("");
   const [movementTestSelected, setMovementTestSelected] =
     React.useState("sit to stand");
   const [fromDate, setFromDate] = React.useState(dayjs("2023-02-03"));
@@ -46,15 +48,18 @@ function PatientPage({ patient_id, patient_name }) {
   const [data, setData] = React.useState([]);
 
   const fetchData = async () => {
-    console.log("id", id);
     // query test events for the graph
+    let resPatient = await API.graphql(
+      graphqlOperation(getPatientById, { patient_id: patient_id })
+    );
+    setPatientName(resPatient.data.getPatientById.name);
+    console.log("resPatient", resPatient);
     let resEventsGraph = await API.graphql(
       graphqlOperation(getTestEvents, {
         patient_id: patient_id,
         test_type: movementTestSelected,
         from_time: dayjs(fromDate).format("YYYY-MM-DD hh:mm:ss"),
         to_time: dayjs(toDate).format("YYYY-MM-DD hh:mm:ss"),
-        if_completed: true,
         sort: "asc",
       })
     );
@@ -65,6 +70,7 @@ function PatientPage({ patient_id, patient_name }) {
   };
 
   React.useEffect(() => {
+    console.log(patient_id);
     fetchData();
   }, [fromDate, toDate]);
 
@@ -133,7 +139,7 @@ function PatientPage({ patient_id, patient_name }) {
         {/* page title */}
         <Grid item>
           <Typography variant="h5" gutterBottom>
-            Statistics for {patient_name} ({patient_id})
+            Statistics for {patientName} ({patient_id})
           </Typography>
         </Grid>
         {/* analytics */}
