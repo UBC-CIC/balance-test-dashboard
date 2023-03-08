@@ -82,12 +82,12 @@ function App() {
             {/* <Route path="/" element={<SignIn />}> */}
             <Route index element={<PatientsTable careProviderId="1" />} />
             <Route
-              path="patient"
+              path="patient/:patient_id"
               element={
                 <PatientPage
-                  // 217016f5-3dbf-41b3-8438-b414c2a95f0d
-                  patient_id={"217016f5-3dbf-41b3-8438-b414c2a95f0d"}
-                  patient_name={"Albert Pham"}
+                // 217016f5-3dbf-41b3-8438-b414c2a95f0d
+                // patient_id={"217016f5-3dbf-41b3-8438-b414c2a95f0d"}
+                // patient_name={"Albert Pham"}
                 />
               }
             />
@@ -99,13 +99,9 @@ function App() {
             <Route path="signIn" element={<SignIn />} />
             <Route path="signUp" element={<SignUp />} />
             <Route
-              path="testDetails"
-              element={
-                <TestDetails
-                  patient_id={"217016f5-3dbf-41b3-8438-b414c2a95f0d"}
-                  patient_name={"Albert Pham"}
-                />
-              }
+              path="testDetails/:patient_id/:test_event_id"
+              element={<TestDetails />}
+              exact
             />
             <Route path="executeApi" element={<Execute />} />
 

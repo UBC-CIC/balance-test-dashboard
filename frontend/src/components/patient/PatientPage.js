@@ -1,4 +1,4 @@
-import { Button } from "@mui/material";
+import { Button, Paper } from "@mui/material";
 import AnalyticsCard from "./AnalyticsCard";
 import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
@@ -10,6 +10,7 @@ import TextField from "@mui/material/TextField";
 import * as React from "react";
 import dayjs from "dayjs";
 import { DataGrid } from "@mui/x-data-grid";
+import { Box } from "@mui/material";
 import { RangeChart, ScoreChart } from "./Charts";
 import Grid from "@mui/material/Grid";
 import TestEventsTable from "./EventsTable";
@@ -24,7 +25,7 @@ import {
   MEASUREMENT_TYPES,
 } from "../mockData/data";
 import { useNavigate, useParams } from "react-router";
-import { getTestEvents } from "../../graphql/queries";
+import { getPatientById, getTestEvents } from "../../graphql/queries";
 
 const { Amplify, API, graphqlOperation } = require("aws-amplify");
 const awsconfig = require("../../aws-exports");
@@ -35,8 +36,10 @@ const {
 } = require("../../graphql/mutations");
 Amplify.configure(awsconfig);
 
-function PatientPage({ patient_id, patient_name }) {
-  const { id } = useParams();
+function PatientPage() {
+  // { patient_id, patient_name }
+  const { patient_id } = useParams();
+  const [patientName, setPatientName] = React.useState("");
   const [movementTestSelected, setMovementTestSelected] =
     React.useState("sit to stand");
   const [fromDate, setFromDate] = React.useState(dayjs("2023-02-03"));
@@ -46,15 +49,18 @@ function PatientPage({ patient_id, patient_name }) {
   const [data, setData] = React.useState([]);
 
   const fetchData = async () => {
-    console.log("id", id);
     // query test events for the graph
+    let resPatient = await API.graphql(
+      graphqlOperation(getPatientById, { patient_id: patient_id })
+    );
+    setPatientName(resPatient.data.getPatientById.name);
+    console.log("resPatient", resPatient);
     let resEventsGraph = await API.graphql(
       graphqlOperation(getTestEvents, {
         patient_id: patient_id,
         test_type: movementTestSelected,
         from_time: dayjs(fromDate).format("YYYY-MM-DD hh:mm:ss"),
         to_time: dayjs(toDate).format("YYYY-MM-DD hh:mm:ss"),
-        if_completed: true,
         sort: "asc",
       })
     );
@@ -65,6 +71,7 @@ function PatientPage({ patient_id, patient_name }) {
   };
 
   React.useEffect(() => {
+    console.log(patient_id);
     fetchData();
   }, [fromDate, toDate]);
 
@@ -133,7 +140,7 @@ function PatientPage({ patient_id, patient_name }) {
         {/* page title */}
         <Grid item>
           <Typography variant="h5" gutterBottom>
-            Statistics for {patient_name} ({patient_id})
+            Statistics for {patientName} ({patient_id})
           </Typography>
         </Grid>
         {/* analytics */}
@@ -144,8 +151,8 @@ function PatientPage({ patient_id, patient_name }) {
           justifyContent="space-evenly"
           alignItems="flex-start"
         >
-          <AnalyticsCard value={90} title="7-day average" change={12} />
-          <AnalyticsCard value={85} title="monthly average" change={0 - 5} />
+          <AnalyticsCard title="7-day average" />
+          <AnalyticsCard title="monthly average" />
         </Grid>
         {/* graph */}
         <Grid item>
@@ -181,20 +188,39 @@ function PatientPage({ patient_id, patient_name }) {
           </Grid>
           {/* chart */}
           <Grid item>
-            <ScoreChart
-              data={
-                movementTestSelected == "sit to stand"
-                  ? data
-                  : scoreDataMapping[movementTestSelected].filter(
-                      (i) =>
-                        dayjs(i.date).isAfter(fromDate) &&
-                        dayjs(i.date).isBefore(toDate)
-                    )
-              }
-            />
+            {data.length == 0 ? (
+              <Box
+                sx={{
+                  display: "flex",
+                  flexWrap: "wrap",
+                  justifyContent: "center",
+                  alignContent: "center",
+                  "& > :not(style)": {
+                    m: 1,
+                    width: 128,
+                    height: 128,
+                  },
+                }}
+              >
+                <div>No data available</div>
+                {/* <Typography variant="subtitle1">No data available</Typography> */}
+              </Box>
+            ) : (
+              <ScoreChart
+                data={
+                  movementTestSelected == "sit to stand"
+                    ? data
+                    : scoreDataMapping[movementTestSelected].filter(
+                        (i) =>
+                          dayjs(i.date).isAfter(fromDate) &&
+                          dayjs(i.date).isBefore(toDate)
+                      )
+                }
+              />
+            )}
           </Grid>
           {/* measurement select */}
-          <Grid
+          {/* <Grid
             container
             direction="row"
             justifyContent="flex-start"
@@ -205,7 +231,7 @@ function PatientPage({ patient_id, patient_name }) {
           </Grid>
           <Grid item pl={5}>
             <RangeChart />
-          </Grid>
+          </Grid> */}
         </Grid>
       </Grid>
       {/* table */}

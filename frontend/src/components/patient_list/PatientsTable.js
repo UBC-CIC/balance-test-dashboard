@@ -22,7 +22,10 @@ import { v4 as uuidv4 } from "uuid";
 
 import { Amplify, API, graphqlOperation } from "aws-amplify";
 import awsconfig from "../../aws-exports";
-import { getPatients, getTestEvents } from "../../graphql/queries";
+import {
+  getPatientsForCareprovider,
+  getTestEvents,
+} from "../../graphql/queries";
 Amplify.configure(awsconfig);
 
 const headerColumns = [
@@ -506,7 +509,7 @@ export function PatientsTable({ careProviderId }) {
     try {
       console.log("in fetchdata try block");
       let response = await API.graphql(
-        graphqlOperation(getPatients, {
+        graphqlOperation(getPatientsForCareprovider, {
           care_provider_id: careProviderId,
         })
       );

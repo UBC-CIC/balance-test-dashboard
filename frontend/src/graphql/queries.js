@@ -18,6 +18,20 @@ export const getPatientById = /* GraphQL */ `
     }
   }
 `;
+export const getTestEventById = /* GraphQL */ `
+  query GetTestEventById($test_event_id: String!) {
+    getTestEventById(test_event_id: $test_event_id) {
+      test_event_id
+      patient_id
+      test_type
+      balance_score
+      doctor_score
+      notes
+      start_time
+      end_time
+    }
+  }
+`;
 export const getPatientsForCareprovider = /* GraphQL */ `
   query GetPatientsForCareprovider($care_provider_id: String!) {
     getPatientsForCareprovider(care_provider_id: $care_provider_id) {
@@ -56,7 +70,6 @@ export const getTestEvents = /* GraphQL */ `
       test_event_id
       patient_id
       test_type
-      if_completed
       balance_score
       doctor_score
       notes
@@ -101,6 +114,17 @@ export const getMeasurementData = /* GraphQL */ `
       year: $year
       month: $month
       day: $day
-    )
+    ) {
+      ts
+      ax
+      ay
+      az
+      gx
+      gy
+      gz
+      mx
+      my
+      mz
+    }
   }
 `;
