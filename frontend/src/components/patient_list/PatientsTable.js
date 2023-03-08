@@ -22,7 +22,7 @@ import { v4 as uuidv4 } from "uuid";
 
 import { Amplify, API, graphqlOperation } from "aws-amplify";
 import awsconfig from "../../aws-exports";
-import { getAllPatients, getTestEvents } from "../../graphql/queries";
+import { getAllPatients, getPatientsForCareprovider, getTestEvents, getPatientAssignedTests } from "../../graphql/queries";
 Amplify.configure(awsconfig);
 
 const headerColumns = [
@@ -501,43 +501,49 @@ export function PatientsTable({ careProviderId }) {
   };
 
   async function fetchData() {
-    // let data = [];
+    let data = [];
     console.log("in fetchdata");
     try {
       console.log("in fetchdata try block");
       let response = await API.graphql(
-        graphqlOperation(getAllPatients, {
-          care_provider_id: careProviderId,
+        graphqlOperation(getPatientsForCareprovider, {
+          care_provider_id: 1, //careProviderId,
         })
       );
 
-      let patientsInfo = response.data.getAllPatients;
+      let patientsInfo = response.data.getPatientsForCareprovider;
       console.log("patientsInfo", patientsInfo);
 
       for (let p = 0; p < patientsInfo.length; p++) {
-        console.log(p);
+
         let res1 = await API.graphql(
-          graphqlOperation(getTestEvents, {
-            patient_id: patientsInfo[p].patient_id,
-            if_completed: false,
+          graphqlOperation(getPatientAssignedTests, {
+            patient_id: patientsInfo[p].patient_id
           })
         );
         console.log("res1", res1);
+
         let res2 = await API.graphql(
           graphqlOperation(getTestEvents, {
             patient_id: patientsInfo[p].patient_id,
-            if_completed: true,
             sort: "desc",
+            count: 1
           })
-        );
+        ).catch((res) => {
+          if (res == null) {
+            return 0;
+          }
+        });
         console.log("res2", res2);
 
+        let lastMovementAssigned = res2 == null ? '-' : (res2.data.getTestEvents.length == 0 ? '-' : res2.data.getTestEvents[0]?.test_type);
+
         data.push({
-          user_id: patientsInfo[p].patient_id,
           patient_name: patientsInfo[p].name,
-          assigned_test_num: res1.data.getTestEvents.length,
-          last_movement_tested: res2.data.getTestEvents[0]?.test_type,
-          last_test_score: res2.data.getTestEvents[0]?.balance_score,
+          user_id: patientsInfo[p].patient_id,
+          assigned_test_num: res1.data.getPatientAssignedTests.length,
+          last_movement_tested: lastMovementAssigned, //res2.data.getTestEvents[0]?.test_type,
+          last_test_score: '-', //res2.data.getTestEvents[0]?.balance_score,
         });
       }
       console.log("data", data);
@@ -552,9 +558,9 @@ export function PatientsTable({ careProviderId }) {
 
   useEffect(() => {
     console.log("in useeffect");
-    // fetchData().then((data) => updatePatientDataRowsArr(data));
+    fetchData().then((data) => updatePatientDataRowsArr(data));
 
-    data = testRows;
+    // data = testRows;
     updatePatientDataRowsArr(data);
   }, []);
 

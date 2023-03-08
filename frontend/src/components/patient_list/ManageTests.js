@@ -35,12 +35,13 @@ export default function ManageTests({ rowNum, user_id, patientDataRowsArr, updat
             console.log("in sendTestToPatient try block");
             let response = await API.graphql(
               graphqlOperation(assignTestToPatient, {
-                patient_id: 1, //user_id,
+                patient_id: user_id,
                 test_type: testStr
               })
             );
 
-            console.log("assignTestToPatient Response: " + response);
+            console.log("assignTestToPatient Response: ");
+            console.log(response['data']);
 
         } catch (err) {
             console.log(err);
@@ -54,12 +55,13 @@ export default function ManageTests({ rowNum, user_id, patientDataRowsArr, updat
             console.log("in sendTestToPatient try block");
             let response = await API.graphql(
               graphqlOperation(removeTestFromPatient, {
-                patient_id: 1, //user_id,
+                patient_id: user_id,
                 test_type: testStr
               })
             );
 
-            console.log("removeTestFromPatient Response: "+ response);
+            console.log("removeTestFromPatient Response: ");
+            console.log(response['data']);
 
         } catch (err) {
             console.log(err);
@@ -73,11 +75,12 @@ export default function ManageTests({ rowNum, user_id, patientDataRowsArr, updat
             console.log("in retrieveAssignedTests try block");
             let response = await API.graphql(
               graphqlOperation(getPatientAssignedTests, {
-                patient_id: 1, //user_id,
+                patient_id: user_id,
               })
             );
 
-            console.log(response['data']['getPatientAssignedTests']);
+            console.log("getPatientAssignedTests Response: ");
+            console.log(response['data']);
             
             let testsArr = [];
             response['data']['getPatientAssignedTests'].map((test_info) => {
@@ -155,7 +158,10 @@ export default function ManageTests({ rowNum, user_id, patientDataRowsArr, updat
     }
 
     React.useEffect(() => {
-        retrieveAssignedTests()
+        retrieveAssignedTests().then(() => {
+            patientDataRowsArr[rowNum].assigned_test_num = Object.values(checkboxStates).filter(Boolean).length;
+            
+        });
     }, []);
 
 
@@ -169,7 +175,7 @@ export default function ManageTests({ rowNum, user_id, patientDataRowsArr, updat
                         Select the movement(s) to assign to the patient.
                     </DialogContentText>
                     {movement_tests.map((movement_test) => {
-                        console.log("Checked: " + movement_test + "-" + checkboxStates[movement_test])
+                        // console.log("Checked: " + movement_test + "-" + checkboxStates[movement_test])
                         return(
                             <FormGroup key={movement_test}>
                                 <FormControlLabel 
