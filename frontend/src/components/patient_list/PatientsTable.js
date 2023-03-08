@@ -22,9 +22,12 @@ import { v4 as uuidv4 } from "uuid";
 
 import { Amplify, API, graphqlOperation } from "aws-amplify";
 import awsconfig from "../../aws-exports";
+
 import {
+  getAllPatients,
   getPatientsForCareprovider,
   getTestEvents,
+  getPatientAssignedTests,
 } from "../../graphql/queries";
 Amplify.configure(awsconfig);
 
@@ -299,7 +302,7 @@ function DisplayRows({
                         onClick={() => {
                           navigate("/patient");
                           // console.log("row", row);
-                          // navigate(`/patient:${row.user_id}`);
+                          navigate(`/patient/${row.user_id}`);
                         }}
                       >
                         See Patient Data
@@ -415,7 +418,7 @@ function DisplaySearchResults({
                         onClick={() => {
                           // console.log("row.patient_id", row.patient_id);
                           // navigate(`/patient:${row.patient_id}`);
-                          navigate(`/patient`);
+                          navigate(`/patient/${row.patient_id}`);
                         }}
                       >
                         See Patient Data
@@ -510,43 +513,52 @@ export function PatientsTable({ careProviderId }) {
       console.log("in fetchdata try block");
       let response = await API.graphql(
         graphqlOperation(getPatientsForCareprovider, {
-          care_provider_id: careProviderId,
+          care_provider_id: 1, //careProviderId,
         })
       );
 
-      let patientsInfo = response.data.getPatients;
+      let patientsInfo = response.data.getPatientsForCareprovider;
       console.log("patientsInfo", patientsInfo);
 
       for (let p = 0; p < patientsInfo.length; p++) {
-        console.log(p);
         let res1 = await API.graphql(
-          graphqlOperation(getTestEvents, {
+          graphqlOperation(getPatientAssignedTests, {
             patient_id: patientsInfo[p].patient_id,
-            if_completed: false,
           })
         );
         console.log("res1", res1);
+
         let res2 = await API.graphql(
           graphqlOperation(getTestEvents, {
             patient_id: patientsInfo[p].patient_id,
-            if_completed: true,
             sort: "desc",
+            count: 1,
           })
-        );
+        ).catch((res) => {
+          if (res == null) {
+            return 0;
+          }
+        });
         console.log("res2", res2);
 
+        let lastMovementAssigned =
+          res2 == null
+            ? "-"
+            : res2.data.getTestEvents.length == 0
+            ? "-"
+            : res2.data.getTestEvents[0]?.test_type;
+
         data.push({
-          user_id: patientsInfo[p].patient_id,
           patient_name: patientsInfo[p].name,
-          assigned_test_num: res1.data.getTestEvents.length,
-          last_movement_tested: res2.data.getTestEvents[0]?.test_type,
-          last_test_score: res2.data.getTestEvents[0]?.balance_score,
+          user_id: patientsInfo[p].patient_id,
+          assigned_test_num: res1.data.getPatientAssignedTests.length,
+          last_movement_tested: lastMovementAssigned, //res2.data.getTestEvents[0]?.test_type,
+          last_test_score: "-", //res2.data.getTestEvents[0]?.balance_score,
         });
       }
       console.log("data", data);
       setLoading(false);
       return data;
-      // return new Promise((resolve, reject) => resolve(data));
     } catch (err) {
       console.log(err);
       return new Promise((resolve, reject) => reject(err));
@@ -555,8 +567,10 @@ export function PatientsTable({ careProviderId }) {
 
   useEffect(() => {
     console.log("in useeffect");
-    // console.log(fetchData());
     fetchData().then((data) => updatePatientDataRowsArr(data));
+
+    // data = testRows;
+    updatePatientDataRowsArr(data);
   }, []);
 
   const handleChangeRowsPerPage = (event) => {

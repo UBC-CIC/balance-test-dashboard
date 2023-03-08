@@ -11,39 +11,115 @@ import Checkbox from '@mui/material/Checkbox';
 
 import "./ManageTests.css";
 
-const movement_tests = ["Sit-to-Stand", "Movement 2", "Movement 3"]; // modify the movement names if needed
+import { Amplify, API, graphqlOperation } from "aws-amplify";
+import awsconfig from "../../aws-exports";
+import { assignTestToPatient, removeTestFromPatient } from "../../graphql/mutations";
+import { getPatientAssignedTests } from '../../graphql/queries';
+Amplify.configure(awsconfig);
 
+const movement_tests = ["Sit-to-Stand", "Movement 2", "Movement 3"]; // modify the movement names if needed
 
 export default function ManageTests({ rowNum, user_id, patientDataRowsArr, updatePatientDataRowsArr }) {
     const [modalOpen, setModalOpen] = React.useState(false);
-    const [sendButtonDisabled, setSendButtonDisabled] = React.useState(true);
-    
+
     const checkboxInitStateObj = {}
     for (let i in movement_tests) {
         checkboxInitStateObj[movement_tests[i]] = false;
     }
 
     const [checkboxStates, setCheckboxStates] = React.useState(checkboxInitStateObj);
-    
-    React.useEffect(() => {
-        if (Object.values(checkboxStates).filter(Boolean).length > 0) {
-            setSendButtonDisabled(false);
+    const [prevCheckboxStates, setPrevCheckboxStates] = React.useState(checkboxInitStateObj);
 
-        } else {
-            setSendButtonDisabled(true);
+    async function sendTestToPatient(testStr) {
+        try {
+            console.log("in sendTestToPatient try block");
+            let response = await API.graphql(
+              graphqlOperation(assignTestToPatient, {
+                patient_id: user_id,
+                test_type: testStr
+              })
+            );
+
+            console.log("assignTestToPatient Response: ");
+            console.log(response['data']);
+
+        } catch (err) {
+            console.log(err);
+            return new Promise((resolve, reject) => reject(err));
         }
-    }, [checkboxStates]);
+        
+    }
+
+    async function deleteTestFromPatient(testStr) {
+        try {
+            console.log("in sendTestToPatient try block");
+            let response = await API.graphql(
+              graphqlOperation(removeTestFromPatient, {
+                patient_id: user_id,
+                test_type: testStr
+              })
+            );
+
+            console.log("removeTestFromPatient Response: ");
+            console.log(response['data']);
+
+        } catch (err) {
+            console.log(err);
+            return new Promise((resolve, reject) => reject(err));
+        }
+        
+    }
+
+    async function retrieveAssignedTests() {
+        try {
+            console.log("in retrieveAssignedTests try block");
+            let response = await API.graphql(
+              graphqlOperation(getPatientAssignedTests, {
+                patient_id: user_id,
+              })
+            );
+
+            console.log("getPatientAssignedTests Response: ");
+            console.log(response['data']);
+            
+            let testsArr = [];
+            response['data']['getPatientAssignedTests'].map((test_info) => {
+                testsArr.push(test_info['test_type'])
+            });
+            console.log(testsArr);
+
+            for (const checkboxKey of Object.keys(checkboxStates)) {
+
+                if (testsArr.includes(checkboxKey.toLowerCase())) {
+                    setCheckboxStates({
+                        ...checkboxStates,
+                        [checkboxKey]: true
+                    });
+                
+                } else {
+                    setCheckboxStates({
+                        ...checkboxStates,
+                        [checkboxKey]: false
+                    });
+
+                }
+            } 
+            console.log(checkboxStates)
+
+        } catch (err) {
+            console.log(err);
+            return new Promise((resolve, reject) => reject(err));
+        }
+    }
 
     const handleOpenModal = () => {
-        setCheckboxStates(checkboxInitStateObj);
+        // setCheckboxStates(checkboxInitStateObj);
         setModalOpen(true);
-        setSendButtonDisabled(true);
     }
 
     const handleCloseModal = () => {
-        setCheckboxStates(checkboxInitStateObj);
+        setCheckboxStates(prevCheckboxStates);
         setModalOpen(false);
-        setSendButtonDisabled(true);
     }
 
     const handleCheckbox = (event) => {
@@ -53,22 +129,41 @@ export default function ManageTests({ rowNum, user_id, patientDataRowsArr, updat
         });
 
         console.log("Checked: " + event.target.checked);
-        console.log("Checkbox Label: " + event.target.name);
     }
 
-    const handleSendToPatient = () => {
+    const handleSaveTests = () => {
         let countTrues = Object.values(checkboxStates).filter(Boolean).length;
 
-        //need to specify what tests should be sent to the patient here and save the tests accordingly
+        // console.log("Checkbox States: " + checkboxStates)
 
-        patientDataRowsArr[rowNum].assigned_test_num = patientDataRowsArr[rowNum].assigned_test_num + countTrues;
+        //send dict obj to database to show which tests are true/false
+        patientDataRowsArr[rowNum].assigned_test_num = countTrues;
         let updatedArr = patientDataRowsArr.slice();
         updatePatientDataRowsArr(updatedArr);
         
-        setCheckboxStates(checkboxInitStateObj);
+        console.log(checkboxStates);
         setModalOpen(false);
-        setSendButtonDisabled(true);
+        setPrevCheckboxStates(checkboxStates);
+
+        for (const [checkboxKey, checkboxValue] of Object.entries(checkboxStates)) {
+            if (checkboxValue == true) {
+                console.log(checkboxKey.toLowerCase());
+                sendTestToPatient(checkboxKey.toLowerCase());
+
+            } else {
+                deleteTestFromPatient(checkboxKey.toLowerCase());
+
+            }
+        } 
     }
+
+    React.useEffect(() => {
+        retrieveAssignedTests().then(() => {
+            patientDataRowsArr[rowNum].assigned_test_num = Object.values(checkboxStates).filter(Boolean).length;
+            
+        });
+    }, []);
+
 
     return (
         <div className='manage-button-div'>
@@ -80,6 +175,7 @@ export default function ManageTests({ rowNum, user_id, patientDataRowsArr, updat
                         Select the movement(s) to assign to the patient.
                     </DialogContentText>
                     {movement_tests.map((movement_test) => {
+                        // console.log("Checked: " + movement_test + "-" + checkboxStates[movement_test])
                         return(
                             <FormGroup key={movement_test}>
                                 <FormControlLabel 
@@ -93,7 +189,7 @@ export default function ManageTests({ rowNum, user_id, patientDataRowsArr, updat
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleCloseModal}>Cancel</Button>
-                    <Button disabled={sendButtonDisabled} onClick={handleSendToPatient}>Send to Patient</Button> 
+                    <Button onClick={handleSaveTests}>Save</Button> 
                 </DialogActions>
             </Dialog>
         </div>

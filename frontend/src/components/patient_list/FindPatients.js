@@ -5,6 +5,11 @@ import Button from '@mui/material/Button';
 import IconButton from "@mui/material/IconButton";
 import TextField from '@mui/material/TextField';
 
+import { Amplify, API, graphqlOperation } from "aws-amplify";
+import awsconfig from "../../aws-exports";
+import { getAllPatients, getTestEvents } from "../../graphql/queries";
+Amplify.configure(awsconfig);
+
 export default function SearchForPatients(props) {
     const [inputName, setInputName] = React.useState("");
     const [searchButtonDisabled, setSearchButtonDisabled] = React.useState(true);
@@ -30,7 +35,7 @@ export default function SearchForPatients(props) {
 
     const handleSearchClick = () => {
         console.log("Searching Name: " + inputName);
-        let resultsRowArr = patientDataRowsArr.filter((patientDataRow) => (patientDataRow.patient_name.toLowerCase() == inputName.toLowerCase()));
+        let resultsRowArr = patientDataRowsArr.filter((patientDataRow) => (patientDataRow.patient_name.trim().toLowerCase() == inputName.trim().toLowerCase()));
         setSearchResults(resultsRowArr.slice());
         setTablePage(0);
         setSearchSubmitKey(searchSubmitKey + 1);
@@ -49,9 +54,10 @@ export default function SearchForPatients(props) {
     return (
         <Box sx={{display: 'flex', flexDirection: 'row', width: '100%', overflow: 'auto', margin: '2.5% 0% 0.5% 0%'}}>
             <Autocomplete
+                autoSelect
                 clearIcon={""}
                 noOptionsText='No Patients in the Table'
-                groupBy={(option) => (option.toUpperCase()[0])}
+                groupBy={(option) => (option.trim().toUpperCase()[0])}
                 options={uniquePatientNamesArr}
                 onChange={handlePatientNameInput}
                 ListboxProps={{style: {maxHeight: 400, overflow: 'auto' }}}
