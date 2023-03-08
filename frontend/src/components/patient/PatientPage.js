@@ -1,4 +1,4 @@
-import { Button } from "@mui/material";
+import { Button, Paper } from "@mui/material";
 import AnalyticsCard from "./AnalyticsCard";
 import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
@@ -10,6 +10,7 @@ import TextField from "@mui/material/TextField";
 import * as React from "react";
 import dayjs from "dayjs";
 import { DataGrid } from "@mui/x-data-grid";
+import { Box } from "@mui/material";
 import { RangeChart, ScoreChart } from "./Charts";
 import Grid from "@mui/material/Grid";
 import TestEventsTable from "./EventsTable";
@@ -150,8 +151,8 @@ function PatientPage() {
           justifyContent="space-evenly"
           alignItems="flex-start"
         >
-          <AnalyticsCard value={90} title="7-day average" change={12} />
-          <AnalyticsCard value={85} title="monthly average" change={0 - 5} />
+          <AnalyticsCard title="7-day average" />
+          <AnalyticsCard title="monthly average" />
         </Grid>
         {/* graph */}
         <Grid item>
@@ -187,20 +188,39 @@ function PatientPage() {
           </Grid>
           {/* chart */}
           <Grid item>
-            <ScoreChart
-              data={
-                movementTestSelected == "sit to stand"
-                  ? data
-                  : scoreDataMapping[movementTestSelected].filter(
-                      (i) =>
-                        dayjs(i.date).isAfter(fromDate) &&
-                        dayjs(i.date).isBefore(toDate)
-                    )
-              }
-            />
+            {data.length == 0 ? (
+              <Box
+                sx={{
+                  display: "flex",
+                  flexWrap: "wrap",
+                  justifyContent: "center",
+                  alignContent: "center",
+                  "& > :not(style)": {
+                    m: 1,
+                    width: 128,
+                    height: 128,
+                  },
+                }}
+              >
+                <div>No data available</div>
+                {/* <Typography variant="subtitle1">No data available</Typography> */}
+              </Box>
+            ) : (
+              <ScoreChart
+                data={
+                  movementTestSelected == "sit to stand"
+                    ? data
+                    : scoreDataMapping[movementTestSelected].filter(
+                        (i) =>
+                          dayjs(i.date).isAfter(fromDate) &&
+                          dayjs(i.date).isBefore(toDate)
+                      )
+                }
+              />
+            )}
           </Grid>
           {/* measurement select */}
-          <Grid
+          {/* <Grid
             container
             direction="row"
             justifyContent="flex-start"
@@ -211,7 +231,7 @@ function PatientPage() {
           </Grid>
           <Grid item pl={5}>
             <RangeChart />
-          </Grid>
+          </Grid> */}
         </Grid>
       </Grid>
       {/* table */}

@@ -32,6 +32,7 @@ export const ScoreChart = ({ data }) => {
           left: 20,
           bottom: 5,
         }}
+        label={<NALabel />}
       >
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="start_time" />
@@ -253,3 +254,28 @@ export const RangeChart = () => {
     </div>
   );
 };
+
+function NALabel({ x, y, stroke, value, width }) {
+  console.log("x", x);
+  console.log("value", value);
+  if (value) {
+    // No label if there is a value. Let the cell handle it.
+    return null;
+  }
+
+  return (
+    <text
+      x={x}
+      y={y}
+      // Move slightly above axis
+      dy={-10}
+      // Center text
+      dx={width / 2}
+      fill={stroke}
+      fontSize={15}
+      textAnchor="middle"
+    >
+      N/A
+    </text>
+  );
+}
