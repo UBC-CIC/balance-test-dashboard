@@ -41,9 +41,15 @@ export default function AnalyticsCard({ title, value, change }) {
         <Typography component="div" variant="subtitle1">
           {title}
         </Typography>
-        <Typography variant="h6">{value}</Typography>
+        <Typography variant="h6">
+          {!value ? "No data available" : value}
+        </Typography>
       </CardContent>
-      <Chip label={change > 0 ? "+" + change + "%" : "-" + -change + "%"} />
+      {!change ? (
+        <div></div>
+      ) : (
+        <Chip label={change > 0 ? "+" + change + "%" : "-" + -change + "%"} />
+      )}
       {/* </Grid> */}
     </Card>
   );
