@@ -96,6 +96,33 @@ export const getAllAvailableTests = /* GraphQL */ `
     }
   }
 `;
+export const getScoreMetricsOverTime = /* GraphQL */ `
+  query GetScoreMetricsOverTime(
+    $patientId: String!
+    $from_time: String!
+    $to_time: String!
+    $metrics: Metric!
+  ) {
+    getScoreMetricsOverTime(
+      patientId: $patientId
+      from_time: $from_time
+      to_time: $to_time
+      metrics: $metrics
+    )
+  }
+`;
+export const getMeasurementRange = /* GraphQL */ `
+  query GetMeasurementRange($patient_id: String!, $measurement: Measurement!) {
+    getMeasurementRange(patient_id: $patient_id, measurement: $measurement) {
+      min
+      max
+      year
+      month
+      day
+      movement
+    }
+  }
+`;
 export const getMeasurementData = /* GraphQL */ `
   query GetMeasurementData(
     $test_event_id: String!
@@ -116,15 +143,28 @@ export const getMeasurementData = /* GraphQL */ `
       day: $day
     ) {
       ts
-      ax
-      ay
-      az
-      gx
-      gy
-      gz
-      mx
-      my
-      mz
+      val
     }
+  }
+`;
+export const downloadTestEventDetails = /* GraphQL */ `
+  query DownloadTestEventDetails(
+    $test_event_id: String!
+    $patient_id: String!
+    $year: Int!
+    $month: Int!
+    $day: Int!
+    $patient_name: String
+    $test_type: String!
+  ) {
+    downloadTestEventDetails(
+      test_event_id: $test_event_id
+      patient_id: $patient_id
+      year: $year
+      month: $month
+      day: $day
+      patient_name: $patient_name
+      test_type: $test_type
+    )
   }
 `;
