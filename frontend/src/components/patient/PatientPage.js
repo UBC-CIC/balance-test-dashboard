@@ -23,6 +23,7 @@ import {
   SIT_UNSUPPORTED_DATA,
   TEST_TYPES,
   MEASUREMENT_TYPES,
+  MEASUREMENT_MAPPING,
 } from "../mockData/data";
 import { useNavigate, useParams } from "react-router";
 import { getPatientById, getTestEvents } from "../../graphql/queries";
@@ -44,6 +45,7 @@ function PatientPage() {
     React.useState("sit to stand");
   const [fromDate, setFromDate] = React.useState(dayjs("2023-02-03"));
   const [toDate, setToDate] = React.useState(dayjs("2023-02-10"));
+  const [measurementSelected, setMeasurementSelected] = React.useState(null);
 
   let navigate = useNavigate();
   const [data, setData] = React.useState([]);
@@ -82,6 +84,10 @@ function PatientPage() {
 
   const handleChangeToDate = (newValue) => {
     setToDate(newValue);
+  };
+
+  const handleSelectMeasurement = (event) => {
+    setMeasurementSelected(event.target.value);
   };
 
   const [openNewTest, setOpenNewTest] = React.useState(false);
@@ -202,7 +208,7 @@ function PatientPage() {
                   },
                 }}
               >
-                <div>No data available</div>
+                <div color="gray">No score data available</div>
                 {/* <Typography variant="subtitle1">No data available</Typography> */}
               </Box>
             ) : (
@@ -220,18 +226,48 @@ function PatientPage() {
             )}
           </Grid>
           {/* measurement select */}
-          {/* <Grid
+
+          <Grid
             container
             direction="row"
             justifyContent="flex-start"
             alignItems="flex-end"
             pl={10}
           >
-            <MeasurementSelect />
+            {/* <MeasurementSelect /> */}
+            <FormControl variant="standard" sx={{ m: 1, minWidth: 320 }}>
+              <InputLabel id="demo-simple-select-standard-label">
+                View Measurement Range Over Time
+              </InputLabel>
+              <Select
+                labelId="demo-simple-select-standard-label"
+                id="demo-simple-select-standard"
+                value={measurementSelected}
+                onChange={handleSelectMeasurement}
+                label="Type of Measurement"
+              >
+                <MenuItem value={null}>
+                  View Measurement Range Over Time
+                </MenuItem>
+                {MEASUREMENT_TYPES.map((t) => (
+                  <MenuItem value={MEASUREMENT_MAPPING[t]}>{t}</MenuItem>
+                ))}
+                {/* <MenuItem value={10}>Ten</MenuItem>
+          <MenuItem value={20}>Twenty</MenuItem>
+          <MenuItem value={30}>Thirty</MenuItem> */}
+              </Select>
+            </FormControl>
           </Grid>
           <Grid item pl={5}>
-            <RangeChart />
-          </Grid> */}
+            {!measurementSelected ? (
+              <div></div>
+            ) : (
+              <RangeChart
+                patientId={patient_id}
+                measurement={measurementSelected}
+              />
+            )}
+          </Grid>
         </Grid>
       </Grid>
       {/* table */}
@@ -282,7 +318,7 @@ function TestSelection({
 }
 
 function MeasurementSelect({ measurementSelected = MEASUREMENT_TYPES[0] }) {
-  // const [age, setAge] = React.useState("");
+  // const [measurementSelected, setMeasurementSelected] = React.useState("");
 
   const handleChange = (event) => {
     // setMovementTestSelected(event.target.value);
@@ -290,9 +326,12 @@ function MeasurementSelect({ measurementSelected = MEASUREMENT_TYPES[0] }) {
 
   return (
     // <div>
-    <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
-      <InputLabel id="demo-simple-select-standard-label">
-        Type of Measurement
+    <FormControl variant="standard" sx={{ m: 1, minWidth: 350 }}>
+      <InputLabel
+        id="demo-simple-select-standard-label"
+        sx={{ m: 1, minWidth: 350 }}
+      >
+        View Measurement Range Over Time
       </InputLabel>
       <Select
         labelId="demo-simple-select-standard-label"
@@ -301,6 +340,7 @@ function MeasurementSelect({ measurementSelected = MEASUREMENT_TYPES[0] }) {
         onChange={handleChange}
         label="Type of Measurement"
       >
+        <MenuItem value={null}>View Measurement Range Over Time</MenuItem>
         {MEASUREMENT_TYPES.map((t) => (
           <MenuItem value={t}>{t}</MenuItem>
         ))}

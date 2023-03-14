@@ -1,4 +1,4 @@
-import React, { PureComponent, useEffect } from "react";
+import React, { PureComponent, useEffect, useState } from "react";
 import ApexCharts from "apexcharts";
 import {
   LineChart,
@@ -17,6 +17,12 @@ import {
   MEASUREMENT_DATA_SMALL,
   MEASUREMENT_RANGE_DATA,
 } from "../mockData/data";
+
+import { getMeasurementRange } from "../../graphql/queries";
+import dayjs from "dayjs";
+const { Amplify, API, graphqlOperation } = require("aws-amplify");
+const awsconfig = require("../../aws-exports");
+Amplify.configure(awsconfig);
 
 export const ScoreChart = ({ data }) => {
   console.log("chartdata", data);
@@ -70,7 +76,7 @@ export const SensorChart = ({ data, y }) => {
       >
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="ts" />
-        <YAxis domain={[-20, 20]} dataKey={y} />
+        <YAxis domain={[-20, 20]} dataKey={"val"} />
         <XAxis dataKey="timestamp" />
         <YAxis domain={[-20, 20]} />
 
@@ -79,7 +85,7 @@ export const SensorChart = ({ data, y }) => {
 
         <Line
           type="monotone"
-          dataKey={y}
+          dataKey={"val"}
           stroke="black"
           isAnimationActive={false}
           dot={false}
@@ -148,11 +154,12 @@ export const SensorChart = ({ data, y }) => {
 //   return <path d={d} stroke="none" fill={color} />;
 // };
 
-export const RangeChart = () => {
+export const RangeChart = ({ patientId, measurement }) => {
   let options = {
     chart: {
       type: "rangeBar",
       height: 100,
+      animations: { enabled: false },
     },
     plotOptions: {
       bar: {
@@ -163,90 +170,93 @@ export const RangeChart = () => {
       enabled: false,
     },
     tooltip: { enabled: false },
-    xaxis: { labels: { trim: true, rotate: 15 }, tickAmount: 6 },
-    grid: { show: false },
-    annotations: {
-      yaxis: [
-        {
-          y: 0.2,
-          borderColor: "gray",
-          label: {
-            borderColor: "gray",
-            style: {
-              color: "#fff",
-              background: "gray",
-            },
-            text: "median: 0.2",
-          },
-        },
-      ],
+    xaxis: {
+      labels: { trim: true, rotate: 15 },
+      tickAmount: 6,
+      type: "datetime",
+      tickPlacement: "on",
     },
+    yaxis: {
+      decimalsInFloat: 2,
+    },
+    grid: { show: false },
+    plotOptions: {
+      bar: {
+        columnWidth: "10%",
+      },
+    },
+    // annotations: {
+    //   yaxis: [
+    //     {
+    //       y: 0.2,
+    //       borderColor: "gray",
+    //       label: {
+    //         borderColor: "gray",
+    //         style: {
+    //           color: "#fff",
+    //           background: "gray",
+    //         },
+    //         text: "median: 0.2",
+    //       },
+    //     },
+    //   ],
+    // },
   };
 
-  // let state = {
-  //   series: [
-  //     {
-  //       data: [
-  //         {
-  //           x: "Team A",
-  //           y: [1, 5],
-  //         },
-  //         {
-  //           x: "Team B",
-  //           y: [4, 6],
-  //         },
-  //         {
-  //           x: "Team C",
-  //           y: [5, 8],
-  //         },
-  //         {
-  //           x: "Team D",
-  //           y: [3, 11],
-  //         },
-  //       ],
-  //     },
-  //     // {
-  //     //   data: [
-  //     //     {
-  //     //       x: "Team A",
-  //     //       y: [2, 6],
-  //     //     },
-  //     //     {
-  //     //       x: "Team B",
-  //     //       y: [1, 3],
-  //     //     },
-  //     //     {
-  //     //       x: "Team C",
-  //     //       y: [7, 8],
-  //     //     },
-  //     //     {
-  //     //       x: "Team D",
-  //     //       y: [5, 9],
-  //     //     },
-  //     //   ],
-  //     // },
-  //   ],
-  //   options: {
-  //     chart: {
-  //       type: "rangeBar",
-  //       height: 350,
-  //     },
-  //     plotOptions: {
-  //       bar: {
-  //         horizontal: false,
-  //       },
-  //     },
-  //     dataLabels: {
-  //       enabled: true,
-  //     },
+  const [data, setData] = useState([]);
+
+  const fetchData = async () => {
+    console.log("measurement", measurement);
+    let res = await API.graphql(
+      graphqlOperation(getMeasurementRange, {
+        patient_id: patientId,
+        measurement: measurement,
+      })
+    );
+
+    let rangeChartData = convert(res.data.getMeasurementRange);
+    console.log("rangechartdata", rangeChartData);
+    setData(rangeChartData);
+  };
+
+  // let data = [
+  //   {
+  //     data: [
+  //       { x: "11/20/2022, 10:01:13 PM", y: [-0.3484, 3.9108] },
+  //       { x: "11/21/2022, 10:01:13 PM", y: [-1.7786, -0.1167] },
+  //     ],
   //   },
-  // };
+  // ];
+  const convert = (data) => {
+    const keys = Object.keys(data);
+
+    const res = data[keys[0]].map((_, i) => {
+      const item = {};
+      keys.forEach((k) => {
+        item[k] = data[k][i];
+      });
+      item["y"] = [item["min"], item["max"]];
+      // todo
+      item["x"] = dayjs(
+        `${item["year"]}-0${item["month"]}-${item["day"]}`
+      ).format("YYYY MMM D");
+      return item;
+    });
+
+    return [{ data: res }];
+  };
+
+  useEffect(() => {
+    console.log("rangechart refresh");
+    fetchData();
+  }, [measurement]);
 
   return (
     <div id="chart">
       <Chart
         options={options}
-        series={MEASUREMENT_RANGE_DATA}
+        // series={MEASUREMENT_RANGE_DATA}
+        series={data}
         type="rangeBar"
         width="95%"
         height={300}

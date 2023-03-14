@@ -20,13 +20,14 @@ import InputLabel from "@mui/material/InputLabel";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import dayjs from "dayjs";
-
+import LoadingButton from "@mui/lab/LoadingButton";
 const { Amplify, API, graphqlOperation } = require("aws-amplify");
 const awsconfig = require("../aws-exports");
 const {
   getPatientById,
   getMeasurementData,
   getTestEventById,
+  downloadTestEventDetails,
 } = require("../graphql/queries");
 Amplify.configure(awsconfig);
 
@@ -36,6 +37,7 @@ export function TestDetails() {
   const [measurementSelected, setMeasurementSelected] = useState("");
   const [measurementData, setMeasurementData] = useState([]);
   const [testEvent, setTestEvent] = useState(null);
+  const [downloading, setDownloading] = useState(false);
   let navigate = useNavigate();
 
   const fetchData = async () => {
@@ -63,7 +65,12 @@ export function TestDetails() {
           measurement: measurementSelected,
         })
       );
-      setMeasurementData(resmeasurement.data.getMeasurementData);
+      setMeasurementData(
+        resmeasurement.data.getMeasurementData.ts.map((ts, i) => ({
+          ts: ts,
+          val: resmeasurement.data.getMeasurementData.val[i],
+        }))
+      );
       console.log("measurementData", measurementData);
     }
   };
@@ -79,6 +86,29 @@ export function TestDetails() {
   const handleChange = (event) => {
     setMeasurementSelected(event.target.value);
     console.log("measurementSelected", measurementSelected);
+  };
+
+  const handleDownload = async (e) => {
+    setDownloading(true);
+    let resdownload = await API.graphql(
+      graphqlOperation(downloadTestEventDetails, {
+        test_event_id: test_event_id,
+        test_type: "sit-to-stand",
+        year: dayjs(testEvent.start_time).year(),
+        month: dayjs(testEvent.start_time).month() + 1,
+        day: dayjs(testEvent.start_time).date(),
+        patient_id: patient_id,
+        measurement: measurementSelected,
+        patient_name: patientName,
+      })
+    );
+    let url = resdownload.data.downloadTestEventDetails;
+    console.log("url", url);
+    let link = document.createElement("a");
+    link.download = url;
+    link.href = url;
+    link.click();
+    setDownloading(false);
   };
 
   return (
@@ -98,7 +128,13 @@ export function TestDetails() {
         </Typography>
         <Grid>
           <Button variant="outlined">Delete</Button>
-          <Button variant="contained">Download</Button>
+          <LoadingButton
+            variant="contained"
+            loading={downloading}
+            onClick={handleDownload}
+          >
+            {downloading ? "Fetching..." : "Download"}
+          </LoadingButton>
         </Grid>
       </Grid>
       <Grid item container justifyContent="center">
@@ -151,7 +187,7 @@ export function TestDetails() {
         // direction="column"
         // justifyContent="center"
       >
-        <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
+        <FormControl variant="standard" sx={{ m: 1, minWidth: 350 }}>
           <InputLabel id="demo-simple-select-standard-label">
             Select a Measurement to View Raw Data
           </InputLabel>

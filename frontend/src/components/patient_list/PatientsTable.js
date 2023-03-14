@@ -22,7 +22,13 @@ import { v4 as uuidv4 } from "uuid";
 
 import { Amplify, API, graphqlOperation } from "aws-amplify";
 import awsconfig from "../../aws-exports";
-import { getAllPatients, getPatientsForCareprovider, getTestEvents, getPatientAssignedTests } from "../../graphql/queries";
+
+import {
+  getAllPatients,
+  getPatientsForCareprovider,
+  getTestEvents,
+  getPatientAssignedTests,
+} from "../../graphql/queries";
 Amplify.configure(awsconfig);
 
 const headerColumns = [
