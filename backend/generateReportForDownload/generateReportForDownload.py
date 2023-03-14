@@ -105,13 +105,18 @@ def lambda_handler(event, context):
 
         pdf.cell(
             200, 10, f'Test Details for {patient_name} ({user_id})')
-        pdf.cell(200, 25, f'{movement}, {year}/{month}/{day}/{start_time}')
+        pdf.ln(10)
+        pdf.cell(200, 8, f'{movement}, {year}/{month}/{day}/{start_time}')
 
         line = 40
+        # current_page_line = line
         for m in MEASUREMENT_MAPPING:
             plot(m, line)
             line += 60
             pdf.ln(10)
+            if (line > 250):
+                pdf.add_page()
+                line = 0
 
         pdf.output(pdf_buffer)
         pdf_buffer.seek(0)
