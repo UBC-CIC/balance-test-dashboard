@@ -26,7 +26,11 @@ import {
   MEASUREMENT_MAPPING,
 } from "../mockData/data";
 import { useNavigate, useParams } from "react-router";
-import { getPatientById, getTestEvents } from "../../graphql/queries";
+import {
+  getPatientById,
+  getScoreMetricsOverTime,
+  getTestEvents,
+} from "../../graphql/queries";
 
 const { Amplify, API, graphqlOperation } = require("aws-amplify");
 const awsconfig = require("../../aws-exports");
@@ -42,15 +46,34 @@ function PatientPage() {
   const { patient_id } = useParams();
   const [patientName, setPatientName] = React.useState("");
   const [movementTestSelected, setMovementTestSelected] =
-    React.useState("sit to stand");
-  const [fromDate, setFromDate] = React.useState(dayjs("2023-02-03"));
-  const [toDate, setToDate] = React.useState(dayjs("2023-02-10"));
+    React.useState("sit-to-stand");
+  const [fromDate, setFromDate] = React.useState(dayjs().subtract(1, "month"));
+  const [toDate, setToDate] = React.useState(dayjs());
   const [measurementSelected, setMeasurementSelected] = React.useState(null);
 
   let navigate = useNavigate();
   const [data, setData] = React.useState([]);
 
   const fetchData = async () => {
+    // get analytics
+    // console.log("getweeklyavginput", {
+    //   patientId: patient_id,
+    //   from_time: dayjs().subtract(7, "day").format("YYYY-MM-DD hh:mm:ss"),
+    //   to_time: dayjs().format("YYYY-MM-DD hh:mm:ss"),
+    //   metrics: "avg",
+    // });
+
+    // let resWeeklyAvg = await API.graphql(
+    //   graphqlOperation(getScoreMetricsOverTime, {
+    //     patientId: patient_id,
+    //     from_time: dayjs().subtract(7, "day").format("YYYY-MM-DD hh:mm:ss"),
+    //     to_time: dayjs().format("YYYY-MM-DD hh:mm:ss"),
+    //     metrics: "avg",
+    //   })
+    // );
+
+    // console.log(resWeeklyAvg.data.getScoreMetricsOverTime);
+
     // query test events for the graph
     let resPatient = await API.graphql(
       graphqlOperation(getPatientById, { patient_id: patient_id })
@@ -66,6 +89,14 @@ function PatientPage() {
         sort: "asc",
       })
     );
+
+    console.log("gettesteventsinput", {
+      patient_id: patient_id,
+      test_type: movementTestSelected,
+      from_time: dayjs(fromDate).format("YYYY-MM-DD hh:mm:ss"),
+      to_time: dayjs(toDate).format("YYYY-MM-DD hh:mm:ss"),
+      sort: "asc",
+    });
 
     console.log(resEventsGraph);
     setData(resEventsGraph.data.getTestEvents);
@@ -112,7 +143,7 @@ function PatientPage() {
   ];
 
   const scoreDataMapping = {
-    "sit to stand": SIT_STAND_DATA,
+    "sit-to-stand": SIT_STAND_DATA,
     "One-foot Stand": ONE_FOOT_STAND_DATA,
     "Sitting with Back Unsupported": SIT_UNSUPPORTED_DATA,
   };
@@ -157,8 +188,8 @@ function PatientPage() {
           justifyContent="space-evenly"
           alignItems="flex-start"
         >
-          <AnalyticsCard title="7-day average" />
-          <AnalyticsCard title="monthly average" />
+          <AnalyticsCard title="7-day average" value={65} />
+          <AnalyticsCard title="monthly average" value={65} />
         </Grid>
         {/* graph */}
         <Grid item>
@@ -214,7 +245,7 @@ function PatientPage() {
             ) : (
               <ScoreChart
                 data={
-                  movementTestSelected == "sit to stand"
+                  movementTestSelected == "sit-to-stand"
                     ? data
                     : scoreDataMapping[movementTestSelected].filter(
                         (i) =>

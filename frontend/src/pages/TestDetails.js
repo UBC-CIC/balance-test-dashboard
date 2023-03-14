@@ -158,8 +158,19 @@ export function TestDetails() {
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
               >
                 {/* todo: replace w var */}
-                <TableCell align="left">sit to stand</TableCell>
-                <TableCell align="left">Calculating...</TableCell>
+                <TableCell align="left">sit-to-stand</TableCell>
+                <TableCell align="left">
+                  {!testEvent ? "loading..." : testEvent.balance_score}
+                  {() => {
+                    if (!testEvent) {
+                      return "loading";
+                    } else if (!testEvent.balance_score) {
+                      return "Calculating...";
+                    } else {
+                      return testEvent.balance_score;
+                    }
+                  }}
+                </TableCell>
                 <TableCell align="left">
                   {!testEvent
                     ? "loading..."
@@ -171,7 +182,7 @@ export function TestDetails() {
                     : dayjs(testEvent.end_time).diff(
                         dayjs(testEvent.start_time),
                         "second"
-                      )}{" "}
+                      )}
                   s
                 </TableCell>
                 <TableCell align="left"></TableCell>
