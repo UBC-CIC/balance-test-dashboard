@@ -44,16 +44,18 @@ type Query {
   getAllAvailableTests: [Test]
 
   # analytics
-  # getWeeklyAverageBalanceScore(patientId: String!): Int
+  getScoreMetricsOverTime(
+    patientId: String!
+    from_time: String!
+    to_time: String!
+    metrics: Metric!
+  ): Int
 
   # measurements
-  # getMeasurementRange(
-  #   test_event_id: String!
-  #   test_type: String!
-  #   from_date: String
-  #   to_date: String
-  # ): String
-
+  getMeasurementRange(
+    patient_id: String!
+    measurement: Measurement!
+  ): MeasurementRange
   getMeasurementData(
     test_event_id: String!
     test_type: String!
@@ -62,9 +64,16 @@ type Query {
     year: Int!
     month: Int!
     day: Int!
-  ): [Datapoint]
-
-  # test: String
+  ): MeasurementRecord
+  downloadTestEventDetails(
+    test_event_id: String!
+    patient_id: String!
+    year: Int!
+    month: Int!
+    day: Int!
+    patient_name: String
+    test_type: Test!
+  ): String
 }
 
 type Mutation {
@@ -104,6 +113,12 @@ type TestEvent {
   end_time: String
 }
 
+# type MeasurementRange {
+#   date: String!
+#   min: Float!
+#   max: Float!
+# }
+
 type Datapoint {
   ts: String!
   ax: Float
@@ -115,6 +130,25 @@ type Datapoint {
   mx: Float
   my: Float
   mz: Float
+}
+
+type MeasurementRecord {
+  ts: [String]
+  val: [Float]
+}
+
+type MeasurementRange {
+  min: [String]
+  max: [String]
+  year: [String]
+  month: [String]
+  day: [String]
+  movement: [String]
+}
+
+enum Metric {
+  avg
+  range
 }
 
 enum SortDirection {

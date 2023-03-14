@@ -290,6 +290,25 @@ export default function TestEventsTable({
     // setSelected(newSelected);
   };
 
+  const handleCheck = (event, test_event_id) => {
+    console.log("in handlechecked");
+    const selectedIndex = selected.indexOf(test_event_id);
+    let newSelected = [];
+    if (selectedIndex === -1) {
+      newSelected = newSelected.concat(selected, test_event_id);
+    } else if (selectedIndex === 0) {
+      newSelected = newSelected.concat(selected.slice(1));
+    } else if (selectedIndex === selected.length - 1) {
+      newSelected = newSelected.concat(selected.slice(0, -1));
+    } else if (selectedIndex > 0) {
+      newSelected = newSelected.concat(
+        selected.slice(0, selectedIndex),
+        selected.slice(selectedIndex + 1)
+      );
+    }
+    setSelected(newSelected);
+  };
+
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
@@ -334,17 +353,17 @@ export default function TestEventsTable({
             {stableSort(rows, getComparator(order, orderBy))
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((row, index) => {
-                const isItemSelected = isSelected(row.name);
+                const isItemSelected = isSelected(row.test_event_id);
                 const labelId = `enhanced-table-checkbox-${index}`;
 
                 return (
                   <TableRow
                     hover
-                    onClick={(event) => handleClick(event, row.test_event_id)}
+                    // onClick={(event) => handleClick(event, row.test_event_id)}
                     role="checkbox"
                     aria-checked={isItemSelected}
                     tabIndex={-1}
-                    key={row.name}
+                    key={row.test_event_id}
                     selected={isItemSelected}
                     align={"left"}
                   >
@@ -352,6 +371,9 @@ export default function TestEventsTable({
                       <Checkbox
                         color="primary"
                         checked={isItemSelected}
+                        onClick={(event) =>
+                          handleCheck(event, row.test_event_id)
+                        }
                         inputProps={{
                           "aria-labelledby": labelId,
                         }}
@@ -382,7 +404,12 @@ export default function TestEventsTable({
                         ? "Calculating score ..."
                         : row.balance_score}
                     </TableCell>
-                    <TableCell align="left">{row.test_type}</TableCell>
+                    <TableCell
+                      align="left"
+                      onClick={(event) => handleClick(event, row.test_event_id)}
+                    >
+                      {row.test_type}
+                    </TableCell>
                     <TableCell align="left">
                       {!row.start_time
                         ? "Test has not been completed"
