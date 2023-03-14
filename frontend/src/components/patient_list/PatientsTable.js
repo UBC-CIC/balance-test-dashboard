@@ -283,6 +283,8 @@ function DisplayRows({
         return (
           <TableRow>
             {headerColumns.map((column) => {
+              const obj_value = row[column.id];
+
               if (column.id === "see_patient_data") {
                 return (
                   <TableCell
@@ -294,9 +296,9 @@ function DisplayRows({
                     {column.id === "see_patient_data" && (
                       <Button
                         onClick={() => {
-                          navigate("/patient");
+                          // navigate("/patient");
                           // console.log("row", row);
-                          // navigate(`/patient:${row.user_id}`);
+                          navigate(`/patient:${row.user_id}`);
                         }}
                       >
                         See Patient Data
@@ -304,10 +306,35 @@ function DisplayRows({
                     )}
                   </TableCell>
                 );
-              } else {
-                const obj_value = row[column.id];
-
-                if (column.id === "last_test_score") {
+              } else if (column.id === "patient_name") {
+                let manualCreateBool = true; //change when the database stuff has this boolean
+                if (manualCreateBool == true) {
+                  return (
+                    <TableCell
+                      variant="body"
+                      key={column.id}
+                      align="left"
+                      sx={{ height: "20px", whiteSpace: "nowrap", color: '#1976d2' }}
+                    >
+                      {obj_value}
+                    </TableCell>
+                  );
+                  
+                } else {
+                  return (
+                    <TableCell
+                      variant="body"
+                      key={column.id}
+                      align="left"
+                      sx={{ height: "20px", whiteSpace: "nowrap", color: 'black' }}
+                    >
+                      {obj_value}
+                    </TableCell>
+                  );
+                }
+              
+              } else if (column.id === "last_test_score") {
+                  
                   return (
                     <TableCell
                       variant="body"
@@ -338,29 +365,29 @@ function DisplayRows({
                       {obj_value}
                     </TableCell>
                   );
-                } else {
-                  return (
-                    <TableCell
-                      variant="body"
-                      key={column.id}
-                      align="left"
-                      sx={{ height: "20px", whiteSpace: "nowrap" }}
-                    >
-                      {column.label === "Movement Tests"
-                        ? obj_value + " Tests Assigned "
-                        : obj_value}
-                      {column.label === "Movement Tests" && (
-                        <ManageTests
-                          rowNum={patientDataRowsArr.indexOf(row)}
-                          user_id={row.user_id}
-                          patientDataRowsArr={patientDataRowsArr}
-                          updatePatientDataRowsArr={updatePatientDataRowsArr}
-                        />
-                      )}
-                    </TableCell>
-                  );
-                }
+              } else {
+                return (
+                  <TableCell
+                    variant="body"
+                    key={column.id}
+                    align="left"
+                    sx={{ height: "20px", whiteSpace: "nowrap" }}
+                  >
+                    {column.label === "Movement Tests"
+                      ? obj_value + " Tests Assigned "
+                      : obj_value}
+                    {column.label === "Movement Tests" && (
+                      <ManageTests
+                        rowNum={patientDataRowsArr.indexOf(row)}
+                        user_id={row.user_id}
+                        patientDataRowsArr={patientDataRowsArr}
+                        updatePatientDataRowsArr={updatePatientDataRowsArr}
+                      />
+                    )}
+                  </TableCell>
+                );
               }
+              
             })}
           </TableRow>
         );
