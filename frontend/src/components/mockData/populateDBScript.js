@@ -63,7 +63,7 @@ function handleExecute() {
   //   graphqlOperation(createAndAssignTest, {
   //     test_event_id: v4(),
   //     patient_id: "217016f5-3dbf-41b3-8438-b414c2a95f0d",
-  //     test_type: "sit to stand",
+  //     test_type: "sit-to-stand",
   //   })
   // ).then((res) => {
   //   console.log(res);
@@ -75,14 +75,14 @@ function handleExecute() {
   //   graphqlOperation(createAndAssignTest, {
   //     test_event_id: v4(),
   //     patient_id: "795e8a28-751d-4c96-9574-4a55d4e97b22",
-  //     test_type: "sit to stand",
+  //     test_type: "sit-to-stand",
   //   })
   // ).then((res) => console.log(res));
   // API.graphql(
   //   graphqlOperation(putTestResult, {
   //     test_event_id: v4(),
   //     patient_id: "217016f5-3dbf-41b3-8438-b414c2a95f0d",
-  //     test_type: "sit to stand",
+  //     test_type: "sit-to-stand",
   //   })
   // ).then((res) => {
   //   console.log(res);
