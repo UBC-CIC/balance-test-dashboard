@@ -17,11 +17,11 @@ export default function SearchForPatients(props) {
 
     const { patientDataRowsArr, updatePatientDataRowsArr, searchResults, setSearchResults, setTablePage } = props;
 
+    console.log("SearchForPatient patient arr: ",patientDataRowsArr);
     let patientNamesArr = patientDataRowsArr.map((patientDataRow) => (patientDataRow.patient_name.trim()))
     const uniquePatientNamesArr = [...new Set(patientNamesArr)].sort();
-
+    
     const handlePatientNameInput = (event, value) => {
-        //change this
         if (value != null) {
             setInputName(value);
 
@@ -57,7 +57,7 @@ export default function SearchForPatients(props) {
                 autoSelect
                 clearIcon={""}
                 noOptionsText='No Patients in the Table'
-                groupBy={(option) => (option.trim().toUpperCase()[0])}
+                groupBy={(option) => (option.trim()[0])}
                 options={uniquePatientNamesArr}
                 onChange={handlePatientNameInput}
                 ListboxProps={{style: {maxHeight: 400, overflow: 'auto' }}}

@@ -14,7 +14,7 @@ import TableRow from "@mui/material/TableRow";
 
 import "./PatientsTable.css";
 import AddPatientFullModal from "./AddPatient";
-import ManageTests from "./ManageTests";
+import { ManageTests, retrieveAssignedTests } from "./ManageTests";
 import { useNavigate } from "react-router";
 import SearchForPatients from "./FindPatients";
 
@@ -269,7 +269,7 @@ function DisplayRows({
         <TableCell colSpan={headerColumns.length} sx={{ textAlign: "center" }}>
           {!loading
             ? "No Patients Found - Add a Patient."
-            : "Loading patients..."}
+            : "Loading Patients..."}
         </TableCell>
       </TableRow>
     );
@@ -487,6 +487,7 @@ function DisplaySearchResults({
 export function PatientsTable({ careProviderId }) {
   let data = [];
   // let data = testRows;
+  careProviderId = 1;
 
   const [patientDataRowsArr, updatePatientDataRowsArr] = React.useState(data);
 
@@ -507,7 +508,7 @@ export function PatientsTable({ careProviderId }) {
       console.log("in fetchdata try block");
       let response = await API.graphql(
         graphqlOperation(getPatientsForCareprovider, {
-          care_provider_id: 1, //careProviderId,
+          care_provider_id: careProviderId
         })
       );
 
@@ -536,15 +537,29 @@ export function PatientsTable({ careProviderId }) {
         });
         console.log("res2", res2);
 
-        let lastMovementAssigned = res2 == null ? '-' : (res2.data.getTestEvents.length == 0 ? '-' : res2.data.getTestEvents[0]?.test_type);
+        let lastMovementAssigned = res2 == null ? '-' : (res2.data.getTestEvents.length == 0 ? '-' : (res2.data.getTestEvents[0].test_type == null ? '-' : res2.data.getTestEvents[0].test_type));
+        let lastScore = res2 == null ? '-' : (res2.data.getTestEvents.length == 0 ? '-' : (res2.data.getTestEvents[0].balance_score == null ? '-' : res2.data.getTestEvents[0].balance_score));
 
-        data.push({
-          patient_name: patientsInfo[p].name,
-          user_id: patientsInfo[p].patient_id,
-          assigned_test_num: res1.data.getPatientAssignedTests.length,
-          last_movement_tested: lastMovementAssigned, //res2.data.getTestEvents[0]?.test_type,
-          last_test_score: '-', //res2.data.getTestEvents[0]?.balance_score,
+        await retrieveAssignedTests(patientsInfo[p].patient_id).then((checkbox_obj) => {
+          data.push({
+            patient_name: patientsInfo[p].name,
+            user_id: patientsInfo[p].patient_id,
+            assigned_test_num: res1.data.getPatientAssignedTests.length,
+            last_movement_tested: lastMovementAssigned, 
+            last_test_score: lastScore,
+            movements_assigned: checkbox_obj
+          });
         });
+
+        // data.push({
+        //   patient_name: patientsInfo[p].name,
+        //   user_id: patientsInfo[p].patient_id,
+        //   assigned_test_num: res1.data.getPatientAssignedTests.length,
+        //   last_movement_tested: lastMovementAssigned, 
+        //   last_test_score: lastScore,
+        //   movements_assigned: {}
+        // });
+
       }
       console.log("data", data);
       setLoading(false);
@@ -561,7 +576,7 @@ export function PatientsTable({ careProviderId }) {
     fetchData().then((data) => updatePatientDataRowsArr(data));
 
     // data = testRows;
-    updatePatientDataRowsArr(data);
+    // updatePatientDataRowsArr(data);
   }, []);
 
   const handleChangeRowsPerPage = (event) => {
@@ -573,7 +588,7 @@ export function PatientsTable({ careProviderId }) {
   if (searchResults.length > 0) {
     paginationCount = searchResults.length;
   }
-
+    
   return (
     <Box
       sx={{
@@ -587,6 +602,7 @@ export function PatientsTable({ careProviderId }) {
         <AddPatientFullModal
           patientDataRowsArr={patientDataRowsArr}
           updatePatientDataRowsArr={updatePatientDataRowsArr}
+          careProviderId={careProviderId}
         />
         <SearchForPatients
           patientDataRowsArr={patientDataRowsArr}

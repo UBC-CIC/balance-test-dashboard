@@ -9,13 +9,15 @@ import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
 
 import { v4 as uuidv4, v5 as uuidv5 } from "uuid";
+import { initMovementsAssignedObj, retrieveAssignedTests } from './ManageTests';
 
 import { Amplify, API, graphqlOperation } from "aws-amplify";
 import awsconfig from "../../aws-exports";
-import { getAllPatients, getTestEvents } from "../../graphql/queries";
+import { getAllPatients, getPatientAssignedTests, getTestEvents } from "../../graphql/queries";
+import { createPatient, addPatientToCareProvider } from "../../graphql/mutations";
 Amplify.configure(awsconfig);
 
-const searchPopOutData = [
+let searchPopOutData = [
     {
         user_id: 19285239,
         patient_name: "John Doe",
@@ -46,48 +48,107 @@ const searchPopOutData = [
       }
 ]
 
-//may need to remake format depending on how the data is retrieved
-
 function createPatientInfoObj(patientName) {
     console.log("New Patient Name: " + patientName);
 
     const newUserID = uuidv5(patientName, uuidv4()); //make a uuid with a name and random uuid
 
-    let newPatientObj = {
+    let newPatientObj = {};
+    let movementsAssignedObj = initMovementsAssignedObj();
+
+    newPatientObj = {
         user_id: newUserID,
         patient_name: patientName,
         assigned_test_num: 0,
         last_movement_tested: '-',
-        last_test_score: '-'
+        last_test_score: '-',
+        movements_assigned: movementsAssignedObj,
     };
-    // let newPatientObj = //retrieve data from array, or figure out how to get index of data
-    
     return newPatientObj;
 }
 
-//remake this when you have retrieved data from AWS
-function retrievePatientInfo(patientName, userID) {
+async function retrievePatientInfo(patientName, userID) {
     console.log("Added Patient from DB: " + patientName + " " + userID);
-    let newPatientObj = {
-        user_id: userID,
-        patient_name: patientName,
-        assigned_test_num: 0,
-        last_movement_tested: '-',
-        last_test_score: '-'
-    };
-    
-    return newPatientObj;
+    let newPatientObj = {};
+
+    try {
+        console.log("in retrievePatientInfo");
+
+        let res1 = await API.graphql(
+            graphqlOperation(getPatientAssignedTests, {
+                patient_id: userID
+            })
+        );
+        console.log("res1_addPatient", res1);
+
+        let res2 = await API.graphql(
+            graphqlOperation(getTestEvents, {
+                patient_id: userID,
+                sort: "desc",
+                count: 1
+            })
+        ).catch((res) => {
+            if (res == null) {
+                return 0;
+            }
+        });
+        console.log("res2_addPatient", res2);
+
+        let lastMovementAssigned = res2 == null ? '-' : (res2.data.getTestEvents.length == 0 ? '-' : res2.data.getTestEvents[0]?.test_type);
+        let balanceScore = res2 == null ? '-' : (res2.data.getTestEvents.length == 0 ? '-' : res2.data.getTestEvents[0]?.balance_score);
+        let lastScore = balanceScore == null ? '-' : balanceScore;
+
+        console.log("last score: ", balanceScore)
+
+        await retrieveAssignedTests(userID).then((checkbox_obj) => {
+            newPatientObj = {
+                patient_name: patientName,
+                user_id: userID,
+                assigned_test_num: res1.data.getPatientAssignedTests.length,
+                last_movement_tested: lastMovementAssigned, 
+                last_test_score: lastScore,
+                movements_assigned: checkbox_obj
+            };
+        });
+
+        console.log("Patient From DB", newPatientObj);
+
+        return newPatientObj;
+
+    } catch (err) {
+        console.log(err);
+        return {};
+    }
+      
 }
 
+async function assignToCareprovider(careProviderId, user_id) {
+    try {
+        let response = await API.graphql(
+            graphqlOperation(addPatientToCareProvider, {
+                care_provider_id: careProviderId,
+                patient_id: user_id
+            })
+        );
+        
+        console.log("addPatientToCareProvider: ", response);
+
+    } catch (err) {
+        console.log(err);
+    }
+    
+}
 
 function SearchPatient(props) {
     const [inputName, setInputName] = React.useState("");
     const [inputInfo, setInputInfo] = React.useState({});
     const [addPatientDisabled, setAddPatientDisabled] = React.useState(true);
-    const { patientDataRowsArr, updatePatientDataRowsArr, setAddPatientModalOpen, searchPatientModalOpen, setSearchPatientModalOpen } = props;
+    const { patientDataRowsArr, updatePatientDataRowsArr, setAddPatientModalOpen, searchPatientModalOpen, setSearchPatientModalOpen, searchData, careProviderId } = props;
     
     let currPatientNamesArr = patientDataRowsArr.map((patientDataRow) => (patientDataRow.patient_name));
     let currUserIDArr = patientDataRowsArr.map((patientDataRow) => (patientDataRow.user_id));
+
+    console.log("In SearchPatient: ", searchData);
 
     const handleCloseModal = () => {
         setSearchPatientModalOpen(false)
@@ -121,13 +182,15 @@ function SearchPatient(props) {
         console.log("Input Info: " + inputInfo.patient_name + " " + inputInfo.user_id)
 
         if (!(currPatientNamesArr.includes(inputName) && currUserIDArr.includes(inputInfo.user_id))) {
-            let retrievedPatientInfo = retrievePatientInfo(inputInfo.patient_name, inputInfo.user_id)
-            patientDataRowsArr.push(retrievedPatientInfo);
-
-            let updatedArr = patientDataRowsArr.slice(); //make copy of array
-            updatePatientDataRowsArr(updatedArr); //add to table by changing state
-
-            console.log("Unique Entry of: " + inputName);
+            
+            retrievePatientInfo(inputInfo.patient_name, inputInfo.user_id).then((patientInfo) => {
+                
+                assignToCareprovider(careProviderId, inputInfo.user_id).then(() => {
+                    patientDataRowsArr.push(patientInfo);
+                    updatePatientDataRowsArr(patientDataRowsArr.slice());
+                    console.log("Unique Entry of: " + inputName);
+                })
+            });
         }
         
         setAddPatientDisabled(true);
@@ -150,7 +213,7 @@ function SearchPatient(props) {
                         disableClearable
                         noOptionsText='No Patients Listed'
                         getOptionLabel={(option) => (option.patient_name + " (ID: " + option.user_id + ")")}
-                        options={searchPopOutData}
+                        options={searchData}
                         onChange={handlePatientNameInput}
                         ListboxProps={{style: {maxHeight: 200, overflow: 'auto' }}}
                         renderInput={(params) => (
@@ -183,7 +246,27 @@ function SearchPatient(props) {
 function ManualAddPatient(props) {
     const [inputName, setInputName] = React.useState("");
     const [addPatientDisabled, setAddPatientDisabled] = React.useState(true);
-    const { patientDataRowsArr, updatePatientDataRowsArr, addPatientModalOpen, setAddPatientModalOpen, setSearchPatientModalOpen } = props;
+    const { patientDataRowsArr, updatePatientDataRowsArr, addPatientModalOpen, setAddPatientModalOpen, setSearchPatientModalOpen, careProviderId } = props;
+
+    async function manuallyAddPatientToDatabase(patient_name, user_id) {
+
+        try {
+            let response = await API.graphql(
+                graphqlOperation(createPatient, {
+                    name: patient_name,
+                    patient_id: user_id
+                    //manuallyCreated: true
+                })
+            );
+            
+            console.log("createPatient: ", response);
+            return true;
+
+        } catch (err) {
+            console.log(err);
+            return false;
+        }   
+    }
 
     const handleCloseModal = () => {
         setSearchPatientModalOpen(false)
@@ -214,16 +297,24 @@ function ManualAddPatient(props) {
     // Modify the onClick function later for Add Patient button
     const handleAddPatientClick = () => {
         setAddPatientModalOpen(false);
-        console.log("Input: " + inputName);
 
         let newPatientObj = createPatientInfoObj(inputName);
-        
-        patientDataRowsArr.push(newPatientObj);
-        let updatedArr = patientDataRowsArr.slice(); //make copy of array
-        updatePatientDataRowsArr(updatedArr); //add to table by changing state
-        
-        console.log("New Patient Info: " + newPatientObj);
 
+        manuallyAddPatientToDatabase(newPatientObj['patient_name'], newPatientObj['user_id']).then((bool) => {
+
+            if (bool) {
+                assignToCareprovider(careProviderId, newPatientObj['user_id']).then(() => {
+                    patientDataRowsArr.push(newPatientObj);
+                    let updatedArr = patientDataRowsArr.slice(); //make copy of array
+                    updatePatientDataRowsArr(updatedArr); //add to table by changing state
+                });
+                
+            } else {
+                setAddPatientModalOpen(true);
+
+            }
+        });
+        
         setAddPatientDisabled(true);
         setInputName("");
     }
@@ -258,16 +349,44 @@ function ManualAddPatient(props) {
     );
 }
 
-export default function AddPatientFullModal({ patientDataRowsArr, updatePatientDataRowsArr }) {
+export default function AddPatientFullModal({ patientDataRowsArr, updatePatientDataRowsArr, careProviderId }) {
     const [searchPatientModalOpen, setSearchPatientModalOpen] = React.useState(false);
     const [addPatientModalOpen, setAddPatientModalOpen] = React.useState(false);
+    const [searchData, setSearchData] = React.useState([]);
+
+    // searchData = searchPopOutData;
 
     // const handleOpenAddPatientModal = () => {
     //     setSearchPatientModalOpen(false)
     //     setAddPatientModalOpen(true);
     // }
 
+    async function retrieveAllPatients() {
+        let response = await API.graphql(
+            graphqlOperation(getAllPatients)
+        );
+
+        console.log("getAllPatients: ", response);
+        let patientSearchRow = {};
+        let allPatientsArr = response.data.getAllPatients;
+        let responseData = [];
+
+        for (let i = 0; i < allPatientsArr.length; i++) {
+            patientSearchRow = {
+                user_id: allPatientsArr[i]['patient_id'],
+                patient_name: allPatientsArr[i]['name']
+            }
+            responseData.push(patientSearchRow);
+        }
+        console.log("responseData ", responseData);
+        return responseData;
+    }
+
     const handleOpenSearchPatientModal = () => {
+        retrieveAllPatients().then((responseData) => {
+            setSearchData(responseData.slice());
+        });
+
         setAddPatientModalOpen(false);
         setSearchPatientModalOpen(true); 
     }
@@ -281,6 +400,8 @@ export default function AddPatientFullModal({ patientDataRowsArr, updatePatientD
                 setAddPatientModalOpen={setAddPatientModalOpen}
                 searchPatientModalOpen={searchPatientModalOpen}
                 setSearchPatientModalOpen={setSearchPatientModalOpen}
+                searchData={searchData}
+                careProviderId={careProviderId}
             />
             <ManualAddPatient 
                 patientDataRowsArr={patientDataRowsArr} 
@@ -288,6 +409,7 @@ export default function AddPatientFullModal({ patientDataRowsArr, updatePatientD
                 addPatientModalOpen={addPatientModalOpen} 
                 setAddPatientModalOpen={setAddPatientModalOpen}
                 setSearchPatientModalOpen={setSearchPatientModalOpen}
+                careProviderId={careProviderId}
             />
         </div>
     );
