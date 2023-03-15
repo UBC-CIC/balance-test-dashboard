@@ -17,6 +17,7 @@ import AddPatientFullModal from "./AddPatient";
 import { ManageTests, retrieveAssignedTests } from "./ManageTests";
 import { useNavigate } from "react-router";
 import SearchForPatients from "./FindPatients";
+import Navbar from "../nav/Navbar";
 
 import { v4 as uuidv4 } from "uuid";
 
@@ -313,7 +314,7 @@ function DisplayRows({
                   </TableCell>
                 );
               } else if (column.id === "patient_name") {
-                let manualCreateBool = true; //change when the database stuff has this boolean
+                let manualCreateBool = false; //change when the database stuff has this boolean
                 if (manualCreateBool == true) {
                   return (
                     <TableCell
@@ -693,5 +694,6 @@ export function PatientsTable({ careProviderId }) {
         </TableContainer>
       </Box>
     </Box>
+    
   );
 }

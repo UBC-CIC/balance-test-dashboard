@@ -15,6 +15,7 @@ import { TestDetails } from "./pages/TestDetails";
 // import "@aws-amplify/ui-react/styles.css";
 import SignIn from "./components/nav/SignIn";
 import SignUp from "./components/nav/SignUp";
+import AuthenticationPage from "./pages/Authentication";
 import { PatientsTable } from "./components/patient_list/PatientsTable";
 import {
   Routes,
@@ -27,9 +28,10 @@ import {
   Router,
   BrowserRouter,
 } from "react-router-dom";
+import React from "react";
 
 function App() {
-  // [authState, setAuthState] = useState();
+  const [authState, setAuthState] = React.useState(false);
 
   // return authState === AuthState.SignedIn && user ? (
   //   <ThemeProvider theme={theme}>
@@ -76,12 +78,13 @@ function App() {
   // return <ScoreChart />;
   return (
     <BrowserRouter>
+      <Navbar />
       <ThemeProvider theme={theme}>
-        <Navbar />
+        
 
         <Container maxWidth="lg">
           <Routes>
-            {/* <Route path="/" element={<SignIn />}> */}
+            <Route path="/auth" element={<AuthenticationPage />} />
             <Route index element={<PatientsTable careProviderId="1" />} />
             <Route
               path="patient/:patient_id"
