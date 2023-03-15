@@ -14,9 +14,10 @@ import TableRow from "@mui/material/TableRow";
 
 import "./PatientsTable.css";
 import AddPatientFullModal from "./AddPatient";
-import ManageTests from "./ManageTests";
+import { ManageTests, retrieveAssignedTests } from "./ManageTests";
 import { useNavigate } from "react-router";
 import SearchForPatients from "./FindPatients";
+import Navbar from "../nav/Navbar";
 
 import { v4 as uuidv4 } from "uuid";
 
@@ -275,7 +276,7 @@ function DisplayRows({
         <TableCell colSpan={headerColumns.length} sx={{ textAlign: "center" }}>
           {!loading
             ? "No Patients Found - Add a Patient."
-            : "Loading patients..."}
+            : "Loading Patients..."}
         </TableCell>
       </TableRow>
     );
@@ -289,6 +290,8 @@ function DisplayRows({
         return (
           <TableRow>
             {headerColumns.map((column) => {
+              const obj_value = row[column.id];
+
               if (column.id === "see_patient_data") {
                 return (
                   <TableCell
@@ -300,9 +303,9 @@ function DisplayRows({
                     {column.id === "see_patient_data" && (
                       <Button
                         onClick={() => {
-                          navigate("/patient");
+                          // navigate("/patient");
                           // console.log("row", row);
-                          navigate(`/patient/${row.user_id}`);
+                          navigate(`/patient:${row.user_id}`);
                         }}
                       >
                         See Patient Data
@@ -310,10 +313,35 @@ function DisplayRows({
                     )}
                   </TableCell>
                 );
-              } else {
-                const obj_value = row[column.id];
-
-                if (column.id === "last_test_score") {
+              } else if (column.id === "patient_name") {
+                let manualCreateBool = false; //change when the database stuff has this boolean
+                if (manualCreateBool == true) {
+                  return (
+                    <TableCell
+                      variant="body"
+                      key={column.id}
+                      align="left"
+                      sx={{ height: "20px", whiteSpace: "nowrap", color: '#1976d2' }}
+                    >
+                      {obj_value}
+                    </TableCell>
+                  );
+                  
+                } else {
+                  return (
+                    <TableCell
+                      variant="body"
+                      key={column.id}
+                      align="left"
+                      sx={{ height: "20px", whiteSpace: "nowrap", color: 'black' }}
+                    >
+                      {obj_value}
+                    </TableCell>
+                  );
+                }
+              
+              } else if (column.id === "last_test_score") {
+                  
                   return (
                     <TableCell
                       variant="body"
@@ -344,29 +372,29 @@ function DisplayRows({
                       {obj_value}
                     </TableCell>
                   );
-                } else {
-                  return (
-                    <TableCell
-                      variant="body"
-                      key={column.id}
-                      align="left"
-                      sx={{ height: "20px", whiteSpace: "nowrap" }}
-                    >
-                      {column.label === "Movement Tests"
-                        ? obj_value + " Tests Assigned "
-                        : obj_value}
-                      {column.label === "Movement Tests" && (
-                        <ManageTests
-                          rowNum={patientDataRowsArr.indexOf(row)}
-                          user_id={row.user_id}
-                          patientDataRowsArr={patientDataRowsArr}
-                          updatePatientDataRowsArr={updatePatientDataRowsArr}
-                        />
-                      )}
-                    </TableCell>
-                  );
-                }
+              } else {
+                return (
+                  <TableCell
+                    variant="body"
+                    key={column.id}
+                    align="left"
+                    sx={{ height: "20px", whiteSpace: "nowrap" }}
+                  >
+                    {column.label === "Movement Tests"
+                      ? obj_value + " Tests Assigned "
+                      : obj_value}
+                    {column.label === "Movement Tests" && (
+                      <ManageTests
+                        rowNum={patientDataRowsArr.indexOf(row)}
+                        user_id={row.user_id}
+                        patientDataRowsArr={patientDataRowsArr}
+                        updatePatientDataRowsArr={updatePatientDataRowsArr}
+                      />
+                    )}
+                  </TableCell>
+                );
               }
+              
             })}
           </TableRow>
         );
@@ -418,7 +446,7 @@ function DisplaySearchResults({
                         onClick={() => {
                           // console.log("row.patient_id", row.patient_id);
                           // navigate(`/patient:${row.patient_id}`);
-                          navigate(`/patient/${row.patient_id}`);
+                          navigate(`/patient`);
                         }}
                       >
                         See Patient Data
@@ -493,6 +521,7 @@ function DisplaySearchResults({
 export function PatientsTable({ careProviderId }) {
   let data = [];
   // let data = testRows;
+  careProviderId = 1;
 
   const [patientDataRowsArr, updatePatientDataRowsArr] = React.useState(data);
 
@@ -513,7 +542,7 @@ export function PatientsTable({ careProviderId }) {
       console.log("in fetchdata try block");
       let response = await API.graphql(
         graphqlOperation(getPatientsForCareprovider, {
-          care_provider_id: 1, //careProviderId,
+          care_provider_id: careProviderId
         })
       );
 
@@ -521,9 +550,10 @@ export function PatientsTable({ careProviderId }) {
       console.log("patientsInfo", patientsInfo);
 
       for (let p = 0; p < patientsInfo.length; p++) {
+
         let res1 = await API.graphql(
           graphqlOperation(getPatientAssignedTests, {
-            patient_id: patientsInfo[p].patient_id,
+            patient_id: patientsInfo[p].patient_id
           })
         );
         console.log("res1", res1);
@@ -532,7 +562,7 @@ export function PatientsTable({ careProviderId }) {
           graphqlOperation(getTestEvents, {
             patient_id: patientsInfo[p].patient_id,
             sort: "desc",
-            count: 1,
+            count: 1
           })
         ).catch((res) => {
           if (res == null) {
@@ -541,24 +571,34 @@ export function PatientsTable({ careProviderId }) {
         });
         console.log("res2", res2);
 
-        let lastMovementAssigned =
-          res2 == null
-            ? "-"
-            : res2.data.getTestEvents.length == 0
-            ? "-"
-            : res2.data.getTestEvents[0]?.test_type;
+        let lastMovementAssigned = res2 == null ? '-' : (res2.data.getTestEvents.length == 0 ? '-' : (res2.data.getTestEvents[0].test_type == null ? '-' : res2.data.getTestEvents[0].test_type));
+        let lastScore = res2 == null ? '-' : (res2.data.getTestEvents.length == 0 ? '-' : (res2.data.getTestEvents[0].balance_score == null ? '-' : res2.data.getTestEvents[0].balance_score));
 
-        data.push({
-          patient_name: patientsInfo[p].name,
-          user_id: patientsInfo[p].patient_id,
-          assigned_test_num: res1.data.getPatientAssignedTests.length,
-          last_movement_tested: lastMovementAssigned, //res2.data.getTestEvents[0]?.test_type,
-          last_test_score: "-", //res2.data.getTestEvents[0]?.balance_score,
+        await retrieveAssignedTests(patientsInfo[p].patient_id).then((checkbox_obj) => {
+          data.push({
+            patient_name: patientsInfo[p].name,
+            user_id: patientsInfo[p].patient_id,
+            assigned_test_num: res1.data.getPatientAssignedTests.length,
+            last_movement_tested: lastMovementAssigned, 
+            last_test_score: lastScore,
+            movements_assigned: checkbox_obj
+          });
         });
+
+        // data.push({
+        //   patient_name: patientsInfo[p].name,
+        //   user_id: patientsInfo[p].patient_id,
+        //   assigned_test_num: res1.data.getPatientAssignedTests.length,
+        //   last_movement_tested: lastMovementAssigned, 
+        //   last_test_score: lastScore,
+        //   movements_assigned: {}
+        // });
+
       }
       console.log("data", data);
       setLoading(false);
       return data;
+      
     } catch (err) {
       console.log(err);
       return new Promise((resolve, reject) => reject(err));
@@ -570,7 +610,7 @@ export function PatientsTable({ careProviderId }) {
     fetchData().then((data) => updatePatientDataRowsArr(data));
 
     // data = testRows;
-    updatePatientDataRowsArr(data);
+    // updatePatientDataRowsArr(data);
   }, []);
 
   const handleChangeRowsPerPage = (event) => {
@@ -582,7 +622,7 @@ export function PatientsTable({ careProviderId }) {
   if (searchResults.length > 0) {
     paginationCount = searchResults.length;
   }
-
+    
   return (
     <Box
       sx={{
@@ -596,6 +636,7 @@ export function PatientsTable({ careProviderId }) {
         <AddPatientFullModal
           patientDataRowsArr={patientDataRowsArr}
           updatePatientDataRowsArr={updatePatientDataRowsArr}
+          careProviderId={careProviderId}
         />
         <SearchForPatients
           patientDataRowsArr={patientDataRowsArr}
@@ -653,5 +694,6 @@ export function PatientsTable({ careProviderId }) {
         </TableContainer>
       </Box>
     </Box>
+    
   );
 }

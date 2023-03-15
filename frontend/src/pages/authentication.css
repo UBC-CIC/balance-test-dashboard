@@ -1,0 +1,5 @@
+@import "@aws-amplify/ui-react/styles.css";
+
+.amplify-button--primary {
+    background-color: #1976d2
+}
