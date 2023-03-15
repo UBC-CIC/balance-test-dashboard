@@ -14,16 +14,17 @@ import { util } from "@aws-appsync/utils";
 export function request(ctx) {
   console.log("request ctx", ctx);
   const {
-    arguments: { patientId, from_time, to_time, metrics },
+    arguments: { patientId, from_time, to_time, stat, movement },
   } = ctx;
 
   let inputToSql = {
     avg: "avg(balance_score)",
     range: "max(balance_score)-min(balance_score)",
   };
+  let movementSelectionSql = !movement ? "" : `and test_type='${movement}'`;
   return {
     payload: {
-      sql: `select ${inputToSql[metrics]} as metric from "TestEvent" where patient_id='${patientId}' and start_time>='${from_time}' and start_time<='${to_time}'`,
+      sql: `select ${inputToSql[stat]} as stat from "TestEvent" where patient_id='${patientId}' ${movementSelectionSql} and start_time>='${from_time}' and start_time<='${to_time}' and balance_score is not null`,
     },
   };
 }
@@ -44,5 +45,5 @@ export function request(ctx) {
 export function response(ctx) {
   console.log("response ctx", ctx);
   let res = ctx.prev.result.body;
-  return res[0].metric;
+  return res[0].stat;
 }
