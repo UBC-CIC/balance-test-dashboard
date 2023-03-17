@@ -41,6 +41,13 @@ export function TestDetails() {
   let navigate = useNavigate();
 
   const fetchData = async () => {
+    let reslambdaauth = await API.graphql({
+      query: getTestEventById,
+      variables: { input: { test_event_id: test_event_id } },
+      authMode: "AWS_LAMBDA",
+      authToken: "1",
+    });
+    console.log("reslambdaauth", reslambdaauth);
     let resPatient = await API.graphql(
       graphqlOperation(getPatientById, { patient_id: patient_id })
     );
@@ -48,7 +55,7 @@ export function TestDetails() {
     let resTest = await API.graphql(
       graphqlOperation(getTestEventById, { test_event_id: test_event_id })
     );
-    console.log("resTest", resTest);
+
     setTestEvent(resTest.data.getTestEventById);
   };
 

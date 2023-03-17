@@ -29,6 +29,7 @@ import { useNavigate, useParams } from "react-router";
 import {
   getPatientById,
   getScoreMetricsOverTime,
+  getScoreStatsOverTime,
   getTestEvents,
 } from "../../graphql/queries";
 
@@ -50,29 +51,34 @@ function PatientPage() {
   const [fromDate, setFromDate] = React.useState(dayjs().subtract(1, "month"));
   const [toDate, setToDate] = React.useState(dayjs());
   const [measurementSelected, setMeasurementSelected] = React.useState(null);
+  const [weeklyAvg, setWeeklyAvg] = React.useState(null);
+  const [monthlyAvg, setMonthlyAvg] = React.useState(null);
 
   let navigate = useNavigate();
   const [data, setData] = React.useState([]);
 
   const fetchData = async () => {
     // get analytics
-    // console.log("getweeklyavginput", {
-    //   patientId: patient_id,
-    //   from_time: dayjs().subtract(7, "day").format("YYYY-MM-DD hh:mm:ss"),
-    //   to_time: dayjs().format("YYYY-MM-DD hh:mm:ss"),
-    //   metrics: "avg",
-    // });
 
-    // let resWeeklyAvg = await API.graphql(
-    //   graphqlOperation(getScoreMetricsOverTime, {
-    //     patientId: patient_id,
-    //     from_time: dayjs().subtract(7, "day").format("YYYY-MM-DD hh:mm:ss"),
-    //     to_time: dayjs().format("YYYY-MM-DD hh:mm:ss"),
-    //     metrics: "avg",
-    //   })
-    // );
+    let resWeeklyAvg = await API.graphql(
+      graphqlOperation(getScoreStatsOverTime, {
+        patientId: patient_id,
+        from_time: dayjs().subtract(7, "day").format("YYYY-MM-DD hh:mm:ss"),
+        to_time: dayjs().format("YYYY-MM-DD hh:mm:ss"),
+        stat: "avg",
+      })
+    );
+    let resMonthlyAvg = await API.graphql(
+      graphqlOperation(getScoreStatsOverTime, {
+        patientId: patient_id,
+        from_time: dayjs().subtract(1, "month").format("YYYY-MM-DD hh:mm:ss"),
+        to_time: dayjs().format("YYYY-MM-DD hh:mm:ss"),
+        stat: "avg",
+      })
+    );
 
-    // console.log(resWeeklyAvg.data.getScoreMetricsOverTime);
+    setWeeklyAvg(Math.round(resWeeklyAvg.data.getScoreStatsOverTime));
+    setMonthlyAvg(Math.round(resMonthlyAvg.data.getScoreStatsOverTime));
 
     // query test events for the graph
     let resPatient = await API.graphql(
@@ -99,7 +105,13 @@ function PatientPage() {
     });
 
     console.log(resEventsGraph);
-    setData(resEventsGraph.data.getTestEvents);
+    setData(
+      resEventsGraph.data.getTestEvents
+      // .map((te) => ({
+      //   start_time: dayjs(te.start_time).format("YYYY MMM D"),
+      //   balance_score: te.balance_score,
+      // }))
+    );
     console.log("data", data);
   };
 
@@ -188,8 +200,8 @@ function PatientPage() {
           justifyContent="space-evenly"
           alignItems="flex-start"
         >
-          <AnalyticsCard title="7-day average" value={65} />
-          <AnalyticsCard title="monthly average" value={65} />
+          <AnalyticsCard title="7-day average" value={weeklyAvg} />
+          <AnalyticsCard title="monthly average" value={monthlyAvg} />
         </Grid>
         {/* graph */}
         <Grid item>
@@ -246,7 +258,10 @@ function PatientPage() {
               <ScoreChart
                 data={
                   movementTestSelected == "sit-to-stand"
-                    ? data
+                    ? data.map((te) => ({
+                        start_time: dayjs(te.start_time).format("YYYY MMM D"),
+                        balance_score: te.balance_score,
+                      }))
                     : scoreDataMapping[movementTestSelected].filter(
                         (i) =>
                           dayjs(i.date).isAfter(fromDate) &&

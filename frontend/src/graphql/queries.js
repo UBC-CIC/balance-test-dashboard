@@ -96,18 +96,20 @@ export const getAllAvailableTests = /* GraphQL */ `
     }
   }
 `;
-export const getScoreMetricsOverTime = /* GraphQL */ `
-  query GetScoreMetricsOverTime(
+export const getScoreStatsOverTime = /* GraphQL */ `
+  query GetScoreStatsOverTime(
     $patientId: String!
     $from_time: String!
     $to_time: String!
-    $metrics: Metric!
+    $stat: Stat!
+    $movement: String
   ) {
-    getScoreMetricsOverTime(
+    getScoreStatsOverTime(
       patientId: $patientId
       from_time: $from_time
       to_time: $to_time
-      metrics: $metrics
+      stat: $stat
+      movement: $movement
     )
   }
 `;
