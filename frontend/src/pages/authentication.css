@@ -1,5 +1,9 @@
 @import "@aws-amplify/ui-react/styles.css";
 
+[data-amplify-authenticator] {
+    margin: 5%;
+}
+
 .amplify-button--primary {
     background-color: #1976d2
 }
