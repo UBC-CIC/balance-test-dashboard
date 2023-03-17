@@ -45,9 +45,27 @@ export const ScoreChart = ({ data }) => {
         <YAxis />
         {/* <Tooltip /> */}
         {/* <Legend /> */}
-        <ReferenceLine y={85} label="OK" stroke="green" position="start" />
-        <ReferenceLine y={60} label="Low" stroke="red" position="end" />
-        <ReferenceLine y={40} label="Very Low" stroke="red" position="end" />
+        <ReferenceLine
+          y={85}
+          label="OK"
+          stroke="green"
+          position="start"
+          strokeDasharray="3 3"
+        />
+        <ReferenceLine
+          y={60}
+          label="Low"
+          stroke="orange"
+          position="end"
+          strokeDasharray="3 3"
+        />
+        <ReferenceLine
+          y={40}
+          label="Very Low"
+          stroke="red"
+          position="end"
+          strokeDasharray="3 3"
+        />
 
         <Line
           type="monotone"
@@ -174,7 +192,7 @@ export const RangeChart = ({ patientId, measurement }) => {
       labels: { trim: true, rotate: 15 },
       tickAmount: 6,
       type: "datetime",
-      tickPlacement: "on",
+      tickPlacement: "between",
     },
     yaxis: {
       decimalsInFloat: 2,
