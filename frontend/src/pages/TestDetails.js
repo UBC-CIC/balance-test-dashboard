@@ -21,7 +21,9 @@ import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import dayjs from "dayjs";
 import LoadingButton from "@mui/lab/LoadingButton";
-const { Amplify, API, graphqlOperation } = require("aws-amplify");
+import { GRAPHQL_AUTH_MODE } from "@aws-amplify/api";
+
+const { Amplify, API, graphqlOperation, Auth } = require("aws-amplify");
 const awsconfig = require("../aws-exports");
 const {
   getPatientById,
@@ -41,11 +43,20 @@ export function TestDetails() {
   let navigate = useNavigate();
 
   const fetchData = async () => {
+    let sesh = await Auth.currentSession();
+    console.log("sesh", sesh);
+    let token = sesh.accessToken.jwtToken;
+    console.log("token", token);
     let reslambdaauth = await API.graphql({
       query: getTestEventById,
-      variables: { input: { test_event_id: test_event_id } },
-      authMode: "AWS_LAMBDA",
-      authToken: "1",
+      variables: { test_event_id: "2" },
+      authMode: GRAPHQL_AUTH_MODE.AWS_LAMBDA,
+      // authToken: `1`,
+
+      authToken: `prefix-${token}`,
+      // headers: {
+      //   Authorization: `Bearer {${token}}`,
+      // },
     });
     console.log("reslambdaauth", reslambdaauth);
     let resPatient = await API.graphql(
