@@ -50,20 +50,12 @@ export default function AuthenticationPage() {
           <Authenticator services={authServices}>
               {({ signOut, user}) => {
 
-                  console.log("User: ", user);
-
                   let userGroupArr = user["signInUserSession"]["accessToken"]["payload"]["cognito:groups"];
                   let user_id = user['username'];
 
                   if (userGroupArr.includes("care_provider_user")) {
-                      // navigate(`care_provider/${user_id}`);
-                      navigate('/patientTable')
-                      // return (
-                      //     <>
-                      //         <PatientsTable careProviderId={user_id} />
-                      //         <button onClick={signOut}>Sign out</button>
-                      //     </>
-                      // )
+                      navigate('/patientTable');
+                      
                   } else {
                       Auth.signOut(); 
                       setShowAccessDenied(true);
