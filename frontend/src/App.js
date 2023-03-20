@@ -9,9 +9,10 @@ import Execute from "./components/mockData/populateDBScript";
 import { Container } from "@mui/system";
 import Patient from "./pages/patient";
 import Navbar from "./components/nav/Navbar";
+import Box from "@mui/material/Box";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { TestDetails } from "./pages/TestDetails";
-// import { Authenticator } from "@aws-amplify/ui-react";
+import { Auth , Hub} from 'aws-amplify';
 // import "@aws-amplify/ui-react/styles.css";
 import SignIn from "./components/nav/SignIn";
 import SignUp from "./components/nav/SignUp";
@@ -22,6 +23,7 @@ import {
   Route,
   Link,
   useNavigate,
+  redirect,
   useLocation,
   Navigate,
   Outlet,
@@ -31,7 +33,7 @@ import {
 import React from "react";
 
 function App() {
-  const [authState, setAuthState] = React.useState(false);
+  const [loginState, setLoginState] = React.useState(false);
 
   // return authState === AuthState.SignedIn && user ? (
   //   <ThemeProvider theme={theme}>
@@ -76,52 +78,102 @@ function App() {
   // return <PatientsTable />;
   // return <EventsTable />;
   // return <ScoreChart />;
+
+  async function setAuthListener() {
+    Hub.listen('auth', (listenerData) => {
+      switch (listenerData.payload.event) {
+        case "signOut":
+          console.log("signOut")
+          setLoginState(false);
+          break;
+        case "signIn":
+          console.log("signIn")
+          setLoginState(true);
+          break;
+        default:
+          break;
+      }
+      
+    });
+  }
+
+  React.useEffect(() => {
+    console.log("Login state: ", loginState);
+    
+    const { userInfo } = Auth.currentAuthenticatedUser()
+                        .then((user) => {
+                          console.log("Checking current authentication user: ", user['username']);
+                          setLoginState(true);
+                      
+                        }).catch((err) => {
+                          setLoginState(false);
+                          console.log(err);
+                        });
+
+    setAuthListener();
+  }, [])
+  
   return (
-    <BrowserRouter>
-      <Navbar />
-      <ThemeProvider theme={theme}>
-        
+    <>
+      {loginState == true ? (
+        <BrowserRouter>
+          <Navbar loginState={loginState} setLoginState={setLoginState} />
+          <ThemeProvider theme={theme}>
+            
 
-        <Container maxWidth="lg">
-          <Routes>
-            <Route path="/auth" element={<AuthenticationPage />} />
-            <Route index element={<PatientsTable careProviderId="1" />} />
-            <Route
-              path="patient/:patient_id"
-              element={
-                <PatientPage
-                // 217016f5-3dbf-41b3-8438-b414c2a95f0d
-                // patient_id={"217016f5-3dbf-41b3-8438-b414c2a95f0d"}
-                // patient_name={"Albert Pham"}
+            <Container maxWidth="lg">
+              <Routes>
+                <Route path="/" element={<AuthenticationPage />} />
+                <Route index path="/patientTable" element={<PatientsTable />} />
+                <Route
+                  path="patient/:patient_id"
+                  element={
+                    <PatientPage
+                    // 217016f5-3dbf-41b3-8438-b414c2a95f0d
+                    // patient_id={"217016f5-3dbf-41b3-8438-b414c2a95f0d"}
+                    // patient_name={"Albert Pham"}
+                    />
+                  }
                 />
-              }
-            />
-            <Route
-              path="patientTable"
-              // 1 is current hard-coded care_provider_id
-              element={<PatientsTable careProviderId="1" />}
-            />
-            <Route path="signIn" element={<SignIn />} />
-            <Route path="signUp" element={<SignUp />} />
-            <Route
-              path="testDetails/:patient_id/:test_event_id"
-              element={<TestDetails />}
-              exact
-            />
-            <Route path="executeApi" element={<Execute />} />
+                {/* <Route path="signIn" element={<SignIn />} />
+                <Route path="signUp" element={<SignUp />} /> */}
+                <Route
+                  path="testDetails/:patient_id/:test_event_id"
+                  element={<TestDetails />}
+                  exact
+                />
+                <Route path="executeApi" element={<Execute />} />
 
-            {/* Using path="*"" means "match anything", so this route
-                acts like a catch-all for URLs that we don't have explicit
-                routes for. */}
-            <Route
-              path="*"
-              element={<div>Sorry, you've reached an unavailable page</div>}
-            />
-            {/* </Route> */}
-          </Routes>
-        </Container>
-      </ThemeProvider>
-    </BrowserRouter>
+                {/* Using path="*"" means "match anything", so this route
+                    acts like a catch-all for URLs that we don't have explicit
+                    routes for. */}
+                <Route
+                  path="*"
+                  element={<Box sx={{display: 'flex', justifyContent: 'center'}}>Sorry, you've reached an unavailable page</Box>}
+                />
+              </Routes>
+            </Container>
+          </ThemeProvider>
+        </BrowserRouter>
+      ) : (
+        <BrowserRouter>
+          <Navbar />
+          <ThemeProvider theme={theme}>
+            <Container maxWidth="lg">
+
+              <Routes>
+                <Route index path="/" element={<AuthenticationPage />} />
+                <Route
+                  path="*"
+                  element={<Box>Sorry, you've reached an unavailable page</Box>}
+                />
+              </Routes>
+
+            </Container>
+          </ThemeProvider>
+        </BrowserRouter>
+      )} 
+    </>
   );
 }
 

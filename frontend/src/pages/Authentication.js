@@ -3,7 +3,7 @@ import { Amplify, API, Auth, Hub, graphqlOperation } from 'aws-amplify';
 import React from 'react';
 import { NavBar } from '../components/nav/Navbar';
 import awsconfig from "../aws-exports";
-import { redirect, useNavigate } from "react-router-dom";
+import { redirect, useNavigate, Link } from "react-router-dom";
 import { PatientsTable } from "../components/patient_list/PatientsTable"
 import Signin from "../components/nav/SignIn";
 
@@ -19,6 +19,7 @@ Amplify.configure(awsconfig);
 export default function AuthenticationPage() {
 
     const [showAccessDenied, setShowAccessDenied] = React.useState(false);
+    const navigate = useNavigate();
 
     const handleDeniedClose = () => {
       setShowAccessDenied(false);
@@ -55,12 +56,14 @@ export default function AuthenticationPage() {
                   let user_id = user['username'];
 
                   if (userGroupArr.includes("care_provider_user")) {
-                      return (
-                          <>
-                              <PatientsTable careProviderId={user_id} />
-                              <button onClick={signOut}>Sign out</button>
-                          </>
-                      )
+                      // navigate(`care_provider/${user_id}`);
+                      navigate('/patientTable')
+                      // return (
+                      //     <>
+                      //         <PatientsTable careProviderId={user_id} />
+                      //         <button onClick={signOut}>Sign out</button>
+                      //     </>
+                      // )
                   } else {
                       Auth.signOut(); 
                       setShowAccessDenied(true);
