@@ -321,57 +321,62 @@ function DisplayRows({
                       variant="body"
                       key={column.id}
                       align="left"
-                      sx={{ height: "20px", whiteSpace: "nowrap", color: '#1976d2' }}
+                      sx={{
+                        height: "20px",
+                        whiteSpace: "nowrap",
+                        color: "#1976d2",
+                      }}
                     >
                       {obj_value}
                     </TableCell>
                   );
-                  
                 } else {
                   return (
                     <TableCell
                       variant="body"
                       key={column.id}
                       align="left"
-                      sx={{ height: "20px", whiteSpace: "nowrap", color: 'black' }}
-                    >
-                      {obj_value}
-                    </TableCell>
-                  );
-                }
-              
-              } else if (column.id === "last_test_score") {
-                  
-                  return (
-                    <TableCell
-                      variant="body"
-                      key={column.id}
-                      align="left"
-                      sx={() => {
-                        if (obj_value >= 50) {
-                          return {
-                            color: "green",
-                            height: "20px",
-                            whiteSpace: "nowrap",
-                          };
-                        } else if (obj_value >= 0) {
-                          return {
-                            color: "red",
-                            height: "20px",
-                            whiteSpace: "nowrap",
-                          };
-                        } else {
-                          return {
-                            color: "black",
-                            height: "20px",
-                            whiteSpace: "nowrap",
-                          };
-                        }
+                      sx={{
+                        height: "20px",
+                        whiteSpace: "nowrap",
+                        color: "black",
                       }}
                     >
                       {obj_value}
                     </TableCell>
                   );
+                }
+              } else if (column.id === "last_test_score") {
+                return (
+                  <TableCell
+                    variant="body"
+                    key={column.id}
+                    align="left"
+                    sx={() => {
+                      if (obj_value >= 50) {
+                        return {
+                          color: "green",
+                          height: "20px",
+                          whiteSpace: "nowrap",
+                        };
+                      } else if (obj_value >= 0) {
+                        return {
+                          color: "red",
+                          height: "20px",
+                          whiteSpace: "nowrap",
+                        };
+                      } else {
+                        return {
+                          color: "black",
+                          height: "20px",
+                          whiteSpace: "nowrap",
+                        };
+                      }
+                    }}
+                  >
+                    {obj_value}
+                  </TableCell>
+                );
               } else {
                 return (
                   <TableCell
@@ -394,7 +399,6 @@ function DisplayRows({
                   </TableCell>
                 );
               }
-              
             })}
           </TableRow>
         );
@@ -542,63 +546,62 @@ export function PatientsTable({ careProviderId }) {
       console.log("in fetchdata try block");
       let response = await API.graphql(
         graphqlOperation(getPatientsForCareprovider, {
-          care_provider_id: careProviderId
+          care_provider_id: careProviderId,
         })
       );
 
       let patientsInfo = response.data.getPatientsForCareprovider;
       console.log("patientsInfo", patientsInfo);
 
-      for (let p = 0; p < patientsInfo.length; p++) {
+      // for (let p = 0; p < patientsInfo.length; p++) {
 
-        let res1 = await API.graphql(
-          graphqlOperation(getPatientAssignedTests, {
-            patient_id: patientsInfo[p].patient_id
-          })
-        );
-        console.log("res1", res1);
+      //   let res1 = await API.graphql(
+      //     graphqlOperation(getPatientAssignedTests, {
+      //       patient_id: patientsInfo[p].patient_id
+      //     })
+      //   );
+      //   console.log("res1", res1);
 
-        let res2 = await API.graphql(
-          graphqlOperation(getTestEvents, {
-            patient_id: patientsInfo[p].patient_id,
-            sort: "desc",
-            count: 1
-          })
-        ).catch((res) => {
-          if (res == null) {
-            return 0;
-          }
-        });
-        console.log("res2", res2);
+      //   let res2 = await API.graphql(
+      //     graphqlOperation(getTestEvents, {
+      //       patient_id: patientsInfo[p].patient_id,
+      //       sort: "desc",
+      //       count: 1
+      //     })
+      //   ).catch((res) => {
+      //     if (res == null) {
+      //       return 0;
+      //     }
+      //   });
+      //   console.log("res2", res2);
 
-        let lastMovementAssigned = res2 == null ? '-' : (res2.data.getTestEvents.length == 0 ? '-' : (res2.data.getTestEvents[0].test_type == null ? '-' : res2.data.getTestEvents[0].test_type));
-        let lastScore = res2 == null ? '-' : (res2.data.getTestEvents.length == 0 ? '-' : (res2.data.getTestEvents[0].balance_score == null ? '-' : res2.data.getTestEvents[0].balance_score));
+      //   let lastMovementAssigned = res2 == null ? '-' : (res2.data.getTestEvents.length == 0 ? '-' : (res2.data.getTestEvents[0].test_type == null ? '-' : res2.data.getTestEvents[0].test_type));
+      //   let lastScore = res2 == null ? '-' : (res2.data.getTestEvents.length == 0 ? '-' : (res2.data.getTestEvents[0].balance_score == null ? '-' : res2.data.getTestEvents[0].balance_score));
 
-        await retrieveAssignedTests(patientsInfo[p].patient_id).then((checkbox_obj) => {
-          data.push({
-            patient_name: patientsInfo[p].name,
-            user_id: patientsInfo[p].patient_id,
-            assigned_test_num: res1.data.getPatientAssignedTests.length,
-            last_movement_tested: lastMovementAssigned, 
-            last_test_score: lastScore,
-            movements_assigned: checkbox_obj
-          });
-        });
+      //   await retrieveAssignedTests(patientsInfo[p].patient_id).then((checkbox_obj) => {
+      //     data.push({
+      //       patient_name: patientsInfo[p].name,
+      //       user_id: patientsInfo[p].patient_id,
+      //       assigned_test_num: res1.data.getPatientAssignedTests.length,
+      //       last_movement_tested: lastMovementAssigned,
+      //       last_test_score: lastScore,
+      //       movements_assigned: checkbox_obj
+      //     });
+      //   });
 
-        // data.push({
-        //   patient_name: patientsInfo[p].name,
-        //   user_id: patientsInfo[p].patient_id,
-        //   assigned_test_num: res1.data.getPatientAssignedTests.length,
-        //   last_movement_tested: lastMovementAssigned, 
-        //   last_test_score: lastScore,
-        //   movements_assigned: {}
-        // });
+      //   // data.push({
+      //   //   patient_name: patientsInfo[p].name,
+      //   //   user_id: patientsInfo[p].patient_id,
+      //   //   assigned_test_num: res1.data.getPatientAssignedTests.length,
+      //   //   last_movement_tested: lastMovementAssigned,
+      //   //   last_test_score: lastScore,
+      //   //   movements_assigned: {}
+      //   // });
 
-      }
-      console.log("data", data);
-      setLoading(false);
-      return data;
-      
+      // }
+      // console.log("data", data);
+      // setLoading(false);
+      // return data;
     } catch (err) {
       console.log(err);
       return new Promise((resolve, reject) => reject(err));
@@ -622,7 +625,7 @@ export function PatientsTable({ careProviderId }) {
   if (searchResults.length > 0) {
     paginationCount = searchResults.length;
   }
-    
+
   return (
     <Box
       sx={{
@@ -694,6 +697,5 @@ export function PatientsTable({ careProviderId }) {
         </TableContainer>
       </Box>
     </Box>
-    
   );
 }

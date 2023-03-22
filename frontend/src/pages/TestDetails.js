@@ -47,15 +47,17 @@ export function TestDetails() {
     console.log("sesh", sesh);
     let token = sesh.accessToken.jwtToken;
     console.log("token", token);
+    let idtoken = sesh.idToken.jwtToken;
+    console.log("idtoken", idtoken);
     let reslambdaauth = await API.graphql({
       query: getTestEventById,
-      variables: { test_event_id: "2" },
+      variables: { test_event_id: test_event_id, patient_id: "1" },
       authMode: GRAPHQL_AUTH_MODE.AWS_LAMBDA,
       // authToken: `1`,
 
-      authToken: `prefix-${token}`,
+      authToken: `prefix-${idtoken}`,
       // headers: {
-      //   Authorization: `Bearer {${token}}`,
+      //   Authorization: `prefix-${idtoken}`,
       // },
     });
     console.log("reslambdaauth", reslambdaauth);
@@ -71,26 +73,41 @@ export function TestDetails() {
   };
 
   const fetchMeasurement = async () => {
-    if (testEvent) {
-      let resmeasurement = await API.graphql(
-        graphqlOperation(getMeasurementData, {
-          test_event_id: test_event_id,
-          test_type: "sit-to-stand",
-          year: dayjs(testEvent.start_time).year(),
-          month: dayjs(testEvent.start_time).month() + 1,
-          day: dayjs(testEvent.start_time).date(),
-          patient_id: patient_id,
-          measurement: measurementSelected,
-        })
-      );
-      setMeasurementData(
-        resmeasurement.data.getMeasurementData.ts.map((ts, i) => ({
-          ts: ts,
-          val: resmeasurement.data.getMeasurementData.val[i],
-        }))
-      );
-      console.log("measurementData", measurementData);
-    }
+    console.log("76");
+    let sesh = await Auth.currentSession();
+    let idtoken = sesh.idToken.jwtToken;
+    console.log("idtoken", idtoken);
+
+    // todo: comment
+    // if (testEvent) {
+    let resmeasurement = await API.graphql({
+      query: getMeasurementData,
+      variables: {
+        test_event_id: test_event_id,
+        test_type: "sit-to-stand",
+        // year: dayjs(testEvent.start_time).year(),
+        // month: dayjs(testEvent.start_time).month() + 1,
+        // day: dayjs(testEvent.start_time).date(),
+        year: 2023,
+        month: 2,
+        day: 7,
+        patient_id: patient_id,
+        measurement: measurementSelected,
+      },
+      authMode: GRAPHQL_AUTH_MODE.AWS_LAMBDA,
+      // authToken: `1`,
+
+      authToken: `prefix-${idtoken}`,
+    });
+    console.log("resmeasurement", resmeasurement);
+    setMeasurementData(
+      resmeasurement.data.getMeasurementData.ts.map((ts, i) => ({
+        ts: ts,
+        val: resmeasurement.data.getMeasurementData.val[i],
+      }))
+    );
+    console.log("measurementData", measurementData);
+    // }
   };
 
   useEffect(() => {
@@ -98,6 +115,7 @@ export function TestDetails() {
   }, []);
 
   useEffect(() => {
+    console.log("112");
     fetchMeasurement();
   }, [measurementSelected]);
 
