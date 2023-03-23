@@ -44,30 +44,31 @@ export function TestDetails() {
 
   const fetchData = async () => {
     let sesh = await Auth.currentSession();
-    console.log("sesh", sesh);
-    let token = sesh.accessToken.jwtToken;
-    console.log("token", token);
     let idtoken = sesh.idToken.jwtToken;
-    console.log("idtoken", idtoken);
     let reslambdaauth = await API.graphql({
       query: getTestEventById,
-      variables: { test_event_id: test_event_id, patient_id: "1" },
-      authMode: GRAPHQL_AUTH_MODE.AWS_LAMBDA,
-      // authToken: `1`,
-
-      authToken: `prefix-${idtoken}`,
+      variables: { test_event_id: test_event_id, patient_id: patient_id },
+      // authMode: GRAPHQL_AUTH_MODE.AWS_LAMBDA,
+      authToken: `${idtoken}`,
       // headers: {
       //   Authorization: `prefix-${idtoken}`,
       // },
     });
     console.log("reslambdaauth", reslambdaauth);
-    let resPatient = await API.graphql(
-      graphqlOperation(getPatientById, { patient_id: patient_id })
-    );
+    let resPatient = await API.graphql({
+      query: getPatientById,
+      variables: { patient_id: patient_id },
+      authToken: idtoken,
+    });
     setPatientName(resPatient.data.getPatientById.name);
-    let resTest = await API.graphql(
-      graphqlOperation(getTestEventById, { test_event_id: test_event_id })
-    );
+    let resTest = await API.graphql({
+      query: getTestEventById,
+      variables: {
+        test_event_id: test_event_id,
+        patient_id: patient_id,
+      },
+      authToken: idtoken,
+    });
 
     setTestEvent(resTest.data.getTestEventById);
   };
@@ -85,19 +86,16 @@ export function TestDetails() {
       variables: {
         test_event_id: test_event_id,
         test_type: "sit-to-stand",
-        // year: dayjs(testEvent.start_time).year(),
-        // month: dayjs(testEvent.start_time).month() + 1,
-        // day: dayjs(testEvent.start_time).date(),
-        year: 2023,
-        month: 2,
-        day: 7,
+        year: dayjs(testEvent.start_time).year(),
+        month: dayjs(testEvent.start_time).month() + 1,
+        day: dayjs(testEvent.start_time).date(),
         patient_id: patient_id,
         measurement: measurementSelected,
       },
-      authMode: GRAPHQL_AUTH_MODE.AWS_LAMBDA,
+      // authMode: GRAPHQL_AUTH_MODE.AWS_LAMBDA,
       // authToken: `1`,
 
-      authToken: `prefix-${idtoken}`,
+      authToken: `${idtoken}`,
     });
     console.log("resmeasurement", resmeasurement);
     setMeasurementData(
@@ -125,9 +123,13 @@ export function TestDetails() {
   };
 
   const handleDownload = async (e) => {
+    let sesh = await Auth.currentSession();
+    let idtoken = sesh.idToken.jwtToken;
+
     setDownloading(true);
-    let resdownload = await API.graphql(
-      graphqlOperation(downloadTestEventDetails, {
+    let resdownload = await API.graphql({
+      query: downloadTestEventDetails,
+      variables: {
         test_event_id: test_event_id,
         test_type: "sit-to-stand",
         year: dayjs(testEvent.start_time).year(),
@@ -136,8 +138,9 @@ export function TestDetails() {
         patient_id: patient_id,
         measurement: measurementSelected,
         patient_name: patientName,
-      })
-    );
+      },
+      authToken: idtoken,
+    });
     let url = resdownload.data.downloadTestEventDetails;
     console.log("url", url);
     let link = document.createElement("a");

@@ -20,7 +20,7 @@ import {
 
 import { getMeasurementRange } from "../../graphql/queries";
 import dayjs from "dayjs";
-const { Amplify, API, graphqlOperation } = require("aws-amplify");
+const { Amplify, API, Auth, graphqlOperation } = require("aws-amplify");
 const awsconfig = require("../../aws-exports");
 Amplify.configure(awsconfig);
 
@@ -224,13 +224,17 @@ export const RangeChart = ({ patientId, measurement }) => {
   const [data, setData] = useState([]);
 
   const fetchData = async () => {
+    let sesh = await Auth.currentSession();
+    let idtoken = sesh.idToken.jwtToken;
     console.log("measurement", measurement);
-    let res = await API.graphql(
-      graphqlOperation(getMeasurementRange, {
+    let res = await API.graphql({
+      query: getMeasurementRange,
+      variables: {
         patient_id: patientId,
         measurement: measurement,
-      })
-    );
+      },
+      authToken: idtoken,
+    });
 
     let rangeChartData = convert(res.data.getMeasurementRange);
     console.log("rangechartdata", rangeChartData);

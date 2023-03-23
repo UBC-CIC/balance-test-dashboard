@@ -33,7 +33,7 @@ import MenuItem from "@mui/material/MenuItem";
 import NewTestDialog from "./NewTestDialog";
 import { Navigate, useNavigate } from "react-router";
 
-const { Amplify, API, graphqlOperation } = require("aws-amplify");
+const { Amplify, API, Auth, graphqlOperation } = require("aws-amplify");
 const awsconfig = require("../../aws-exports");
 const { getTestEvents } = require("../../graphql/queries");
 Amplify.configure(awsconfig);
@@ -241,12 +241,16 @@ export default function TestEventsTable({
   const navigate = useNavigate();
 
   const fetchData = async () => {
-    let resTestEvents = await API.graphql(
-      graphqlOperation(getTestEvents, {
+    let sesh = await Auth.currentSession();
+    let idtoken = sesh.idToken.jwtToken;
+    let resTestEvents = await API.graphql({
+      query: getTestEvents,
+      variables: {
         patient_id: patient_id,
         sort: "asc",
-      })
-    );
+      },
+      authToken: idtoken,
+    });
 
     console.log("restestevents", resTestEvents);
     setRows(resTestEvents.data.getTestEvents);

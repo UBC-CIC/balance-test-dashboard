@@ -21,7 +21,7 @@ import Navbar from "../nav/Navbar";
 
 import { v4 as uuidv4 } from "uuid";
 
-import { Amplify, API, graphqlOperation } from "aws-amplify";
+import { Amplify, API, Auth, graphqlOperation } from "aws-amplify";
 import awsconfig from "../../aws-exports";
 
 import {
@@ -540,68 +540,90 @@ export function PatientsTable({ careProviderId }) {
   };
 
   async function fetchData() {
+    let sesh = await Auth.currentSession();
+    let idtoken = sesh.idToken.jwtToken;
     let data = [];
     console.log("in fetchdata");
     try {
       console.log("in fetchdata try block");
-      let response = await API.graphql(
-        graphqlOperation(getPatientsForCareprovider, {
+      let response = await API.graphql({
+        query: getPatientsForCareprovider,
+        variables: {
           care_provider_id: careProviderId,
-        })
-      );
+        },
+        authToken: idtoken,
+      });
 
       let patientsInfo = response.data.getPatientsForCareprovider;
       console.log("patientsInfo", patientsInfo);
 
-      // for (let p = 0; p < patientsInfo.length; p++) {
+      for (let p = 0; p < patientsInfo.length; p++) {
+        let res1 = await API.graphql({
+          query: getPatientAssignedTests,
+          variables: {
+            patient_id: patientsInfo[p].patient_id,
+          },
+          authToken: idtoken,
+        });
+        console.log("res1", res1);
 
-      //   let res1 = await API.graphql(
-      //     graphqlOperation(getPatientAssignedTests, {
-      //       patient_id: patientsInfo[p].patient_id
-      //     })
-      //   );
-      //   console.log("res1", res1);
+        let res2 = await API.graphql({
+          query: getTestEvents,
+          variables: {
+            patient_id: patientsInfo[p].patient_id,
+            sort: "desc",
+            count: 1,
+          },
+          authToken: idtoken,
+        }).catch((res) => {
+          if (res == null) {
+            return 0;
+          }
+        });
+        console.log("res2", res2);
 
-      //   let res2 = await API.graphql(
-      //     graphqlOperation(getTestEvents, {
-      //       patient_id: patientsInfo[p].patient_id,
-      //       sort: "desc",
-      //       count: 1
-      //     })
-      //   ).catch((res) => {
-      //     if (res == null) {
-      //       return 0;
-      //     }
-      //   });
-      //   console.log("res2", res2);
+        let lastMovementAssigned =
+          res2 == null
+            ? "-"
+            : res2.data.getTestEvents.length == 0
+            ? "-"
+            : res2.data.getTestEvents[0].test_type == null
+            ? "-"
+            : res2.data.getTestEvents[0].test_type;
+        let lastScore =
+          res2 == null
+            ? "-"
+            : res2.data.getTestEvents.length == 0
+            ? "-"
+            : res2.data.getTestEvents[0].balance_score == null
+            ? "-"
+            : res2.data.getTestEvents[0].balance_score;
 
-      //   let lastMovementAssigned = res2 == null ? '-' : (res2.data.getTestEvents.length == 0 ? '-' : (res2.data.getTestEvents[0].test_type == null ? '-' : res2.data.getTestEvents[0].test_type));
-      //   let lastScore = res2 == null ? '-' : (res2.data.getTestEvents.length == 0 ? '-' : (res2.data.getTestEvents[0].balance_score == null ? '-' : res2.data.getTestEvents[0].balance_score));
+        await retrieveAssignedTests(patientsInfo[p].patient_id).then(
+          (checkbox_obj) => {
+            data.push({
+              patient_name: patientsInfo[p].name,
+              user_id: patientsInfo[p].patient_id,
+              assigned_test_num: res1.data.getPatientAssignedTests.length,
+              last_movement_tested: lastMovementAssigned,
+              last_test_score: lastScore,
+              movements_assigned: checkbox_obj,
+            });
+          }
+        );
 
-      //   await retrieveAssignedTests(patientsInfo[p].patient_id).then((checkbox_obj) => {
-      //     data.push({
-      //       patient_name: patientsInfo[p].name,
-      //       user_id: patientsInfo[p].patient_id,
-      //       assigned_test_num: res1.data.getPatientAssignedTests.length,
-      //       last_movement_tested: lastMovementAssigned,
-      //       last_test_score: lastScore,
-      //       movements_assigned: checkbox_obj
-      //     });
-      //   });
-
-      //   // data.push({
-      //   //   patient_name: patientsInfo[p].name,
-      //   //   user_id: patientsInfo[p].patient_id,
-      //   //   assigned_test_num: res1.data.getPatientAssignedTests.length,
-      //   //   last_movement_tested: lastMovementAssigned,
-      //   //   last_test_score: lastScore,
-      //   //   movements_assigned: {}
-      //   // });
-
-      // }
-      // console.log("data", data);
-      // setLoading(false);
-      // return data;
+        // data.push({
+        //   patient_name: patientsInfo[p].name,
+        //   user_id: patientsInfo[p].patient_id,
+        //   assigned_test_num: res1.data.getPatientAssignedTests.length,
+        //   last_movement_tested: lastMovementAssigned,
+        //   last_test_score: lastScore,
+        //   movements_assigned: {}
+        // });
+      }
+      console.log("data", data);
+      setLoading(false);
+      return data;
     } catch (err) {
       console.log(err);
       return new Promise((resolve, reject) => reject(err));
