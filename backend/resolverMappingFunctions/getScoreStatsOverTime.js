@@ -14,7 +14,7 @@ import { util } from "@aws-appsync/utils";
 export function request(ctx) {
   console.log("request ctx", ctx);
   const {
-    arguments: { patientId, from_time, to_time, stat, movement },
+    arguments: { patient_id, from_time, to_time, stat, movement },
   } = ctx;
 
   let inputToSql = {
@@ -24,7 +24,7 @@ export function request(ctx) {
   let movementSelectionSql = !movement ? "" : `and test_type='${movement}'`;
   return {
     payload: {
-      sql: `select ${inputToSql[stat]} as stat from "TestEvent" where patient_id='${patientId}' ${movementSelectionSql} and start_time>='${from_time}' and start_time<='${to_time}' and balance_score is not null`,
+      sql: `select ${inputToSql[stat]} as stat from "TestEvent" where patient_id='${patient_id}' ${movementSelectionSql} and start_time>='${from_time}' and start_time<='${to_time}' and balance_score is not null`,
     },
   };
 }
