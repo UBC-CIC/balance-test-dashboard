@@ -13,8 +13,10 @@ export const getPatientById = /* GraphQL */ `
   query GetPatientById($patient_id: String!) {
     getPatientById(patient_id: $patient_id) {
       patient_id
-      name
       email
+      first_name
+      last_name
+      privacy_consent_date
     }
   }
 `;
@@ -36,8 +38,10 @@ export const getPatientsForCareprovider = /* GraphQL */ `
   query GetPatientsForCareprovider($care_provider_id: String!) {
     getPatientsForCareprovider(care_provider_id: $care_provider_id) {
       patient_id
-      name
       email
+      first_name
+      last_name
+      privacy_consent_date
     }
   }
 `;
@@ -45,8 +49,10 @@ export const getAllPatients = /* GraphQL */ `
   query GetAllPatients {
     getAllPatients {
       patient_id
-      name
       email
+      first_name
+      last_name
+      privacy_consent_date
     }
   }
 `;
@@ -156,7 +162,6 @@ export const downloadTestEventDetails = /* GraphQL */ `
     $year: Int!
     $month: Int!
     $day: Int!
-    $patient_name: String
     $test_type: String!
   ) {
     downloadTestEventDetails(
@@ -165,8 +170,10 @@ export const downloadTestEventDetails = /* GraphQL */ `
       year: $year
       month: $month
       day: $day
-      patient_name: $patient_name
       test_type: $test_type
-    )
+    ) {
+      pdf_url
+      raw_url
+    }
   }
 `;

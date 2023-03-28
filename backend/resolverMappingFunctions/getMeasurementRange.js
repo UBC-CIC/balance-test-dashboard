@@ -15,12 +15,16 @@ export function request(ctx) {
   console.log("request ctx", ctx);
   const {
     arguments: { measurement, patient_id },
+    request: {
+      headers: { authorization },
+    },
   } = ctx;
   return {
     payload: {
       athena_query: `SELECT min(${measurement}) as min, max(${measurement}) as max, year, month, day, movement FROM "sensor_data"."user_id_${patient_id
         .split("-")
         .join("_")}"  group by year, month, day, movement;`,
+      authorization: authorization,
     },
   };
 }

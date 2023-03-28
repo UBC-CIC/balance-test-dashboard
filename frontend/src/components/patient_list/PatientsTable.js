@@ -542,6 +542,7 @@ export function PatientsTable({ careProviderId }) {
   async function fetchData() {
     let sesh = await Auth.currentSession();
     let idtoken = sesh.idToken.jwtToken;
+    console.log("idtoken", idtoken);
     let data = [];
     console.log("in fetchdata");
     try {

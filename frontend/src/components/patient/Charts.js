@@ -20,12 +20,17 @@ import {
 
 import { getMeasurementRange } from "../../graphql/queries";
 import dayjs from "dayjs";
+import moment from "moment";
 const { Amplify, API, Auth, graphqlOperation } = require("aws-amplify");
 const awsconfig = require("../../aws-exports");
 Amplify.configure(awsconfig);
 
-export const ScoreChart = ({ data }) => {
+export const ScoreChart = ({ data, range }) => {
   console.log("chartdata", data);
+  console.log("range", range);
+  const dateFormatter = (t) => {
+    return moment(t).format("MMMM Do YYYY");
+  };
   return (
     <ResponsiveContainer width="100%" height={350}>
       <LineChart
@@ -41,8 +46,13 @@ export const ScoreChart = ({ data }) => {
         label={<NALabel />}
       >
         <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="start_time" />
-        <YAxis />
+        <XAxis
+          dataKey="start_time"
+          type="number"
+          tickFormatter={dateFormatter}
+          domain={range}
+        />
+        <YAxis domain={[0, 100]} />
         {/* <Tooltip /> */}
         {/* <Legend /> */}
         <ReferenceLine

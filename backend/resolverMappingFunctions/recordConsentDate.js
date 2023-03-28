@@ -14,12 +14,10 @@ import { util } from "@aws-appsync/utils";
 export function request(ctx) {
   console.log("request ctx", ctx);
   const {
-    arguments: { patient_id, first_name, last_name, email },
+    arguments: { patient_id, date },
   } = ctx;
-  let sql = !email
-    ? `insert into "Patient" (patient_id, first_name, last_name, email) values ('${patient_id}', '${first_name}','${last_name}', null)`
-    : `insert into "Patient" (patient_id, first_name, last_name, email) values ('${patient_id}', '${first_name}', '${last_name}','${email}')`;
-  sql += ` returning *;`;
+  let sql = `UPDATE "Patient" SET privacy_consent_date='${date}'
+  WHERE patient_id='${patient_id}' returning *;`;
   return {
     payload: {
       sql: sql,

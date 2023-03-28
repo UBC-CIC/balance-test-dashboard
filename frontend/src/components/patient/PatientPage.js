@@ -9,6 +9,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import TextField from "@mui/material/TextField";
 import * as React from "react";
 import dayjs from "dayjs";
+import moment from "moment";
 import { DataGrid } from "@mui/x-data-grid";
 import { Box } from "@mui/material";
 import { RangeChart, ScoreChart } from "./Charts";
@@ -73,23 +74,33 @@ function PatientPage() {
     let idtoken = sesh.idToken.jwtToken;
     // get analytics
     console.log("62");
-    // let resWeeklyAvg = await API.graphql(
-    //   graphqlOperation(getScoreStatsOverTime, {
-    //     patient_id: patient_id,
-    //     from_time: dayjs().subtract(7, "day").format("YYYY-MM-DD hh:mm:ss"),
-    //     to_time: dayjs().format("YYYY-MM-DD hh:mm:ss"),
-    //     stat: "avg",
-    //   })
-    // );
-    // let resMonthlyAvg = await API.graphql(
-    //   graphqlOperation(getScoreStatsOverTime, {
-    //     patient_id: patient_id,
-    //     from_time: dayjs().subtract(1, "month").format("YYYY-MM-DD hh:mm:ss"),
-    //     to_time: dayjs().format("YYYY-MM-DD hh:mm:ss"),
-    //     stat: "avg",
-    //   })
-    // );
-    // console.log("resMonthlyAvg", resMonthlyAvg);
+    let resWeeklyAvg = await API.graphql({
+      query: getScoreStatsOverTime,
+      variables: {
+        patient_id: patient_id,
+        from_time: dayjs().subtract(7, "day").format("YYYY-MM-DD hh:mm:ss"),
+        to_time: dayjs().format("YYYY-MM-DD hh:mm:ss"),
+        stat: "avg",
+      },
+      authToken: idtoken,
+    });
+    console.log("monthly avg input", {
+      patient_id: patient_id,
+      from_time: dayjs().subtract(1, "month").format("YYYY-MM-DD hh:mm:ss"),
+      to_time: dayjs().format("YYYY-MM-DD hh:mm:ss"),
+      stat: "avg",
+    });
+    let resMonthlyAvg = await API.graphql({
+      query: getScoreStatsOverTime,
+      variables: {
+        patient_id: patient_id,
+        from_time: dayjs().subtract(1, "month").format("YYYY-MM-DD hh:mm:ss"),
+        to_time: dayjs().format("YYYY-MM-DD hh:mm:ss"),
+        stat: "avg",
+      },
+      authToken: idtoken,
+    });
+    console.log("resMonthlyAvg", resMonthlyAvg);
 
     // console.log("79");
     // setWeeklyAvg(Math.round(resWeeklyAvg.data.getScoreStatsOverTime));
@@ -281,16 +292,26 @@ function PatientPage() {
               <ScoreChart
                 data={
                   movementTestSelected == "sit-to-stand"
-                    ? data.map((te) => ({
-                        start_time: dayjs(te.start_time).format("YYYY MMM D"),
-                        balance_score: te.balance_score,
-                      }))
+                    ? data
+                        .map((te) => ({
+                          start_time: moment(te.start_time).valueOf(),
+                          balance_score: te.balance_score,
+                        }))
+                        .filter(
+                          (i) =>
+                            dayjs(i.start_time).isAfter(fromDate) &&
+                            dayjs(i.start_time).isBefore(toDate)
+                        )
                     : scoreDataMapping[movementTestSelected].filter(
                         (i) =>
                           dayjs(i.date).isAfter(fromDate) &&
                           dayjs(i.date).isBefore(toDate)
                       )
                 }
+                range={[
+                  moment(dayjs(fromDate).format()).valueOf(),
+                  moment(dayjs(toDate).format()).valueOf(),
+                ]}
               />
             )}
           </Grid>

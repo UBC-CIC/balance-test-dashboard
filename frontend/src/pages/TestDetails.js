@@ -23,7 +23,13 @@ import dayjs from "dayjs";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { GRAPHQL_AUTH_MODE } from "@aws-amplify/api";
 
-const { Amplify, API, graphqlOperation, Auth } = require("aws-amplify");
+const {
+  Amplify,
+  API,
+  graphqlOperation,
+  Auth,
+  Storage,
+} = require("aws-amplify");
 const awsconfig = require("../aws-exports");
 const {
   getPatientById,
@@ -141,12 +147,24 @@ export function TestDetails() {
       },
       authToken: idtoken,
     });
-    let url = resdownload.data.downloadTestEventDetails;
-    console.log("url", url);
-    let link = document.createElement("a");
-    link.download = url;
-    link.href = url;
-    link.click();
+    let pdfUrl = resdownload.data.downloadTestEventDetails.pdf_url;
+    // window.open(pdfUrl);
+    let rawUrl = resdownload.data.downloadTestEventDetails.raw_url;
+    // window.open(rawUrl);
+
+    // pdfUrl = "a";
+    // rawUrl = "b";
+    console.log("pdfUrl", pdfUrl);
+    console.log("rawUrl", rawUrl);
+
+    let downloadLink = document.createElement("a");
+    downloadLink.download = rawUrl;
+    downloadLink.href = rawUrl;
+    downloadLink.click();
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    downloadLink.download = pdfUrl;
+    downloadLink.href = pdfUrl;
+    downloadLink.click();
     setDownloading(false);
   };
 
@@ -166,7 +184,7 @@ export function TestDetails() {
           Test Event Details, {patientName} ({patient_id})
         </Typography>
         <Grid>
-          <Button variant="outlined">Delete</Button>
+          {/* <Button variant="outlined">Delete</Button> */}
           <LoadingButton
             variant="contained"
             loading={downloading}

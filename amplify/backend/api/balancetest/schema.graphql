@@ -1,7 +1,9 @@
 type Patient {
   patient_id: String!
-  name: String
   email: String
+  first_name: String
+  last_name: String
+  privacy_consent_date: String
 }
 
 type CareProvider {
@@ -77,19 +79,23 @@ type Query {
     year: Int!
     month: Int!
     day: Int!
-    patient_name: String
     test_type: String!
-  ): String @aws_lambda
+  ): URLGenerated @aws_lambda
 }
 
 type Mutation {
-  createPatient(patient_id: String!, email: String, name: String): Patient
-    @aws_lambda
+  createPatient(
+    patient_id: String!
+    email: String
+    first_name: String
+    last_name: String # privacy_consent_date: String
+  ): Patient @aws_lambda
   createCareProvider(care_provider_id: String!, email: String!): CareProvider
   addPatientToCareProvider(
     care_provider_id: String!
     patient_id: String!
   ): PatientCareprovider
+  recordConsentDate(patient_id: String!, date: String!): Patient
 
   assignTestToPatient(patient_id: String!, test_type: String!): PatientTest
 
@@ -111,7 +117,15 @@ type Mutation {
     instructions: String
     duration_in_seconds: Int
   ): Test
-  # deleteTestEvent(test_event_id: String!)
+  deleteTestEventFromS3(
+    test_event_id: String!
+    patient_id: String!
+    year: Int!
+    month: Int!
+    day: Int!
+    test_type: String!
+  ): String
+  deleteTestEventFromDB(test_event_id: String!, patient_id: String!): String
 }
 
 type TestEvent {
@@ -156,6 +170,11 @@ type MeasurementRange {
   month: [String]
   day: [String]
   movement: [String]
+}
+
+type URLGenerated {
+  pdf_url: String
+  raw_url: String
 }
 
 enum Stat {

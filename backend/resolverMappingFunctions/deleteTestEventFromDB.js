@@ -14,12 +14,9 @@ import { util } from "@aws-appsync/utils";
 export function request(ctx) {
   console.log("request ctx", ctx);
   const {
-    arguments: { patient_id, first_name, last_name, email },
+    arguments: { test_event_id, patient_id },
   } = ctx;
-  let sql = !email
-    ? `insert into "Patient" (patient_id, first_name, last_name, email) values ('${patient_id}', '${first_name}','${last_name}', null)`
-    : `insert into "Patient" (patient_id, first_name, last_name, email) values ('${patient_id}', '${first_name}', '${last_name}','${email}')`;
-  sql += ` returning *;`;
+  let sql = `delete from "TestEvent" where patient_id='${patient_id}' and test_event_id='${test_event_id}'`;
   return {
     payload: {
       sql: sql,
@@ -43,5 +40,5 @@ export function request(ctx) {
 export function response(ctx) {
   console.log("response ctx", ctx);
   let res = ctx.prev.result.body;
-  return res[0];
+  return res;
 }

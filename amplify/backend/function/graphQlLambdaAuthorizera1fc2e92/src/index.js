@@ -52,7 +52,7 @@ exports.handler = async (event) => {
     //   `arn:aws:appsync:${process.env.AWS_REGION}:${accountId}:apis/${apiId}/types/Event/fields/comments`,
     //   `Mutation.createEvent`,
     // ],
-    ttlOverride: 300,
+    ttlOverride: 0,
   };
   console.log(`response >`, JSON.stringify(response, null, 2));
   return response;

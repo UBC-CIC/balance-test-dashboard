@@ -14,15 +14,17 @@ import { util } from "@aws-appsync/utils";
 export function request(ctx) {
   console.log("request ctx", ctx);
   const {
-    arguments: { patient_id, first_name, last_name, email },
+    arguments: { test_event_id, patient_id, year, month, day, test_type },
+    request: {
+      headers: { authorization },
+    },
   } = ctx;
-  let sql = !email
-    ? `insert into "Patient" (patient_id, first_name, last_name, email) values ('${patient_id}', '${first_name}','${last_name}', null)`
-    : `insert into "Patient" (patient_id, first_name, last_name, email) values ('${patient_id}', '${first_name}', '${last_name}','${email}')`;
-  sql += ` returning *;`;
   return {
     payload: {
-      sql: sql,
+      // todo: replace region
+      pathToJson: `private/ca-central-1:${patient_id}/movement=${test_type}/year=${year}/month=${month}/day=${day}/test_event_id=${test_event_id}.json`,
+      pathToParquet: `parquet_data/patient_tests/user_id=${patient_id}/movement=${test_type}/year=${year}/month=${month}/day=${day}/test_event_id=${test_event_id}`,
+      authorization: authorization,
     },
   };
 }
@@ -43,5 +45,5 @@ export function request(ctx) {
 export function response(ctx) {
   console.log("response ctx", ctx);
   let res = ctx.prev.result.body;
-  return res[0];
+  return res;
 }

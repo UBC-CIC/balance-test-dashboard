@@ -16,7 +16,7 @@ def lambda_handler(event, context):
     print(event)
     # todo: remove hard-coded val
     id_token = event['payload']['authorization']
-    id_token = id_token[id_token.startswith('prefix-') and len('prefix-'):]
+    # id_token = id_token[id_token.startswith('prefix-') and len('prefix-'):]
     # response = cognito_identity.get_credentials_for_identity(
     #     IdentityId='string',
     #     # Logins={
@@ -49,17 +49,21 @@ def lambda_handler(event, context):
                       aws_session_token=aws_cred['SessionToken'])
     if ('s3key' in event['payload']):
         key = event['payload']['s3key']
+        print('key', key)
         measurement = event['payload']['measurement']
         sql = "SELECT ts, "+measurement+" FROM s3object s"
-        res = s3.select_object_content(
-            Bucket=bucket,
-            Key=key,
-            ExpressionType='SQL',
-            Expression=sql,
-            InputSerialization={'Parquet': {}},
-            OutputSerialization={'JSON': {}}
-        )
 
+        try:
+            res = s3.select_object_content(
+                Bucket=bucket,
+                Key=key,
+                ExpressionType='SQL',
+                Expression=sql,
+                InputSerialization={'Parquet': {}},
+                OutputSerialization={'JSON': {}}
+            )
+        except Exception as e:
+            return {"status": 401, "body": e}
         full_records = ''
         # json_list = []
         object_returned = {'ts': [], 'val': []}
