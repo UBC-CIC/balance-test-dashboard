@@ -35,49 +35,7 @@ import React from "react";
 function App() {
   const [loginState, setLoginState] = React.useState(false);
 
-  // return authState === AuthState.SignedIn && user ? (
-  //   <ThemeProvider theme={theme}>
-  //     <UserContext.Provider value={user}>
-  //       <div className="App">
-  //         <Navigation
-  //           isLoading={isLoading}
-  //           userName={user.username}
-  //           userId={user.userId}
-  //           userDetail={userDetail}
-  //           patients={patients}
-  //           authState={authState}
-  //         />
-  //       </div>
-  //     </UserContext.Provider>
-  //   </ThemeProvider>
-  // ) : (
-  //   <div className="App">
-  //     <ResponsiveAppBar />
-  //     <Authenticator>
-  //       {({ signOut, user }) => (
-  //         <main>
-  //           <h1>Hello {user.username}</h1>
-  //           <button onClick={signOut}>Sign out</button>
-  //         </main>
-  //       )}
-  //     </Authenticator>
-  //   </div>
-  // );
   const theme = createTheme();
-  // return (
-  //   <ThemeProvider theme={theme}>
-  //     <Navbar />
-
-  //     <Container maxWidth="lg">
-  //       {/* <PatientPage /> */}
-  //       <TestDetails />
-  //     </Container>
-  //   </ThemeProvider>
-  // );
-  // return <SignUp />;
-  // return <PatientsTable />;
-  // return <EventsTable />;
-  // return <ScoreChart />;
 
   async function setAuthListener() {
     Hub.listen('auth', (listenerData) => {
@@ -102,7 +60,6 @@ function App() {
     
     const { userInfo } = Auth.currentAuthenticatedUser()
                         .then((user) => {
-                          console.log("Checking current authentication user: ", user['username']);
                           setLoginState(true);
                       
                         }).catch((err) => {
@@ -135,8 +92,6 @@ function App() {
                     />
                   }
                 />
-                {/* <Route path="signIn" element={<SignIn />} />
-                <Route path="signUp" element={<SignUp />} /> */}
                 <Route
                   path="testDetails/:patient_id/:test_event_id"
                   element={<TestDetails />}

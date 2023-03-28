@@ -21,7 +21,7 @@ import Navbar from "../nav/Navbar";
 
 import { v4 as uuidv4 } from "uuid";
 
-import { Amplify, API, graphqlOperation } from "aws-amplify";
+import { Amplify, API, Auth, graphqlOperation } from "aws-amplify";
 import awsconfig from "../../aws-exports";
 
 import {
@@ -69,172 +69,37 @@ const headerColumns = [
 const testRows = [
   {
     user_id: uuidv4(),
-    patient_name: "John Doe",
+    first_name: "John",
+    last_name: "Doe",
     assigned_test_num: 1,
     last_movement_tested: "Sit-to-Stand",
     last_test_score: 65,
   },
   {
     user_id: uuidv4(),
-    patient_name: "Jane Doe",
+    first_name: "Jane",
+    last_name: "Doe",
     assigned_test_num: 1,
     last_movement_tested: "Sit-to-Stand",
     last_test_score: 45,
   },
   {
     user_id: uuidv4(),
-    patient_name: "Robbie Mac",
+    first_name: "Robbie",
+    last_name: "Mac",
     assigned_test_num: 1,
     last_movement_tested: "Sit-to-Stand",
     last_test_score: 56,
   },
   {
     user_id: uuidv4(),
-    patient_name: "Amanda Spence",
+    first_name: "Amanda",
+    last_name: "Spence",
     assigned_test_num: 1,
     last_movement_tested: "Sit-to-Stand",
     last_test_score: 23,
   },
-  {
-    user_id: uuidv4(),
-    patient_name: "John Doe",
-    assigned_test_num: 1,
-    last_movement_tested: "Sit-to-Stand",
-    last_test_score: 65,
-  },
-  {
-    user_id: uuidv4(),
-    patient_name: "Jane Doe",
-    assigned_test_num: 1,
-    last_movement_tested: "Sit-to-Stand",
-    last_test_score: 45,
-  },
-  {
-    user_id: uuidv4(),
-    patient_name: "Robbie Mac",
-    assigned_test_num: 1,
-    last_movement_tested: "Sit-to-Stand",
-    last_test_score: 56,
-  },
-  {
-    user_id: uuidv4(),
-    patient_name: "Amanda Spence",
-    assigned_test_num: 1,
-    last_movement_tested: "Sit-to-Stand",
-    last_test_score: 23,
-  },
-  {
-    user_id: uuidv4(),
-    patient_name: "John Doe",
-    assigned_test_num: 1,
-    last_movement_tested: "Sit-to-Stand",
-    last_test_score: 65,
-  },
-  {
-    user_id: uuidv4(),
-    patient_name: "Jane Doe",
-    assigned_test_num: 1,
-    last_movement_tested: "Sit-to-Stand",
-    last_test_score: 45,
-  },
-  {
-    user_id: uuidv4(),
-    patient_name: "Robbie Mac",
-    assigned_test_num: 1,
-    last_movement_tested: "Sit-to-Stand",
-    last_test_score: 56,
-  },
-  {
-    user_id: uuidv4(),
-    patient_name: "Amanda Spence",
-    assigned_test_num: 1,
-    last_movement_tested: "Sit-to-Stand",
-    last_test_score: 23,
-  },
-  {
-    user_id: uuidv4(),
-    patient_name: "John Doe",
-    assigned_test_num: 1,
-    last_movement_tested: "Sit-to-Stand",
-    last_test_score: 65,
-  },
-  {
-    user_id: uuidv4(),
-    patient_name: "Jane Doe",
-    assigned_test_num: 1,
-    last_movement_tested: "Sit-to-Stand",
-    last_test_score: 45,
-  },
-  {
-    user_id: uuidv4(),
-    patient_name: "Robbie Mac",
-    assigned_test_num: 1,
-    last_movement_tested: "Sit-to-Stand",
-    last_test_score: 56,
-  },
-  {
-    user_id: uuidv4(),
-    patient_name: "Amanda Spence",
-    assigned_test_num: 1,
-    last_movement_tested: "Sit-to-Stand",
-    last_test_score: 23,
-  },
-  {
-    user_id: uuidv4(),
-    patient_name: "John Doe",
-    assigned_test_num: 1,
-    last_movement_tested: "Sit-to-Stand",
-    last_test_score: 65,
-  },
-  {
-    user_id: uuidv4(),
-    patient_name: "Jane Doe",
-    assigned_test_num: 1,
-    last_movement_tested: "Sit-to-Stand",
-    last_test_score: 45,
-  },
-  {
-    user_id: uuidv4(),
-    patient_name: "Robbie Mac",
-    assigned_test_num: 1,
-    last_movement_tested: "Sit-to-Stand",
-    last_test_score: 56,
-  },
-  {
-    user_id: uuidv4(),
-    patient_name: "Amanda Spence",
-    assigned_test_num: 1,
-    last_movement_tested: "Sit-to-Stand",
-    last_test_score: 23,
-  },
-  {
-    user_id: uuidv4(),
-    patient_name: "John Doe",
-    assigned_test_num: 1,
-    last_movement_tested: "Sit-to-Stand",
-    last_test_score: 65,
-  },
-  {
-    user_id: uuidv4(),
-    patient_name: "Jane Doe",
-    assigned_test_num: 1,
-    last_movement_tested: "Sit-to-Stand",
-    last_test_score: 45,
-  },
-  {
-    user_id: uuidv4(),
-    patient_name: "Robbie Mac",
-    assigned_test_num: 1,
-    last_movement_tested: "Sit-to-Stand",
-    last_test_score: 56,
-  },
-  {
-    user_id: uuidv4(),
-    patient_name: "Amanda Spence",
-    assigned_test_num: 1,
-    last_movement_tested: "Sit-to-Stand",
-    last_test_score: 23,
-  },
+  
 ];
 
 function FixedHeaderRow() {
@@ -305,7 +170,7 @@ function DisplayRows({
                         onClick={() => {
                           // navigate("/patient");
                           // console.log("row", row);
-                          navigate(`/patient:${row.user_id}`);
+                          navigate(`/patient/${row.user_id}`);
                         }}
                       >
                         See Patient Data
@@ -321,57 +186,62 @@ function DisplayRows({
                       variant="body"
                       key={column.id}
                       align="left"
-                      sx={{ height: "20px", whiteSpace: "nowrap", color: '#1976d2' }}
+                      sx={{
+                        height: "20px",
+                        whiteSpace: "nowrap",
+                        color: "#1976d2",
+                      }}
                     >
                       {obj_value}
                     </TableCell>
                   );
-                  
                 } else {
                   return (
                     <TableCell
                       variant="body"
                       key={column.id}
                       align="left"
-                      sx={{ height: "20px", whiteSpace: "nowrap", color: 'black' }}
-                    >
-                      {obj_value}
-                    </TableCell>
-                  );
-                }
-              
-              } else if (column.id === "last_test_score") {
-                  
-                  return (
-                    <TableCell
-                      variant="body"
-                      key={column.id}
-                      align="left"
-                      sx={() => {
-                        if (obj_value >= 50) {
-                          return {
-                            color: "green",
-                            height: "20px",
-                            whiteSpace: "nowrap",
-                          };
-                        } else if (obj_value >= 0) {
-                          return {
-                            color: "red",
-                            height: "20px",
-                            whiteSpace: "nowrap",
-                          };
-                        } else {
-                          return {
-                            color: "black",
-                            height: "20px",
-                            whiteSpace: "nowrap",
-                          };
-                        }
+                      sx={{
+                        height: "20px",
+                        whiteSpace: "nowrap",
+                        color: "black",
                       }}
                     >
                       {obj_value}
                     </TableCell>
                   );
+                }
+              } else if (column.id === "last_test_score") {
+                return (
+                  <TableCell
+                    variant="body"
+                    key={column.id}
+                    align="left"
+                    sx={() => {
+                      if (obj_value >= 50) {
+                        return {
+                          color: "green",
+                          height: "20px",
+                          whiteSpace: "nowrap",
+                        };
+                      } else if (obj_value >= 0) {
+                        return {
+                          color: "red",
+                          height: "20px",
+                          whiteSpace: "nowrap",
+                        };
+                      } else {
+                        return {
+                          color: "black",
+                          height: "20px",
+                          whiteSpace: "nowrap",
+                        };
+                      }
+                    }}
+                  >
+                    {obj_value}
+                  </TableCell>
+                );
               } else {
                 return (
                   <TableCell
@@ -394,7 +264,6 @@ function DisplayRows({
                   </TableCell>
                 );
               }
-              
             })}
           </TableRow>
         );
@@ -433,6 +302,7 @@ function DisplaySearchResults({
         return (
           <TableRow>
             {headerColumns.map((column) => {
+              
               if (column.id === "see_patient_data") {
                 return (
                   <TableCell
@@ -444,9 +314,9 @@ function DisplaySearchResults({
                     {column.id === "see_patient_data" && (
                       <Button
                         onClick={() => {
-                          // console.log("row.patient_id", row.patient_id);
-                          // navigate(`/patient:${row.patient_id}`);
-                          navigate(`/patient`);
+                          // console.log("row.patient_id", row.user_id);
+                          navigate(`/patient/${row.user_id}`);
+                          // navigate(`/patient`);
                         }}
                       >
                         See Patient Data
@@ -536,69 +406,90 @@ export function PatientsTable({ careProviderId }) {
   };
 
   async function fetchData() {
+    let sesh = await Auth.currentSession();
+    let idtoken = sesh.idToken.jwtToken;
     let data = [];
     console.log("in fetchdata");
     try {
       console.log("in fetchdata try block");
-      let response = await API.graphql(
-        graphqlOperation(getPatientsForCareprovider, {
-          care_provider_id: careProviderId
-        })
-      );
+      let response = await API.graphql({
+        query: getPatientsForCareprovider,
+        variables: {
+          care_provider_id: careProviderId,
+        },
+        authToken: idtoken,
+      });
 
       let patientsInfo = response.data.getPatientsForCareprovider;
       console.log("patientsInfo", patientsInfo);
 
       for (let p = 0; p < patientsInfo.length; p++) {
-
-        let res1 = await API.graphql(
-          graphqlOperation(getPatientAssignedTests, {
-            patient_id: patientsInfo[p].patient_id
-          })
-        );
+        let res1 = await API.graphql({
+          query: getPatientAssignedTests,
+          variables: {
+            patient_id: patientsInfo[p].patient_id,
+          },
+          authToken: idtoken,
+        });
         console.log("res1", res1);
 
-        let res2 = await API.graphql(
-          graphqlOperation(getTestEvents, {
+        let res2 = await API.graphql({
+          query: getTestEvents,
+          variables: {
             patient_id: patientsInfo[p].patient_id,
             sort: "desc",
-            count: 1
-          })
-        ).catch((res) => {
+            count: 1,
+          },
+          authToken: idtoken,
+        }).catch((res) => {
           if (res == null) {
             return 0;
           }
         });
         console.log("res2", res2);
 
-        let lastMovementAssigned = res2 == null ? '-' : (res2.data.getTestEvents.length == 0 ? '-' : (res2.data.getTestEvents[0].test_type == null ? '-' : res2.data.getTestEvents[0].test_type));
-        let lastScore = res2 == null ? '-' : (res2.data.getTestEvents.length == 0 ? '-' : (res2.data.getTestEvents[0].balance_score == null ? '-' : res2.data.getTestEvents[0].balance_score));
+        let lastMovementAssigned =
+          res2 == null
+            ? "-"
+            : res2.data.getTestEvents.length == 0
+            ? "-"
+            : res2.data.getTestEvents[0].test_type == null
+            ? "-"
+            : res2.data.getTestEvents[0].test_type;
+        let lastScore =
+          res2 == null
+            ? "-"
+            : res2.data.getTestEvents.length == 0
+            ? "-"
+            : res2.data.getTestEvents[0].balance_score == null
+            ? "-"
+            : res2.data.getTestEvents[0].balance_score;
 
-        await retrieveAssignedTests(patientsInfo[p].patient_id).then((checkbox_obj) => {
-          data.push({
-            patient_name: patientsInfo[p].name,
-            user_id: patientsInfo[p].patient_id,
-            assigned_test_num: res1.data.getPatientAssignedTests.length,
-            last_movement_tested: lastMovementAssigned, 
-            last_test_score: lastScore,
-            movements_assigned: checkbox_obj
-          });
-        });
+        await retrieveAssignedTests(patientsInfo[p].patient_id).then(
+          (checkbox_obj) => {
+            data.push({
+              patient_name: patientsInfo[p].last_name + ", " + patientsInfo[p].first_name,
+              user_id: patientsInfo[p].patient_id,
+              assigned_test_num: res1.data.getPatientAssignedTests.length,
+              last_movement_tested: lastMovementAssigned,
+              last_test_score: lastScore,
+              movements_assigned: checkbox_obj,
+            });
+          }
+        );
 
         // data.push({
         //   patient_name: patientsInfo[p].name,
         //   user_id: patientsInfo[p].patient_id,
         //   assigned_test_num: res1.data.getPatientAssignedTests.length,
-        //   last_movement_tested: lastMovementAssigned, 
+        //   last_movement_tested: lastMovementAssigned,
         //   last_test_score: lastScore,
         //   movements_assigned: {}
         // });
-
       }
       console.log("data", data);
       setLoading(false);
       return data;
-      
     } catch (err) {
       console.log(err);
       return new Promise((resolve, reject) => reject(err));
@@ -609,7 +500,19 @@ export function PatientsTable({ careProviderId }) {
     console.log("in useeffect");
     fetchData().then((data) => updatePatientDataRowsArr(data));
 
-    // data = testRows;
+    // for testing frontend
+    // let testData = testRows;
+    // data = [];
+    // for (let p = 0; p < testData.length; p++) {
+    //   data.push({
+    //     patient_name: testData[p].last_name + ', ' + testData[p].first_name,
+    //     user_id: testData[p].user_id,
+    //     assigned_test_num: testData[p].assigned_test_num,
+    //     last_movement_tested: testData[p].last_movement_tested, 
+    //     last_test_score: testData[p].last_test_score,
+    //     movements_assigned: {"sit-to-stand": false, "movement 2": false, "movement 3": false}
+    //   })
+    // }
     // updatePatientDataRowsArr(data);
   }, []);
 
@@ -622,7 +525,7 @@ export function PatientsTable({ careProviderId }) {
   if (searchResults.length > 0) {
     paginationCount = searchResults.length;
   }
-    
+
   return (
     <Box
       sx={{
@@ -694,6 +597,5 @@ export function PatientsTable({ careProviderId }) {
         </TableContainer>
       </Box>
     </Box>
-    
   );
 }

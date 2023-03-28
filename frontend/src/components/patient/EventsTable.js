@@ -15,11 +15,17 @@ import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
 import Checkbox from "@mui/material/Checkbox";
 import IconButton from "@mui/material/IconButton";
+import LoadingButton from "@mui/lab/LoadingButton";
 import Tooltip from "@mui/material/Tooltip";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Switch from "@mui/material/Switch";
 import DeleteIcon from "@mui/icons-material/Delete";
 import FilterListIcon from "@mui/icons-material/FilterList";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
 import { visuallyHidden } from "@mui/utils";
 import { Button } from "@mui/material";
 import dayjs from "dayjs";
@@ -32,10 +38,14 @@ import {
 import MenuItem from "@mui/material/MenuItem";
 import NewTestDialog from "./NewTestDialog";
 import { Navigate, useNavigate } from "react-router";
+import {
+  deleteTestEventFromS3,
+  deleteTestEventFromDB,
+} from "../../graphql/mutations";
 
-const { Amplify, API, graphqlOperation } = require("aws-amplify");
+const { Amplify, API, Auth, graphqlOperation } = require("aws-amplify");
 const awsconfig = require("../../aws-exports");
-const { getTestEvents } = require("../../graphql/queries");
+const { getTestEvents, getTestEventById } = require("../../graphql/queries");
 Amplify.configure(awsconfig);
 
 function createData(name, calories, fat, carbs, protein) {
@@ -187,43 +197,168 @@ EnhancedTableHead.propTypes = {
 };
 
 function EnhancedTableToolbar(props) {
-  const { numSelected, setOpenNewTest } = props;
+  const { numSelected, eventsSelected, patientId, refresh } = props;
+  const [open, setOpen] = React.useState(false);
+  const [deleting, setDeleting] = React.useState(false);
+
+  const handleOpenDeleteDialog = () => {
+    console.log("199");
+    setOpen(true);
+  };
+
+  const handleCloseDeleteDialog = () => {
+    setOpen(false);
+  };
+
+  const handleDeleteTestEvents = async () => {
+    setDeleting(true);
+    let sesh = await Auth.currentSession();
+    let idtoken = sesh.idToken.jwtToken;
+
+    for (let i = 0; i < eventsSelected.length; i++) {
+      let testEventResponse = await API.graphql({
+        query: getTestEventById,
+        variables: {
+          test_event_id: eventsSelected[i],
+          patient_id: patientId,
+        },
+        authToken: idtoken,
+      });
+      let eventDetails = testEventResponse.data.getTestEventById;
+      let deleteFromS3Response = await API.graphql({
+        query: deleteTestEventFromS3,
+        variables: {
+          test_event_id: eventsSelected[i],
+          patient_id: patientId,
+          year: dayjs(eventDetails.start_time).year(),
+          month: dayjs(eventDetails.start_time).month() + 1,
+          day: dayjs(eventDetails.start_time).date(),
+          test_type: eventDetails.test_type,
+        },
+        authToken: idtoken,
+      });
+      console.log("deleteFromS3Response", deleteFromS3Response);
+      console.log("patientid", patientId);
+      let deleteFromDbResponse = await API.graphql({
+        query: deleteTestEventFromDB,
+        variables: {
+          test_event_id: eventsSelected[i],
+          patient_id: patientId,
+        },
+        authToken: idtoken,
+      });
+      console.log("deleteFromDbResponse", deleteFromDbResponse);
+      setDeleting(false);
+      setOpen(false);
+      refresh();
+    }
+  };
 
   return (
-    <Toolbar
-    // sx={{
-    //   pl: { sm: 2 },
-    //   pr: { xs: 1, sm: 1 },
-    //   ...(numSelected > 0 && {
-    //     bgcolor: (theme) =>
-    //       alpha(
-    //         theme.palette.primary.main,
-    //         theme.palette.action.activatedOpacity
-    //       ),
-    //   }),
-    // }}
-    >
-      <Typography
-        sx={{ flex: "1 1 100%" }}
-        variant="h6"
-        id="tableTitle"
-        component="div"
+    <div>
+      <Toolbar
+      // sx={{
+      //   pl: { sm: 2 },
+      //   pr: { xs: 1, sm: 1 },
+      //   ...(numSelected > 0 && {
+      //     bgcolor: (theme) =>
+      //       alpha(
+      //         theme.palette.primary.main,
+      //         theme.palette.action.activatedOpacity
+      //       ),
+      //   }),
+      // }}
       >
-        All Test Events
-      </Typography>
-      <Button variant="outlined" size="small">
-        Delete
-      </Button>
-      {/* <Button variant="contained" size="small" onClick={setOpenNewTest}>
-        New
-      </Button> */}
-    </Toolbar>
+        <Typography
+          sx={{ flex: "1 1 100%" }}
+          variant="h6"
+          id="tableTitle"
+          component="div"
+        >
+          All Test Events
+        </Typography>
+        <Button
+          variant="outlined"
+          size="small"
+          onClick={handleOpenDeleteDialog}
+        >
+          Delete
+        </Button>
+      </Toolbar>
+      <Dialog
+        open={open}
+        onClose={handleCloseDeleteDialog}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Are you sure you want to delete these past test events?"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Once the test events have been deleted, they can't be recovered.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDeleteDialog}>Cancel</Button>
+          <LoadingButton
+            onClick={handleDeleteTestEvents}
+            autoFocus
+            loading={deleting}
+          >
+            Delete
+          </LoadingButton>
+        </DialogActions>
+      </Dialog>
+    </div>
   );
 }
 
 EnhancedTableToolbar.propTypes = {
   numSelected: PropTypes.number.isRequired,
 };
+
+function ConfirmDelete() {
+  const [open, setOpen] = React.useState(false);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  return (
+    <div>
+      <Button variant="outlined" onClick={handleClickOpen}>
+        Open alert dialog
+      </Button>
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Use Google's location service?"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Let Google help apps determine location. This means sending
+            anonymous location data to Google, even when no apps are running.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Disagree</Button>
+          <Button onClick={handleClose} autoFocus>
+            Agree
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </div>
+  );
+}
 
 export default function TestEventsTable({
   openNewTest,
@@ -241,12 +376,16 @@ export default function TestEventsTable({
   const navigate = useNavigate();
 
   const fetchData = async () => {
-    let resTestEvents = await API.graphql(
-      graphqlOperation(getTestEvents, {
+    let sesh = await Auth.currentSession();
+    let idtoken = sesh.idToken.jwtToken;
+    let resTestEvents = await API.graphql({
+      query: getTestEvents,
+      variables: {
         patient_id: patient_id,
         sort: "asc",
-      })
-    );
+      },
+      authToken: idtoken,
+    });
 
     console.log("restestevents", resTestEvents);
     setRows(resTestEvents.data.getTestEvents);
@@ -269,6 +408,7 @@ export default function TestEventsTable({
       return;
     }
     setSelected([]);
+    console.log("selected", selected);
   };
 
   const handleClick = (event, test_event_id) => {
@@ -307,6 +447,7 @@ export default function TestEventsTable({
       );
     }
     setSelected(newSelected);
+    console.log("selected", selected);
   };
 
   const handleChangePage = (event, newPage) => {
@@ -333,7 +474,9 @@ export default function TestEventsTable({
       {/* <Paper sx={{ width: "100%", mb: 2 }}> */}
       <EnhancedTableToolbar
         numSelected={selected.length}
-        setOpenNewTest={setOpenNewTest}
+        eventsSelected={selected}
+        patientId={patient_id}
+        refresh={fetchData}
       />
       <TableContainer>
         <Table

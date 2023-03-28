@@ -21,7 +21,15 @@ import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import dayjs from "dayjs";
 import LoadingButton from "@mui/lab/LoadingButton";
-const { Amplify, API, graphqlOperation } = require("aws-amplify");
+import { GRAPHQL_AUTH_MODE } from "@aws-amplify/api";
+
+const {
+  Amplify,
+  API,
+  graphqlOperation,
+  Auth,
+  Storage,
+} = require("aws-amplify");
 const awsconfig = require("../aws-exports");
 const {
   getPatientById,
@@ -41,45 +49,69 @@ export function TestDetails() {
   let navigate = useNavigate();
 
   const fetchData = async () => {
+    let sesh = await Auth.currentSession();
+    let idtoken = sesh.idToken.jwtToken;
     let reslambdaauth = await API.graphql({
       query: getTestEventById,
-      variables: { input: { test_event_id: test_event_id } },
-      authMode: "AWS_LAMBDA",
-      authToken: "1",
+      variables: { test_event_id: test_event_id, patient_id: patient_id },
+      // authMode: GRAPHQL_AUTH_MODE.AWS_LAMBDA,
+      authToken: `${idtoken}`,
+      // headers: {
+      //   Authorization: `prefix-${idtoken}`,
+      // },
     });
     console.log("reslambdaauth", reslambdaauth);
-    let resPatient = await API.graphql(
-      graphqlOperation(getPatientById, { patient_id: patient_id })
-    );
+    let resPatient = await API.graphql({
+      query: getPatientById,
+      variables: { patient_id: patient_id },
+      authToken: idtoken,
+    });
     setPatientName(resPatient.data.getPatientById.name);
-    let resTest = await API.graphql(
-      graphqlOperation(getTestEventById, { test_event_id: test_event_id })
-    );
+    let resTest = await API.graphql({
+      query: getTestEventById,
+      variables: {
+        test_event_id: test_event_id,
+        patient_id: patient_id,
+      },
+      authToken: idtoken,
+    });
 
     setTestEvent(resTest.data.getTestEventById);
   };
 
   const fetchMeasurement = async () => {
-    if (testEvent) {
-      let resmeasurement = await API.graphql(
-        graphqlOperation(getMeasurementData, {
-          test_event_id: test_event_id,
-          test_type: "sit-to-stand",
-          year: dayjs(testEvent.start_time).year(),
-          month: dayjs(testEvent.start_time).month() + 1,
-          day: dayjs(testEvent.start_time).date(),
-          patient_id: patient_id,
-          measurement: measurementSelected,
-        })
-      );
-      setMeasurementData(
-        resmeasurement.data.getMeasurementData.ts.map((ts, i) => ({
-          ts: ts,
-          val: resmeasurement.data.getMeasurementData.val[i],
-        }))
-      );
-      console.log("measurementData", measurementData);
-    }
+    console.log("76");
+    let sesh = await Auth.currentSession();
+    let idtoken = sesh.idToken.jwtToken;
+    console.log("idtoken", idtoken);
+
+    // todo: comment
+    // if (testEvent) {
+    let resmeasurement = await API.graphql({
+      query: getMeasurementData,
+      variables: {
+        test_event_id: test_event_id,
+        test_type: "sit-to-stand",
+        year: dayjs(testEvent.start_time).year(),
+        month: dayjs(testEvent.start_time).month() + 1,
+        day: dayjs(testEvent.start_time).date(),
+        patient_id: patient_id,
+        measurement: measurementSelected,
+      },
+      // authMode: GRAPHQL_AUTH_MODE.AWS_LAMBDA,
+      // authToken: `1`,
+
+      authToken: `${idtoken}`,
+    });
+    console.log("resmeasurement", resmeasurement);
+    setMeasurementData(
+      resmeasurement.data.getMeasurementData.ts.map((ts, i) => ({
+        ts: ts,
+        val: resmeasurement.data.getMeasurementData.val[i],
+      }))
+    );
+    console.log("measurementData", measurementData);
+    // }
   };
 
   useEffect(() => {
@@ -87,6 +119,7 @@ export function TestDetails() {
   }, []);
 
   useEffect(() => {
+    console.log("112");
     fetchMeasurement();
   }, [measurementSelected]);
 
@@ -96,9 +129,13 @@ export function TestDetails() {
   };
 
   const handleDownload = async (e) => {
+    let sesh = await Auth.currentSession();
+    let idtoken = sesh.idToken.jwtToken;
+
     setDownloading(true);
-    let resdownload = await API.graphql(
-      graphqlOperation(downloadTestEventDetails, {
+    let resdownload = await API.graphql({
+      query: downloadTestEventDetails,
+      variables: {
         test_event_id: test_event_id,
         test_type: "sit-to-stand",
         year: dayjs(testEvent.start_time).year(),
@@ -107,14 +144,27 @@ export function TestDetails() {
         patient_id: patient_id,
         measurement: measurementSelected,
         patient_name: patientName,
-      })
-    );
-    let url = resdownload.data.downloadTestEventDetails;
-    console.log("url", url);
-    let link = document.createElement("a");
-    link.download = url;
-    link.href = url;
-    link.click();
+      },
+      authToken: idtoken,
+    });
+    let pdfUrl = resdownload.data.downloadTestEventDetails.pdf_url;
+    // window.open(pdfUrl);
+    let rawUrl = resdownload.data.downloadTestEventDetails.raw_url;
+    // window.open(rawUrl);
+
+    // pdfUrl = "a";
+    // rawUrl = "b";
+    console.log("pdfUrl", pdfUrl);
+    console.log("rawUrl", rawUrl);
+
+    let downloadLink = document.createElement("a");
+    downloadLink.download = rawUrl;
+    downloadLink.href = rawUrl;
+    downloadLink.click();
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    downloadLink.download = pdfUrl;
+    downloadLink.href = pdfUrl;
+    downloadLink.click();
     setDownloading(false);
   };
 
@@ -134,7 +184,7 @@ export function TestDetails() {
           Test Event Details, {patientName} ({patient_id})
         </Typography>
         <Grid>
-          <Button variant="outlined">Delete</Button>
+          {/* <Button variant="outlined">Delete</Button> */}
           <LoadingButton
             variant="contained"
             loading={downloading}
