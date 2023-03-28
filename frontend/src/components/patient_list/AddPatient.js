@@ -282,7 +282,7 @@ function ManualAddPatient(props) {
     careProviderId,
   } = props;
 
-  async function manuallyAddPatientToDatabase(patient_name, user_id) {
+  async function manuallyAddPatientToDatabase(first_name, last_name, user_id) {
     let sesh = await Auth.currentSession();
     let idtoken = sesh.idToken.jwtToken;
 
@@ -290,7 +290,8 @@ function ManualAddPatient(props) {
       let response = await API.graphql({
         query: createPatient,
         variables: {
-          name: patient_name,
+          first_name: first_name,
+          last_name: last_name,
           patient_id: user_id,
           //manuallyCreated: true
         },
@@ -354,7 +355,8 @@ function ManualAddPatient(props) {
     let newPatientObj = createPatientInfoObj(inputFirstName, inputLastName);
 
     manuallyAddPatientToDatabase(
-      newPatientObj["patient_name"],
+      inputFirstName,
+      inputLastName,
       newPatientObj["user_id"]
     ).then((bool) => {
       if (bool) {
