@@ -53,6 +53,8 @@ export default function AuthenticationPage() {
                   let userGroupArr = user["signInUserSession"]["accessToken"]["payload"]["cognito:groups"];
                   let user_id = user['username'];
 
+                  Auth.currentUserCredentials().then((res) => (console.log("User ", user)));
+
                   if (userGroupArr.includes("care_provider_user")) {
                       navigate('/patientTable');
                       

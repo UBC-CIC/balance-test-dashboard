@@ -76,18 +76,18 @@ export function ManageTests({ rowNum, user_id, patientDataRowsArr, updatePatient
   const [checkboxStates, setCheckboxStates] = React.useState(checkboxInitStateObj);
   const [prevCheckboxStates, setPrevCheckboxStates] = React.useState(checkboxInitStateObj);
   
-  React.useEffect(() => {
-      retrieveAssignedTests(user_id).then((checkbox_obj) => {
+//   React.useEffect(() => {
+//       retrieveAssignedTests(user_id).then((checkbox_obj) => {
           
-          patientDataRowsArr[rowNum].assigned_test_num = Object.values(checkbox_obj).filter(Boolean).length;
-          patientDataRowsArr[rowNum].movements_assigned = checkbox_obj;
-          setCheckboxStates(checkbox_obj);
-          updatePatientDataRowsArr(patientDataRowsArr.slice());
+//           patientDataRowsArr[rowNum].assigned_test_num = Object.values(checkbox_obj).filter(Boolean).length;
+//           patientDataRowsArr[rowNum].movements_assigned = checkbox_obj;
+//           setCheckboxStates(checkbox_obj);
+//           updatePatientDataRowsArr(patientDataRowsArr.slice());
 
-      }).catch((err) => {
-          console.log(err);
-      });
-  }, []);
+//       }).catch((err) => {
+//           console.log(err);
+//       });
+//   }, []);
       
   async function sendTestToPatient(testStr) {
       try {

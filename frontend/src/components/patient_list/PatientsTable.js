@@ -69,172 +69,37 @@ const headerColumns = [
 const testRows = [
   {
     user_id: uuidv4(),
-    patient_name: "John Doe",
+    first_name: "John",
+    last_name: "Doe",
     assigned_test_num: 1,
     last_movement_tested: "Sit-to-Stand",
     last_test_score: 65,
   },
   {
     user_id: uuidv4(),
-    patient_name: "Jane Doe",
+    first_name: "Jane",
+    last_name: "Doe",
     assigned_test_num: 1,
     last_movement_tested: "Sit-to-Stand",
     last_test_score: 45,
   },
   {
     user_id: uuidv4(),
-    patient_name: "Robbie Mac",
+    first_name: "Robbie",
+    last_name: "Mac",
     assigned_test_num: 1,
     last_movement_tested: "Sit-to-Stand",
     last_test_score: 56,
   },
   {
     user_id: uuidv4(),
-    patient_name: "Amanda Spence",
+    first_name: "Amanda",
+    last_name: "Spence",
     assigned_test_num: 1,
     last_movement_tested: "Sit-to-Stand",
     last_test_score: 23,
   },
-  {
-    user_id: uuidv4(),
-    patient_name: "John Doe",
-    assigned_test_num: 1,
-    last_movement_tested: "Sit-to-Stand",
-    last_test_score: 65,
-  },
-  {
-    user_id: uuidv4(),
-    patient_name: "Jane Doe",
-    assigned_test_num: 1,
-    last_movement_tested: "Sit-to-Stand",
-    last_test_score: 45,
-  },
-  {
-    user_id: uuidv4(),
-    patient_name: "Robbie Mac",
-    assigned_test_num: 1,
-    last_movement_tested: "Sit-to-Stand",
-    last_test_score: 56,
-  },
-  {
-    user_id: uuidv4(),
-    patient_name: "Amanda Spence",
-    assigned_test_num: 1,
-    last_movement_tested: "Sit-to-Stand",
-    last_test_score: 23,
-  },
-  {
-    user_id: uuidv4(),
-    patient_name: "John Doe",
-    assigned_test_num: 1,
-    last_movement_tested: "Sit-to-Stand",
-    last_test_score: 65,
-  },
-  {
-    user_id: uuidv4(),
-    patient_name: "Jane Doe",
-    assigned_test_num: 1,
-    last_movement_tested: "Sit-to-Stand",
-    last_test_score: 45,
-  },
-  {
-    user_id: uuidv4(),
-    patient_name: "Robbie Mac",
-    assigned_test_num: 1,
-    last_movement_tested: "Sit-to-Stand",
-    last_test_score: 56,
-  },
-  {
-    user_id: uuidv4(),
-    patient_name: "Amanda Spence",
-    assigned_test_num: 1,
-    last_movement_tested: "Sit-to-Stand",
-    last_test_score: 23,
-  },
-  {
-    user_id: uuidv4(),
-    patient_name: "John Doe",
-    assigned_test_num: 1,
-    last_movement_tested: "Sit-to-Stand",
-    last_test_score: 65,
-  },
-  {
-    user_id: uuidv4(),
-    patient_name: "Jane Doe",
-    assigned_test_num: 1,
-    last_movement_tested: "Sit-to-Stand",
-    last_test_score: 45,
-  },
-  {
-    user_id: uuidv4(),
-    patient_name: "Robbie Mac",
-    assigned_test_num: 1,
-    last_movement_tested: "Sit-to-Stand",
-    last_test_score: 56,
-  },
-  {
-    user_id: uuidv4(),
-    patient_name: "Amanda Spence",
-    assigned_test_num: 1,
-    last_movement_tested: "Sit-to-Stand",
-    last_test_score: 23,
-  },
-  {
-    user_id: uuidv4(),
-    patient_name: "John Doe",
-    assigned_test_num: 1,
-    last_movement_tested: "Sit-to-Stand",
-    last_test_score: 65,
-  },
-  {
-    user_id: uuidv4(),
-    patient_name: "Jane Doe",
-    assigned_test_num: 1,
-    last_movement_tested: "Sit-to-Stand",
-    last_test_score: 45,
-  },
-  {
-    user_id: uuidv4(),
-    patient_name: "Robbie Mac",
-    assigned_test_num: 1,
-    last_movement_tested: "Sit-to-Stand",
-    last_test_score: 56,
-  },
-  {
-    user_id: uuidv4(),
-    patient_name: "Amanda Spence",
-    assigned_test_num: 1,
-    last_movement_tested: "Sit-to-Stand",
-    last_test_score: 23,
-  },
-  {
-    user_id: uuidv4(),
-    patient_name: "John Doe",
-    assigned_test_num: 1,
-    last_movement_tested: "Sit-to-Stand",
-    last_test_score: 65,
-  },
-  {
-    user_id: uuidv4(),
-    patient_name: "Jane Doe",
-    assigned_test_num: 1,
-    last_movement_tested: "Sit-to-Stand",
-    last_test_score: 45,
-  },
-  {
-    user_id: uuidv4(),
-    patient_name: "Robbie Mac",
-    assigned_test_num: 1,
-    last_movement_tested: "Sit-to-Stand",
-    last_test_score: 56,
-  },
-  {
-    user_id: uuidv4(),
-    patient_name: "Amanda Spence",
-    assigned_test_num: 1,
-    last_movement_tested: "Sit-to-Stand",
-    last_test_score: 23,
-  },
+  
 ];
 
 function FixedHeaderRow() {
@@ -291,7 +156,7 @@ function DisplayRows({
           <TableRow>
             {headerColumns.map((column) => {
               const obj_value = row[column.id];
-
+              
               if (column.id === "see_patient_data") {
                 return (
                   <TableCell
@@ -303,9 +168,7 @@ function DisplayRows({
                     {column.id === "see_patient_data" && (
                       <Button
                         onClick={() => {
-                          // navigate("/patient");
-                          // console.log("row", row);
-                          navigate(`/patient:${row.user_id}`);
+                          navigate(`/patient/${row.user_id}`);
                         }}
                       >
                         See Patient Data
@@ -454,6 +317,8 @@ function DisplaySearchResults({
                     )}
                   </TableCell>
                 );
+
+
               } else {
                 const obj_value = row[column.id];
 
@@ -518,10 +383,11 @@ function DisplaySearchResults({
   }
 }
 
-export function PatientsTable({ careProviderId }) {
+export function PatientsTable() {
   let data = [];
   // let data = testRows;
-  careProviderId = 1;
+
+  let careProviderId = 1;
 
   const [patientDataRowsArr, updatePatientDataRowsArr] = React.useState(data);
 
@@ -574,6 +440,7 @@ export function PatientsTable({ careProviderId }) {
         let lastMovementAssigned = res2 == null ? '-' : (res2.data.getTestEvents.length == 0 ? '-' : (res2.data.getTestEvents[0].test_type == null ? '-' : res2.data.getTestEvents[0].test_type));
         let lastScore = res2 == null ? '-' : (res2.data.getTestEvents.length == 0 ? '-' : (res2.data.getTestEvents[0].balance_score == null ? '-' : res2.data.getTestEvents[0].balance_score));
 
+        //patient_name: patientsInfo[p].last_name + ', ' + patientsInfo[p].first_name
         await retrieveAssignedTests(patientsInfo[p].patient_id).then((checkbox_obj) => {
           data.push({
             patient_name: patientsInfo[p].name,
@@ -584,15 +451,6 @@ export function PatientsTable({ careProviderId }) {
             movements_assigned: checkbox_obj
           });
         });
-
-        // data.push({
-        //   patient_name: patientsInfo[p].name,
-        //   user_id: patientsInfo[p].patient_id,
-        //   assigned_test_num: res1.data.getPatientAssignedTests.length,
-        //   last_movement_tested: lastMovementAssigned, 
-        //   last_test_score: lastScore,
-        //   movements_assigned: {}
-        // });
 
       }
       console.log("data", data);
@@ -609,7 +467,19 @@ export function PatientsTable({ careProviderId }) {
     console.log("in useeffect");
     fetchData().then((data) => updatePatientDataRowsArr(data));
 
-    // data = testRows;
+    //for testing frontend
+    // let testData = testRows;
+    // data = [];
+    // for (let p = 0; p < testData.length; p++) {
+    //   data.push({
+    //     patient_name: testData[p].last_name + ', ' + testData[p].first_name,
+    //     user_id: testData[p].user_id,
+    //     assigned_test_num: testData[p].assigned_test_num,
+    //     last_movement_tested: testData[p].last_movement_tested, 
+    //     last_test_score: testData[p].last_test_score,
+    //     movements_assigned: {"sit-to-stand": false, "movement 2": false, "movement 3": false}
+    //   })
+    // }
     // updatePatientDataRowsArr(data);
   }, []);
 
@@ -624,74 +494,76 @@ export function PatientsTable({ careProviderId }) {
   }
     
   return (
-    <Box
-      sx={{
-        display: "flex",
-        width: "100%",
-        overflow: "hidden",
-        flexDirection: "column",
-      }}
-    >
-      <div className="above-table-row">
-        <AddPatientFullModal
-          patientDataRowsArr={patientDataRowsArr}
-          updatePatientDataRowsArr={updatePatientDataRowsArr}
-          careProviderId={careProviderId}
-        />
-        <SearchForPatients
-          patientDataRowsArr={patientDataRowsArr}
-          updatePatientDataRowsArr={updatePatientDataRowsArr}
-          searchResults={searchResults}
-          setSearchResults={setSearchResults}
-          setTablePage={setTablePage}
-        />
-      </div>
-
-      <Box sx={{ color: "#000000", width: "100%" }}>
-        <TableContainer
-          sx={{
-            maxWidth: "95%",
-            margin: "0 2.5% 0 2.5%",
-            border: 1,
-            minHeight: 100,
-            maxHeight: 500,
-            overflow: "auto",
-          }}
-        >
-          <Table stickyHeader>
-            <TableHead>{FixedHeaderRow()}</TableHead>
-
-            <TableBody>
-              {searchResults.length > 0
-                ? DisplaySearchResults({
-                    tablePage,
-                    rowsPerTablePage,
-                    searchResults,
-                    setSearchResults,
-                    patientDataRowsArr,
-                    updatePatientDataRowsArr,
-                  })
-                : DisplayRows({
-                    tablePage,
-                    rowsPerTablePage,
-                    patientDataRowsArr,
-                    updatePatientDataRowsArr,
-                    loading,
-                  })}
-            </TableBody>
-          </Table>
-
-          <TablePagination
-            rowsPerPageOptions={[10, 25, 50]}
-            component="div"
-            count={paginationCount}
-            rowsPerPage={rowsPerTablePage}
-            page={tablePage}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-            sx={{ borderTop: 1, borderColor: "#000000", position: "sticky" }}
+    <Box sx={{display: 'flex', justifyContent: 'center', width: '100%'}}>
+      <Box
+        sx={{
+          display: "flex",
+          width: "100%",
+          overflow: "hidden",
+          flexDirection: "column",
+        }}
+      >
+        <div className="above-table-row">
+          <AddPatientFullModal
+            patientDataRowsArr={patientDataRowsArr}
+            updatePatientDataRowsArr={updatePatientDataRowsArr}
+            careProviderId={careProviderId}
           />
-        </TableContainer>
+          <SearchForPatients
+            patientDataRowsArr={patientDataRowsArr}
+            updatePatientDataRowsArr={updatePatientDataRowsArr}
+            searchResults={searchResults}
+            setSearchResults={setSearchResults}
+            setTablePage={setTablePage}
+          />
+        </div>
+
+        <Box sx={{ color: "#000000", width: "100%" }}>
+          <TableContainer
+            sx={{
+              maxWidth: "95%",
+              margin: "0 2% 0 2%",
+              border: 1,
+              minHeight: 100,
+              maxHeight: 500,
+              overflow: "auto",
+            }}
+          >
+            <Table stickyHeader>
+              <TableHead>{FixedHeaderRow()}</TableHead>
+
+              <TableBody>
+                {searchResults.length > 0
+                  ? DisplaySearchResults({
+                      tablePage,
+                      rowsPerTablePage,
+                      searchResults,
+                      setSearchResults,
+                      patientDataRowsArr,
+                      updatePatientDataRowsArr,
+                    })
+                  : DisplayRows({
+                      tablePage,
+                      rowsPerTablePage,
+                      patientDataRowsArr,
+                      updatePatientDataRowsArr,
+                      loading,
+                    })}
+              </TableBody>
+            </Table>
+
+            <TablePagination
+              rowsPerPageOptions={[10, 25, 50]}
+              component="div"
+              count={paginationCount}
+              rowsPerPage={rowsPerTablePage}
+              page={tablePage}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+              sx={{ borderTop: 1, borderColor: "#000000", position: "sticky" }}
+            />
+          </TableContainer>
+        </Box>
       </Box>
     </Box>
     

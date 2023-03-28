@@ -23,13 +23,13 @@ export default function SignIn() {
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-    });
-    Auth.signIn(data.get("email"), data.get("password"))
-      .then((user) => console.log(user))
-      .catch((err) => console.log(err));
+    // console.log({
+    //   email: data.get("email"),
+    //   password: data.get("password"),
+    // });
+    // Auth.signIn(data.get("email"), data.get("password"))
+    //   .then((user) => console.log(user))
+    //   .catch((err) => console.log(err));
   };
 
   return (

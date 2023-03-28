@@ -33,7 +33,7 @@ import {
   getTestEvents,
 } from "../../graphql/queries";
 
-const { Amplify, API, graphqlOperation } = require("aws-amplify");
+const { Amplify, API, Auth, graphqlOperation } = require("aws-amplify");
 const awsconfig = require("../../aws-exports");
 const {
   createAndAssignTest,
@@ -180,7 +180,7 @@ function PatientPage() {
         <Grid item>
           <Button
             onClick={() => {
-              navigate("/");
+              navigate("/patientTable");
             }}
           >
             Back

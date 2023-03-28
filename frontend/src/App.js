@@ -31,53 +31,15 @@ import {
   BrowserRouter,
 } from "react-router-dom";
 import React from "react";
+import { Amplify } from "aws-amplify";
+import awsconfig from "./aws-exports";
+
+Amplify.configure(awsconfig);
 
 function App() {
   const [loginState, setLoginState] = React.useState(false);
 
-  // return authState === AuthState.SignedIn && user ? (
-  //   <ThemeProvider theme={theme}>
-  //     <UserContext.Provider value={user}>
-  //       <div className="App">
-  //         <Navigation
-  //           isLoading={isLoading}
-  //           userName={user.username}
-  //           userId={user.userId}
-  //           userDetail={userDetail}
-  //           patients={patients}
-  //           authState={authState}
-  //         />
-  //       </div>
-  //     </UserContext.Provider>
-  //   </ThemeProvider>
-  // ) : (
-  //   <div className="App">
-  //     <ResponsiveAppBar />
-  //     <Authenticator>
-  //       {({ signOut, user }) => (
-  //         <main>
-  //           <h1>Hello {user.username}</h1>
-  //           <button onClick={signOut}>Sign out</button>
-  //         </main>
-  //       )}
-  //     </Authenticator>
-  //   </div>
-  // );
   const theme = createTheme();
-  // return (
-  //   <ThemeProvider theme={theme}>
-  //     <Navbar />
-
-  //     <Container maxWidth="lg">
-  //       {/* <PatientPage /> */}
-  //       <TestDetails />
-  //     </Container>
-  //   </ThemeProvider>
-  // );
-  // return <SignUp />;
-  // return <PatientsTable />;
-  // return <EventsTable />;
-  // return <ScoreChart />;
 
   async function setAuthListener() {
     Hub.listen('auth', (listenerData) => {
@@ -98,7 +60,11 @@ function App() {
   }
 
   React.useEffect(() => {
-    console.log("Login state: ", loginState);
+    setAuthListener();
+  }, [])
+
+  React.useEffect(() => {
+    console.log("Login state (App): ", loginState);
     
     const { userInfo } = Auth.currentAuthenticatedUser()
                         .then((user) => {
@@ -110,8 +76,7 @@ function App() {
                           console.log(err);
                         });
 
-    setAuthListener();
-  }, [])
+  }, [loginState]);
   
   return (
     <>
@@ -128,15 +93,9 @@ function App() {
                 <Route
                   path="patient/:patient_id"
                   element={
-                    <PatientPage
-                    // 217016f5-3dbf-41b3-8438-b414c2a95f0d
-                    // patient_id={"217016f5-3dbf-41b3-8438-b414c2a95f0d"}
-                    // patient_name={"Albert Pham"}
-                    />
+                    <PatientPage />
                   }
                 />
-                {/* <Route path="signIn" element={<SignIn />} />
-                <Route path="signUp" element={<SignUp />} /> */}
                 <Route
                   path="testDetails/:patient_id/:test_event_id"
                   element={<TestDetails />}
