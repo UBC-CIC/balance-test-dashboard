@@ -1,15 +1,7 @@
 {
   "api": {
     "balancetest": {
-      "dependsOn": [
-        {
-          "attributes": [
-            "UserPoolId"
-          ],
-          "category": "auth",
-          "resourceName": "balancetest6a22503d"
-        }
-      ],
+      "dependsOn": [],
       "output": {
         "authConfig": {
           "additionalAuthenticationProviders": [
@@ -20,19 +12,13 @@
                 "description": ""
               },
               "authenticationType": "API_KEY"
-            },
-            {
-              "authenticationType": "AWS_LAMBDA",
-              "lambdaAuthorizerConfig": {
-                "lambdaFunction": "graphQlLambdaAuthorizera1fc2e92",
-                "ttlSeconds": "300"
-              }
             }
           ],
           "defaultAuthentication": {
-            "authenticationType": "AMAZON_COGNITO_USER_POOLS",
-            "userPoolConfig": {
-              "userPoolId": "authbalancetest6a22503d"
+            "authenticationType": "AWS_LAMBDA",
+            "lambdaAuthorizerConfig": {
+              "lambdaFunction": "graphQlLambdaAuthorizera1fc2e92",
+              "ttlSeconds": "300"
             }
           }
         }
@@ -43,11 +29,11 @@
   },
   "auth": {
     "balancetest6a22503d": {
-      "customAuth": false,
-      "dependsOn": [],
-      "providerPlugin": "awscloudformation",
       "service": "Cognito",
-      "serviceType": "imported"
+      "serviceType": "imported",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": [],
+      "customAuth": false
     }
   },
   "function": {
@@ -213,10 +199,10 @@
   },
   "storage": {
     "balancetest89613ef5": {
-      "dependsOn": [],
-      "providerPlugin": "awscloudformation",
       "service": "S3",
-      "serviceType": "imported"
+      "serviceType": "imported",
+      "providerPlugin": "awscloudformation",
+      "dependsOn": []
     }
   }
 }
