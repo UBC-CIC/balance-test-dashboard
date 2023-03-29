@@ -135,7 +135,9 @@ export class AppsyncStack extends Stack {
             name: s3DownloadAppsyncFunctionName,
             dataSource: generateReportLambdaDataSource,
             runtime: appsync.FunctionRuntime.JS_1_0_0,
-            // code: 
+            // code: ,
+            // requestMappingTemplate: ,
+            // responseMappingTempalte: ,
         });
 
         const s3DataRetrievalAppsyncFunction = new appsync.AppsyncFunction(this, s3DataRetrievalAppsyncFunctionName, {
@@ -143,7 +145,9 @@ export class AppsyncStack extends Stack {
             name: s3DataRetrievalAppsyncFunctionName,
             dataSource: queryS3LambdaDataSource,
             runtime: appsync.FunctionRuntime.JS_1_0_0,
-            // code: 
+            // code: ,
+            // requestMappingTemplate: ,
+            // responseMappingTempalte: ,
         });
 
         const postgresqlRDSAppsyncFunction = new appsync.AppsyncFunction(this, postgresqlRDSAppsyncFunctionName, {
@@ -151,7 +155,9 @@ export class AppsyncStack extends Stack {
             name: postgresqlRDSAppsyncFunctionName,
             dataSource: postgresqlRDSConnectLambdaDataSource,
             runtime: appsync.FunctionRuntime.JS_1_0_0,
-            // code: 
+            // code: ,
+            // requestMappingTemplate: ,
+            // responseMappingTempalte: ,
         });
         
         const deleteEventAppsyncFunction = new appsync.AppsyncFunction(this, deleteEventAppsyncFunctionName, {
@@ -159,8 +165,11 @@ export class AppsyncStack extends Stack {
             name: deleteEventAppsyncFunctionName,
             dataSource: deleteEventLambdaDataSource,
             runtime: appsync.FunctionRuntime.JS_1_0_0,
-            // code: 
+            // code: ,
+            // requestMappingTemplate: ,
+            // responseMappingTempalte: ,
         });
         
+        // TODO: make the queries
     }
 }

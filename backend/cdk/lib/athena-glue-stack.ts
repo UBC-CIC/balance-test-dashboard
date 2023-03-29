@@ -7,6 +7,7 @@ import * as logs from "aws-cdk-lib/aws-logs";
 import { DataWorkflowStack } from './data-workflow-stack';
 import { VPCStack } from "./vpc-stack";
 import * as cdk from 'aws-cdk-lib';
+import * as console from "console"; //TODO: remove after testing
 
 export class AthenaGlueStack extends Stack {
 
@@ -28,7 +29,7 @@ export class AthenaGlueStack extends Stack {
       }
 
       //TODO: check if props['env']['account'] gives account id
-      
+      // make Glue database
       const glueDb = new glue.CfnDatabase(this, glueDbName, {
         catalogId: accountId,
         databaseInput: {
@@ -48,7 +49,7 @@ export class AthenaGlueStack extends Stack {
         assumedBy: new iam.ServicePrincipal("lambda.amazonaws.com"),
         roleName: glueSensorDataCrawlerRoleName,
         description: "Role gives access to appropriate S3 functions needed for crawling data with Glue.",
-        inlinePolicies: { ["BalanceTest-athenaQueryS3Policy"]: glueSensorDataCrawlerPolicyDocument },
+        inlinePolicies: { ["BalanceTest-glueSensorDataCrawlerPolicy"]: glueSensorDataCrawlerPolicyDocument },
         managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName("AWSGlueServiceRole")]
       });
 

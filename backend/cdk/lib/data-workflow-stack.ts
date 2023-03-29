@@ -49,7 +49,7 @@ export class DataWorkflowStack extends Stack {
       // create log group
       const logGroup = new logs.LogGroup(this, logGroupName, {
         logGroupName: `/aws/lambda/${s3LambdaTriggerName}`,
-        removalPolicy: RemovalPolicy.DESTROY
+        removalPolicy: RemovalPolicy.RETAIN
       });
 
       //create policy document and role for Lambda trigger
@@ -143,10 +143,10 @@ export class DataWorkflowStack extends Stack {
         //vpc: vpcStack.vpc,
       });
 
-      // make log group for Lambda that generates a report
+      // make log group for Lambda that deletes files from S3
       const deleteS3RecordLambdaLogGroup = new logs.LogGroup(this, deleteS3RecordLambdaLogGroupName, {
         logGroupName: `/aws/lambda/${deleteS3RecordLambdaName}`,
-        removalPolicy: RemovalPolicy.DESTROY
+        removalPolicy: RemovalPolicy.RETAIN
       });
 
       //TODO: add the correct restrictive permissions for S3
@@ -186,7 +186,7 @@ export class DataWorkflowStack extends Stack {
         //vpc: vpcStack.vpc,
       });
 
-      //TODO: add sagemaker resource, sagemaker permissions, and a new lambda function for sagemaker if needed
+      //TODO: add new S3 bucket (if needed) and figure out how to store data/model artifacts in there
 
     }
 
