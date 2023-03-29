@@ -14,17 +14,12 @@ import { util } from "@aws-appsync/utils";
 export function request(ctx) {
   console.log("request ctx", ctx);
   const {
-    arguments: { patient_id, from_time, to_time, stat, movement },
+    arguments: { test_event_id, patient_id },
   } = ctx;
-
-  let inputToSql = {
-    avg: "avg(balance_score)",
-    range: "max(balance_score)-min(balance_score)",
-  };
-  let movementSelectionSql = !movement ? "" : `and test_type='${movement}'`;
+  let sql = `delete from "TestEvent" where patient_id='${patient_id}' and test_event_id='${test_event_id}'`;
   return {
     payload: {
-      sql: `select ${inputToSql[stat]} as stat from "TestEvent" where patient_id='${patient_id}' ${movementSelectionSql} and start_time>='${from_time}' and start_time<='${to_time}' and balance_score is not null`,
+      sql: sql,
     },
   };
 }
@@ -45,5 +40,5 @@ export function request(ctx) {
 export function response(ctx) {
   console.log("response ctx", ctx);
   let res = ctx.prev.result.body;
-  return res[0].stat;
+  return res;
 }

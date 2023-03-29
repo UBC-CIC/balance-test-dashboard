@@ -68,7 +68,6 @@ function App() {
     
     const { userInfo } = Auth.currentAuthenticatedUser()
                         .then((user) => {
-                          console.log("Checking current authentication user: ", user['username']);
                           setLoginState(true);
                       
                         }).catch((err) => {

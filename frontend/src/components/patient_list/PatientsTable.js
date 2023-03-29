@@ -21,7 +21,7 @@ import Navbar from "../nav/Navbar";
 
 import { v4 as uuidv4 } from "uuid";
 
-import { Amplify, API, graphqlOperation } from "aws-amplify";
+import { Amplify, API, Auth, graphqlOperation } from "aws-amplify";
 import awsconfig from "../../aws-exports";
 
 import {
@@ -156,7 +156,7 @@ function DisplayRows({
           <TableRow>
             {headerColumns.map((column) => {
               const obj_value = row[column.id];
-              
+
               if (column.id === "see_patient_data") {
                 return (
                   <TableCell
@@ -168,6 +168,8 @@ function DisplayRows({
                     {column.id === "see_patient_data" && (
                       <Button
                         onClick={() => {
+                          // navigate("/patient");
+                          // console.log("row", row);
                           navigate(`/patient/${row.user_id}`);
                         }}
                       >
@@ -184,57 +186,62 @@ function DisplayRows({
                       variant="body"
                       key={column.id}
                       align="left"
-                      sx={{ height: "20px", whiteSpace: "nowrap", color: '#1976d2' }}
+                      sx={{
+                        height: "20px",
+                        whiteSpace: "nowrap",
+                        color: "#1976d2",
+                      }}
                     >
                       {obj_value}
                     </TableCell>
                   );
-                  
                 } else {
                   return (
                     <TableCell
                       variant="body"
                       key={column.id}
                       align="left"
-                      sx={{ height: "20px", whiteSpace: "nowrap", color: 'black' }}
-                    >
-                      {obj_value}
-                    </TableCell>
-                  );
-                }
-              
-              } else if (column.id === "last_test_score") {
-                  
-                  return (
-                    <TableCell
-                      variant="body"
-                      key={column.id}
-                      align="left"
-                      sx={() => {
-                        if (obj_value >= 50) {
-                          return {
-                            color: "green",
-                            height: "20px",
-                            whiteSpace: "nowrap",
-                          };
-                        } else if (obj_value >= 0) {
-                          return {
-                            color: "red",
-                            height: "20px",
-                            whiteSpace: "nowrap",
-                          };
-                        } else {
-                          return {
-                            color: "black",
-                            height: "20px",
-                            whiteSpace: "nowrap",
-                          };
-                        }
+                      sx={{
+                        height: "20px",
+                        whiteSpace: "nowrap",
+                        color: "black",
                       }}
                     >
                       {obj_value}
                     </TableCell>
                   );
+                }
+              } else if (column.id === "last_test_score") {
+                return (
+                  <TableCell
+                    variant="body"
+                    key={column.id}
+                    align="left"
+                    sx={() => {
+                      if (obj_value >= 50) {
+                        return {
+                          color: "green",
+                          height: "20px",
+                          whiteSpace: "nowrap",
+                        };
+                      } else if (obj_value >= 0) {
+                        return {
+                          color: "red",
+                          height: "20px",
+                          whiteSpace: "nowrap",
+                        };
+                      } else {
+                        return {
+                          color: "black",
+                          height: "20px",
+                          whiteSpace: "nowrap",
+                        };
+                      }
+                    }}
+                  >
+                    {obj_value}
+                  </TableCell>
+                );
               } else {
                 return (
                   <TableCell
@@ -257,7 +264,6 @@ function DisplayRows({
                   </TableCell>
                 );
               }
-              
             })}
           </TableRow>
         );
@@ -296,6 +302,7 @@ function DisplaySearchResults({
         return (
           <TableRow>
             {headerColumns.map((column) => {
+              
               if (column.id === "see_patient_data") {
                 return (
                   <TableCell
@@ -307,9 +314,9 @@ function DisplaySearchResults({
                     {column.id === "see_patient_data" && (
                       <Button
                         onClick={() => {
-                          // console.log("row.patient_id", row.patient_id);
-                          // navigate(`/patient:${row.patient_id}`);
-                          navigate(`/patient`);
+                          // console.log("row.patient_id", row.user_id);
+                          navigate(`/patient/${row.user_id}`);
+                          // navigate(`/patient`);
                         }}
                       >
                         See Patient Data
@@ -317,8 +324,6 @@ function DisplaySearchResults({
                     )}
                   </TableCell>
                 );
-
-
               } else {
                 const obj_value = row[column.id];
 
@@ -383,11 +388,10 @@ function DisplaySearchResults({
   }
 }
 
-export function PatientsTable() {
+export function PatientsTable({ careProviderId }) {
   let data = [];
   // let data = testRows;
-
-  let careProviderId = 1;
+  careProviderId = 1;
 
   const [patientDataRowsArr, updatePatientDataRowsArr] = React.useState(data);
 
@@ -402,61 +406,90 @@ export function PatientsTable() {
   };
 
   async function fetchData() {
+    let sesh = await Auth.currentSession();
+    let idtoken = sesh.idToken.jwtToken;
     let data = [];
     console.log("in fetchdata");
     try {
       console.log("in fetchdata try block");
-      let response = await API.graphql(
-        graphqlOperation(getPatientsForCareprovider, {
-          care_provider_id: careProviderId
-        })
-      );
+      let response = await API.graphql({
+        query: getPatientsForCareprovider,
+        variables: {
+          care_provider_id: careProviderId,
+        },
+        authToken: idtoken,
+      });
 
       let patientsInfo = response.data.getPatientsForCareprovider;
       console.log("patientsInfo", patientsInfo);
 
       for (let p = 0; p < patientsInfo.length; p++) {
-
-        let res1 = await API.graphql(
-          graphqlOperation(getPatientAssignedTests, {
-            patient_id: patientsInfo[p].patient_id
-          })
-        );
+        let res1 = await API.graphql({
+          query: getPatientAssignedTests,
+          variables: {
+            patient_id: patientsInfo[p].patient_id,
+          },
+          authToken: idtoken,
+        });
         console.log("res1", res1);
 
-        let res2 = await API.graphql(
-          graphqlOperation(getTestEvents, {
+        let res2 = await API.graphql({
+          query: getTestEvents,
+          variables: {
             patient_id: patientsInfo[p].patient_id,
             sort: "desc",
-            count: 1
-          })
-        ).catch((res) => {
+            count: 1,
+          },
+          authToken: idtoken,
+        }).catch((res) => {
           if (res == null) {
             return 0;
           }
         });
         console.log("res2", res2);
 
-        let lastMovementAssigned = res2 == null ? '-' : (res2.data.getTestEvents.length == 0 ? '-' : (res2.data.getTestEvents[0].test_type == null ? '-' : res2.data.getTestEvents[0].test_type));
-        let lastScore = res2 == null ? '-' : (res2.data.getTestEvents.length == 0 ? '-' : (res2.data.getTestEvents[0].balance_score == null ? '-' : res2.data.getTestEvents[0].balance_score));
+        let lastMovementAssigned =
+          res2 == null
+            ? "-"
+            : res2.data.getTestEvents.length == 0
+            ? "-"
+            : res2.data.getTestEvents[0].test_type == null
+            ? "-"
+            : res2.data.getTestEvents[0].test_type;
+        let lastScore =
+          res2 == null
+            ? "-"
+            : res2.data.getTestEvents.length == 0
+            ? "-"
+            : res2.data.getTestEvents[0].balance_score == null
+            ? "-"
+            : res2.data.getTestEvents[0].balance_score;
 
-        //patient_name: patientsInfo[p].last_name + ', ' + patientsInfo[p].first_name
-        await retrieveAssignedTests(patientsInfo[p].patient_id).then((checkbox_obj) => {
-          data.push({
-            patient_name: patientsInfo[p].name,
-            user_id: patientsInfo[p].patient_id,
-            assigned_test_num: res1.data.getPatientAssignedTests.length,
-            last_movement_tested: lastMovementAssigned, 
-            last_test_score: lastScore,
-            movements_assigned: checkbox_obj
-          });
-        });
+        await retrieveAssignedTests(patientsInfo[p].patient_id).then(
+          (checkbox_obj) => {
+            data.push({
+              patient_name: patientsInfo[p].last_name + ", " + patientsInfo[p].first_name,
+              user_id: patientsInfo[p].patient_id,
+              assigned_test_num: res1.data.getPatientAssignedTests.length,
+              last_movement_tested: lastMovementAssigned,
+              last_test_score: lastScore,
+              movements_assigned: checkbox_obj,
+            });
+          }
+        );
 
+        // data.push({
+        //   patient_name: patientsInfo[p].name,
+        //   user_id: patientsInfo[p].patient_id,
+        //   assigned_test_num: res1.data.getPatientAssignedTests.length,
+        //   last_movement_tested: lastMovementAssigned,
+        //   last_test_score: lastScore,
+        //   movements_assigned: {}
+        // });
       }
       console.log("data", data);
       setLoading(false);
       return data;
-      
     } catch (err) {
       console.log(err);
       return new Promise((resolve, reject) => reject(err));
@@ -467,7 +500,7 @@ export function PatientsTable() {
     console.log("in useeffect");
     fetchData().then((data) => updatePatientDataRowsArr(data));
 
-    //for testing frontend
+    // for testing frontend
     // let testData = testRows;
     // data = [];
     // for (let p = 0; p < testData.length; p++) {
@@ -492,80 +525,77 @@ export function PatientsTable() {
   if (searchResults.length > 0) {
     paginationCount = searchResults.length;
   }
-    
+
   return (
-    <Box sx={{display: 'flex', justifyContent: 'center', width: '100%'}}>
-      <Box
-        sx={{
-          display: "flex",
-          width: "100%",
-          overflow: "hidden",
-          flexDirection: "column",
-        }}
-      >
-        <div className="above-table-row">
-          <AddPatientFullModal
-            patientDataRowsArr={patientDataRowsArr}
-            updatePatientDataRowsArr={updatePatientDataRowsArr}
-            careProviderId={careProviderId}
+    <Box
+      sx={{
+        display: "flex",
+        width: "100%",
+        overflow: "hidden",
+        flexDirection: "column",
+      }}
+    >
+      <div className="above-table-row">
+        <AddPatientFullModal
+          patientDataRowsArr={patientDataRowsArr}
+          updatePatientDataRowsArr={updatePatientDataRowsArr}
+          careProviderId={careProviderId}
+        />
+        <SearchForPatients
+          patientDataRowsArr={patientDataRowsArr}
+          updatePatientDataRowsArr={updatePatientDataRowsArr}
+          searchResults={searchResults}
+          setSearchResults={setSearchResults}
+          setTablePage={setTablePage}
+        />
+      </div>
+
+      <Box sx={{ color: "#000000", width: "100%" }}>
+        <TableContainer
+          sx={{
+            maxWidth: "95%",
+            margin: "0 2.5% 0 2.5%",
+            border: 1,
+            minHeight: 100,
+            maxHeight: 500,
+            overflow: "auto",
+          }}
+        >
+          <Table stickyHeader>
+            <TableHead>{FixedHeaderRow()}</TableHead>
+
+            <TableBody>
+              {searchResults.length > 0
+                ? DisplaySearchResults({
+                    tablePage,
+                    rowsPerTablePage,
+                    searchResults,
+                    setSearchResults,
+                    patientDataRowsArr,
+                    updatePatientDataRowsArr,
+                  })
+                : DisplayRows({
+                    tablePage,
+                    rowsPerTablePage,
+                    patientDataRowsArr,
+                    updatePatientDataRowsArr,
+                    loading,
+                  })}
+            </TableBody>
+          </Table>
+
+          <TablePagination
+            rowsPerPageOptions={[10, 25, 50]}
+            component="div"
+            count={paginationCount}
+            rowsPerPage={rowsPerTablePage}
+            page={tablePage}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+            sx={{ borderTop: 1, borderColor: "#000000", position: "sticky" }}
           />
-          <SearchForPatients
-            patientDataRowsArr={patientDataRowsArr}
-            updatePatientDataRowsArr={updatePatientDataRowsArr}
-            searchResults={searchResults}
-            setSearchResults={setSearchResults}
-            setTablePage={setTablePage}
-          />
-        </div>
-
-        <Box sx={{ color: "#000000", width: "100%" }}>
-          <TableContainer
-            sx={{
-              maxWidth: "95%",
-              margin: "0 2% 0 2%",
-              border: 1,
-              minHeight: 100,
-              maxHeight: 500,
-              overflow: "auto",
-            }}
-          >
-            <Table stickyHeader>
-              <TableHead>{FixedHeaderRow()}</TableHead>
-
-              <TableBody>
-                {searchResults.length > 0
-                  ? DisplaySearchResults({
-                      tablePage,
-                      rowsPerTablePage,
-                      searchResults,
-                      setSearchResults,
-                      patientDataRowsArr,
-                      updatePatientDataRowsArr,
-                    })
-                  : DisplayRows({
-                      tablePage,
-                      rowsPerTablePage,
-                      patientDataRowsArr,
-                      updatePatientDataRowsArr,
-                      loading,
-                    })}
-              </TableBody>
-            </Table>
-
-            <TablePagination
-              rowsPerPageOptions={[10, 25, 50]}
-              component="div"
-              count={paginationCount}
-              rowsPerPage={rowsPerTablePage}
-              page={tablePage}
-              onPageChange={handleChangePage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
-              sx={{ borderTop: 1, borderColor: "#000000", position: "sticky" }}
-            />
-          </TableContainer>
-        </Box>
+        </TableContainer>
       </Box>
     </Box>
-    
   );
 }

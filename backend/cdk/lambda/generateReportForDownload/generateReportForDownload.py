@@ -55,6 +55,31 @@ def lambda_handler(event, context):
 
         user_id, movement, year, month, day, test_event_id,  test_event_id2 = extract(
             template, key)
+        pdf_path = f'parquet_data/patient_tests/user_id={user_id}/movement={movement}/year={year}/month={month}/day={day}/test_event_id={test_event_id}/test_event_{test_event_id}.pdf'
+
+        raw_url = s3_client.generate_presigned_url(ClientMethod='get_object',
+                                                   Params={
+                                                       'Bucket': bucket,
+                                                       'Key': key,
+                                                       #    'ResponseContentDisposition': 'attachment;filename=file.csv',
+                                                       #    'ResponseContentType': 'text/csv'
+                                                   },
+                                                   ExpiresIn=60*5,
+                                                   )
+        try:
+            s3_client.head_object(
+                Bucket=bucket, Key=pdf_path)
+            pdf_url = s3_client.generate_presigned_url(ClientMethod='get_object',
+                                                       Params={
+                                                           'Bucket': bucket,
+                                                           'Key': pdf_path
+                                                       },
+                                                       ExpiresIn=60*5
+                                                       )
+
+            return {"status": 200, "body": {'pdf_url': pdf_url, 'raw_url': raw_url}}
+        except:
+            print('pdf not generated before')
 
         # query s3 object to select everything
         sql = "SELECT * FROM s3object s"
@@ -125,17 +150,17 @@ def lambda_handler(event, context):
 
         # s3_client.upload_file(pdf_buffer, bucket, 'test.pdf')
         s3_client.put_object(Body=pdf_buffer, Bucket=bucket,
-                             Key=f'event_reports/{test_event_id}.pdf')
+                             Key=pdf_path)
 
-        url = s3_client.generate_presigned_url(ClientMethod='get_object',
-                                               Params={
-                                                   'Bucket': bucket,
-                                                   'Key': f'event_reports/{test_event_id}.pdf'
-                                               },
-                                               ExpiresIn=60*5
-                                               )
+        pdf_url = s3_client.generate_presigned_url(ClientMethod='get_object',
+                                                   Params={
+                                                       'Bucket': bucket,
+                                                       'Key': pdf_path
+                                                   },
+                                                   ExpiresIn=60*5
+                                                   )
 
-        return {"status": 200, "body": url}
+        return {"status": 200, "body": {'pdf_url': pdf_url, 'raw_url': raw_url}}
 
 
 def extract(template, text):

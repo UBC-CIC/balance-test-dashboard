@@ -14,17 +14,17 @@ import { util } from "@aws-appsync/utils";
 export function request(ctx) {
   console.log("request ctx", ctx);
   const {
-    arguments: { patient_id, from_time, to_time, stat, movement },
+    arguments: { test_event_id, patient_id, year, month, day, test_type },
+    request: {
+      headers: { authorization },
+    },
   } = ctx;
-
-  let inputToSql = {
-    avg: "avg(balance_score)",
-    range: "max(balance_score)-min(balance_score)",
-  };
-  let movementSelectionSql = !movement ? "" : `and test_type='${movement}'`;
   return {
     payload: {
-      sql: `select ${inputToSql[stat]} as stat from "TestEvent" where patient_id='${patient_id}' ${movementSelectionSql} and start_time>='${from_time}' and start_time<='${to_time}' and balance_score is not null`,
+      // todo: replace region
+      pathToJson: `private/ca-central-1:${patient_id}/movement=${test_type}/year=${year}/month=${month}/day=${day}/test_event_id=${test_event_id}.json`,
+      pathToParquet: `parquet_data/patient_tests/user_id=${patient_id}/movement=${test_type}/year=${year}/month=${month}/day=${day}/test_event_id=${test_event_id}`,
+      authorization: authorization,
     },
   };
 }
@@ -45,5 +45,5 @@ export function request(ctx) {
 export function response(ctx) {
   console.log("response ctx", ctx);
   let res = ctx.prev.result.body;
-  return res[0].stat;
+  return res;
 }

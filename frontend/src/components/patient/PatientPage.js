@@ -9,6 +9,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import TextField from "@mui/material/TextField";
 import * as React from "react";
 import dayjs from "dayjs";
+import moment from "moment";
 import { DataGrid } from "@mui/x-data-grid";
 import { Box } from "@mui/material";
 import { RangeChart, ScoreChart } from "./Charts";
@@ -33,7 +34,7 @@ import {
   getTestEvents,
 } from "../../graphql/queries";
 
-const { Amplify, API, Auth, graphqlOperation } = require("aws-amplify");
+const { Amplify, API, graphqlOperation, Auth } = require("aws-amplify");
 const awsconfig = require("../../aws-exports");
 const {
   createAndAssignTest,
@@ -41,6 +42,17 @@ const {
   putTestResult,
 } = require("../../graphql/mutations");
 Amplify.configure(awsconfig);
+// Amplify.configure({
+//   API: {
+//     // aws_appsync_graphqlEndpoint:
+//     //   "https://xxxxxxxxxxxxxxxxxxxxxxxxxx.appsync-api.us-east-1.amazonaws.com/graphql",
+//     // aws_appsync_region: "us-east-1",
+//     // aws_appsync_authenticationType: "NONE",
+//     graphql_headers: async () => ({
+//       Authorization: (await Auth.currentSession()).getIdToken().getJwtToken(),
+//     }),
+//   },
+// });
 
 function PatientPage() {
   // { patient_id, patient_name }
@@ -58,43 +70,64 @@ function PatientPage() {
   const [data, setData] = React.useState([]);
 
   const fetchData = async () => {
+    let sesh = await Auth.currentSession();
+    let idtoken = sesh.idToken.jwtToken;
     // get analytics
-
-    let resWeeklyAvg = await API.graphql(
-      graphqlOperation(getScoreStatsOverTime, {
-        patientId: patient_id,
+    console.log("62");
+    let resWeeklyAvg = await API.graphql({
+      query: getScoreStatsOverTime,
+      variables: {
+        patient_id: patient_id,
         from_time: dayjs().subtract(7, "day").format("YYYY-MM-DD hh:mm:ss"),
         to_time: dayjs().format("YYYY-MM-DD hh:mm:ss"),
         stat: "avg",
-      })
-    );
-    let resMonthlyAvg = await API.graphql(
-      graphqlOperation(getScoreStatsOverTime, {
-        patientId: patient_id,
+      },
+      authToken: idtoken,
+    });
+    console.log("monthly avg input", {
+      patient_id: patient_id,
+      from_time: dayjs().subtract(1, "month").format("YYYY-MM-DD hh:mm:ss"),
+      to_time: dayjs().format("YYYY-MM-DD hh:mm:ss"),
+      stat: "avg",
+    });
+    let resMonthlyAvg = await API.graphql({
+      query: getScoreStatsOverTime,
+      variables: {
+        patient_id: patient_id,
         from_time: dayjs().subtract(1, "month").format("YYYY-MM-DD hh:mm:ss"),
         to_time: dayjs().format("YYYY-MM-DD hh:mm:ss"),
         stat: "avg",
-      })
-    );
+      },
+      authToken: idtoken,
+    });
+    console.log("resMonthlyAvg", resMonthlyAvg);
 
-    setWeeklyAvg(Math.round(resWeeklyAvg.data.getScoreStatsOverTime));
-    setMonthlyAvg(Math.round(resMonthlyAvg.data.getScoreStatsOverTime));
+    // console.log("79");
+    // setWeeklyAvg(Math.round(resWeeklyAvg.data.getScoreStatsOverTime));
+    // setMonthlyAvg(Math.round(resMonthlyAvg.data.getScoreStatsOverTime));
 
     // query test events for the graph
-    let resPatient = await API.graphql(
-      graphqlOperation(getPatientById, { patient_id: patient_id })
-    );
-    setPatientName(resPatient.data.getPatientById.name);
+
+    let resPatient = await API.graphql({
+      query: getPatientById,
+      variables: { patient_id: patient_id },
+      // authMode: "AWS_LAMBDA",
+      authToken: idtoken,
+    });
+    
+    setPatientName(resPatient.data.getPatientById.last_name + ", " + resPatient.data.getPatientById.first_name);
     console.log("resPatient", resPatient);
-    let resEventsGraph = await API.graphql(
-      graphqlOperation(getTestEvents, {
+    let resEventsGraph = await API.graphql({
+      query: getTestEvents,
+      variables: {
         patient_id: patient_id,
         test_type: movementTestSelected,
         from_time: dayjs(fromDate).format("YYYY-MM-DD hh:mm:ss"),
         to_time: dayjs(toDate).format("YYYY-MM-DD hh:mm:ss"),
         sort: "asc",
-      })
-    );
+      },
+      authToken: idtoken,
+    });
 
     console.log("gettesteventsinput", {
       patient_id: patient_id,
@@ -116,7 +149,6 @@ function PatientPage() {
   };
 
   React.useEffect(() => {
-    console.log(patient_id);
     fetchData();
   }, [fromDate, toDate]);
 
@@ -200,8 +232,11 @@ function PatientPage() {
           justifyContent="space-evenly"
           alignItems="flex-start"
         >
-          <AnalyticsCard title="7-day average" value={weeklyAvg} />
-          <AnalyticsCard title="monthly average" value={monthlyAvg} />
+          {/* todo: replace w real data */}
+          {/* <AnalyticsCard title="7-day average" value={weeklyAvg} />
+          <AnalyticsCard title="monthly average" value={monthlyAvg} /> */}
+          <AnalyticsCard title="7-day average" value={70} />
+          <AnalyticsCard title="monthly average" value={65} />
         </Grid>
         {/* graph */}
         <Grid item>
@@ -258,16 +293,26 @@ function PatientPage() {
               <ScoreChart
                 data={
                   movementTestSelected == "sit-to-stand"
-                    ? data.map((te) => ({
-                        start_time: dayjs(te.start_time).format("YYYY MMM D"),
-                        balance_score: te.balance_score,
-                      }))
+                    ? data
+                        .map((te) => ({
+                          start_time: moment(te.start_time).valueOf(),
+                          balance_score: te.balance_score,
+                        }))
+                        .filter(
+                          (i) =>
+                            dayjs(i.start_time).isAfter(fromDate) &&
+                            dayjs(i.start_time).isBefore(toDate)
+                        )
                     : scoreDataMapping[movementTestSelected].filter(
                         (i) =>
                           dayjs(i.date).isAfter(fromDate) &&
                           dayjs(i.date).isBefore(toDate)
                       )
                 }
+                range={[
+                  moment(dayjs(fromDate).format()).valueOf(),
+                  moment(dayjs(toDate).format()).valueOf(),
+                ]}
               />
             )}
           </Grid>

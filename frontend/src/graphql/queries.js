@@ -13,14 +13,16 @@ export const getPatientById = /* GraphQL */ `
   query GetPatientById($patient_id: String!) {
     getPatientById(patient_id: $patient_id) {
       patient_id
-      name
       email
+      first_name
+      last_name
+      privacy_consent_date
     }
   }
 `;
 export const getTestEventById = /* GraphQL */ `
-  query GetTestEventById($test_event_id: String!) {
-    getTestEventById(test_event_id: $test_event_id) {
+  query GetTestEventById($test_event_id: String!, $patient_id: String!) {
+    getTestEventById(test_event_id: $test_event_id, patient_id: $patient_id) {
       test_event_id
       patient_id
       test_type
@@ -36,8 +38,10 @@ export const getPatientsForCareprovider = /* GraphQL */ `
   query GetPatientsForCareprovider($care_provider_id: String!) {
     getPatientsForCareprovider(care_provider_id: $care_provider_id) {
       patient_id
-      name
       email
+      first_name
+      last_name
+      privacy_consent_date
     }
   }
 `;
@@ -45,8 +49,10 @@ export const getAllPatients = /* GraphQL */ `
   query GetAllPatients {
     getAllPatients {
       patient_id
-      name
       email
+      first_name
+      last_name
+      privacy_consent_date
     }
   }
 `;
@@ -98,14 +104,14 @@ export const getAllAvailableTests = /* GraphQL */ `
 `;
 export const getScoreStatsOverTime = /* GraphQL */ `
   query GetScoreStatsOverTime(
-    $patientId: String!
+    $patient_id: String!
     $from_time: String!
     $to_time: String!
     $stat: Stat!
     $movement: String
   ) {
     getScoreStatsOverTime(
-      patientId: $patientId
+      patient_id: $patient_id
       from_time: $from_time
       to_time: $to_time
       stat: $stat
@@ -156,7 +162,6 @@ export const downloadTestEventDetails = /* GraphQL */ `
     $year: Int!
     $month: Int!
     $day: Int!
-    $patient_name: String
     $test_type: String!
   ) {
     downloadTestEventDetails(
@@ -165,8 +170,10 @@ export const downloadTestEventDetails = /* GraphQL */ `
       year: $year
       month: $month
       day: $day
-      patient_name: $patient_name
       test_type: $test_type
-    )
+    ) {
+      pdf_url
+      raw_url
+    }
   }
 `;

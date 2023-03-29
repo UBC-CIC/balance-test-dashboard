@@ -11,8 +11,11 @@ CREATE TABLE "TestEvent" (
 
 CREATE TABLE "Patient" (
   "patient_id" varchar PRIMARY KEY,
-  "name" varchar NOT NULL,
-  "email" varchar
+  "first_name" varchar,
+  "middle_name" varchar,
+  "last_name" varchar,
+  "email" varchar,
+  "privacy_consent_date" timestamp 
 );
 
 CREATE TABLE "CareProvider" (
