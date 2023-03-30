@@ -126,12 +126,18 @@ export function ManageTests({
   async function deleteTestFromPatient(testStr) {
     try {
       console.log("in sendTestToPatient try block");
-      let response = await API.graphql(
-        graphqlOperation(removeTestFromPatient, {
+
+      let sesh = await Auth.currentSession();
+      let idtoken = sesh.idToken.jwtToken;
+
+      let response = await API.graphql({
+        query: removeTestFromPatient, 
+        variables: {
           patient_id: user_id,
           test_type: testStr,
-        })
-      );
+        },
+        authToken: idtoken
+      });
 
       console.log("removeTestFromPatient Response: ");
       console.log(response["data"]);

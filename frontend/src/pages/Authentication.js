@@ -7,8 +7,8 @@ import { Amplify, API, Auth, Hub, graphqlOperation } from "aws-amplify";
 import React from "react";
 import { NavBar } from "../components/nav/Navbar";
 import awsconfig from "../aws-exports";
-import { redirect, useNavigate } from "react-router-dom";
-import { PatientsTable } from "../components/patient_list/PatientsTable";
+import { redirect, useNavigate, Link } from "react-router-dom";
+import { PatientsTable } from "../components/patient_list/PatientsTable"
 import Signin from "../components/nav/SignIn";
 
 import Box from "@mui/material/Box";
@@ -22,6 +22,7 @@ Amplify.configure(awsconfig);
 
 export default function AuthenticationPage() {
   const [showAccessDenied, setShowAccessDenied] = React.useState(false);
+  const navigate = useNavigate();
 
   const handleDeniedClose = () => {
     setShowAccessDenied(false);
@@ -52,54 +53,26 @@ export default function AuthenticationPage() {
     <Box>
       <Authenticator services={authServices}>
         {({ signOut, user }) => {
-          console.log("User: ", user);
+          
+            let userGroupArr = user["signInUserSession"]["accessToken"]["payload"]["cognito:groups"];
+            let user_id = user['username'];
 
-          // Auth.currentSession().then((res) => {
-          //   console.log("ressession", res);
-          //   let idToken = res.getIdToken().payload["cognito:identity-id"];
-          //   console.log("idToken", idToken);
-          // });
-
-          let userGroupArr =
-            user["signInUserSession"]["accessToken"]["payload"][
-              "cognito:groups"
-            ];
-          let user_id = user["username"];
-
-          Auth.currentUserCredentials().then((credentials) => {
-            console.log("identityId", credentials.identityId);
-            if (user["attributes"]["custom:identity_id"] == "null") {
-              console.log("1");
-              Auth.updateUserAttributes(user, {
-                ["custom:identity_id"]: credentials.identityId,
-              }).then((res) => {});
+            if (userGroupArr.includes("care_provider_user")) {
+                navigate('/patientTable');
+                
+            } else {
+                Auth.signOut(); 
+                setShowAccessDenied(true);
             }
-          });
-
-          // remove this
-          if (
-            userGroupArr.includes("care_provider_user") ||
-            userGroupArr.includes("patient_user")
-          ) {
-            return (
-              <>
-                <PatientsTable careProviderId={user_id} />
-                <button onClick={signOut}>Sign out</button>
-              </>
-            );
-          } else {
-            Auth.signOut();
-            setShowAccessDenied(true);
-          }
         }}
       </Authenticator>
       <Snackbar
         open={showAccessDenied}
         autoHideDuration={5000}
-        anchorOrigin={{ horizontal: "center", vertical: "bottom" }}
+        anchorOrigin = {{'horizontal': 'center', 'vertical': 'bottom'}}
         onClose={handleDeniedClose}
         message="No Permissions to Access."
       />
     </Box>
-  );
+  )
 }

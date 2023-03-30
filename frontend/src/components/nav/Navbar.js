@@ -12,14 +12,19 @@ import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, redirect } from "react-router-dom";
+import { Auth, Hub } from 'aws-amplify';
 
 const pages = ["Patients"];
-const settings = ["Profile", "Logout"];
+const settings = ["Log Out"];
 
-function ResponsiveAppBar() {
+function ResponsiveAppBar({ loginState, setLoginState }) {
+  // const { user } = Auth.currentAuthenticatedUser();
+
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
+  
+  // const [loginState, setLoginState] = React.useState(false);
 
   let navigate = useNavigate();
 
@@ -39,129 +44,194 @@ function ResponsiveAppBar() {
     setAnchorElUser(null);
   };
 
+  const handleUserMenuItemClick = (setting) => {
+    setAnchorElUser(null);
+
+    if (setting === "Log Out") {
+      Auth.signOut();
+      // navigate("/");
+    }
+  };
+
+  async function setAuthListener() {
+    Hub.listen('auth', (listenerData) => {
+      switch (listenerData.payload.event) {
+        case "signOut":
+          navigate("/")
+          break;
+        case "signIn":
+          break;
+        default:
+          break;
+      }
+      
+    });
+  }
+
+  React.useEffect(() => {
+    setAuthListener();
+
+    // if (loginState == false) {
+    //   navigate("/");
+    // }
+  }, [])
+
   return (
     <AppBar position="static">
-      <Container maxWidth="xl">
-        <Toolbar disableGutters>
-          {/* <AdbIcon sx={{ display: { xs: "none", md: "flex" }, mr: 1 }} /> */}
-          <Typography
-            variant="h6"
-            noWrap
-            component="a"
-            href="/"
-            sx={{
-              mr: 2,
-              display: { xs: "none", md: "flex" },
-              fontFamily: "monospace",
-              fontWeight: 700,
-              letterSpacing: ".3rem",
-              color: "inherit",
-              textDecoration: "none",
-            }}
-          >
-            HOME
-          </Typography>
-
-          <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
-            <IconButton
-              size="large"
-              aria-label="account of current user"
-              aria-controls="menu-appbar"
-              aria-haspopup="true"
-              onClick={handleOpenNavMenu}
-              color="inherit"
-            >
-              <MenuIcon />
-            </IconButton>
-            <Menu
-              id="menu-appbar"
-              anchorEl={anchorElNav}
-              anchorOrigin={{
-                vertical: "bottom",
-                horizontal: "left",
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "left",
-              }}
-              open={Boolean(anchorElNav)}
-              onClose={handleCloseNavMenu}
+      {loginState === true ? (
+        <Container maxWidth="xl">
+          <Toolbar disableGutters>
+            <Typography
+              align='center'
+              variant="h6"
+              href="/"
+              noWrap
+              component="a"
               sx={{
-                display: { xs: "block", md: "none" },
+                mr: 2,
+                display: { xs: "none", md: "flex" },
+                fontWeight: 500,
+                color: "inherit",
+                textDecoration: "none",
               }}
             >
+              Balance Test
+            </Typography>
+            
+            <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
+              <IconButton
+                size="large"
+                aria-label="account of current user"
+                aria-controls="menu-appbar"
+                aria-haspopup="true"
+                onClick={handleOpenNavMenu}
+                color="inherit"
+              >
+                <MenuIcon />
+              </IconButton>
+              <Menu
+                id="menu-appbar"
+                anchorEl={anchorElNav}
+                anchorOrigin={{
+                  vertical: "bottom",
+                  horizontal: "left",
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: "top",
+                  horizontal: "left",
+                }}
+                open={Boolean(anchorElNav)}
+                onClose={handleCloseNavMenu}
+                sx={{
+                  display: { xs: "block", md: "none" },
+                }}
+              >
+                {pages.map((page) => (
+                  <MenuItem key={page} onClick={handleCloseNavMenu}>
+                    <Typography textAlign="center">
+                      {<Link to="/">{page}</Link>}
+                    </Typography>
+                  </MenuItem>
+                ))}
+              </Menu>
+            </Box>
+            <Typography
+              variant="h6"
+              href="/"
+              noWrap
+              component="a"
+              sx={{
+                mr: 2,
+                display: { xs: "flex", md: "none" },
+                flexGrow: 1,
+                fontWeight: 500,
+                color: "inherit",
+                textDecoration: "none",
+              }}
+            >
+              Balance Test
+            </Typography>
+            <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
               {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center">
-                    {<Link to="/">{page}</Link>}
-                  </Typography>
-                </MenuItem>
+                <Button
+                  key={page}
+                  onClick={handleCloseNavMenu}
+                  sx={{ my: 2, color: "white", display: "block" }}
+                >
+                  {page}
+                </Button>
               ))}
-            </Menu>
-          </Box>
-          <AdbIcon sx={{ display: { xs: "flex", md: "none" }, mr: 1 }} />
+            </Box>
+
+            <Box sx={{ flexGrow: 0 }}>
+              <Tooltip title="Open settings">
+                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                  <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                </IconButton>
+              </Tooltip>
+              <Menu
+                sx={{ mt: "45px" }}
+                id="menu-appbar"
+                anchorEl={anchorElUser}
+                anchorOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
+                }}
+                open={Boolean(anchorElUser)}
+                onClose={handleCloseUserMenu}
+              >
+                {settings.map((setting) => (
+                  <MenuItem key={setting} onClick={() => {handleUserMenuItemClick(setting)}}>
+                    <Typography textAlign="center">{setting}</Typography>
+                  </MenuItem>
+                ))}
+              </Menu>
+            </Box>
+          </Toolbar>
+        </Container>
+
+      ) : (
+        <Toolbar>
           <Typography
+            align='center'
             variant="h6"
+            href="/"
             noWrap
             component="a"
-            href=""
             sx={{
-              mr: 2,
-              display: { xs: "flex", md: "none" },
-              flexGrow: 1,
-              fontFamily: "monospace",
-              fontWeight: 700,
-              letterSpacing: ".3rem",
+              my: 2,
+              display: { xs: "none", md: "flex" },
+              fontWeight: 500,
               color: "inherit",
               textDecoration: "none",
             }}
           >
-            LOGO
+            Balance Test
           </Typography>
-          <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-            {pages.map((page) => (
-              <Button
-                key={page}
-                onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: "white", display: "block" }}
-              >
-                {page}
-              </Button>
-            ))}
-          </Box>
-
-          <Box sx={{ flexGrow: 0 }}>
-            <Tooltip title="Open settings">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
-              </IconButton>
-            </Tooltip>
-            <Menu
-              sx={{ mt: "45px" }}
-              id="menu-appbar"
-              anchorEl={anchorElUser}
-              anchorOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
-              open={Boolean(anchorElUser)}
-              onClose={handleCloseUserMenu}
-            >
-              {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center">{setting}</Typography>
-                </MenuItem>
-              ))}
-            </Menu>
-          </Box>
+          
+          <Typography
+            variant="h6"
+            href="/"
+            noWrap
+            component="a"
+            sx={{
+              my: 2,
+              display: { xs: "flex", md: "none" },
+              fontWeight: 500,
+              color: "inherit",
+              textDecoration: "none",
+            }}
+          >
+            Balance Test
+          </Typography>
         </Toolbar>
-      </Container>
+      )}
     </AppBar>
   );
 }

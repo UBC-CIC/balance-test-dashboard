@@ -69,172 +69,37 @@ const headerColumns = [
 const testRows = [
   {
     user_id: uuidv4(),
-    patient_name: "John Doe",
+    first_name: "John",
+    last_name: "Doe",
     assigned_test_num: 1,
     last_movement_tested: "Sit-to-Stand",
     last_test_score: 65,
   },
   {
     user_id: uuidv4(),
-    patient_name: "Jane Doe",
+    first_name: "Jane",
+    last_name: "Doe",
     assigned_test_num: 1,
     last_movement_tested: "Sit-to-Stand",
     last_test_score: 45,
   },
   {
     user_id: uuidv4(),
-    patient_name: "Robbie Mac",
+    first_name: "Robbie",
+    last_name: "Mac",
     assigned_test_num: 1,
     last_movement_tested: "Sit-to-Stand",
     last_test_score: 56,
   },
   {
     user_id: uuidv4(),
-    patient_name: "Amanda Spence",
+    first_name: "Amanda",
+    last_name: "Spence",
     assigned_test_num: 1,
     last_movement_tested: "Sit-to-Stand",
     last_test_score: 23,
   },
-  {
-    user_id: uuidv4(),
-    patient_name: "John Doe",
-    assigned_test_num: 1,
-    last_movement_tested: "Sit-to-Stand",
-    last_test_score: 65,
-  },
-  {
-    user_id: uuidv4(),
-    patient_name: "Jane Doe",
-    assigned_test_num: 1,
-    last_movement_tested: "Sit-to-Stand",
-    last_test_score: 45,
-  },
-  {
-    user_id: uuidv4(),
-    patient_name: "Robbie Mac",
-    assigned_test_num: 1,
-    last_movement_tested: "Sit-to-Stand",
-    last_test_score: 56,
-  },
-  {
-    user_id: uuidv4(),
-    patient_name: "Amanda Spence",
-    assigned_test_num: 1,
-    last_movement_tested: "Sit-to-Stand",
-    last_test_score: 23,
-  },
-  {
-    user_id: uuidv4(),
-    patient_name: "John Doe",
-    assigned_test_num: 1,
-    last_movement_tested: "Sit-to-Stand",
-    last_test_score: 65,
-  },
-  {
-    user_id: uuidv4(),
-    patient_name: "Jane Doe",
-    assigned_test_num: 1,
-    last_movement_tested: "Sit-to-Stand",
-    last_test_score: 45,
-  },
-  {
-    user_id: uuidv4(),
-    patient_name: "Robbie Mac",
-    assigned_test_num: 1,
-    last_movement_tested: "Sit-to-Stand",
-    last_test_score: 56,
-  },
-  {
-    user_id: uuidv4(),
-    patient_name: "Amanda Spence",
-    assigned_test_num: 1,
-    last_movement_tested: "Sit-to-Stand",
-    last_test_score: 23,
-  },
-  {
-    user_id: uuidv4(),
-    patient_name: "John Doe",
-    assigned_test_num: 1,
-    last_movement_tested: "Sit-to-Stand",
-    last_test_score: 65,
-  },
-  {
-    user_id: uuidv4(),
-    patient_name: "Jane Doe",
-    assigned_test_num: 1,
-    last_movement_tested: "Sit-to-Stand",
-    last_test_score: 45,
-  },
-  {
-    user_id: uuidv4(),
-    patient_name: "Robbie Mac",
-    assigned_test_num: 1,
-    last_movement_tested: "Sit-to-Stand",
-    last_test_score: 56,
-  },
-  {
-    user_id: uuidv4(),
-    patient_name: "Amanda Spence",
-    assigned_test_num: 1,
-    last_movement_tested: "Sit-to-Stand",
-    last_test_score: 23,
-  },
-  {
-    user_id: uuidv4(),
-    patient_name: "John Doe",
-    assigned_test_num: 1,
-    last_movement_tested: "Sit-to-Stand",
-    last_test_score: 65,
-  },
-  {
-    user_id: uuidv4(),
-    patient_name: "Jane Doe",
-    assigned_test_num: 1,
-    last_movement_tested: "Sit-to-Stand",
-    last_test_score: 45,
-  },
-  {
-    user_id: uuidv4(),
-    patient_name: "Robbie Mac",
-    assigned_test_num: 1,
-    last_movement_tested: "Sit-to-Stand",
-    last_test_score: 56,
-  },
-  {
-    user_id: uuidv4(),
-    patient_name: "Amanda Spence",
-    assigned_test_num: 1,
-    last_movement_tested: "Sit-to-Stand",
-    last_test_score: 23,
-  },
-  {
-    user_id: uuidv4(),
-    patient_name: "John Doe",
-    assigned_test_num: 1,
-    last_movement_tested: "Sit-to-Stand",
-    last_test_score: 65,
-  },
-  {
-    user_id: uuidv4(),
-    patient_name: "Jane Doe",
-    assigned_test_num: 1,
-    last_movement_tested: "Sit-to-Stand",
-    last_test_score: 45,
-  },
-  {
-    user_id: uuidv4(),
-    patient_name: "Robbie Mac",
-    assigned_test_num: 1,
-    last_movement_tested: "Sit-to-Stand",
-    last_test_score: 56,
-  },
-  {
-    user_id: uuidv4(),
-    patient_name: "Amanda Spence",
-    assigned_test_num: 1,
-    last_movement_tested: "Sit-to-Stand",
-    last_test_score: 23,
-  },
+  
 ];
 
 function FixedHeaderRow() {
@@ -305,7 +170,7 @@ function DisplayRows({
                         onClick={() => {
                           // navigate("/patient");
                           // console.log("row", row);
-                          navigate(`/patient:${row.user_id}`);
+                          navigate(`/patient/${row.user_id}`);
                         }}
                       >
                         See Patient Data
@@ -437,6 +302,7 @@ function DisplaySearchResults({
         return (
           <TableRow>
             {headerColumns.map((column) => {
+              
               if (column.id === "see_patient_data") {
                 return (
                   <TableCell
@@ -448,9 +314,9 @@ function DisplaySearchResults({
                     {column.id === "see_patient_data" && (
                       <Button
                         onClick={() => {
-                          // console.log("row.patient_id", row.patient_id);
-                          // navigate(`/patient:${row.patient_id}`);
-                          navigate(`/patient`);
+                          // console.log("row.patient_id", row.user_id);
+                          navigate(`/patient/${row.user_id}`);
+                          // navigate(`/patient`);
                         }}
                       >
                         See Patient Data
@@ -542,7 +408,6 @@ export function PatientsTable({ careProviderId }) {
   async function fetchData() {
     let sesh = await Auth.currentSession();
     let idtoken = sesh.idToken.jwtToken;
-    console.log("idtoken", idtoken);
     let data = [];
     console.log("in fetchdata");
     try {
@@ -603,7 +468,7 @@ export function PatientsTable({ careProviderId }) {
         await retrieveAssignedTests(patientsInfo[p].patient_id).then(
           (checkbox_obj) => {
             data.push({
-              patient_name: patientsInfo[p].name,
+              patient_name: patientsInfo[p].last_name + ", " + patientsInfo[p].first_name,
               user_id: patientsInfo[p].patient_id,
               assigned_test_num: res1.data.getPatientAssignedTests.length,
               last_movement_tested: lastMovementAssigned,
@@ -635,7 +500,19 @@ export function PatientsTable({ careProviderId }) {
     console.log("in useeffect");
     fetchData().then((data) => updatePatientDataRowsArr(data));
 
-    // data = testRows;
+    // for testing frontend
+    // let testData = testRows;
+    // data = [];
+    // for (let p = 0; p < testData.length; p++) {
+    //   data.push({
+    //     patient_name: testData[p].last_name + ', ' + testData[p].first_name,
+    //     user_id: testData[p].user_id,
+    //     assigned_test_num: testData[p].assigned_test_num,
+    //     last_movement_tested: testData[p].last_movement_tested, 
+    //     last_test_score: testData[p].last_test_score,
+    //     movements_assigned: {"sit-to-stand": false, "movement 2": false, "movement 3": false}
+    //   })
+    // }
     // updatePatientDataRowsArr(data);
   }, []);
 
