@@ -1,7 +1,7 @@
 // This is sample code. Please update this to suite your schema
 const AWS = require("aws-sdk");
-const cognitoIdentity = new AWS.CognitoIdentity();
-const cognito = new AWS.CognitoIdentityServiceProvider();
+// const cognitoIdentity = new AWS.CognitoIdentity();
+// const cognito = new AWS.CognitoIdentityServiceProvider();
 const jwt = require("jsonwebtoken");
 
 /**
