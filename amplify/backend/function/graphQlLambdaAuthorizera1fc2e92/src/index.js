@@ -16,33 +16,38 @@ exports.handler = async (event) => {
     },
   } = event;
   // let token = authorizationToken.replace("prefix-", "");
+  console.log("token", authorizationToken);
 
-  const user_cognito_id = jwt.decode(authorizationToken).sub;
-  let params = {
-    // todo: remove hard-coded value
-    UserPoolId: "ca-central-1_qBJ3I7w8V",
-    Username: user_cognito_id,
-  };
-  let getUserResponse = await cognito.adminGetUser(params).promise();
-  let user = getUserResponse.UserAttributes;
-  console.log("user", user);
-  let identityId;
-  let isCareProvider = false;
-  for (let i = 0; i < user.length; i++) {
-    if (user[i].Name == "custom:identity_id") {
-      identityId = user[i].Value;
-    }
-    if (user[i].Name == "custom:user_type") {
-      console.log("user[i]", user[i]);
-      isCareProvider = true;
-    }
-  }
+  const identityId = jwt.decode(authorizationToken)["custom:identity_id"];
+  const userType = jwt.decode(authorizationToken)["user_type"];
+  // let params = {
+  //   // todo: remove hard-coded value
+  //   UserPoolId: "ca-central-1_qBJ3I7w8V",
+  //   Username: user_cognito_id,
+  // };
+  // let getUserResponse = await cognito.adminGetUser(params).promise();
+  // let user = getUserResponse.UserAttributes;
+  // console.log("user", user);
+  // let identityId;
+  // let isCareProvider = false;
+  // for (let i = 0; i < user.length; i++) {
+  //   if (user[i].Name == "custom:identity_id") {
+  //     identityId = user[i].Value;
+  //   }
+  //   if (user[i].Name == "custom:user_type") {
+  //     console.log("user[i]", user[i]);
+  //     isCareProvider = true;
+  //   }
+  // }
   console.log("identityId", identityId);
   console.log("patient_id", patient_id);
-  console.log("iscareprovider", isCareProvider);
+  // console.log("iscareprovider", isCareProvider);
 
   const response = {
-    isAuthorized: isCareProvider || patient_id === identityId,
+    isAuthorized:
+      userType == "care_provider_user" ||
+      // 'ca-central-1:'+
+      patient_id === identityId,
     // resolverContext: {
     //   userid: "user-id",
     //   info: "contextual information A",
