@@ -10,7 +10,7 @@ import * as cdk from 'aws-cdk-lib';
 
 export class DatabaseStack extends Stack {
 
-    private readonly secretRdsPath: string;
+    // private readonly secretRdsPath: string;
     private readonly postgresqlRDSConnectLambda: lambda.Function;
 
     constructor(scope: App, id: string, vpcStack: VPCStack, props?: StackProps) {
@@ -23,14 +23,20 @@ export class DatabaseStack extends Stack {
         const postgresqlRDSConnectLambdaLogGroupName = "BalanceTest-postgresqlRDSConnect-Logs";
 
         // database secret; make secret during deployment
-        this.secretRdsPath = 'balanceTest/credentials/rdsCredentials';
-        const rdsUsername = sm.Secret.fromSecretNameV2(this, 'balanceTest-rdsUsername', 'balanceTest-rdsUsername');
+        const rdsCredentialSecret = new sm.Secret(this, 'Secret', {
+            generateSecretString: {
+                secretStringTemplate: JSON.stringify({ username: 'postgres' }),
+                generateStringKey: 'password',
+            }
+        })
+        // this.secretRdsPath = 'balanceTest/credentials/rdsCredentials';
+        // const rdsUsername = sm.Secret.fromSecretNameV2(this, 'balanceTest-rdsUsername', 'balanceTest-rdsUsername');
         
         // make single-AZ RDS instance 
         const rdsInstance = new rds.DatabaseInstance(this, rdsInstanceName, {
             engine: rds.DatabaseInstanceEngine.POSTGRES,
             databaseName: rdsInstanceName,
-            multiAz: false,
+            multiAz: true,
             instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MICRO),
             storageType: rds.StorageType.GP2,
             storageEncrypted: true,
@@ -45,9 +51,10 @@ export class DatabaseStack extends Stack {
             vpcSubnets: {
                 subnetType: ec2.SubnetType.PRIVATE_ISOLATED
             },
-            credentials: rds.Credentials.fromUsername(rdsUsername.secretValueFromJson("username").toString(), {
-                secretName: this.secretRdsPath
-            }), //TODO: instead of toString(), may want to use unsafeUnwrap(); test by deploying
+            credentials: {
+                username: rdsCredentialSecret.secretValueFromJson('username').unsafeUnwrap(),
+                password: rdsCredentialSecret.secretValueFromJson('password')
+            },
             removalPolicy: RemovalPolicy.RETAIN,
         })
         //TODO: see if I need rds credentials in props, and test if secrets manager is enough

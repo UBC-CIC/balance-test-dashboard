@@ -19,6 +19,11 @@ import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import Typography from "@mui/material/Typography";
 import {
+  // exportComponentAsJPEG,
+  exportComponentAsPDF,
+  // exportComponentAsPNG,
+} from "react-component-export-image";
+import {
   SIT_STAND_DATA,
   ONE_FOOT_STAND_DATA,
   SIT_UNSUPPORTED_DATA,
@@ -114,8 +119,12 @@ function PatientPage() {
       // authMode: "AWS_LAMBDA",
       authToken: idtoken,
     });
-    
-    setPatientName(resPatient.data.getPatientById.last_name + ", " + resPatient.data.getPatientById.first_name);
+
+    setPatientName(
+      resPatient.data.getPatientById.last_name +
+        ", " +
+        resPatient.data.getPatientById.first_name
+    );
     console.log("resPatient", resPatient);
     let resEventsGraph = await API.graphql({
       query: getTestEvents,
@@ -163,6 +172,12 @@ function PatientPage() {
 
   const handleSelectMeasurement = (event) => {
     setMeasurementSelected(event.target.value);
+  };
+  const ref = React.useRef(null);
+  const downloadScoreGraph = () => {
+    console.log("173");
+    console.log("ref", ref);
+    // saveSvgAsPng(document.getElementById("scoreChart"), "scores.png");
   };
 
   const [openNewTest, setOpenNewTest] = React.useState(false);
@@ -269,6 +284,18 @@ function PatientPage() {
                 renderInput={(params) => <TextField size="small" {...params} />}
               />
             </LocalizationProvider>
+            <Button
+              variant="outlined"
+              onClick={() => {
+                console.log("ref", ref);
+                exportComponentAsPDF(ref, {
+                  pdfOptions: { w: 250, h: 90, orientation: "l" },
+                  fileName: "scores",
+                });
+              }}
+            >
+              Download Graph
+            </Button>
           </Grid>
           {/* chart */}
           <Grid item>
@@ -290,30 +317,32 @@ function PatientPage() {
                 {/* <Typography variant="subtitle1">No data available</Typography> */}
               </Box>
             ) : (
-              <ScoreChart
-                data={
-                  movementTestSelected == "sit-to-stand"
-                    ? data
-                        .map((te) => ({
-                          start_time: moment(te.start_time).valueOf(),
-                          balance_score: te.balance_score,
-                        }))
-                        .filter(
+              <div ref={ref}>
+                <ScoreChart
+                  data={
+                    movementTestSelected == "sit-to-stand"
+                      ? data
+                          .map((te) => ({
+                            start_time: moment(te.start_time).valueOf(),
+                            balance_score: te.balance_score,
+                          }))
+                          .filter(
+                            (i) =>
+                              dayjs(i.start_time).isAfter(fromDate) &&
+                              dayjs(i.start_time).isBefore(toDate)
+                          )
+                      : scoreDataMapping[movementTestSelected].filter(
                           (i) =>
-                            dayjs(i.start_time).isAfter(fromDate) &&
-                            dayjs(i.start_time).isBefore(toDate)
+                            dayjs(i.date).isAfter(fromDate) &&
+                            dayjs(i.date).isBefore(toDate)
                         )
-                    : scoreDataMapping[movementTestSelected].filter(
-                        (i) =>
-                          dayjs(i.date).isAfter(fromDate) &&
-                          dayjs(i.date).isBefore(toDate)
-                      )
-                }
-                range={[
-                  moment(dayjs(fromDate).format()).valueOf(),
-                  moment(dayjs(toDate).format()).valueOf(),
-                ]}
-              />
+                  }
+                  range={[
+                    moment(dayjs(fromDate).format()).valueOf(),
+                    moment(dayjs(toDate).format()).valueOf(),
+                  ]}
+                />
+              </div>
             )}
           </Grid>
           {/* measurement select */}
