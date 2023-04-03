@@ -23,6 +23,7 @@
     "aws-cdk-lib": "2.69.0",
     "console": "^0.7.2",
     "constructs": "^10.0.0",
+    "pg": "^8.10.0",
     "source-map-support": "^0.5.21"
   }
 }

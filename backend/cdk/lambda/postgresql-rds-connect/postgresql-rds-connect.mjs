@@ -5,9 +5,10 @@ import pg from "pg";
 // const AWS = require("aws-sdk");
 // const s3 = new AWS.S3();
 // const bucketName = process.env.BUCKET_NAME;
-const bucketName = "balancetest-datastorage-bucket";
+// const bucketName = process.env.S3_BUCKET_NAME;
 // todo: err handling, env var
 
+// const PROXY_ENDPOINT = process.env.PGHOST;
 const PROXY_ENDPOINT =
   "postgres-proxy.proxy-coyl0mh3hp8c.ca-central-1.rds.amazonaws.com";
 

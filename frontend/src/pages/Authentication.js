@@ -9,15 +9,15 @@ import { NavBar } from "../components/nav/Navbar";
 import awsconfig from "../aws-exports";
 import { redirect, useNavigate, Link } from "react-router-dom";
 import { PatientsTable } from "../components/patient_list/PatientsTable"
-import Signin from "../components/nav/SignIn";
 
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Alert from "@mui/material/Alert";
 import Snackbar from "@mui/material/Snackbar";
 
-import "./authentication.css";
+import { createCareProvider } from "../graphql/mutations";
 
+import "./authentication.css";
 Amplify.configure(awsconfig);
 
 export default function AuthenticationPage() {
@@ -49,17 +49,44 @@ export default function AuthenticationPage() {
     },
   };
 
+  async function makeCareProvider(email) {
+      let sesh = await Auth.currentSession();
+      let idtoken = sesh.idToken.jwtToken;
+
+      let userCreds = await Auth.currentUserCredentials();
+      let identity_id = userCreds["identityId"];
+
+      
+      try {
+        
+        identity_id = identity_id.split(":")[1]; //get id without the region
+       
+        let response = await API.graphql({
+          query: createCareProvider,
+          variables: {
+            care_provider_id: identity_id,
+            email: email
+          },
+          authToken: idtoken,
+        });
+
+      } catch (err) {
+        console.log(err);
+      }
+  }
+
   return (
     <Box>
       <Authenticator services={authServices}>
         {({ signOut, user }) => {
-          
             let userGroupArr = user["signInUserSession"]["accessToken"]["payload"]["cognito:groups"];
             let user_id = user['username'];
+            let email = user["attributes"]["email"];
 
             if (userGroupArr.includes("care_provider_user")) {
                 navigate('/patientTable');
-                
+                makeCareProvider(email);
+                            
             } else {
                 Auth.signOut(); 
                 setShowAccessDenied(true);

@@ -10,7 +10,6 @@ import * as cdk from 'aws-cdk-lib';
 
 export class DatabaseStack extends Stack {
 
-    // private readonly secretRdsPath: string;
     private readonly postgresqlRDSConnectLambda: lambda.Function;
 
     constructor(scope: App, id: string, vpcStack: VPCStack, props?: StackProps) {
@@ -22,16 +21,15 @@ export class DatabaseStack extends Stack {
         const postgresqlRDSConnectLambdaRoleName = "BalanceTest-postgresqlRDSConnectLambda-Role";
         const postgresqlRDSConnectLambdaLogGroupName = "BalanceTest-postgresqlRDSConnect-Logs";
 
-        // database secret; make secret during deployment
+        // database secret
         const rdsCredentialSecret = new sm.Secret(this, 'Secret', {
             generateSecretString: {
                 secretStringTemplate: JSON.stringify({ username: 'postgres' }),
                 generateStringKey: 'password',
             }
         })
-        // this.secretRdsPath = 'balanceTest/credentials/rdsCredentials';
-        // const rdsUsername = sm.Secret.fromSecretNameV2(this, 'balanceTest-rdsUsername', 'balanceTest-rdsUsername');
-        
+
+        //TODO: double this configuration
         // make single-AZ RDS instance 
         const rdsInstance = new rds.DatabaseInstance(this, rdsInstanceName, {
             engine: rds.DatabaseInstanceEngine.POSTGRES,
@@ -58,11 +56,11 @@ export class DatabaseStack extends Stack {
             removalPolicy: RemovalPolicy.RETAIN,
             monitoringInterval:
         })
-        //TODO: see if I need rds credentials in props, and test if secrets manager is enough
-
+        
         //TODO: check if we need this
+        const port = ec2.Port.tcp(5432);
         rdsInstance.connections.securityGroups.forEach((securityGroup) => {
-            securityGroup.addIngressRule(ec2.Peer.ipv4(vpcStack.cidrStr), ec2.Port.tcp(5432), "BalanceTest-RDS-Postgres-Ingress")
+            securityGroup.addIngressRule(ec2.Peer.ipv4(vpcStack.cidrStr), port, "BalanceTest-RDS-Postgres-Ingress")
         });
 
         // make log group for Lambda that connects to PostgreSQL RDS
@@ -86,17 +84,34 @@ export class DatabaseStack extends Stack {
             inlinePolicies: { ["BalanceTest-postgresqlRDSConnectLambdaPolicy"]: postgresqlRDSConnectLambdaPolicyDocument },
             managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName("AmazonEC2FullAccess")]
         });
-
-        // todo: associate w vpc
-        // make Lambda to connect to and query from the database
+        
+        //TODO: test the layer, and figure out what is needed to connect to the lambda (appsync resolver)
+        const postgresqlRDSConnectLambdaRuntime = lambda.Runtime.NODEJS_16_X;
+        const postgresqlRDSConnectLambdaLayer = new lambda.LayerVersion(this, "postgresqlRDSConnectLayer", {
+            code: lambda.Code.fromAsset('layers/postgresqlRDSConnectNodePackages'),
+            compatibleRuntimes: [postgresqlRDSConnectLambdaRuntime],
+            removalPolicy: RemovalPolicy.DESTROY,
+            description: "Contains libraries for the " + postgresqlRDSConnectLambdaName + " function."
+        });
+        
+        //TODO: check environment variables; use parameter store to get the values for environment variables if needed
+        // make Lambda to generate a PDF report for downloading in dashboard
         this.postgresqlRDSConnectLambda = new lambda.Function(this, postgresqlRDSConnectLambdaName, {
-            runtime: lambda.Runtime.NODEJS_16_X,
+            runtime: postgresqlRDSConnectLambdaRuntime,
             functionName: postgresqlRDSConnectLambdaName,
             handler: postgresqlRDSConnectLambdaFileName + ".lambda_handler",
             code: lambda.Code.fromAsset("./lambda/" + postgresqlRDSConnectLambdaFileName),
             timeout: Duration.minutes(3),
             memorySize: 512,
             role: postgresqlRDSConnectLambdaRole,
+            // environment: {
+            //     "PGDATABASE": rdsInstanceName,
+            //     "PGHOST": ,
+            //     "PGUSER": rdsCredentialSecret.secretValueFromJson('username').unsafeUnwrap(),
+            //     "PGPASSWORD": rdsCredentialSecret.secretValueFromJson('password'),
+            //     "PGPORT": port,
+            // },
+            layers: [postgresqlRDSConnectLambdaLayer],
             //vpc: vpcStack.vpc,
         });
     }

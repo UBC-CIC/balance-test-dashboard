@@ -2,8 +2,9 @@
 
 import boto3
 import json
+import os
 
-bucket = "json-to-parquet-poc-bucket"
+bucket = os.environ["S3_BUCKET_NAME"]
 identity_pool_id = 'ca-central-1:966e3d18-034c-451a-a396-e8df41963374'
 user_pool_id = 'ca-central-1_qBJ3I7w8V'
 region = 'ca-central-1'
@@ -14,6 +15,7 @@ cognito_identity = boto3.client('cognito-identity')
 
 
 def lambda_handler(event, context):
+    ## region = event['Records'][0]['awsRegion'] # TODO: check if event gives this info
     print('event')
     print(event)
     # todo: remove hard-coded val

@@ -17,7 +17,6 @@ export default function SearchForPatients(props) {
 
     const { patientDataRowsArr, updatePatientDataRowsArr, searchResults, setSearchResults, setTablePage } = props;
 
-    console.log("SearchForPatient patient arr: ",patientDataRowsArr);
     let patientNamesArr = patientDataRowsArr.map((patientDataRow) => (patientDataRow.patient_name.trim()))
     const uniquePatientNamesArr = [...new Set(patientNamesArr)].sort();
     
@@ -29,19 +28,14 @@ export default function SearchForPatients(props) {
             setInputName("");
         }
         
-        console.log("Current Text: " + event.target.value)
-        console.log("Current Value: " + value)
     }
 
     const handleSearchClick = () => {
-        console.log("Searching Name: " + inputName);
         let resultsRowArr = patientDataRowsArr.filter((patientDataRow) => (patientDataRow.patient_name.trim().toLowerCase() == inputName.trim().toLowerCase()));
         setSearchResults(resultsRowArr.slice());
         setTablePage(0);
         setSearchSubmitKey(searchSubmitKey + 1);
 
-        console.log(resultsRowArr);
-        console.log(searchResults.length);
         setInputName("");
     }
 

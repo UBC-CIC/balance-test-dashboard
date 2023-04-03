@@ -4,6 +4,7 @@ import * as glue from 'aws-cdk-lib/aws-glue';
 import * as iam from "aws-cdk-lib/aws-iam";
 import * as lambda from "aws-cdk-lib/aws-lambda";
 import * as logs from "aws-cdk-lib/aws-logs";
+import * as ssm from "aws-cdk-lib/aws-ssm";
 import { DataWorkflowStack } from './data-workflow-stack';
 import { VPCStack } from "./vpc-stack";
 import * as cdk from 'aws-cdk-lib';
@@ -13,7 +14,7 @@ export class AthenaGlueStack extends Stack {
 
     private readonly athenaS3QueryLambda: lambda.Function;
 
-    constructor(scope: App, id: string, dataWorkflowStack: DataWorkflowStack, props: StackProps) {
+    constructor(scope: App, id: string, vpcStack: VPCStack, dataWorkflowStack: DataWorkflowStack, props: StackProps) {
       super(scope, id, props);
 
       const glueDbName = "BalanceTest-SensorData-GlueDb";
@@ -103,6 +104,16 @@ export class AthenaGlueStack extends Stack {
         managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName("AmazonS3FullAccess"), iam.ManagedPolicy.fromAwsManagedPolicyName("AmazonAthenaFullAccess")]
       });
 
+      //TODO: get values for Cognito from Parameter Store 
+      const cognitoIdentityPoolId = ssm.StringParameter.fromSecureStringParameterAttributes(this, "BalanceTestCognitoIdentityPoolId". {
+        parameterName: ""
+      }).stringValue;
+
+      const cognitoUserPoolId = ssm.StringParameter.fromSecureStringParameterAttributes(this, "BalanceTestCognitoUserPoolId". {
+        parameterName: ""
+      }).stringValue;
+
+      //TODO: add other needed environment variables
       //make Lambda for Athena to query to S3
       this.athenaS3QueryLambda = new lambda.Function(this, athenaS3QueryLambdaName, {
         runtime: lambda.Runtime.PYTHON_3_9,
@@ -112,6 +123,11 @@ export class AthenaGlueStack extends Stack {
         timeout: Duration.minutes(3),
         memorySize: 512,
         role: athenaQueryS3Role,
+        environment: {
+          "S3_BUCKET_NAME": dataWorkflowStack.getS3BucketName(),
+          "IDENTITY_POOL_ID": cognitoIdentityPoolId,
+          "USER_POOL_ID": cognitoUserPoolId,
+        },
         //vpc: vpcStack.vpc,
       });    
 

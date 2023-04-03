@@ -5,6 +5,7 @@ import { DataWorkflowStack } from '../lib/data-workflow-stack';
 import { VPCStack } from '../lib/vpc-stack';
 import { DatabaseStack } from '../lib/database-stack';
 import { AthenaGlueStack } from '../lib/athena-glue-stack';
+import { SagemakerStack } from '../lib/sagemaker-stack';
 
 const app = new cdk.App();
 // new CdkStack(app, 'CdkStack', {
@@ -26,17 +27,19 @@ const vpcStack = new VPCStack(app, "VPCStack", {
     env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION }
 });
 
-const databaseStack = new DatabaseStack(app, "DatabaseStack", vpcStack, {
+const dataWorkflowStack = new DataWorkflowStack(app, 'DataWorkflowStack', {
     env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION }
 });
 
-const dataWorkflowStack = new DataWorkflowStack(app, 'DataWorkflowStack',  vpcStack, {
-    env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION }
-});
+// const databaseStack = new DatabaseStack(app, "DatabaseStack", vpcStack, {
+//     env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
+// });
 
-const glueAthenaStack = new AthenaGlueStack(app, "AthenaGlueStack", dataWorkflowStack, {
-    env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
-});
+// const sagemakerStack = new SagemakerStack(app, "SagemakerStack", vpcStack, dataWorkflowStack, databaseStack, {
+//     env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
+// });
 
-
+// const glueAthenaStack = new AthenaGlueStack(app, "AthenaGlueStack", vpcStack, dataWorkflowStack, {
+//     env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
+// });
 

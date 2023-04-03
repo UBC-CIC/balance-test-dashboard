@@ -202,7 +202,7 @@ function EnhancedTableToolbar(props) {
   const [deleting, setDeleting] = React.useState(false);
 
   const handleOpenDeleteDialog = () => {
-    console.log("199");
+    // console.log("199");
     setOpen(true);
   };
 
@@ -237,8 +237,8 @@ function EnhancedTableToolbar(props) {
         },
         authToken: idtoken,
       });
-      console.log("deleteFromS3Response", deleteFromS3Response);
-      console.log("patientid", patientId);
+      // console.log("deleteFromS3Response", deleteFromS3Response);
+      // console.log("patientid", patientId);
       let deleteFromDbResponse = await API.graphql({
         query: deleteTestEventFromDB,
         variables: {
@@ -247,7 +247,7 @@ function EnhancedTableToolbar(props) {
         },
         authToken: idtoken,
       });
-      console.log("deleteFromDbResponse", deleteFromDbResponse);
+      // console.log("deleteFromDbResponse", deleteFromDbResponse);
       setDeleting(false);
       setOpen(false);
       refresh();
@@ -387,7 +387,7 @@ export default function TestEventsTable({
       authToken: idtoken,
     });
 
-    console.log("restestevents", resTestEvents);
+    // console.log("restestevents", resTestEvents);
     setRows(resTestEvents.data.getTestEvents);
   };
 
@@ -408,7 +408,7 @@ export default function TestEventsTable({
       return;
     }
     setSelected([]);
-    console.log("selected", selected);
+    // console.log("selected", selected);
   };
 
   const handleClick = (event, test_event_id) => {
@@ -431,7 +431,7 @@ export default function TestEventsTable({
   };
 
   const handleCheck = (event, test_event_id) => {
-    console.log("in handlechecked");
+    // console.log("in handlechecked");
     const selectedIndex = selected.indexOf(test_event_id);
     let newSelected = [];
     if (selectedIndex === -1) {
@@ -447,7 +447,7 @@ export default function TestEventsTable({
       );
     }
     setSelected(newSelected);
-    console.log("selected", selected);
+    // console.log("selected", selected);
   };
 
   const handleChangePage = (event, newPage) => {

@@ -14,8 +14,6 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { TestDetails } from "./pages/TestDetails";
 import { Auth , Hub} from 'aws-amplify';
 // import "@aws-amplify/ui-react/styles.css";
-import SignIn from "./components/nav/SignIn";
-import SignUp from "./components/nav/SignUp";
 import AuthenticationPage from "./pages/Authentication";
 import { PatientsTable } from "./components/patient_list/PatientsTable";
 import {
@@ -45,11 +43,11 @@ function App() {
     Hub.listen('auth', (listenerData) => {
       switch (listenerData.payload.event) {
         case "signOut":
-          console.log("signOut")
+          // console.log("signOut")
           setLoginState(false);
           break;
         case "signIn":
-          console.log("signIn")
+          // console.log("signIn")
           setLoginState(true);
           break;
         default:
@@ -74,6 +72,7 @@ function App() {
                           setLoginState(false);
                           console.log(err);
                         });
+    
 
   }, [loginState]);
   

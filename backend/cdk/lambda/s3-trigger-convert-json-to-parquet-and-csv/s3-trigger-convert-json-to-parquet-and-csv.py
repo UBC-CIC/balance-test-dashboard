@@ -31,6 +31,7 @@ def lambda_handler(event, context):
     
     # make Parquet file and folder path 
     df_json = pd.read_json(response_get_body_str)
+    region = event['Records'][0]['awsRegion']
     user_id = response_get_body_dict['user_id']
     movement_str = response_get_body_dict['movement']
     
@@ -48,17 +49,14 @@ def lambda_handler(event, context):
     
     # filename_csv = "test_event_" + str(test_event_id) + ".csv"
     filename_parquet = "test_event_" + str(test_event_id) + ".parquet"
-    path_general= "parquet_data/patient_tests" + "/user_id=" + str(user_id) + "/movement=" + movement_str + "/year=" + str(start_year) + "/month=" + str(start_month) + "/day=" + str(start_day) + "/test_event_id=" + str(test_event_id) + "/"
+    path_general= "parquet_data/patient_tests" + "/user_id=" + region + ":" + str(user_id) + "/movement=" + movement_str + "/year=" + str(start_year) + "/month=" + str(start_month) + "/day=" + str(start_day) + "/test_event_id=" + str(test_event_id) + "/"
     # path_csv = path_general + filename_csv
     path_parquet = path_general + filename_parquet
     # path_parquet_training = "parquet_data/patient_tests" + "/user_id=" + str(user_id) + "/movement=" + movement_str + "/" + filename_parquet
     
     # # Send json file to Sagemaker endpoint
-    # print("Key: ", key)
     # dict_to_sagemaker = {'file_path': key}
     # json_to_sagemaker = json.dumps(dict_to_sagemaker).encode('utf-8')
-    # print(type(json_to_sagemaker))
-    # print(json_to_sagemaker)
     
     if (training_bool == True):
         training_folder_path = os.path.split(key)[0] + "/"; 

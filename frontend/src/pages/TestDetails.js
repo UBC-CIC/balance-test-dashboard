@@ -60,7 +60,7 @@ export function TestDetails() {
       //   Authorization: `prefix-${idtoken}`,
       // },
     });
-    console.log("reslambdaauth", reslambdaauth);
+    // console.log("reslambdaauth", reslambdaauth);
     let resPatient = await API.graphql({
       query: getPatientById,
       variables: { patient_id: patient_id },
@@ -80,10 +80,9 @@ export function TestDetails() {
   };
 
   const fetchMeasurement = async () => {
-    console.log("76");
+    // console.log("76");
     let sesh = await Auth.currentSession();
     let idtoken = sesh.idToken.jwtToken;
-    console.log("idtoken", idtoken);
 
     // todo: comment
     // if (testEvent) {
@@ -103,14 +102,14 @@ export function TestDetails() {
 
       authToken: `${idtoken}`,
     });
-    console.log("resmeasurement", resmeasurement);
+    // console.log("resmeasurement", resmeasurement);
     setMeasurementData(
       resmeasurement.data.getMeasurementData.ts.map((ts, i) => ({
         ts: ts,
         val: resmeasurement.data.getMeasurementData.val[i],
       }))
     );
-    console.log("measurementData", measurementData);
+    // console.log("measurementData", measurementData);
     // }
   };
 
@@ -119,13 +118,13 @@ export function TestDetails() {
   }, []);
 
   useEffect(() => {
-    console.log("112");
+    // console.log("112");
     fetchMeasurement();
   }, [measurementSelected]);
 
   const handleChange = (event) => {
     setMeasurementSelected(event.target.value);
-    console.log("measurementSelected", measurementSelected);
+    // console.log("measurementSelected", measurementSelected);
   };
 
   const handleDownload = async (e) => {
@@ -154,8 +153,8 @@ export function TestDetails() {
 
     // pdfUrl = "a";
     // rawUrl = "b";
-    console.log("pdfUrl", pdfUrl);
-    console.log("rawUrl", rawUrl);
+    // console.log("pdfUrl", pdfUrl);
+    // console.log("rawUrl", rawUrl);
 
     let downloadLink = document.createElement("a");
     downloadLink.download = rawUrl;
