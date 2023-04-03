@@ -56,7 +56,7 @@ let searchPopOutData = [
 ];
 
 function createPatientInfoObj(first_name, last_name) {
-  console.log("New Patient Name: " + last_name + ', ' + first_name);
+  // console.log("New Patient Name: " + last_name + ', ' + first_name);
 
   const newUserID = uuidv5(last_name + ', ' + first_name, uuidv4()); //make a uuid with a name and random uuid
 
@@ -78,11 +78,10 @@ async function retrievePatientInfo(patientName, userID) {
   let sesh = await Auth.currentSession();
   let idtoken = sesh.idToken.jwtToken;
 
-  console.log("Added Patient from DB: " + patientName + " " + userID);
   let newPatientObj = {};
 
   try {
-    console.log("in retrievePatientInfo");
+    // console.log("in retrievePatientInfo");
 
     let res1 = await API.graphql({
       query: getPatientAssignedTests,
@@ -91,7 +90,7 @@ async function retrievePatientInfo(patientName, userID) {
       },
       authToken: idtoken,
     });
-    console.log("res1_addPatient", res1);
+    // console.log("res1_addPatient", res1);
 
     let res2 = await API.graphql({
       query: getTestEvents,
@@ -106,7 +105,7 @@ async function retrievePatientInfo(patientName, userID) {
         return 0;
       }
     });
-    console.log("res2_addPatient", res2);
+    // console.log("res2_addPatient", res2);
 
     let lastMovementAssigned =
       res2 == null
@@ -122,7 +121,7 @@ async function retrievePatientInfo(patientName, userID) {
         : res2.data.getTestEvents[0]?.balance_score;
     let lastScore = balanceScore == null ? "-" : balanceScore;
 
-    console.log("last score: ", balanceScore);
+    // console.log("last score: ", balanceScore);
 
     await retrieveAssignedTests(userID).then((checkbox_obj) => {
       newPatientObj = {
@@ -134,8 +133,6 @@ async function retrievePatientInfo(patientName, userID) {
         movements_assigned: checkbox_obj,
       };
     });
-
-    console.log("Patient From DB", newPatientObj);
 
     return newPatientObj;
   } catch (err) {
@@ -158,7 +155,7 @@ async function assignToCareprovider(careProviderId, user_id) {
       authToken: idtoken,
     });
 
-    console.log("addPatientToCareProvider: ", response);
+    // console.log("addPatientToCareProvider: ", response);
   } catch (err) {
     console.log(err);
   }
@@ -173,8 +170,7 @@ function SearchPatient(props) {
   let currPatientNamesArr = patientDataRowsArr.map((patientDataRow) => (patientDataRow.patient_name));
   let currUserIDArr = patientDataRowsArr.map((patientDataRow) => (patientDataRow.user_id));
 
-  //need to double check if responseData sends out first and last name together or not
-  console.log("In SearchPatient: ", searchData);
+  // console.log("In SearchPatient: ", searchData);
 
   const handleCloseModal = () => {
       setSearchPatientModalOpen(false)
@@ -197,15 +193,12 @@ function SearchPatient(props) {
       setInputName(value.patient_name);
       setInputInfo(value);
       setAddPatientDisabled(false);
-
-      console.log("Current Text: " + event.target.value)
-      console.log("Current Value: " + value)
   }
 
   const handleAddPatientClick = () => {
       handleCloseModal();
-      console.log("Name: " + inputName);
-      console.log("Input Info: " + inputInfo.patient_name + " " + inputInfo.user_id)
+      // console.log("Name: " + inputName);
+      // console.log("Input Info: " + inputInfo.patient_name + " " + inputInfo.user_id)
 
       if (!(currPatientNamesArr.includes(inputName) && currUserIDArr.includes(inputInfo.user_id))) {
           
@@ -214,7 +207,6 @@ function SearchPatient(props) {
               assignToCareprovider(careProviderId, inputInfo.user_id).then(() => {
                   patientDataRowsArr.push(patientInfo);
                   updatePatientDataRowsArr(patientDataRowsArr.slice());
-                  console.log("Unique Entry of: " + inputName);
               })
           });
       }
@@ -298,7 +290,7 @@ function ManualAddPatient(props) {
         authToken: idtoken,
       });
 
-      console.log("createPatient: ", response);
+      // console.log("createPatient: ", response);
       return true;
     } catch (err) {
       console.log(err);
@@ -324,8 +316,6 @@ function ManualAddPatient(props) {
     let textInput = event.target.value
     setInputFirstName(textInput);
 
-    console.log("Current first name: " + textInput)
-
     if (textInput.trim().length > 0 && inputLastName.trim().length > 0) {
         setAddPatientDisabled(false);
     
@@ -337,8 +327,6 @@ function ManualAddPatient(props) {
   const handlePatientLastNameInput = (event) => {
       let textInput = event.target.value;
       setInputLastName(textInput);
-
-      console.log("Current last name: " + textInput)
 
       if (textInput.trim().length > 0 && inputFirstName.trim().length > 0) {
           setAddPatientDisabled(false);
@@ -440,7 +428,7 @@ export default function AddPatientFullModal({
 
     let response = await API.graphql({ query: getAllPatients, authToken: idtoken });
 
-    console.log("getAllPatients: ", response);
+    // console.log("getAllPatients: ", response);
     let patientSearchRow = {};
     let allPatientsArr = response.data.getAllPatients;
     let responseData = [];
@@ -452,7 +440,7 @@ export default function AddPatientFullModal({
       };
       responseData.push(patientSearchRow);
     }
-    console.log("responseData ", responseData);
+    // console.log("responseData ", responseData);
     return responseData;
   }
 

@@ -36,7 +36,7 @@ export async function retrieveAssignedTests(user_id) {
   let sesh = await Auth.currentSession();
   let idtoken = sesh.idToken.jwtToken;
   try {
-    console.log("in retrieveAssignedTests try block");
+    // console.log("in retrieveAssignedTests try block");
     let response = await API.graphql({
       query: getPatientAssignedTests,
       variables: {
@@ -45,14 +45,14 @@ export async function retrieveAssignedTests(user_id) {
       authToken: idtoken,
     });
 
-    console.log("getPatientAssignedTests Response: ");
-    console.log(response["data"]);
+    // console.log("getPatientAssignedTests Response: ");
+    // console.log(response["data"]);
 
     let testsArr = [];
     response["data"]["getPatientAssignedTests"].map((test_info) => {
       testsArr.push(test_info["test_type"]);
     });
-    console.log(user_id, testsArr);
+    // console.log(user_id, testsArr);
 
     let checkboxInitStateObj = {};
 
@@ -60,7 +60,6 @@ export async function retrieveAssignedTests(user_id) {
       if (testsArr.includes(movement)) {
         checkboxInitStateObj[movement] = true;
 
-        console.log("Checkbox is True");
       } else {
         checkboxInitStateObj[movement] = false;
       }
@@ -103,7 +102,7 @@ export function ManageTests({
     let idtoken = sesh.idToken.jwtToken;
 
     try {
-      console.log("in sendTestToPatient try block");
+      // console.log("in sendTestToPatient try block");
       let response = await API.graphql({
         query: assignTestToPatient,
         variables: {
@@ -113,8 +112,8 @@ export function ManageTests({
         authToken: idtoken,
       });
 
-      console.log("assignTestToPatient Response: ");
-      console.log(response["data"]);
+      // console.log("assignTestToPatient Response: ");
+      // console.log(response["data"]);
     } catch (err) {
       console.log(err);
       return new Promise((resolve, reject) => reject(err));
@@ -123,7 +122,7 @@ export function ManageTests({
 
   async function deleteTestFromPatient(testStr) {
     try {
-      console.log("in sendTestToPatient try block");
+      // console.log("in sendTestToPatient try block");
 
       let sesh = await Auth.currentSession();
       let idtoken = sesh.idToken.jwtToken;
@@ -137,8 +136,8 @@ export function ManageTests({
         authToken: idtoken
       });
 
-      console.log("removeTestFromPatient Response: ");
-      console.log(response["data"]);
+      // console.log("removeTestFromPatient Response: ");
+      // console.log(response["data"]);
     } catch (err) {
       console.log(err);
       return new Promise((resolve, reject) => reject(err));

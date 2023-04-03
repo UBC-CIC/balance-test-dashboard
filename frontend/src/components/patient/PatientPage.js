@@ -73,7 +73,7 @@ function PatientPage() {
     let sesh = await Auth.currentSession();
     let idtoken = sesh.idToken.jwtToken;
     // get analytics
-    console.log("62");
+    // console.log("62");
     let resWeeklyAvg = await API.graphql({
       query: getScoreStatsOverTime,
       variables: {
@@ -84,12 +84,12 @@ function PatientPage() {
       },
       authToken: idtoken,
     });
-    console.log("monthly avg input", {
-      patient_id: patient_id,
-      from_time: dayjs().subtract(1, "month").format("YYYY-MM-DD hh:mm:ss"),
-      to_time: dayjs().format("YYYY-MM-DD hh:mm:ss"),
-      stat: "avg",
-    });
+    // console.log("monthly avg input", {
+    //   patient_id: patient_id,
+    //   from_time: dayjs().subtract(1, "month").format("YYYY-MM-DD hh:mm:ss"),
+    //   to_time: dayjs().format("YYYY-MM-DD hh:mm:ss"),
+    //   stat: "avg",
+    // });
     let resMonthlyAvg = await API.graphql({
       query: getScoreStatsOverTime,
       variables: {
@@ -100,7 +100,7 @@ function PatientPage() {
       },
       authToken: idtoken,
     });
-    console.log("resMonthlyAvg", resMonthlyAvg);
+    // console.log("resMonthlyAvg", resMonthlyAvg);
 
     // console.log("79");
     // setWeeklyAvg(Math.round(resWeeklyAvg.data.getScoreStatsOverTime));
@@ -116,7 +116,7 @@ function PatientPage() {
     });
     
     setPatientName(resPatient.data.getPatientById.last_name + ", " + resPatient.data.getPatientById.first_name);
-    console.log("resPatient", resPatient);
+    // console.log("resPatient", resPatient);
     let resEventsGraph = await API.graphql({
       query: getTestEvents,
       variables: {
@@ -129,15 +129,15 @@ function PatientPage() {
       authToken: idtoken,
     });
 
-    console.log("gettesteventsinput", {
-      patient_id: patient_id,
-      test_type: movementTestSelected,
-      from_time: dayjs(fromDate).format("YYYY-MM-DD hh:mm:ss"),
-      to_time: dayjs(toDate).format("YYYY-MM-DD hh:mm:ss"),
-      sort: "asc",
-    });
+    // console.log("gettesteventsinput", {
+    //   patient_id: patient_id,
+    //   test_type: movementTestSelected,
+    //   from_time: dayjs(fromDate).format("YYYY-MM-DD hh:mm:ss"),
+    //   to_time: dayjs(toDate).format("YYYY-MM-DD hh:mm:ss"),
+    //   sort: "asc",
+    // });
 
-    console.log(resEventsGraph);
+    // console.log(resEventsGraph);
     setData(
       resEventsGraph.data.getTestEvents
       // .map((te) => ({
@@ -145,7 +145,7 @@ function PatientPage() {
       //   balance_score: te.balance_score,
       // }))
     );
-    console.log("data", data);
+    // console.log("data", data);
   };
 
   React.useEffect(() => {
@@ -154,7 +154,7 @@ function PatientPage() {
 
   const handleChangeFromDate = (newValue) => {
     setFromDate(newValue);
-    console.log(fromDate);
+    // console.log(fromDate);
   };
 
   const handleChangeToDate = (newValue) => {

@@ -26,8 +26,8 @@ const awsconfig = require("../../aws-exports");
 Amplify.configure(awsconfig);
 
 export const ScoreChart = ({ data, range }) => {
-  console.log("chartdata", data);
-  console.log("range", range);
+  // console.log("chartdata", data);
+  // console.log("range", range);
   const dateFormatter = (t) => {
     return moment(t).format("MMMM Do YYYY");
   };
@@ -236,7 +236,7 @@ export const RangeChart = ({ patientId, measurement }) => {
   const fetchData = async () => {
     let sesh = await Auth.currentSession();
     let idtoken = sesh.idToken.jwtToken;
-    console.log("measurement", measurement);
+    // console.log("measurement", measurement);
     let res = await API.graphql({
       query: getMeasurementRange,
       variables: {
@@ -247,7 +247,7 @@ export const RangeChart = ({ patientId, measurement }) => {
     });
 
     let rangeChartData = convert(res.data.getMeasurementRange);
-    console.log("rangechartdata", rangeChartData);
+    // console.log("rangechartdata", rangeChartData);
     setData(rangeChartData);
   };
 
@@ -279,7 +279,7 @@ export const RangeChart = ({ patientId, measurement }) => {
   };
 
   useEffect(() => {
-    console.log("rangechart refresh");
+    // console.log("rangechart refresh");
     fetchData();
   }, [measurement]);
 
@@ -298,8 +298,8 @@ export const RangeChart = ({ patientId, measurement }) => {
 };
 
 function NALabel({ x, y, stroke, value, width }) {
-  console.log("x", x);
-  console.log("value", value);
+  // console.log("x", x);
+  // console.log("value", value);
   if (value) {
     // No label if there is a value. Let the cell handle it.
     return null;

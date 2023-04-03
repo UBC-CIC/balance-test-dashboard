@@ -4,21 +4,24 @@ import * as s3notif from "aws-cdk-lib/aws-s3-notifications";
 import * as iam from "aws-cdk-lib/aws-iam";
 import * as lambda from "aws-cdk-lib/aws-lambda";
 import * as logs from "aws-cdk-lib/aws-logs";
+import * as ssm from "aws-cdk-lib/aws-ssm";
 import * as cdk from 'aws-cdk-lib';
 import { VPCStack } from './vpc-stack';
 
 //TODO: figure out if we want to change this to only S3-related stack, and then have Sagemaker as its own stack
-//TODO: figure out how to add access point/connect to vpc
+//TODO: figure out how to add access point/connect to vpc; add vpc back to this stack
 export class DataWorkflowStack extends Stack {
 
-    private readonly balanceTestBucket: s3.Bucket;
+    // private readonly balanceTestBucket: s3.Bucket;
+    private readonly balanceTestBucket: s3.IBucket;
     private readonly generateReportLambda: lambda.Function;
     private readonly deleteS3RecordLambda: lambda.Function;
 
-    constructor(scope: App, id: string, vpcStack: VPCStack, props?: StackProps) {
+    constructor(scope: App, id: string, props?: StackProps) {
       super(scope, id, props);
       
       const balanceTestBucketName = "balancetest-datastorage-bucket";
+      const balanceTestBucketAccessPointName = "BalanceTest-DataStorage-Bucket-AccessPoint";
       const s3LambdaTriggerName = "BalanceTest-convert-json-to-parquet-and-csv";
       const s3LambdaTriggerFileName = "s3-trigger-convert-json-to-parquet-and-csv";
       const logGroupName = "BalanceTest-S3LambdaTrigger-Logs";
@@ -36,15 +39,42 @@ export class DataWorkflowStack extends Stack {
 
 
       //must ensure that this is a PRIVATE/BLOCK_ALL public access bucket!
-      this.balanceTestBucket = new s3.Bucket(this, balanceTestBucketName, {
-        bucketName: balanceTestBucketName,
-        removalPolicy: RemovalPolicy.RETAIN,
-        blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
-        publicReadAccess: false,
-        versioned: true,
-        encryption: s3.BucketEncryption.S3_MANAGED,
-        objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_ENFORCED
-      }); 
+      // this.balanceTestBucket = new s3.Bucket(this, balanceTestBucketName, {
+      //   bucketName: balanceTestBucketName,
+      //   removalPolicy: RemovalPolicy.RETAIN,
+      //   blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+      //   publicReadAccess: false,
+      //   versioned: true,
+      //   encryption: s3.BucketEncryption.S3_MANAGED,
+      //   objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_ENFORCED
+      // }); 
+
+      //TODO: use parameter store to get bucket arn. and add to the bucket code below
+      const balanceTestBucketArn = ssm.StringParameter.fromSecureStringParameterAttributes(this, "BalanceTestRecordingsBucketArn". {
+        parameterName: ""
+      }).stringValue;
+
+      // get data storage bucket using bucket ARN
+      this.balanceTestBucket = s3.Bucket.fromBucketArn(this, "balancetestrecordings160420-dev", "arn:aws:s3:::balancetestrecordings160420-dev");
+
+      this.balanceTestBucket.applyRemovalPolicy(RemovalPolicy.RETAIN);
+
+      //TODO: uncomment this
+      // add an access point for VPC
+      // const balanceTestBucketAccessPoint = new s3.CfnAccessPoint(this, balanceTestBucketAccessPointName, {
+      //   bucket: this.balanceTestBucket.bucketName,
+      //   bucketAccountId: props?.env?.account,
+      //   name: balanceTestBucketAccessPointName,
+      //   publicAccessBlockConfiguration: {
+      //     blockPublicAcls: true,
+      //     blockPublicPolicy: true,
+      //     restrictPublicBuckets: true
+      //   },
+      //   vpcConfiguration: {
+      //     vpcId: vpcStack.vpc.vpcId,
+      //   }
+
+      // });
 
       // create log group
       const logGroup = new logs.LogGroup(this, logGroupName, {
@@ -129,18 +159,29 @@ export class DataWorkflowStack extends Stack {
         managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName("AmazonS3FullAccess")]
       });
 
-      //TODO: add python layers for this lambda, and figure out what is needed to connect to the lambda
+      //TODO: test if layer works
+      const generateReportRuntime = lambda.Runtime.PYTHON_3_7;
+      const generateReportLambdaLayer = new lambda.LayerVersion(this, "generateReportPythonLayer", {
+        removalPolicy: RemovalPolicy.DESTROY,
+        code: lambda.Code.fromAsset('layers/generateReportPythonPackages'),
+        compatibleRuntimes: [generateReportRuntime],
+        description: "Contains libraries for the " + generateReportLambdaName + " function."
+      })
+
       // make Lambda to generate a PDF report for downloading in dashboard
       this.generateReportLambda = new lambda.Function(this, generateReportLambdaName, {
-        runtime: lambda.Runtime.PYTHON_3_7,
+        runtime: generateReportRuntime,
         functionName: generateReportLambdaName,
         handler: generateReportLambdaFileName + ".lambda_handler",
         code: lambda.Code.fromAsset("./lambda/" + generateReportLambdaFileName),
         timeout: Duration.minutes(3),
         memorySize: 512,
         role: generateReportLambdaRole,
-        // layers: [],
-        //vpc: vpcStack.vpc,
+        environment: {
+          "S3_BUCKET_NAME": this.balanceTestBucket.bucketName
+        },
+        layers: [generateReportLambdaLayer],
+        // vpc: vpcStack.vpc,
       });
 
       // make log group for Lambda that deletes files from S3
@@ -173,7 +214,16 @@ export class DataWorkflowStack extends Stack {
         inlinePolicies: { ["BalanceTest-deleteS3RecordLambdaPolicy"]: deleteS3RecordLambdaPolicyDocument },
       });
 
-      //TODO: double check Lambda
+      //TODO: get values for Cognito from Parameter Store 
+      const cognitoIdentityPoolId = ssm.StringParameter.fromSecureStringParameterAttributes(this, "BalanceTestCognitoIdentityPoolId". {
+        parameterName: ""
+      }).stringValue;
+
+      const cognitoUserPoolId = ssm.StringParameter.fromSecureStringParameterAttributes(this, "BalanceTestCognitoUserPoolId". {
+        parameterName: ""
+      }).stringValue;
+
+      //TODO: add environment variables, and double check Lambda
       // make Lambda to delete a test event record from S3
       this.deleteS3RecordLambda = new lambda.Function(this, deleteS3RecordLambdaName, {
         runtime: lambda.Runtime.PYTHON_3_7,
@@ -183,11 +233,13 @@ export class DataWorkflowStack extends Stack {
         timeout: Duration.minutes(3),
         memorySize: 512,
         role: deleteS3RecordLambdaRole,
+        environment: {
+          "S3_BUCKET_NAME": this.balanceTestBucket.bucketName,
+          "IDENTITY_POOL_ID": cognitoIdentityPoolId,
+          "USER_POOL_ID": cognitoUserPoolId,
+        }
         //vpc: vpcStack.vpc,
       });
-
-      //TODO: add new S3 bucket (if needed) and figure out how to store data/model artifacts in there
-
     }
 
     public getS3BucketName(): string {

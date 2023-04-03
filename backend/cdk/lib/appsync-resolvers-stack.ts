@@ -3,6 +3,7 @@ import * as appsync from "aws-cdk-lib/aws-appsync";
 import * as iam from "aws-cdk-lib/aws-iam";
 import * as lambda from "aws-cdk-lib/aws-lambda";
 import * as logs from "aws-cdk-lib/aws-logs";
+import * as ssm from "aws-cdk-lib/aws-ssm";
 import * as cdk from 'aws-cdk-lib';
 import { VPCStack } from './vpc-stack';
 import { DataWorkflowStack } from './data-workflow-stack';
@@ -14,6 +15,8 @@ export class AppsyncStack extends Stack {
                 athenaGlueStack: AthenaGlueStack, databaseStack: DatabaseStack, props?: StackProps) {
         super(scope, id, props);
 
+        const appsyncName = "BalanceTest-API";
+
         const generateReportLambdaDataSourceName = "BalanceTest_generate_report_s3_lambda";
         const postgresqlRDSLambdaDataSourceName = "BalanceTest_postgresql_connection_lambda";
         const queryS3LambdaDataSourceName = "BalanceTest_query_s3_lambda";
@@ -24,11 +27,9 @@ export class AppsyncStack extends Stack {
         const queryS3DataSourceRoleName = "BalanceTest-appsync-queryS3DataSource-Role";
         const deleteEventDataSourceRoleName = "BalanceTest-appsync-deleteEventDataSource-Role";
         
-    
-        //TODO: figure out how to get graphql api from Amplify, and put it in here as part of the inputs
         //TODO: remove the below new api placeholder after figuring out the above. then test deployment
-        const api = new appsync.GraphqlApi(this, "BalanceTest-API", {
-            name: "BalanceTest-API",
+        const api = new appsync.GraphqlApi(this, appsyncName, {
+            name: appsyncName,
             schema: appsync.SchemaFile.fromAsset("../../../amplify/backend/api/balancetest/schema.graphql"),
             authorizationConfig: {
                 defaultAuthorization: {
@@ -39,6 +40,15 @@ export class AppsyncStack extends Stack {
                 },
             }
         });
+
+        //TODO: get graphql api ID from Parameter Store
+        // const apiId = ssm.StringParameter.fromStringParameterAttributes(this, "BalanceTestAppsyncApiId", {
+        //     parameterName: "",
+        // }).stringValue;
+
+        // const api = appsync.GraphqlApi.fromGraphqlApiAttributes(this, appsyncName, {
+        //     graphqlApiId: apiId
+        // })
 
         // getting needed Lambda functions for data sources
         const generateReportLambda = dataWorkflowStack.getGenerateReportLambda();
@@ -170,6 +180,23 @@ export class AppsyncStack extends Stack {
             // responseMappingTempalte: ,
         });
         
-        // TODO: make the queries
+        // TODO: make the resolvers, and change apiID to the one from Parameter Store
+
+        let deleteEventResolverNameList = ["deleteTestEventFromS3"]
+
+        //TODO: see if I need the code or if schema is better
+        for (let i = 0; i < deleteEventResolverNameList.length; i++) {
+            const deleteEventResolver = new appsync.CfnResolver(this, deleteEventResolverNameList[i], {
+                apiId: api.apiId,
+                fieldName: deleteEventResolverNameList[i],
+                typeName: "Mutation",
+                dataSourceName: deleteEventLambdaDataSource.name,
+                pipelineConfig: {
+                    functions: [deleteEventAppsyncFunctionName]
+                },
+                
+            });
+        }
+            
     }
 }

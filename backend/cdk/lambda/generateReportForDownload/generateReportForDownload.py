@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 from fpdf import FPDF
 
 
-bucket = "json-to-parquet-poc-bucket"
+bucket = os.environ["S3_BUCKET_NAME"]
 
 s3_client = boto3.client('s3')
 

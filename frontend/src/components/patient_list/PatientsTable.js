@@ -133,7 +133,7 @@ function DisplayRows({
 
   let navigate = useNavigate();
 
-  console.log("Display All Patients.");
+  // console.log("Display All Patients.");
 
   if (patientDataRowsArr.length === 0) {
     return (
@@ -282,7 +282,7 @@ function DisplaySearchResults({
   const [numTestsAssigned, setNumTestsAssigned] = React.useState(0);
 
   let navigate = useNavigate();
-  console.log("Display Search Results.");
+  // console.log("Display Search Results.");
 
   if (searchResults.length === 0) {
     return (
@@ -388,10 +388,12 @@ function DisplaySearchResults({
   }
 }
 
-export function PatientsTable({ careProviderId }) {
+export function PatientsTable() {
   let data = [];
   // let data = testRows;
-  careProviderId = 1;
+  
+  // careProviderId = 1;
+  const [careProviderId, setCareProviderId] = React.useState("");
 
   const [patientDataRowsArr, updatePatientDataRowsArr] = React.useState(data);
 
@@ -409,19 +411,28 @@ export function PatientsTable({ careProviderId }) {
     let sesh = await Auth.currentSession();
     let idtoken = sesh.idToken.jwtToken;
     let data = [];
-    console.log("in fetchdata");
+
+    let userCreds = await Auth.currentUserCredentials();
+    let identity_id = userCreds["identityId"];
+    
+    identity_id = identity_id.split(":")[1]; //get id without the region
+    
+    setCareProviderId(identity_id);
+    
+    // console.log("in fetchdata");
     try {
-      console.log("in fetchdata try block");
+      // console.log("in fetchdata try block");
+
       let response = await API.graphql({
         query: getPatientsForCareprovider,
         variables: {
-          care_provider_id: careProviderId,
+          care_provider_id: identity_id,
         },
         authToken: idtoken,
       });
 
       let patientsInfo = response.data.getPatientsForCareprovider;
-      console.log("patientsInfo", patientsInfo);
+      // console.log("patientsInfo", patientsInfo);
 
       for (let p = 0; p < patientsInfo.length; p++) {
         let res1 = await API.graphql({
@@ -431,7 +442,7 @@ export function PatientsTable({ careProviderId }) {
           },
           authToken: idtoken,
         });
-        console.log("res1", res1);
+        // console.log("res1", res1);
 
         let res2 = await API.graphql({
           query: getTestEvents,
@@ -446,7 +457,7 @@ export function PatientsTable({ careProviderId }) {
             return 0;
           }
         });
-        console.log("res2", res2);
+        // console.log("res2", res2);
 
         let lastMovementAssigned =
           res2 == null
@@ -487,9 +498,8 @@ export function PatientsTable({ careProviderId }) {
         //   movements_assigned: {}
         // });
       }
-      console.log("data", data);
-      setLoading(false);
-      return data;
+      updatePatientDataRowsArr(data);
+
     } catch (err) {
       console.log(err);
       return new Promise((resolve, reject) => reject(err));
@@ -497,23 +507,9 @@ export function PatientsTable({ careProviderId }) {
   }
 
   useEffect(() => {
-    console.log("in useeffect");
-    fetchData().then((data) => updatePatientDataRowsArr(data));
+    // console.log("in useeffect");
+    fetchData().then(() => setLoading(false));
 
-    // for testing frontend
-    // let testData = testRows;
-    // data = [];
-    // for (let p = 0; p < testData.length; p++) {
-    //   data.push({
-    //     patient_name: testData[p].last_name + ', ' + testData[p].first_name,
-    //     user_id: testData[p].user_id,
-    //     assigned_test_num: testData[p].assigned_test_num,
-    //     last_movement_tested: testData[p].last_movement_tested, 
-    //     last_test_score: testData[p].last_test_score,
-    //     movements_assigned: {"sit-to-stand": false, "movement 2": false, "movement 3": false}
-    //   })
-    // }
-    // updatePatientDataRowsArr(data);
   }, []);
 
   const handleChangeRowsPerPage = (event) => {
