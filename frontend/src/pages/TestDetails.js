@@ -66,7 +66,9 @@ export function TestDetails() {
       variables: { patient_id: patient_id },
       authToken: idtoken,
     });
-    setPatientName(resPatient.data.getPatientById.name);
+    setPatientName(
+      `${resPatient.data.getPatientById.last_name}, ${resPatient.data.getPatientById.first_name}`
+    );
     let resTest = await API.graphql({
       query: getTestEventById,
       variables: {
@@ -180,7 +182,7 @@ export function TestDetails() {
       </Grid>
       <Grid item container direction="row" justifyContent="space-between">
         <Typography variant="h5" gutterBottom inline>
-          Test Event Details, {patientName} ({patient_id})
+          Test Event Details: {patientName} ({patient_id})
         </Typography>
         <Grid>
           {/* <Button variant="outlined">Delete</Button> */}

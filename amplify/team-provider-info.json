@@ -1,52 +1,44 @@
 {
   "dev": {
     "awscloudformation": {
-      "AuthRoleName": "amplify-balancetest-dev-210647-authRole",
-      "UnauthRoleArn": "arn:aws:iam::684904187051:role/amplify-balancetest-dev-210647-unauthRole",
-      "AuthRoleArn": "arn:aws:iam::684904187051:role/amplify-balancetest-dev-210647-authRole",
+      "AuthRoleName": "amplify-balancetestdashboard-dev-160420-authRole",
+      "UnauthRoleArn": "arn:aws:iam::684904187051:role/amplify-balancetestdashboard-dev-160420-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::684904187051:role/amplify-balancetestdashboard-dev-160420-authRole",
       "Region": "ca-central-1",
-      "DeploymentBucketName": "amplify-balancetest-dev-210647-deployment",
-      "UnauthRoleName": "amplify-balancetest-dev-210647-unauthRole",
-      "StackName": "amplify-balancetest-dev-210647",
-      "StackId": "arn:aws:cloudformation:ca-central-1:684904187051:stack/amplify-balancetest-dev-210647/0d0140a0-af4a-11ed-a8cb-02cf3e738bfc",
-      "AmplifyAppId": "dve23vuhma119"
+      "DeploymentBucketName": "amplify-balancetestdashboard-dev-160420-deployment",
+      "UnauthRoleName": "amplify-balancetestdashboard-dev-160420-unauthRole",
+      "StackName": "amplify-balancetestdashboard-dev-160420",
+      "StackId": "arn:aws:cloudformation:ca-central-1:684904187051:stack/amplify-balancetestdashboard-dev-160420/3500e310-cf4f-11ed-9225-021f5368c042",
+      "AmplifyAppId": "d32jqjxn9qa81",
+      "AuthTriggerTemplateURL": "https://s3.amazonaws.com/amplify-balancetestdashboard-dev-160420-deployment/amplify-cfn-templates/auth/auth-trigger-cloudformation-template.json"
     },
     "categories": {
       "auth": {
-        "balancetest1b7f439d": {
-          "userPoolId": "ca-central-1_qBJ3I7w8V",
-          "userPoolName": "Btest-test-user-pool",
-          "webClientId": "5lfno130a5ohv1tv1trl7b4s2u",
-          "nativeClientId": "5lfno130a5ohv1tv1trl7b4s2u"
+        "balancetestdashboard733fb088": {},
+        "userPoolGroups": {}
+      },
+      "function": {
+        "balancetestdashboard733fb088PreTokenGeneration": {
+          "deploymentBucketName": "amplify-balancetestdashboard-dev-160420-deployment",
+          "s3Key": "amplify-builds/balancetestdashboard733fb088PreTokenGeneration-383738666850714e4b5a-build.zip"
         },
-        "balancetest6a22503d": {
-          "userPoolId": "ca-central-1_qBJ3I7w8V",
-          "userPoolName": "Btest-test-user-pool",
-          "webClientId": "5lfno130a5ohv1tv1trl7b4s2u",
-          "nativeClientId": "5lfno130a5ohv1tv1trl7b4s2u",
-          "identityPoolId": "ca-central-1:966e3d18-034c-451a-a396-e8df41963374",
-          "identityPoolName": "balance_test_identity_pool",
-          "allowUnauthenticatedIdentities": false,
-          "authRoleArn": "arn:aws:iam::684904187051:role/Cognito_balance_test_identity_poolAuth_Role",
-          "authRoleName": "Cognito_balance_test_identity_poolAuth_Role",
-          "unauthRoleArn": "arn:aws:iam::684904187051:role/Cognito_balance_test_identity_poolUnauth_Role",
-          "unauthRoleName": "Cognito_balance_test_identity_poolUnauth_Role"
+        "balancetestdashboard733fb088PostConfirmation": {
+          "deploymentBucketName": "amplify-balancetestdashboard-dev-160420-deployment",
+          "s3Key": "amplify-builds/balancetestdashboard733fb088PostConfirmation-66507068596a67713574-build.zip"
+        },
+        "graphQlLambdaAuthorizera86a1dbf": {
+          "deploymentBucketName": "amplify-balancetestdashboard-dev-160420-deployment",
+          "s3Key": "amplify-builds/graphQlLambdaAuthorizera86a1dbf-307033454a686e347976-build.zip"
         }
       },
       "api": {
-        "balancetest": {}
+        "balancetestdashboard": {}
       },
       "storage": {
-        "balancetest89613ef5": {
-          "bucketName": "json-to-parquet-poc-bucket",
-          "region": "ca-central-1"
-        }
+        "balanceTestS3": {}
       },
-      "function": {
-        "graphQlLambdaAuthorizera1fc2e92": {
-          "deploymentBucketName": "amplify-balancetest-dev-210647-deployment",
-          "s3Key": "amplify-builds/graphQlLambdaAuthorizera1fc2e92-7830466f52754a767a52-build.zip"
-        }
+      "custom": {
+        "paramStoreParams": {}
       }
     }
   }

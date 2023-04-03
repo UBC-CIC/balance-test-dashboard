@@ -1,0 +1,631 @@
+{
+ "Resources": {
+  "balanceTestVPCFBF0FFB3": {
+   "Type": "AWS::EC2::VPC",
+   "Properties": {
+    "CidrBlock": "10.1.0.0/16",
+    "EnableDnsHostnames": true,
+    "EnableDnsSupport": true,
+    "InstanceTenancy": "default",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "balanceTest-VPC"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "VPCStack/balanceTest-VPC/Resource"
+   }
+  },
+  "balanceTestVPCpublicsubnetSubnet1SubnetF42454BE": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "VpcId": {
+     "Ref": "balanceTestVPCFBF0FFB3"
+    },
+    "AvailabilityZone": "ca-central-1a",
+    "CidrBlock": "10.1.0.0/18",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "public-subnet"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "VPCStack/balanceTest-VPC/public-subnetSubnet1"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "VPCStack/balanceTest-VPC/public-subnetSubnet1/Subnet"
+   }
+  },
+  "balanceTestVPCpublicsubnetSubnet1RouteTable1AFB0DF1": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Ref": "balanceTestVPCFBF0FFB3"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "VPCStack/balanceTest-VPC/public-subnetSubnet1"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "VPCStack/balanceTest-VPC/public-subnetSubnet1/RouteTable"
+   }
+  },
+  "balanceTestVPCpublicsubnetSubnet1RouteTableAssociation915B2250": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "balanceTestVPCpublicsubnetSubnet1RouteTable1AFB0DF1"
+    },
+    "SubnetId": {
+     "Ref": "balanceTestVPCpublicsubnetSubnet1SubnetF42454BE"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "VPCStack/balanceTest-VPC/public-subnetSubnet1/RouteTableAssociation"
+   }
+  },
+  "balanceTestVPCpublicsubnetSubnet1DefaultRoute32F4C813": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "balanceTestVPCpublicsubnetSubnet1RouteTable1AFB0DF1"
+    },
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "balanceTestVPCIGWE6E65258"
+    }
+   },
+   "DependsOn": [
+    "balanceTestVPCVPCGW997AB5B0"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "VPCStack/balanceTest-VPC/public-subnetSubnet1/DefaultRoute"
+   }
+  },
+  "balanceTestVPCpublicsubnetSubnet1EIPE1B43273": {
+   "Type": "AWS::EC2::EIP",
+   "Properties": {
+    "Domain": "vpc",
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "VPCStack/balanceTest-VPC/public-subnetSubnet1"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "VPCStack/balanceTest-VPC/public-subnetSubnet1/EIP"
+   }
+  },
+  "balanceTestVPCpublicsubnetSubnet1NATGatewayE904A269": {
+   "Type": "AWS::EC2::NatGateway",
+   "Properties": {
+    "SubnetId": {
+     "Ref": "balanceTestVPCpublicsubnetSubnet1SubnetF42454BE"
+    },
+    "AllocationId": {
+     "Fn::GetAtt": [
+      "balanceTestVPCpublicsubnetSubnet1EIPE1B43273",
+      "AllocationId"
+     ]
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "VPCStack/balanceTest-VPC/public-subnetSubnet1"
+     }
+    ]
+   },
+   "DependsOn": [
+    "balanceTestVPCpublicsubnetSubnet1DefaultRoute32F4C813",
+    "balanceTestVPCpublicsubnetSubnet1RouteTableAssociation915B2250"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "VPCStack/balanceTest-VPC/public-subnetSubnet1/NATGateway"
+   }
+  },
+  "balanceTestVPCpublicsubnetSubnet2SubnetEA84E475": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "VpcId": {
+     "Ref": "balanceTestVPCFBF0FFB3"
+    },
+    "AvailabilityZone": "ca-central-1b",
+    "CidrBlock": "10.1.64.0/18",
+    "MapPublicIpOnLaunch": true,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "public-subnet"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Public"
+     },
+     {
+      "Key": "Name",
+      "Value": "VPCStack/balanceTest-VPC/public-subnetSubnet2"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "VPCStack/balanceTest-VPC/public-subnetSubnet2/Subnet"
+   }
+  },
+  "balanceTestVPCpublicsubnetSubnet2RouteTable0B7EB2F8": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Ref": "balanceTestVPCFBF0FFB3"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "VPCStack/balanceTest-VPC/public-subnetSubnet2"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "VPCStack/balanceTest-VPC/public-subnetSubnet2/RouteTable"
+   }
+  },
+  "balanceTestVPCpublicsubnetSubnet2RouteTableAssociationCFCD7BA6": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "balanceTestVPCpublicsubnetSubnet2RouteTable0B7EB2F8"
+    },
+    "SubnetId": {
+     "Ref": "balanceTestVPCpublicsubnetSubnet2SubnetEA84E475"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "VPCStack/balanceTest-VPC/public-subnetSubnet2/RouteTableAssociation"
+   }
+  },
+  "balanceTestVPCpublicsubnetSubnet2DefaultRoute98D545EF": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "balanceTestVPCpublicsubnetSubnet2RouteTable0B7EB2F8"
+    },
+    "DestinationCidrBlock": "0.0.0.0/0",
+    "GatewayId": {
+     "Ref": "balanceTestVPCIGWE6E65258"
+    }
+   },
+   "DependsOn": [
+    "balanceTestVPCVPCGW997AB5B0"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "VPCStack/balanceTest-VPC/public-subnetSubnet2/DefaultRoute"
+   }
+  },
+  "balanceTestVPCprivatesubnetSubnet1Subnet8BA87DE4": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "VpcId": {
+     "Ref": "balanceTestVPCFBF0FFB3"
+    },
+    "AvailabilityZone": "ca-central-1a",
+    "CidrBlock": "10.1.128.0/18",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "private-subnet"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Isolated"
+     },
+     {
+      "Key": "Name",
+      "Value": "VPCStack/balanceTest-VPC/private-subnetSubnet1"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "VPCStack/balanceTest-VPC/private-subnetSubnet1/Subnet"
+   }
+  },
+  "balanceTestVPCprivatesubnetSubnet1RouteTable1BCA205D": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Ref": "balanceTestVPCFBF0FFB3"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "VPCStack/balanceTest-VPC/private-subnetSubnet1"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "VPCStack/balanceTest-VPC/private-subnetSubnet1/RouteTable"
+   }
+  },
+  "balanceTestVPCprivatesubnetSubnet1RouteTableAssociationD36013BF": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "balanceTestVPCprivatesubnetSubnet1RouteTable1BCA205D"
+    },
+    "SubnetId": {
+     "Ref": "balanceTestVPCprivatesubnetSubnet1Subnet8BA87DE4"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "VPCStack/balanceTest-VPC/private-subnetSubnet1/RouteTableAssociation"
+   }
+  },
+  "balanceTestVPCprivatesubnetSubnet2SubnetD1E19331": {
+   "Type": "AWS::EC2::Subnet",
+   "Properties": {
+    "VpcId": {
+     "Ref": "balanceTestVPCFBF0FFB3"
+    },
+    "AvailabilityZone": "ca-central-1b",
+    "CidrBlock": "10.1.192.0/18",
+    "MapPublicIpOnLaunch": false,
+    "Tags": [
+     {
+      "Key": "aws-cdk:subnet-name",
+      "Value": "private-subnet"
+     },
+     {
+      "Key": "aws-cdk:subnet-type",
+      "Value": "Isolated"
+     },
+     {
+      "Key": "Name",
+      "Value": "VPCStack/balanceTest-VPC/private-subnetSubnet2"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "VPCStack/balanceTest-VPC/private-subnetSubnet2/Subnet"
+   }
+  },
+  "balanceTestVPCprivatesubnetSubnet2RouteTable0F00F62A": {
+   "Type": "AWS::EC2::RouteTable",
+   "Properties": {
+    "VpcId": {
+     "Ref": "balanceTestVPCFBF0FFB3"
+    },
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "VPCStack/balanceTest-VPC/private-subnetSubnet2"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "VPCStack/balanceTest-VPC/private-subnetSubnet2/RouteTable"
+   }
+  },
+  "balanceTestVPCprivatesubnetSubnet2RouteTableAssociationAB24C59D": {
+   "Type": "AWS::EC2::SubnetRouteTableAssociation",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "balanceTestVPCprivatesubnetSubnet2RouteTable0F00F62A"
+    },
+    "SubnetId": {
+     "Ref": "balanceTestVPCprivatesubnetSubnet2SubnetD1E19331"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "VPCStack/balanceTest-VPC/private-subnetSubnet2/RouteTableAssociation"
+   }
+  },
+  "balanceTestVPCIGWE6E65258": {
+   "Type": "AWS::EC2::InternetGateway",
+   "Properties": {
+    "Tags": [
+     {
+      "Key": "Name",
+      "Value": "balanceTest-VPC"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "VPCStack/balanceTest-VPC/IGW"
+   }
+  },
+  "balanceTestVPCVPCGW997AB5B0": {
+   "Type": "AWS::EC2::VPCGatewayAttachment",
+   "Properties": {
+    "VpcId": {
+     "Ref": "balanceTestVPCFBF0FFB3"
+    },
+    "InternetGatewayId": {
+     "Ref": "balanceTestVPCIGWE6E65258"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "VPCStack/balanceTest-VPC/VPCGW"
+   }
+  },
+  "balanceTestVPCS3931A580C": {
+   "Type": "AWS::EC2::VPCEndpoint",
+   "Properties": {
+    "ServiceName": {
+     "Fn::Join": [
+      "",
+      [
+       "com.amazonaws.",
+       {
+        "Ref": "AWS::Region"
+       },
+       ".s3"
+      ]
+     ]
+    },
+    "VpcId": {
+     "Ref": "balanceTestVPCFBF0FFB3"
+    },
+    "RouteTableIds": [
+     {
+      "Ref": "balanceTestVPCprivatesubnetSubnet1RouteTable1BCA205D"
+     },
+     {
+      "Ref": "balanceTestVPCprivatesubnetSubnet2RouteTable0F00F62A"
+     }
+    ],
+    "VpcEndpointType": "Gateway"
+   },
+   "Metadata": {
+    "aws:cdk:path": "VPCStack/balanceTest-VPC/S3/Resource"
+   }
+  },
+  "balanceTestVPCRDSEndpointE5345593": {
+   "Type": "AWS::EC2::VPCEndpoint",
+   "Properties": {
+    "ServiceName": "com.amazonaws.ca-central-1.rds",
+    "VpcId": {
+     "Ref": "balanceTestVPCFBF0FFB3"
+    },
+    "PrivateDnsEnabled": true,
+    "SecurityGroupIds": [
+     {
+      "Fn::GetAtt": [
+       "balanceTestVPCFBF0FFB3",
+       "DefaultSecurityGroup"
+      ]
+     }
+    ],
+    "SubnetIds": [
+     {
+      "Ref": "balanceTestVPCprivatesubnetSubnet1Subnet8BA87DE4"
+     },
+     {
+      "Ref": "balanceTestVPCprivatesubnetSubnet2SubnetD1E19331"
+     }
+    ],
+    "VpcEndpointType": "Interface"
+   },
+   "Metadata": {
+    "aws:cdk:path": "VPCStack/balanceTest-VPC/RDS-Endpoint/Resource"
+   }
+  },
+  "balanceTestVPCCloudWatchLogsEndpointEF9B29EE": {
+   "Type": "AWS::EC2::VPCEndpoint",
+   "Properties": {
+    "ServiceName": "com.amazonaws.ca-central-1.logs",
+    "VpcId": {
+     "Ref": "balanceTestVPCFBF0FFB3"
+    },
+    "PrivateDnsEnabled": true,
+    "SecurityGroupIds": [
+     {
+      "Fn::GetAtt": [
+       "balanceTestVPCFBF0FFB3",
+       "DefaultSecurityGroup"
+      ]
+     }
+    ],
+    "SubnetIds": [
+     {
+      "Ref": "balanceTestVPCprivatesubnetSubnet1Subnet8BA87DE4"
+     },
+     {
+      "Ref": "balanceTestVPCprivatesubnetSubnet2SubnetD1E19331"
+     }
+    ],
+    "VpcEndpointType": "Interface"
+   },
+   "Metadata": {
+    "aws:cdk:path": "VPCStack/balanceTest-VPC/CloudWatch-Logs-Endpoint/Resource"
+   }
+  },
+  "VPCStackfromIndirectPeer4430AB72B80": {
+   "Type": "AWS::EC2::SecurityGroupIngress",
+   "Properties": {
+    "IpProtocol": "tcp",
+    "CidrIp": {
+     "Fn::GetAtt": [
+      "balanceTestVPCFBF0FFB3",
+      "CidrBlock"
+     ]
+    },
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "from ",
+       {
+        "Fn::GetAtt": [
+         "balanceTestVPCFBF0FFB3",
+         "CidrBlock"
+        ]
+       },
+       ":443"
+      ]
+     ]
+    },
+    "FromPort": 443,
+    "GroupId": {
+     "Fn::GetAtt": [
+      "balanceTestVPCFBF0FFB3",
+      "DefaultSecurityGroup"
+     ]
+    },
+    "ToPort": 443
+   },
+   "Metadata": {
+    "aws:cdk:path": "VPCStack/VPCStack/from {IndirectPeer}:443"
+   }
+  },
+  "VPCStackfromIndirectPeer2443043A1BC3": {
+   "Type": "AWS::EC2::SecurityGroupIngress",
+   "Properties": {
+    "IpProtocol": "tcp",
+    "CidrIp": {
+     "Fn::GetAtt": [
+      "balanceTestVPCFBF0FFB3",
+      "CidrBlock"
+     ]
+    },
+    "Description": {
+     "Fn::Join": [
+      "",
+      [
+       "from ",
+       {
+        "Fn::GetAtt": [
+         "balanceTestVPCFBF0FFB3",
+         "CidrBlock"
+        ]
+       },
+       ":443"
+      ]
+     ]
+    },
+    "FromPort": 443,
+    "GroupId": {
+     "Fn::GetAtt": [
+      "balanceTestVPCFBF0FFB3",
+      "DefaultSecurityGroup"
+     ]
+    },
+    "ToPort": 443
+   },
+   "Metadata": {
+    "aws:cdk:path": "VPCStack/VPCStack/from '{IndirectPeer2}':443"
+   }
+  },
+  "PrivateSubnetRoute0": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "balanceTestVPCprivatesubnetSubnet1RouteTable1BCA205D"
+    },
+    "DestinationCidrBlock": "10.0.0.0/16",
+    "NatGatewayId": {
+     "Ref": "balanceTestVPCpublicsubnetSubnet1NATGatewayE904A269"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "VPCStack/Private-Subnet-Route0"
+   }
+  },
+  "PrivateSubnetRoute1": {
+   "Type": "AWS::EC2::Route",
+   "Properties": {
+    "RouteTableId": {
+     "Ref": "balanceTestVPCprivatesubnetSubnet2RouteTable0F00F62A"
+    },
+    "DestinationCidrBlock": "10.0.0.0/16",
+    "NatGatewayId": {
+     "Ref": "balanceTestVPCpublicsubnetSubnet1NATGatewayE904A269"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "VPCStack/Private-Subnet-Route1"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/12OwarCMBBFv8V9Gq0LH28pItKNlPbh9pFORx2tk5JMFBH/3VSrBVdz5nC53Kme/erJyFx8AvUxaajSt1IMHFVU/whTfdu0oBZb3uQLlYeqIShDxSidG6iwQfDPVA0OfnBz7y2QEbL8CXewzPLurI2sjODFXFXu6BxxKM5Y0EV+B15L+m8ucer+hCyqN3HskuvWEksf/bzPpq0B/MqUCMGRXFfOhjbjnUPv76pAb4OD58w33xXbGvXBj8/pTKc/Oh0dPFHiAgudUBev+wCLwX+fVAEAAA=="
+   },
+   "Metadata": {
+    "aws:cdk:path": "VPCStack/CDKMetadata/Default"
+   }
+  }
+ },
+ "Outputs": {
+  "ExportsOutputRefbalanceTestVPCprivatesubnetSubnet1Subnet8BA87DE45B0B5EB2": {
+   "Value": {
+    "Ref": "balanceTestVPCprivatesubnetSubnet1Subnet8BA87DE4"
+   },
+   "Export": {
+    "Name": "VPCStack:ExportsOutputRefbalanceTestVPCprivatesubnetSubnet1Subnet8BA87DE45B0B5EB2"
+   }
+  },
+  "ExportsOutputRefbalanceTestVPCprivatesubnetSubnet2SubnetD1E1933170382F7C": {
+   "Value": {
+    "Ref": "balanceTestVPCprivatesubnetSubnet2SubnetD1E19331"
+   },
+   "Export": {
+    "Name": "VPCStack:ExportsOutputRefbalanceTestVPCprivatesubnetSubnet2SubnetD1E1933170382F7C"
+   }
+  },
+  "ExportsOutputRefbalanceTestVPCFBF0FFB322759C6A": {
+   "Value": {
+    "Ref": "balanceTestVPCFBF0FFB3"
+   },
+   "Export": {
+    "Name": "VPCStack:ExportsOutputRefbalanceTestVPCFBF0FFB322759C6A"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

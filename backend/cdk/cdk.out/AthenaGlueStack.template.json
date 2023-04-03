@@ -1,0 +1,291 @@
+{
+ "Resources": {
+  "BalanceTestSensorDataGlueDb": {
+   "Type": "AWS::Glue::Database",
+   "Properties": {
+    "CatalogId": "684904187051",
+    "DatabaseInput": {
+     "Name": "BalanceTest-SensorData-GlueDb"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "AthenaGlueStack/BalanceTest-SensorData-GlueDb"
+   }
+  },
+  "BalanceTestSensorDataGlueCrawlerRole1D4EBF44": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Description": "Role gives access to appropriate S3 functions needed for crawling data with Glue.",
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AWSGlueServiceRole"
+       ]
+      ]
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyDocument": {
+       "Statement": [
+        {
+         "Action": [
+          "s3:GetObject",
+          "s3:PutObject"
+         ],
+         "Effect": "Allow",
+         "Resource": {
+          "Fn::Join": [
+           "",
+           [
+            {
+             "Fn::ImportValue": "DataWorkflowStack:ExportsOutputFnGetAttbalancetestdatastoragebucketD25B585EArnFFCC6A0F"
+            },
+            "/parquet_data/patient_tests/*"
+           ]
+          ]
+         }
+        }
+       ],
+       "Version": "2012-10-17"
+      },
+      "PolicyName": "BalanceTest-glueSensorDataCrawlerPolicy"
+     }
+    ],
+    "RoleName": "BalanceTest-SensorData-GlueCrawler-Role"
+   },
+   "Metadata": {
+    "aws:cdk:path": "AthenaGlueStack/BalanceTest-SensorData-GlueCrawler-Role/Resource"
+   }
+  },
+  "BalanceTestSensorDataGlueCrawler": {
+   "Type": "AWS::Glue::Crawler",
+   "Properties": {
+    "Role": {
+     "Fn::GetAtt": [
+      "BalanceTestSensorDataGlueCrawlerRole1D4EBF44",
+      "Arn"
+     ]
+    },
+    "Targets": {
+     "S3Targets": [
+      {
+       "Path": {
+        "Fn::Join": [
+         "",
+         [
+          "s3://",
+          {
+           "Fn::ImportValue": "DataWorkflowStack:ExportsOutputRefbalancetestdatastoragebucketD25B585E3C53CCB4"
+          },
+          "/parquet_data/patient_tests/*"
+         ]
+        ]
+       }
+      }
+     ]
+    },
+    "DatabaseName": "BalanceTest-SensorData-GlueDb",
+    "Description": "For crawling parquet data within the S3 bucket for Athena querying",
+    "Name": "BalanceTest-SensorData-GlueCrawler",
+    "RecrawlPolicy": {
+     "RecrawlBehavior": "CRAWL_EVERYTHING"
+    },
+    "SchemaChangePolicy": {
+     "DeleteBehavior": "DEPRECATE_IN_DATABASE",
+     "UpdateBehavior": "UPDATE_IN_DATABASE"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "AthenaGlueStack/BalanceTest-SensorData-GlueCrawler"
+   }
+  },
+  "BalanceTestAthenaQueryS3Logs62A3581A": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": "/aws/lambda/BalanceTest-query-S3",
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "AthenaGlueStack/BalanceTest-AthenaQueryS3-Logs/Resource"
+   }
+  },
+  "BalanceTestAthenaQueryS3LambdaRole29CCB440": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Description": "Role gives access to appropriate S3 functions needed for querying from bucket for Lambda.",
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AmazonS3FullAccess"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AmazonAthenaFullAccess"
+       ]
+      ]
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyDocument": {
+       "Statement": [
+        {
+         "Action": [
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents"
+         ],
+         "Effect": "Allow",
+         "Resource": {
+          "Fn::GetAtt": [
+           "BalanceTestAthenaQueryS3Logs62A3581A",
+           "Arn"
+          ]
+         }
+        }
+       ],
+       "Version": "2012-10-17"
+      },
+      "PolicyName": "BalanceTest-athenaQueryS3Policy"
+     }
+    ],
+    "RoleName": "BalanceTest-AthenaQueryS3-Lambda-Role"
+   },
+   "Metadata": {
+    "aws:cdk:path": "AthenaGlueStack/BalanceTest-AthenaQueryS3-Lambda-Role/Resource"
+   }
+  },
+  "BalanceTestqueryS3B568AEB2": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-684904187051-ca-central-1",
+     "S3Key": "68cbd50f69e1fae5685fb89cacf389f9bd962e32ce3042aca6d8dc9fd194315c.zip"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "BalanceTestAthenaQueryS3LambdaRole29CCB440",
+      "Arn"
+     ]
+    },
+    "FunctionName": "BalanceTest-query-S3",
+    "Handler": "query-s3.handler",
+    "MemorySize": 512,
+    "Runtime": "python3.9",
+    "Timeout": 180
+   },
+   "DependsOn": [
+    "BalanceTestAthenaQueryS3LambdaRole29CCB440"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "AthenaGlueStack/BalanceTest-query-S3/Resource",
+    "aws:asset:path": "asset.68cbd50f69e1fae5685fb89cacf389f9bd962e32ce3042aca6d8dc9fd194315c",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "BalanceTestAthenaDataCatalog": {
+   "Type": "AWS::Athena::DataCatalog",
+   "Properties": {
+    "Name": "BalanceTestAthenaDataCatalog",
+    "Type": "GLUE",
+    "Parameters": {
+     "catalog-id": "684904187051"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "AthenaGlueStack/BalanceTestAthenaDataCatalog"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/zVOy27CMBD8Fu7OllCJqkcIggun8AFo42xdE8dGXrscLP87dgqH1by0mtnA9hvWK3xwI8epMXqAdAkoJ1Gsa1ImEqTuxx4w4IBMovDO48OQz0LjDKl3ZnErZmGcYkhnp07exXv137xkOA8jQjpGK4N2tqZvngV/XpGZAsOuQtGwj3KisK+1GH7JIryWdOVKUxY9sYteklh+ynClrVrWvIIsrBsJbvzx126h/YJ2dWOtGx9t0DNB/49PapOVfwcBAAA="
+   },
+   "Metadata": {
+    "aws:cdk:path": "AthenaGlueStack/CDKMetadata/Default"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

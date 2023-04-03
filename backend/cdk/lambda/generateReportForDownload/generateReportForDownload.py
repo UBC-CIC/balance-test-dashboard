@@ -8,6 +8,7 @@ from difflib import SequenceMatcher
 from datetime import datetime
 import matplotlib.pyplot as plt
 from fpdf import FPDF
+import pandas as pd
 
 
 bucket = os.environ["S3_BUCKET_NAME"]
@@ -55,12 +56,21 @@ def lambda_handler(event, context):
 
         user_id, movement, year, month, day, test_event_id,  test_event_id2 = extract(
             template, key)
-        pdf_path = f'parquet_data/patient_tests/user_id={user_id}/movement={movement}/year={year}/month={month}/day={day}/test_event_id={test_event_id}/test_event_{test_event_id}.pdf'
+        # pdf_path = f'parquet_data/patient_tests/user_id={user_id}/movement={movement}/year={year}/month={month}/day={day}/test_event_id={test_event_id}/test_event_{test_event_id}.pdf'
+        pdf_path = f'private/ca-central-1:{user_id}/movement={movement}/year={year}/month={month}/day={day}/{test_event_id}.pdf'
+        csv_path = f'private/ca-central-1:{user_id}/movement={movement}/year={year}/month={month}/day={day}/{test_event_id}.csv'
+
+        # convert to csv and store in s3
+        raw = s3_client.get_object(Bucket=bucket, Key=key)
+        parquet = raw['Body'].read()
+        df = pd.read_parquet(parquet)
+        csv = df.to_csv()
+        s3_client.put_object(Bucket=bucket, Key=csv_path)
 
         raw_url = s3_client.generate_presigned_url(ClientMethod='get_object',
                                                    Params={
                                                        'Bucket': bucket,
-                                                       'Key': key,
+                                                       'Key': csv_path,
                                                        #    'ResponseContentDisposition': 'attachment;filename=file.csv',
                                                        #    'ResponseContentType': 'text/csv'
                                                    },

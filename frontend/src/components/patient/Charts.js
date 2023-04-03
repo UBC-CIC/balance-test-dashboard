@@ -182,7 +182,7 @@ export const SensorChart = ({ data, y }) => {
 //   return <path d={d} stroke="none" fill={color} />;
 // };
 
-export const RangeChart = ({ patientId, measurement }) => {
+export const RangeChart = ({ patientId, measurement, fromDate, toDate }) => {
   let options = {
     chart: {
       type: "rangeBar",
@@ -203,6 +203,8 @@ export const RangeChart = ({ patientId, measurement }) => {
       tickAmount: 6,
       type: "datetime",
       tickPlacement: "between",
+      // min: dayjs(fromDate).format("DD/MM/YYYY"),
+      // max: dayjs(fromDate).format("DD/MM/YYYY"),
     },
     yaxis: {
       decimalsInFloat: 2,
@@ -272,6 +274,8 @@ export const RangeChart = ({ patientId, measurement }) => {
       item["x"] = dayjs(
         `${item["year"]}-0${item["month"]}-${item["day"]}`
       ).format("YYYY MMM D");
+      // .format("DD/MM/YYYY");
+      console.log("item", item);
       return item;
     });
 

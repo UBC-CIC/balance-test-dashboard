@@ -21,7 +21,7 @@ export function request(ctx) {
   } = ctx;
   return {
     payload: {
-      athena_query: `SELECT min(${measurement}) as min, max(${measurement}) as max, year, month, day, movement FROM "sensor_data"."user_id_${patient_id
+      athena_query: `SELECT min(${measurement}) as min, max(${measurement}) as max, year, month, day, movement FROM "sensor_data"."user_id_ca_central_1_${patient_id
         .split("-")
         .join("_")}"  group by year, month, day, movement;`,
       authorization: authorization,

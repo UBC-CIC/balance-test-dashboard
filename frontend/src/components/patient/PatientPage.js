@@ -69,7 +69,9 @@ function PatientPage() {
   const [toDate, setToDate] = React.useState(dayjs());
   const [measurementSelected, setMeasurementSelected] = React.useState(null);
   const [weeklyAvg, setWeeklyAvg] = React.useState(null);
+  const [changeFromLastWeek, setChangeFromLastWeek] = React.useState(null);
   const [monthlyAvg, setMonthlyAvg] = React.useState(null);
+  const [changeFromLastMonth, setChangeFromLastMonth] = React.useState(null);
 
   let navigate = useNavigate();
   const [data, setData] = React.useState([]);
@@ -77,6 +79,7 @@ function PatientPage() {
   const fetchData = async () => {
     let sesh = await Auth.currentSession();
     let idtoken = sesh.idToken.jwtToken;
+    console.log("idtoken", idtoken);
     // get analytics
     // console.log("62");
     let resWeeklyAvg = await API.graphql({
@@ -89,12 +92,22 @@ function PatientPage() {
       },
       authToken: idtoken,
     });
-    // console.log("monthly avg input", {
-    //   patient_id: patient_id,
-    //   from_time: dayjs().subtract(1, "month").format("YYYY-MM-DD hh:mm:ss"),
-    //   to_time: dayjs().format("YYYY-MM-DD hh:mm:ss"),
-    //   stat: "avg",
-    // });
+    let resLastWeekAvg = await API.graphql({
+      query: getScoreStatsOverTime,
+      variables: {
+        patient_id: patient_id,
+        from_time: dayjs().subtract(14, "day").format("YYYY-MM-DD hh:mm:ss"),
+        to_time: dayjs().subtract(7, "day").format("YYYY-MM-DD hh:mm:ss"),
+        stat: "avg",
+      },
+      authToken: idtoken,
+    });
+    console.log("monthly avg input", {
+      patient_id: patient_id,
+      from_time: dayjs().subtract(1, "month").format("YYYY-MM-DD hh:mm:ss"),
+      to_time: dayjs().format("YYYY-MM-DD hh:mm:ss"),
+      stat: "avg",
+    });
     let resMonthlyAvg = await API.graphql({
       query: getScoreStatsOverTime,
       variables: {
@@ -105,7 +118,33 @@ function PatientPage() {
       },
       authToken: idtoken,
     });
-    // console.log("resMonthlyAvg", resMonthlyAvg);
+    let resLastMonthAvg = await API.graphql({
+      query: getScoreStatsOverTime,
+      variables: {
+        patient_id: patient_id,
+        from_time: dayjs().subtract(2, "month").format("YYYY-MM-DD hh:mm:ss"),
+        to_time: dayjs().subtract(1, "month").format("YYYY-MM-DD hh:mm:ss"),
+        stat: "avg",
+      },
+      authToken: idtoken,
+    });
+    console.log("resLastMonthAvg", resLastMonthAvg);
+    setMonthlyAvg(parseFloat(resMonthlyAvg.data.getScoreStatsOverTime));
+    setWeeklyAvg(parseFloat(resWeeklyAvg.data.getScoreStatsOverTime));
+    setChangeFromLastMonth(
+      resLastMonthAvg.data.getScoreStatsOverTime == null
+        ? null
+        : (resMonthlyAvg.data.getScoreStatsOverTime -
+            resLastMonthAvg.data.getScoreStatsOverTime) /
+            resLastMonthAvg.data.getScoreStatsOverTime
+    );
+    setChangeFromLastWeek(
+      resLastWeekAvg.data.getScoreStatsOverTime == null
+        ? null
+        : (resWeeklyAvg.data.getScoreStatsOverTime -
+            resLastWeekAvg.data.getScoreStatsOverTime) /
+            resLastWeekAvg.data.getScoreStatsOverTime
+    );
 
     // console.log("79");
     // setWeeklyAvg(Math.round(resWeeklyAvg.data.getScoreStatsOverTime));
@@ -119,13 +158,10 @@ function PatientPage() {
       // authMode: "AWS_LAMBDA",
       authToken: idtoken,
     });
-
     setPatientName(
-      resPatient.data.getPatientById.last_name +
-        ", " +
-        resPatient.data.getPatientById.first_name
+      `${resPatient.data.getPatientById.last_name}, ${resPatient.data.getPatientById.first_name}`
     );
-    // console.log("resPatient", resPatient);
+    console.log("resPatient", resPatient);
     let resEventsGraph = await API.graphql({
       query: getTestEvents,
       variables: {
@@ -250,8 +286,16 @@ function PatientPage() {
           {/* todo: replace w real data */}
           {/* <AnalyticsCard title="7-day average" value={weeklyAvg} />
           <AnalyticsCard title="monthly average" value={monthlyAvg} /> */}
-          <AnalyticsCard title="7-day average" value={70} />
-          <AnalyticsCard title="monthly average" value={65} />
+          <AnalyticsCard
+            title="7-day average"
+            value={weeklyAvg}
+            change={changeFromLastWeek * 100}
+          />
+          <AnalyticsCard
+            title="monthly average"
+            value={monthlyAvg}
+            change={changeFromLastMonth * 100}
+          />
         </Grid>
         {/* graph */}
         <Grid item>
@@ -385,6 +429,8 @@ function PatientPage() {
               <RangeChart
                 patientId={patient_id}
                 measurement={measurementSelected}
+                fromDate={fromDate}
+                toDate={toDate}
               />
             )}
           </Grid>

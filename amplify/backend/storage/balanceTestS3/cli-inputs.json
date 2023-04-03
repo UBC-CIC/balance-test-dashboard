@@ -1,0 +1,13 @@
+{
+  "resourceName": "balanceTestS3",
+  "policyUUID": "f57e9d16",
+  "bucketName": "balancetestrecordings",
+  "storageAccess": "auth",
+  "guestAccess": [],
+  "authAccess": [
+    "CREATE_AND_UPDATE",
+    "READ",
+    "DELETE"
+  ],
+  "triggerFunction": "NONE"
+}
