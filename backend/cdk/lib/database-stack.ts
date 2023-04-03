@@ -56,6 +56,7 @@ export class DatabaseStack extends Stack {
                 password: rdsCredentialSecret.secretValueFromJson('password')
             },
             removalPolicy: RemovalPolicy.RETAIN,
+            monitoringInterval:
         })
         //TODO: see if I need rds credentials in props, and test if secrets manager is enough
 
@@ -86,17 +87,16 @@ export class DatabaseStack extends Stack {
             managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName("AmazonEC2FullAccess")]
         });
 
-        //TODO: add python layers for this lambda, and figure out what is needed to connect to the lambda (appsync resolver)
-        // make Lambda to generate a PDF report for downloading in dashboard
+        // todo: associate w vpc
+        // make Lambda to connect to and query from the database
         this.postgresqlRDSConnectLambda = new lambda.Function(this, postgresqlRDSConnectLambdaName, {
-            runtime: lambda.Runtime.PYTHON_3_7,
+            runtime: lambda.Runtime.NODEJS_16_X,
             functionName: postgresqlRDSConnectLambdaName,
             handler: postgresqlRDSConnectLambdaFileName + ".lambda_handler",
             code: lambda.Code.fromAsset("./lambda/" + postgresqlRDSConnectLambdaFileName),
             timeout: Duration.minutes(3),
             memorySize: 512,
             role: postgresqlRDSConnectLambdaRole,
-            // layers: [],
             //vpc: vpcStack.vpc,
         });
     }
