@@ -1,17 +1,17 @@
 {
-  "projectName": "balancetestdashboard",
+  "providers": [
+    "awscloudformation"
+  ],
+  "projectName": "balancetest",
   "version": "3.1",
   "frontend": "javascript",
   "javascript": {
-    "framework": "none",
+    "framework": "react",
     "config": {
-      "SourceDir": "src",
-      "DistributionDir": "dist",
+      "SourceDir": "frontend/src",
+      "DistributionDir": "build",
       "BuildCommand": "npm.cmd run-script build",
       "StartCommand": "npm.cmd run-script start"
     }
-  },
-  "providers": [
-    "awscloudformation"
-  ]
+  }
 }

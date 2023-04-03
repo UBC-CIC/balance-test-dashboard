@@ -13,7 +13,7 @@ import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
 import { Link, useNavigate, redirect } from "react-router-dom";
-import { Auth, Hub } from 'aws-amplify';
+import { Auth, Hub } from "aws-amplify";
 
 const pages = ["Patients"];
 const settings = ["Log Out"];
@@ -23,7 +23,7 @@ function ResponsiveAppBar({ loginState, setLoginState }) {
 
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
-  
+
   // const [loginState, setLoginState] = React.useState(false);
 
   let navigate = useNavigate();
@@ -54,17 +54,16 @@ function ResponsiveAppBar({ loginState, setLoginState }) {
   };
 
   async function setAuthListener() {
-    Hub.listen('auth', (listenerData) => {
+    Hub.listen("auth", (listenerData) => {
       switch (listenerData.payload.event) {
         case "signOut":
-          navigate("/")
+          navigate("/");
           break;
         case "signIn":
           break;
         default:
           break;
       }
-      
     });
   }
 
@@ -74,7 +73,7 @@ function ResponsiveAppBar({ loginState, setLoginState }) {
     // if (loginState == false) {
     //   navigate("/");
     // }
-  }, [])
+  }, []);
 
   return (
     <AppBar position="static">
@@ -82,7 +81,7 @@ function ResponsiveAppBar({ loginState, setLoginState }) {
         <Container maxWidth="xl">
           <Toolbar disableGutters>
             <Typography
-              align='center'
+              align="center"
               variant="h6"
               href="/"
               noWrap
@@ -97,7 +96,7 @@ function ResponsiveAppBar({ loginState, setLoginState }) {
             >
               Balance Test
             </Typography>
-            
+
             <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
               <IconButton
                 size="large"
@@ -187,7 +186,12 @@ function ResponsiveAppBar({ loginState, setLoginState }) {
                 onClose={handleCloseUserMenu}
               >
                 {settings.map((setting) => (
-                  <MenuItem key={setting} onClick={() => {handleUserMenuItemClick(setting)}}>
+                  <MenuItem
+                    key={setting}
+                    onClick={() => {
+                      handleUserMenuItemClick(setting);
+                    }}
+                  >
                     <Typography textAlign="center">{setting}</Typography>
                   </MenuItem>
                 ))}
@@ -195,11 +199,10 @@ function ResponsiveAppBar({ loginState, setLoginState }) {
             </Box>
           </Toolbar>
         </Container>
-
       ) : (
         <Toolbar>
           <Typography
-            align='center'
+            align="center"
             variant="h6"
             href="/"
             noWrap
@@ -214,7 +217,7 @@ function ResponsiveAppBar({ loginState, setLoginState }) {
           >
             Balance Test
           </Typography>
-          
+
           <Typography
             variant="h6"
             href="/"

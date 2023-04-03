@@ -1,0 +1,205 @@
+type Patient {
+  patient_id: String!
+  email: String
+  first_name: String
+  last_name: String
+  privacy_consent_date: String
+}
+
+type CareProvider {
+  care_provider_id: String!
+  email: String
+}
+
+type PatientCareprovider {
+  patient_id: String!
+  care_provider_id: String!
+}
+
+type PatientTest {
+  patient_id: String!
+  test_type: String!
+}
+
+type Test {
+  test_type: String!
+  instructions: String
+  duration_in_seconds: Int
+}
+
+type Query {
+  # getters
+  getCareproviderById(care_provider_id: String!): CareProvider
+  getPatientById(patient_id: String!): Patient @aws_lambda
+  getTestEventById(test_event_id: String!, patient_id: String!): TestEvent
+    @aws_lambda
+  # @aws_cognito_user_pools(cognito_groups: ["care_provider_user"])
+
+  getPatientsForCareprovider(care_provider_id: String!): [Patient]
+  getAllPatients: [Patient]
+  getTestEvents(
+    patient_id: String!
+    test_type: String
+    from_time: String
+    to_time: String
+    sort: SortDirection
+    count: Int
+  ): [TestEvent] @aws_lambda
+  getPatientAssignedTests(patient_id: String!): [Test] @aws_lambda
+  getAllAvailableTests: [Test]
+
+  # analytics
+  getScoreStatsOverTime(
+    patient_id: String!
+    from_time: String!
+    to_time: String!
+    stat: Stat!
+    movement: String
+  ): String @aws_lambda
+
+  # measurements
+  getMeasurementRange(
+    patient_id: String!
+    measurement: Measurement!
+  ): MeasurementRange @aws_lambda
+
+  getMeasurementData(
+    test_event_id: String!
+    test_type: String!
+    measurement: Measurement!
+    patient_id: String!
+    year: Int!
+    month: Int!
+    day: Int!
+  ): MeasurementRecord @aws_lambda
+
+  downloadTestEventDetails(
+    test_event_id: String!
+    patient_id: String!
+    year: Int!
+    month: Int!
+    day: Int!
+    test_type: String!
+  ): URLGenerated @aws_lambda
+}
+
+type Mutation {
+  createPatient(
+    patient_id: String!
+    email: String
+    first_name: String
+    last_name: String # privacy_consent_date: String
+  ): Patient @aws_lambda
+  createCareProvider(care_provider_id: String!, email: String!): CareProvider
+  addPatientToCareProvider(
+    care_provider_id: String!
+    patient_id: String!
+  ): PatientCareprovider
+  recordConsentDate(patient_id: String!, date: String!): Patient
+
+  assignTestToPatient(patient_id: String!, test_type: String!): PatientTest
+
+  removeTestFromPatient(patient_id: String!, test_type: String!): String
+
+  putTestResult(
+    test_event_id: String!
+    patient_id: String!
+    test_type: String!
+    doctor_score: Int
+    start_time: String!
+    end_time: String!
+    notes: String
+  ): TestEvent @aws_lambda
+
+  putBalanceScore(test_event_id: String!, balance_score: Int!): TestEvent
+  addTestType(
+    test_type: String!
+    instructions: String
+    duration_in_seconds: Int
+  ): Test
+  deleteTestEventFromS3(
+    test_event_id: String!
+    patient_id: String!
+    year: Int!
+    month: Int!
+    day: Int!
+    test_type: String!
+  ): String
+  deleteTestEventFromDB(test_event_id: String!, patient_id: String!): String
+}
+
+type TestEvent {
+  test_event_id: String!
+  patient_id: String!
+  test_type: String!
+  balance_score: Int
+  doctor_score: Int
+  notes: String
+  start_time: String
+  end_time: String
+}
+
+# type MeasurementRange {
+#   date: String!
+#   min: Float!
+#   max: Float!
+# }
+
+type Datapoint {
+  ts: String!
+  ax: Float
+  ay: Float
+  az: Float
+  gx: Float
+  gy: Float
+  gz: Float
+  mx: Float
+  my: Float
+  mz: Float
+}
+
+type MeasurementRecord {
+  ts: [String]
+  val: [Float]
+}
+
+type MeasurementRange {
+  min: [String]
+  max: [String]
+  year: [String]
+  month: [String]
+  day: [String]
+  movement: [String]
+}
+
+type URLGenerated {
+  pdf_url: String
+  raw_url: String
+}
+
+enum Stat {
+  avg
+  range
+}
+
+enum SortDirection {
+  asc
+  desc
+}
+
+enum Measurement {
+  ax
+  ay
+  az
+  gx
+  gy
+  gz
+  mx
+  my
+  mz
+}
+
+schema {
+  query: Query
+  mutation: Mutation
+}
