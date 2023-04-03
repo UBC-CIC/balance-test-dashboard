@@ -10,6 +10,7 @@ export class VPCStack extends Stack {
 
     public readonly vpc: ec2.Vpc;
     public readonly cidrStr: string;
+    private readonly destinationCidrStr: string;
 
     constructor(scope: App, id: string, props?: StackProps) {
       super(scope, id, props);
@@ -17,7 +18,8 @@ export class VPCStack extends Stack {
       const vpcName = "balanceTest-VPC";
       const rdsEndpointName = "RDS-Endpoint";
       const cloudwatchEndpointName = "CloudWatch-Logs-Endpoint";
-      this.cidrStr = '20.0.0.0/16';
+      this.cidrStr = '11.0.0.0/16';
+      this.destinationCidrStr = '13.0.0.0/16';
 
       const natGatewayProvider = ec2.NatProvider.gateway();
       
@@ -47,7 +49,7 @@ export class VPCStack extends Stack {
           }
         },
       });
-      this.vpc.applyRemovalPolicy(RemovalPolicy.DESTROY);
+      // this.vpc.applyRemovalPolicy(RemovalPolicy.DESTROY);
 
       // make security group
       const securityGroup = ec2.SecurityGroup.fromSecurityGroupId(this, id, this.vpc.vpcDefaultSecurityGroup);
@@ -72,13 +74,12 @@ export class VPCStack extends Stack {
 
       // Add routes; deploy to see if I need this
       this.vpc.isolatedSubnets.forEach(({routeTable: { routeTableId }}, index) => {
-        new ec2.CfnRoute(this, "Private-Route-" + index, {
-          destinationCidrBlock: this.cidrStr,
+        new ec2.CfnRoute(this, "Route-Private-" + index, {
+          destinationCidrBlock: this.destinationCidrStr,
           routeTableId,
           natGatewayId: natGatewayProvider.configuredGateways[0].gatewayId
         })
       });
     }
 
-    
 }
