@@ -5,6 +5,7 @@ import * as iam from "aws-cdk-lib/aws-iam";
 import * as lambda from "aws-cdk-lib/aws-lambda";
 import * as logs from "aws-cdk-lib/aws-logs";
 import * as ssm from "aws-cdk-lib/aws-ssm";
+import * as ec2 from "aws-cdk-lib/aws-ec2";
 import * as cdk from 'aws-cdk-lib';
 import { VPCStack } from './vpc-stack';
 
@@ -17,10 +18,10 @@ export class DataWorkflowStack extends Stack {
     private readonly generateReportLambda: lambda.Function;
     private readonly deleteS3RecordLambda: lambda.Function;
 
+    // constructor(scope: App, id: string, vpcStack: VPCStack, props?: StackProps) {
     constructor(scope: App, id: string, props?: StackProps) {
       super(scope, id, props);
       
-      const balanceTestBucketName = "balancetest-datastorage-bucket";
       const balanceTestBucketAccessPointName = "BalanceTest-DataStorage-Bucket-AccessPoint";
       const s3LambdaTriggerName = "BalanceTest-convert-json-to-parquet-and-csv";
       const s3LambdaTriggerFileName = "s3-trigger-convert-json-to-parquet-and-csv";
@@ -49,15 +50,15 @@ export class DataWorkflowStack extends Stack {
       //   objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_ENFORCED
       // }); 
 
-      //TODO: use parameter store to get bucket arn. and add to the bucket code below
-      const balanceTestBucketArn = ssm.StringParameter.fromSecureStringParameterAttributes(this, "BalanceTestRecordingsBucketArn". {
-        parameterName: ""
+      //TODO: change to secured StringParameter
+      const balanceTestBucketName = ssm.StringParameter.fromStringParameterAttributes(this, "BalanceTestRecordingsBucketArn", {
+        parameterName: "S3BucketName"
       }).stringValue;
 
       // get data storage bucket using bucket ARN
-      this.balanceTestBucket = s3.Bucket.fromBucketArn(this, "balancetestrecordings160420-dev", "arn:aws:s3:::balancetestrecordings160420-dev");
+      this.balanceTestBucket = s3.Bucket.fromBucketArn(this, "balancetestrecordings160420-dev", "arn:aws:s3:::" + balanceTestBucketName);
 
-      this.balanceTestBucket.applyRemovalPolicy(RemovalPolicy.RETAIN);
+      // this.balanceTestBucket.applyRemovalPolicy(RemovalPolicy.RETAIN); //TODO: see if I need this; doesn't work
 
       //TODO: uncomment this
       // add an access point for VPC
@@ -76,10 +77,19 @@ export class DataWorkflowStack extends Stack {
 
       // });
 
+      // let balanceTestIVPC = ec2.Vpc.fromLookup(this, "BalanceTest-iVPC", {
+      //   vpcId: vpcStack.vpc.vpcId
+      // });
+
+      // let vpcLambdaSubnetSelection = {
+      //   subnetType: ec2.SubnetType.PRIVATE_ISOLATED
+      // };
+
+      //TODO: see if we need to delete logs when destroying stacks, or retain
       // create log group
       const logGroup = new logs.LogGroup(this, logGroupName, {
         logGroupName: `/aws/lambda/${s3LambdaTriggerName}`,
-        removalPolicy: RemovalPolicy.RETAIN
+        removalPolicy: RemovalPolicy.DESTROY
       });
 
       //create policy document and role for Lambda trigger
@@ -119,7 +129,8 @@ export class DataWorkflowStack extends Stack {
         timeout: Duration.minutes(3),
         memorySize: 512,
         role: s3LambdaTriggerRole,
-        //vpc: vpcStack.vpc,
+        // vpc: balanceTestIVPC,
+        // vpcSubnets: vpcLambdaSubnetSelection,
       });
 
       // for adding Pandas library to the function
@@ -136,7 +147,8 @@ export class DataWorkflowStack extends Stack {
           suffix: ".json"
         }
       );
-
+      
+      //TODO: see if we need to delete logs when destroying stacks, or retain
       // make log group for Lambda that generates a report
       const generateReportLambdaLogGroup = new logs.LogGroup(this, generateReportLambdaLogGroupName, {
         logGroupName: `/aws/lambda/${generateReportLambdaName}`,
@@ -163,7 +175,7 @@ export class DataWorkflowStack extends Stack {
       const generateReportRuntime = lambda.Runtime.PYTHON_3_7;
       const generateReportLambdaLayer = new lambda.LayerVersion(this, "generateReportPythonLayer", {
         removalPolicy: RemovalPolicy.DESTROY,
-        code: lambda.Code.fromAsset('layers/generateReportPythonPackages'),
+        code: lambda.Code.fromAsset('layers/generateReportPythonPackages.zip'),
         compatibleRuntimes: [generateReportRuntime],
         description: "Contains libraries for the " + generateReportLambdaName + " function."
       })
@@ -181,13 +193,15 @@ export class DataWorkflowStack extends Stack {
           "S3_BUCKET_NAME": this.balanceTestBucket.bucketName
         },
         layers: [generateReportLambdaLayer],
-        // vpc: vpcStack.vpc,
+        // vpc: balanceTestIVPC,
+        // vpcSubnets: vpcLambdaSubnetSelection
       });
 
+      //TODO: see if we need to delete logs when destroying stacks, or retain
       // make log group for Lambda that deletes files from S3
       const deleteS3RecordLambdaLogGroup = new logs.LogGroup(this, deleteS3RecordLambdaLogGroupName, {
         logGroupName: `/aws/lambda/${deleteS3RecordLambdaName}`,
-        removalPolicy: RemovalPolicy.RETAIN
+        removalPolicy: RemovalPolicy.DESTROY
       });
 
       //TODO: add the correct restrictive permissions for S3
@@ -214,13 +228,13 @@ export class DataWorkflowStack extends Stack {
         inlinePolicies: { ["BalanceTest-deleteS3RecordLambdaPolicy"]: deleteS3RecordLambdaPolicyDocument },
       });
 
-      //TODO: get values for Cognito from Parameter Store 
-      const cognitoIdentityPoolId = ssm.StringParameter.fromSecureStringParameterAttributes(this, "BalanceTestCognitoIdentityPoolId". {
-        parameterName: ""
-      }).stringValue;
+      //TODO: get values for Cognito from Parameter Store, and change to secured StringParameter
+      // const cognitoIdentityPoolId = ssm.StringParameter.fromSecureStringParameterAttributes(this, "BalanceTestCognitoIdentityPoolId", {
+      //   parameterName: ""
+      // }).stringValue;
 
-      const cognitoUserPoolId = ssm.StringParameter.fromSecureStringParameterAttributes(this, "BalanceTestCognitoUserPoolId". {
-        parameterName: ""
+      const cognitoUserPoolId = ssm.StringParameter.fromStringParameterAttributes(this, "BalanceTestCognitoUserPoolId", {
+        parameterName: "UserPoolId"
       }).stringValue;
 
       //TODO: add environment variables, and double check Lambda
@@ -235,10 +249,11 @@ export class DataWorkflowStack extends Stack {
         role: deleteS3RecordLambdaRole,
         environment: {
           "S3_BUCKET_NAME": this.balanceTestBucket.bucketName,
-          "IDENTITY_POOL_ID": cognitoIdentityPoolId,
+          // "IDENTITY_POOL_ID": cognitoIdentityPoolId,
           "USER_POOL_ID": cognitoUserPoolId,
-        }
-        //vpc: vpcStack.vpc,
+        },
+        // vpc: balanceTestIVPC,
+        // vpcSubnets: vpcLambdaSubnetSelection
       });
     }
 
