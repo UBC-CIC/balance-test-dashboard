@@ -28,27 +28,27 @@ export class AppsyncStack extends Stack {
         const deleteEventDataSourceRoleName = "BalanceTest-appsync-deleteEventDataSource-Role";
         
         //TODO: remove the below new api placeholder after figuring out the above. then test deployment
-        const api = new appsync.GraphqlApi(this, appsyncName, {
-            name: appsyncName,
-            schema: appsync.SchemaFile.fromAsset("../../../amplify/backend/api/balancetest/schema.graphql"),
-            authorizationConfig: {
-                defaultAuthorization: {
-                    authorizationType: appsync.AuthorizationType.API_KEY, //should be lambda, but will use this for now
-                    // lambdaAuthorizerConfig: {
-                    //     handler: 
-                    // },
-                },
-            }
-        });
+        // const api = new appsync.GraphqlApi(this, appsyncName, {
+        //     name: appsyncName,
+        //     schema: appsync.SchemaFile.fromAsset("../../../amplify/backend/api/balancetest/schema.graphql"),
+        //     authorizationConfig: {
+        //         defaultAuthorization: {
+        //             authorizationType: appsync.AuthorizationType.API_KEY, //should be lambda, but will use this for now
+        //             // lambdaAuthorizerConfig: {
+        //             //     handler: 
+        //             // },
+        //         },
+        //     }
+        // });
 
         //TODO: get graphql api ID from Parameter Store
-        // const apiId = ssm.StringParameter.fromStringParameterAttributes(this, "BalanceTestAppsyncApiId", {
-        //     parameterName: "",
-        // }).stringValue;
+        const apiId = ssm.StringParameter.fromStringParameterAttributes(this, "BalanceTestAppsyncApiId", {
+            parameterName: "GraphqlApiId",
+        }).stringValue;
 
-        // const api = appsync.GraphqlApi.fromGraphqlApiAttributes(this, appsyncName, {
-        //     graphqlApiId: apiId
-        // })
+        const api = appsync.GraphqlApi.fromGraphqlApiAttributes(this, appsyncName, {
+            graphqlApiId: apiId
+        })
 
         // getting needed Lambda functions for data sources
         const generateReportLambda = dataWorkflowStack.getGenerateReportLambda();
@@ -113,12 +113,21 @@ export class AppsyncStack extends Stack {
             serviceRole: generateReportDataSourceRole
         });
 
-        const postgresqlRDSConnectLambdaDataSource = new appsync.LambdaDataSource(this, postgresqlRDSLambdaDataSourceName, {
-            api: api,
-            lambdaFunction: postgresqlRDSConnectLambda,
+        const postgresqlRDSConnectLambdaDataSource = new appsync.CfnDataSource(this, 'postgresqlDataSource', {
+            apiId: api.apiId,
             name: postgresqlRDSLambdaDataSourceName,
-            serviceRole: postgresqlRDSConnectDataSourceRole
+            type: "AWS_LAMBDA",
+            lambdaConfig: {
+                lambdaFunctionArn: postgresqlRDSConnectLambda.functionArn
+            },
+            serviceRoleArn: postgresqlRDSConnectDataSourceRole.roleArn
         });
+        // new appsync.LambdaDataSource(this, postgresqlRDSLambdaDataSourceName, {
+        //     api: api,
+        //     lambdaFunction: postgresqlRDSConnectLambda,
+        //     name: postgresqlRDSLambdaDataSourceName,
+        //     serviceRole: postgresqlRDSConnectDataSourceRole
+        // });
 
         const queryS3LambdaDataSource = new appsync.LambdaDataSource(this, queryS3LambdaDataSourceName, {
             api: api,
@@ -160,15 +169,15 @@ export class AppsyncStack extends Stack {
             // responseMappingTempalte: ,
         });
 
-        const postgresqlRDSAppsyncFunction = new appsync.AppsyncFunction(this, postgresqlRDSAppsyncFunctionName, {
-            api: api,
-            name: postgresqlRDSAppsyncFunctionName,
-            dataSource: postgresqlRDSConnectLambdaDataSource,
-            runtime: appsync.FunctionRuntime.JS_1_0_0,
-            // code: ,
-            // requestMappingTemplate: ,
-            // responseMappingTempalte: ,
-        });
+        // const postgresqlRDSAppsyncFunction = new appsync.AppsyncFunction(this, postgresqlRDSAppsyncFunctionName, {
+        //     api: api,
+        //     name: postgresqlRDSAppsyncFunctionName,
+        //     dataSource: postgresqlRDSConnectLambdaDataSource,
+        //     runtime: appsync.FunctionRuntime.JS_1_0_0,
+        //     // code: ,
+        //     // requestMappingTemplate: ,
+        //     // responseMappingTempalte: ,
+        // });
         
         const deleteEventAppsyncFunction = new appsync.AppsyncFunction(this, deleteEventAppsyncFunctionName, {
             api: api,
@@ -181,7 +190,9 @@ export class AppsyncStack extends Stack {
         });
         
         // TODO: make the resolvers, and change apiID to the one from Parameter Store
-
+        let postgresqlDBQueryList = ["getCareproviderById",'getPatientById','getTestEventById','getPatientsForCareprovider','getAllPatients','getTestEvents','getPatientAssignedTests','getAllAvailableTests','getScoreStatsOverTime',
+        'createPatient','createCareProvider','addPatientToCareProvider','recordConsentDate','assignTestToPatient','removeTestFromPatient','putTestResult','putBalanceScore','addTestType','deleteTestEventFromDB']
+        let s3QueryList = ['getMeasurementRange','getMeasurementData','downloadTestEventDetails']
         let deleteEventResolverNameList = ["deleteTestEventFromS3"]
 
         //TODO: see if I need the code or if schema is better
@@ -197,6 +208,16 @@ export class AppsyncStack extends Stack {
                 
             });
         }
+        for(let i = 0; i<postgresqlDBQueryList.length; i++){
+            const resolver = new appsync.CfnResolver(this, postgresqlDBQueryList[i], {
+                apiId: api.apiId,
+                fieldName: postgresqlDBQueryList[i],
+                typeName: 'Query',
+                dataSourceName: postgresqlRDSConnectLambdaDataSource.name,
+            });
+            // resolver.addDependsOn(postgresqlRDSConnectLambdaDataSource);
+            // resolver.addDependsOn(apiSchema);
+    }
             
     }
 }
