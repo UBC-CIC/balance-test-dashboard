@@ -15,11 +15,13 @@ export class DatabaseStack extends Stack {
     constructor(scope: App, id: string, vpcStack: VPCStack, props?: StackProps) {
         super(scope, id, props);
 
-        const rdsInstanceName = "balancetest-postgresql-instance";
+        const rdsInstanceName = "balancetest_postgresql_instance";
         const postgresqlRDSConnectLambdaName = "BalanceTest-postgresql-RDS-connect";
         const postgresqlRDSConnectLambdaFileName = "postgresql-rds-connect";
         const postgresqlRDSConnectLambdaRoleName = "BalanceTest-postgresqlRDSConnectLambda-Role";
         const postgresqlRDSConnectLambdaLogGroupName = "BalanceTest-postgresqlRDSConnect-Logs";
+        const dbPort = 5432;
+        const rdsMonitoringRoleName = 'balancetest-rds-monitoring-role';
 
         // database secret
         const rdsCredentialSecret = new sm.Secret(this, 'Secret', {
@@ -27,6 +29,13 @@ export class DatabaseStack extends Stack {
                 secretStringTemplate: JSON.stringify({ username: 'postgres' }),
                 generateStringKey: 'password',
             }
+        })
+
+        const monitoringRole = new iam.Role(this, 'RdsMonitoringRole', {
+            assumedBy: new iam.ServicePrincipal("monitoring.rds.amazonaws.com"),
+            roleName: rdsMonitoringRoleName,
+            description: 'Allows RDS to manage CloudWatch Logs resources for Enhanced Monitoring',
+            managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonRDSEnhancedMonitoringRole')]
         })
 
         //TODO: double this configuration
@@ -54,11 +63,21 @@ export class DatabaseStack extends Stack {
                 password: rdsCredentialSecret.secretValueFromJson('password')
             },
             removalPolicy: RemovalPolicy.RETAIN,
-            monitoringInterval: cdk.Duration.seconds(0)
+            monitoringInterval: cdk.Duration.seconds(60),
+            monitoringRole: monitoringRole
         })
+
+        const proxy = new rds.DatabaseProxy(this, 'Proxy', {
+            proxyTarget: rds.ProxyTarget.fromInstance(rdsInstance),
+            secrets: [rdsCredentialSecret],
+            vpc: vpcStack.vpc,
+        });
+
+        const dbProxyRole = new iam.Role(this, 'DBProxyRole', { assumedBy: new iam.AccountPrincipal(this.account) });
+        proxy.grantConnect(dbProxyRole, 'admin'); // Grant the role connection access to the DB Proxy for database user 'admin'.
         
         //TODO: check if we need this
-        const port = ec2.Port.tcp(5432);
+        const port = ec2.Port.tcp(dbPort);
         rdsInstance.connections.securityGroups.forEach((securityGroup) => {
             securityGroup.addIngressRule(ec2.Peer.ipv4(vpcStack.cidrStr), port, "BalanceTest-RDS-Postgres-Ingress")
         });
@@ -104,15 +123,15 @@ export class DatabaseStack extends Stack {
             timeout: Duration.minutes(3),
             memorySize: 512,
             role: postgresqlRDSConnectLambdaRole,
-            // environment: {
-            //     "PGDATABASE": rdsInstanceName,
-            //     "PGHOST": ,
-            //     "PGUSER": rdsCredentialSecret.secretValueFromJson('username').unsafeUnwrap(),
-            //     "PGPASSWORD": rdsCredentialSecret.secretValueFromJson('password'),
-            //     "PGPORT": port,
-            // },
+            environment: {
+                "PGDATABASE": rdsInstanceName,
+                "PGHOST": proxy.endpoint,
+                "PGUSER": rdsCredentialSecret.secretValueFromJson('username').unsafeUnwrap(),
+                "PGPASSWORD": rdsCredentialSecret.secretValueFromJson('password').unsafeUnwrap(),
+                "PGPORT": String(dbPort)
+            },
             layers: [postgresqlRDSConnectLambdaLayer],
-            //vpc: vpcStack.vpc,
+            vpc: vpcStack.vpc,
         });
     }
 

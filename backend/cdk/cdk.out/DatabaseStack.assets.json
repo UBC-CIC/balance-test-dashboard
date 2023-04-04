@@ -1,21 +1,35 @@
 {
   "version": "31.0.0",
   "files": {
-    "6873f2c4361471f12127eab34acd8d8d6df904d3afe7613bf235ec039b12a15b": {
+    "8e0fbb0f6c0547fcecaf694c22ac02dc594d058bcadf5e479469a04e09abc02f": {
       "source": {
-        "path": "asset.6873f2c4361471f12127eab34acd8d8d6df904d3afe7613bf235ec039b12a15b",
-        "packaging": "zip"
+        "path": "asset.8e0fbb0f6c0547fcecaf694c22ac02dc594d058bcadf5e479469a04e09abc02f.zip",
+        "packaging": "file"
       },
       "destinations": {
         "684904187051-ca-central-1": {
           "bucketName": "cdk-hnb659fds-assets-684904187051-ca-central-1",
-          "objectKey": "6873f2c4361471f12127eab34acd8d8d6df904d3afe7613bf235ec039b12a15b.zip",
+          "objectKey": "8e0fbb0f6c0547fcecaf694c22ac02dc594d058bcadf5e479469a04e09abc02f.zip",
           "region": "ca-central-1",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::684904187051:role/cdk-hnb659fds-file-publishing-role-684904187051-ca-central-1"
         }
       }
     },
-    "a05c426fc630e399f2b3155d7158c18b8d32fd8686439e046a0615760080aac1": {
+    "84fc2e602951f4afa6b702177b4097eeee5c5e877404f02fdc6d4f1b7dd40d7e": {
+      "source": {
+        "path": "asset.84fc2e602951f4afa6b702177b4097eeee5c5e877404f02fdc6d4f1b7dd40d7e",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "684904187051-ca-central-1": {
+          "bucketName": "cdk-hnb659fds-assets-684904187051-ca-central-1",
+          "objectKey": "84fc2e602951f4afa6b702177b4097eeee5c5e877404f02fdc6d4f1b7dd40d7e.zip",
+          "region": "ca-central-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::684904187051:role/cdk-hnb659fds-file-publishing-role-684904187051-ca-central-1"
+        }
+      }
+    },
+    "a82328e133404a515bccb14ff4dc29aaf6f8fcbdea9b6b944ca376a7f8594b9f": {
       "source": {
         "path": "DatabaseStack.template.json",
         "packaging": "file"
@@ -23,7 +37,7 @@
       "destinations": {
         "684904187051-ca-central-1": {
           "bucketName": "cdk-hnb659fds-assets-684904187051-ca-central-1",
-          "objectKey": "a05c426fc630e399f2b3155d7158c18b8d32fd8686439e046a0615760080aac1.json",
+          "objectKey": "a82328e133404a515bccb14ff4dc29aaf6f8fcbdea9b6b944ca376a7f8594b9f.json",
           "region": "ca-central-1",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::684904187051:role/cdk-hnb659fds-file-publishing-role-684904187051-ca-central-1"
         }

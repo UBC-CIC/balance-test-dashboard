@@ -3,7 +3,7 @@
   "balanceTestVPCFBF0FFB3": {
    "Type": "AWS::EC2::VPC",
    "Properties": {
-    "CidrBlock": "10.1.0.0/16",
+    "CidrBlock": "11.0.0.0/16",
     "EnableDnsHostnames": true,
     "EnableDnsSupport": true,
     "InstanceTenancy": "default",
@@ -25,7 +25,7 @@
      "Ref": "balanceTestVPCFBF0FFB3"
     },
     "AvailabilityZone": "ca-central-1a",
-    "CidrBlock": "10.1.0.0/18",
+    "CidrBlock": "11.0.0.0/18",
     "MapPublicIpOnLaunch": true,
     "Tags": [
      {
@@ -144,7 +144,7 @@
      "Ref": "balanceTestVPCFBF0FFB3"
     },
     "AvailabilityZone": "ca-central-1b",
-    "CidrBlock": "10.1.64.0/18",
+    "CidrBlock": "11.0.64.0/18",
     "MapPublicIpOnLaunch": true,
     "Tags": [
      {
@@ -221,7 +221,7 @@
      "Ref": "balanceTestVPCFBF0FFB3"
     },
     "AvailabilityZone": "ca-central-1a",
-    "CidrBlock": "10.1.128.0/18",
+    "CidrBlock": "11.0.128.0/18",
     "MapPublicIpOnLaunch": false,
     "Tags": [
      {
@@ -280,7 +280,7 @@
      "Ref": "balanceTestVPCFBF0FFB3"
     },
     "AvailabilityZone": "ca-central-1b",
-    "CidrBlock": "10.1.192.0/18",
+    "CidrBlock": "11.0.192.0/18",
     "MapPublicIpOnLaunch": false,
     "Tags": [
      {
@@ -528,34 +528,34 @@
     "aws:cdk:path": "VPCStack/VPCStack/from '{IndirectPeer2}':443"
    }
   },
-  "PrivateSubnetRoute0": {
+  "RoutePrivate0": {
    "Type": "AWS::EC2::Route",
    "Properties": {
     "RouteTableId": {
      "Ref": "balanceTestVPCprivatesubnetSubnet1RouteTable1BCA205D"
     },
-    "DestinationCidrBlock": "10.0.0.0/16",
+    "DestinationCidrBlock": "13.0.0.0/16",
     "NatGatewayId": {
      "Ref": "balanceTestVPCpublicsubnetSubnet1NATGatewayE904A269"
     }
    },
    "Metadata": {
-    "aws:cdk:path": "VPCStack/Private-Subnet-Route0"
+    "aws:cdk:path": "VPCStack/Route-Private-0"
    }
   },
-  "PrivateSubnetRoute1": {
+  "RoutePrivate1": {
    "Type": "AWS::EC2::Route",
    "Properties": {
     "RouteTableId": {
      "Ref": "balanceTestVPCprivatesubnetSubnet2RouteTable0F00F62A"
     },
-    "DestinationCidrBlock": "10.0.0.0/16",
+    "DestinationCidrBlock": "13.0.0.0/16",
     "NatGatewayId": {
      "Ref": "balanceTestVPCpublicsubnetSubnet1NATGatewayE904A269"
     }
    },
    "Metadata": {
-    "aws:cdk:path": "VPCStack/Private-Subnet-Route1"
+    "aws:cdk:path": "VPCStack/Route-Private-1"
    }
   },
   "CDKMetadata": {

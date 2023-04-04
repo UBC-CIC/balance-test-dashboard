@@ -30,6 +30,8 @@ export class cdkStack extends cdk.Stack {
       const GraphQLAPIIdOutput = cdk.Fn.ref(dependencies.api.balancetestdashboard.GraphQLAPIIdOutput)
       const GraphQLAPIEndpointOutput = cdk.Fn.ref(dependencies.api.balancetestdashboard.GraphQLAPIEndpointOutput)
       const UserPoolIdOutput = cdk.Fn.ref(dependencies.auth.balancetestdashboard733fb088.UserPoolId);
+      const IdentityPoolIdOutput = cdk.Fn.ref(dependencies.auth.balancetestdashboard733fb088.IdentityPoolId);
+
       const s3BucketName = cdk.Fn.ref(dependencies.storage.balanceTestS3.BucketName);
 
       /* AWS CDK code goes here - learn more: https://docs.aws.amazon.com/cdk/latest/guide/home.html */
@@ -45,6 +47,10 @@ export class cdkStack extends cdk.Stack {
       new ssm.StringParameter(this, 'ParameterStoreUserPoolId', {
         parameterName: 'UserPoolId',
         stringValue: UserPoolIdOutput,
+      });
+      new ssm.StringParameter(this, 'ParameterStoreIdentityPoolId', {
+        parameterName: 'IdentityPoolId',
+        stringValue: IdentityPoolIdOutput,
       });
       new ssm.StringParameter(this, 'ParameterStoreS3BucketName', {
         parameterName: 'S3BucketName',
