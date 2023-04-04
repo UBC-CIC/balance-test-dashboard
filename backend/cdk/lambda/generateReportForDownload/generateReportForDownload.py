@@ -1,5 +1,3 @@
-#TODO: fix hardcoded bucket name 
-
 import os
 import io
 import boto3
@@ -46,8 +44,8 @@ def lambda_handler(event, context):
 
         plt.clf()
 
-    print('event')
-    print(event)
+    # print('event')
+    # print(event)
     if ('s3key' in event['payload']):
         key = event['payload']['s3key']
         patient_name = event['payload']['patientName']

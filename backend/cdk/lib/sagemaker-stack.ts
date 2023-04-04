@@ -56,19 +56,19 @@ export class SagemakerStack extends Stack {
         });
 
         // make the notebook instance for Sagemaker
-        const notebookInstance = new sagemaker.CfnNotebookInstance(this, sagemakerNotebookName, {
-            instanceType: "ml.t3.medium",
-            roleArn: sagemakerNotebookRole.roleArn,
-            volumeSizeInGb: 5,
-            platformIdentifier: "notebook-al2-v2",
-            instanceMetadataServiceConfiguration: {
-                minimumInstanceMetadataServiceVersion: "2"
-            },
-            //defaultCodeRepository: ,
-            //directInternetAccess: "Disabled",
-            //subnetId: ,
-            //securityGroupIds: [],
-        });
+        // const notebookInstance = new sagemaker.CfnNotebookInstance(this, sagemakerNotebookName, {
+        //     instanceType: "ml.t3.medium",
+        //     roleArn: sagemakerNotebookRole.roleArn,
+        //     volumeSizeInGb: 5,
+        //     platformIdentifier: "notebook-al2-v2",
+        //     instanceMetadataServiceConfiguration: {
+        //         minimumInstanceMetadataServiceVersion: "2"
+        //     },
+        //     //defaultCodeRepository: ,
+        //     //directInternetAccess: "Disabled",
+        //     //subnetId: ,
+        //     //securityGroupIds: [],
+        // });
 
         // create log group for Lambda that calls Sagemaker endpoints
         const logGroup = new logs.LogGroup(this, sagemakerCalls_LambdaLogGroupName, {
@@ -80,8 +80,8 @@ export class SagemakerStack extends Stack {
         // make IAM role for a Lambda that calls Sagemaker endpoints
         const sagemakerCalls_LambdaPolicyDocument = new iam.PolicyDocument({
             statements: [new iam.PolicyStatement({
-                actions: [],
-                resources: [] 
+                actions: ["s3:GetObject", "s3:PutObject", "s3:DeleteObject", "s3:ListBucket"],
+                resources: [this.sagemakerBucket.bucketArn]
             })]
         })
         const sagemakerCalls_LambdaRole = new iam.Role(this, sagemakerCalls_LambdaRoleName, {
@@ -90,7 +90,7 @@ export class SagemakerStack extends Stack {
             description: "Role gives access to appropriate permissions for the Lambda that calls Sagemaker.",
             inlinePolicies: { ["BalanceTest-SagemakerCallsPolicy"]: sagemakerCalls_LambdaPolicyDocument },
             managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName("AmazonS3FullAccess"), iam.ManagedPolicy.fromAwsManagedPolicyName("AmazonSageMakerFullAccess")]
-          });
+        });
 
         // make Lambda function that calls Sagemaker endpoints
         this.sagemakerCalls_Lambda = new lambda.Function(this, sagemakerCalls_LambdaName, {
@@ -107,7 +107,7 @@ export class SagemakerStack extends Stack {
             // vpc: vpcStack.vpc,
         });
 
-        
+
     }
 
     public getSagemakerBucketName(): string {

@@ -69,14 +69,14 @@ export const handler = async (event, context) => {
   let response;
   try {
     if (event.payload.sql) {
-      console.log("event", event);
-      console.log('context',context)
+      // console.log("event", event);
+      // console.log('context',context)
       let sql = event.payload.sql;
       // let sql=`delete from "TestEvent" where patient_id='1ec6234a-232a-415d-9d31-f059c2cc4afa'`;
       await connectDb();
       console.log(`about to execute sql: `, sql);
       let res = await pool.query(sql);
-      console.log("sql execution result", res);
+      // console.log("sql execution result", res);
 
       response = {
         statusCode: 200,

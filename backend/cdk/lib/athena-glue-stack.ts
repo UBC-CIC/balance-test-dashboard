@@ -14,10 +14,11 @@ export class AthenaGlueStack extends Stack {
 
     private readonly athenaS3QueryLambda: lambda.Function;
 
-    constructor(scope: App, id: string, vpcStack: VPCStack, dataWorkflowStack: DataWorkflowStack, props: StackProps) {
+    // constructor(scope: App, id: string, vpcStack: VPCStack, dataWorkflowStack: DataWorkflowStack, props: StackProps) {
+    constructor(scope: App, id: string, dataWorkflowStack: DataWorkflowStack, props: StackProps) {
       super(scope, id, props);
 
-      const glueDbName = "BalanceTest-SensorData-GlueDb";
+      const glueDbName = "balancetest-sensordata-gluedb";
       const glueSensorDataCrawlerS3Arn = dataWorkflowStack.getS3BucketArn() + "/parquet_data/patient_tests/*";
       const glueSensorDataCrawlerRoleName = "BalanceTest-SensorData-GlueCrawler-Role";
       const glueSensorDataCrawlerS3Path = "s3://" + dataWorkflowStack.getS3BucketName() + "/parquet_data/patient_tests/*";
@@ -26,7 +27,11 @@ export class AthenaGlueStack extends Stack {
       let accountId = "";
       if (props["env"] && props["env"]["account"]) {
         accountId = props["env"]["account"];
-        console.log(accountId) //TODO: remove after testing
+      }
+
+      let region = 'ca-central-1';
+      if (props["env"] && props["env"]["region"]) {
+        region = props["env"]["region"]
       }
 
       //TODO: check if props['env']['account'] gives account id
@@ -47,11 +52,11 @@ export class AthenaGlueStack extends Stack {
         })]
       });
       let glueSensorDataCrawlerRole = new iam.Role(this, glueSensorDataCrawlerRoleName, {
-        assumedBy: new iam.ServicePrincipal("lambda.amazonaws.com"),
+        assumedBy: new iam.ServicePrincipal("glue.amazonaws.com"),
         roleName: glueSensorDataCrawlerRoleName,
         description: "Role gives access to appropriate S3 functions needed for crawling data with Glue.",
         inlinePolicies: { ["BalanceTest-glueSensorDataCrawlerPolicy"]: glueSensorDataCrawlerPolicyDocument },
-        managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName("AWSGlueServiceRole")]
+        managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName("service-role/AWSGlueServiceRole")]
       });
 
       // make Glue crawler for crawling S3 sensor data
@@ -82,6 +87,7 @@ export class AthenaGlueStack extends Stack {
       const athenaDataCatalogName = "BalanceTestAthenaDataCatalog";
       const logGroupName = "BalanceTest-AthenaQueryS3-Logs";
 
+      //TODO: see if we want to destroy or retain log groups when deleting stack
       // create log group for Lambda that uses Athena to query S3
       const logGroup = new logs.LogGroup(this, logGroupName, {
         logGroupName: `/aws/lambda/${athenaS3QueryLambdaName}`,
@@ -104,13 +110,13 @@ export class AthenaGlueStack extends Stack {
         managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName("AmazonS3FullAccess"), iam.ManagedPolicy.fromAwsManagedPolicyName("AmazonAthenaFullAccess")]
       });
 
-      //TODO: get values for Cognito from Parameter Store 
-      const cognitoIdentityPoolId = ssm.StringParameter.fromSecureStringParameterAttributes(this, "BalanceTestCognitoIdentityPoolId". {
-        parameterName: ""
+      //TODO: change to secured StringParameter
+      const cognitoIdentityPoolId = ssm.StringParameter.fromStringParameterAttributes(this, "BalanceTestCognitoIdentityPoolId", {
+        parameterName: "IdentityPoolId"
       }).stringValue;
 
-      const cognitoUserPoolId = ssm.StringParameter.fromSecureStringParameterAttributes(this, "BalanceTestCognitoUserPoolId". {
-        parameterName: ""
+      const cognitoUserPoolId = ssm.StringParameter.fromStringParameterAttributes(this, "BalanceTestCognitoUserPoolId", {
+        parameterName: "UserPoolId"
       }).stringValue;
 
       //TODO: add other needed environment variables
@@ -127,6 +133,7 @@ export class AthenaGlueStack extends Stack {
           "S3_BUCKET_NAME": dataWorkflowStack.getS3BucketName(),
           "IDENTITY_POOL_ID": cognitoIdentityPoolId,
           "USER_POOL_ID": cognitoUserPoolId,
+          "REGION": region,
         },
         //vpc: vpcStack.vpc,
       });    
