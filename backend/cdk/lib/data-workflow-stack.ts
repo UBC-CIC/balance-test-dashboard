@@ -19,7 +19,7 @@ export class DataWorkflowStack extends Stack {
     private readonly deleteS3RecordLambda: lambda.Function;
 
     // constructor(scope: App, id: string, vpcStack: VPCStack, props?: StackProps) {
-    constructor(scope: App, id: string, props?: StackProps) {
+    constructor(scope: App, id: string, props: StackProps) {
       super(scope, id, props);
       
       const balanceTestBucketAccessPointName = "BalanceTest-DataStorage-Bucket-AccessPoint";
@@ -38,6 +38,10 @@ export class DataWorkflowStack extends Stack {
       const deleteS3RecordLambdaRoleName = "BalanceTest-deleteS3RecordLambda-Role";
       const deleteS3RecordLambdaLogGroupName = "BalanceTest-deleteS3RecordLambda-Logs";
 
+      let region = 'ca-central-1';
+      if (props["env"] && props["env"]["region"]) {
+        region = props["env"]["region"]
+      }
 
       //must ensure that this is a PRIVATE/BLOCK_ALL public access bucket!
       // this.balanceTestBucket = new s3.Bucket(this, balanceTestBucketName, {
@@ -228,10 +232,10 @@ export class DataWorkflowStack extends Stack {
         inlinePolicies: { ["BalanceTest-deleteS3RecordLambdaPolicy"]: deleteS3RecordLambdaPolicyDocument },
       });
 
-      //TODO: get values for Cognito from Parameter Store, and change to secured StringParameter
-      // const cognitoIdentityPoolId = ssm.StringParameter.fromSecureStringParameterAttributes(this, "BalanceTestCognitoIdentityPoolId", {
-      //   parameterName: ""
-      // }).stringValue;
+      //TODO: change to secured StringParameter
+      const cognitoIdentityPoolId = ssm.StringParameter.fromStringParameterAttributes(this, "BalanceTestCognitoIdentityPoolId", {
+        parameterName: "IdentityPoolId"
+      }).stringValue;
 
       const cognitoUserPoolId = ssm.StringParameter.fromStringParameterAttributes(this, "BalanceTestCognitoUserPoolId", {
         parameterName: "UserPoolId"
@@ -249,8 +253,9 @@ export class DataWorkflowStack extends Stack {
         role: deleteS3RecordLambdaRole,
         environment: {
           "S3_BUCKET_NAME": this.balanceTestBucket.bucketName,
-          // "IDENTITY_POOL_ID": cognitoIdentityPoolId,
+          "IDENTITY_POOL_ID": cognitoIdentityPoolId,
           "USER_POOL_ID": cognitoUserPoolId,
+          "REGION": region,
         },
         // vpc: balanceTestIVPC,
         // vpcSubnets: vpcLambdaSubnetSelection
