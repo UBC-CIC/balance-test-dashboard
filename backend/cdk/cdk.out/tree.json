@@ -898,7 +898,8 @@
                   "aws:cdk:cloudformation:props": {
                     "generateSecretString": {
                       "secretStringTemplate": "{\"username\":\"postgres\"}",
-                      "generateStringKey": "password"
+                      "generateStringKey": "password",
+                      "excludeCharacters": "\"@/\\"
                     }
                   }
                 },
@@ -910,6 +911,14 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_secretsmanager.Secret",
+              "version": "2.69.0"
+            }
+          },
+          "rds-monitoring-role": {
+            "id": "rds-monitoring-role",
+            "path": "DatabaseStack/rds-monitoring-role",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.Resource",
               "version": "2.69.0"
             }
           },
@@ -945,18 +954,7 @@
                     },
                     "description": "Allows RDS to manage CloudWatch Logs resources for Enhanced Monitoring",
                     "managedPolicyArns": [
-                      {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "arn:",
-                            {
-                              "Ref": "AWS::Partition"
-                            },
-                            ":iam::aws:policy/AmazonRDSEnhancedMonitoringRole"
-                          ]
-                        ]
-                      }
+                      "arn:aws:iam::aws:policy/service-role/AmazonRDSEnhancedMonitoringRole"
                     ],
                     "roleName": "balancetest-rds-monitoring-role"
                   }
@@ -1709,7 +1707,7 @@
                   "aws:cdk:cloudformation:props": {
                     "code": {
                       "s3Bucket": "cdk-hnb659fds-assets-684904187051-ca-central-1",
-                      "s3Key": "84fc2e602951f4afa6b702177b4097eeee5c5e877404f02fdc6d4f1b7dd40d7e.zip"
+                      "s3Key": "ae2ae9b8bf2107ede110be0a61a7cdf8326edc6cc4065ed89df3f936c1889f1d.zip"
                     },
                     "role": {
                       "Fn::GetAtt": [

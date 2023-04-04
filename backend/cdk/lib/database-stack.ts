@@ -28,6 +28,7 @@ export class DatabaseStack extends Stack {
             generateSecretString: {
                 secretStringTemplate: JSON.stringify({ username: 'postgres' }),
                 generateStringKey: 'password',
+                excludeCharacters: '"@/\\'
             }
         })
 
@@ -35,7 +36,7 @@ export class DatabaseStack extends Stack {
             assumedBy: new iam.ServicePrincipal("monitoring.rds.amazonaws.com"),
             roleName: rdsMonitoringRoleName,
             description: 'Allows RDS to manage CloudWatch Logs resources for Enhanced Monitoring',
-            managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName('AmazonRDSEnhancedMonitoringRole')]
+            managedPolicies: [iam.ManagedPolicy.fromManagedPolicyArn(this, 'rds-monitoring-role', 'arn:aws:iam::aws:policy/service-role/AmazonRDSEnhancedMonitoringRole')]
         })
 
         //TODO: double this configuration

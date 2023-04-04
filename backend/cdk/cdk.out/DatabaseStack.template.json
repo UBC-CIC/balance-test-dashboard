@@ -4,6 +4,7 @@
    "Type": "AWS::SecretsManager::Secret",
    "Properties": {
     "GenerateSecretString": {
+     "ExcludeCharacters": "\"@/\\",
      "GenerateStringKey": "password",
      "SecretStringTemplate": "{\"username\":\"postgres\"}"
     }
@@ -31,18 +32,7 @@
     },
     "Description": "Allows RDS to manage CloudWatch Logs resources for Enhanced Monitoring",
     "ManagedPolicyArns": [
-     {
-      "Fn::Join": [
-       "",
-       [
-        "arn:",
-        {
-         "Ref": "AWS::Partition"
-        },
-        ":iam::aws:policy/AmazonRDSEnhancedMonitoringRole"
-       ]
-      ]
-     }
+     "arn:aws:iam::aws:policy/service-role/AmazonRDSEnhancedMonitoringRole"
     ],
     "RoleName": "balancetest-rds-monitoring-role"
    },
@@ -510,7 +500,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-684904187051-ca-central-1",
-     "S3Key": "84fc2e602951f4afa6b702177b4097eeee5c5e877404f02fdc6d4f1b7dd40d7e.zip"
+     "S3Key": "ae2ae9b8bf2107ede110be0a61a7cdf8326edc6cc4065ed89df3f936c1889f1d.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -588,7 +578,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "DatabaseStack/BalanceTest-postgresql-RDS-connect/Resource",
-    "aws:asset:path": "asset.84fc2e602951f4afa6b702177b4097eeee5c5e877404f02fdc6d4f1b7dd40d7e",
+    "aws:asset:path": "asset.ae2ae9b8bf2107ede110be0a61a7cdf8326edc6cc4065ed89df3f936c1889f1d",
     "aws:asset:is-bundled": false,
     "aws:asset:property": "Code"
    }
