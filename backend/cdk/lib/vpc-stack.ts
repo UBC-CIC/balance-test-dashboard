@@ -49,7 +49,6 @@ export class VPCStack extends Stack {
           }
         },
       });
-      // this.vpc.applyRemovalPolicy(RemovalPolicy.DESTROY);
 
       // make security group
       const securityGroup = ec2.SecurityGroup.fromSecurityGroupId(this, id, this.vpc.vpcDefaultSecurityGroup);
@@ -72,7 +71,7 @@ export class VPCStack extends Stack {
         }
       });
 
-      // Add routes; deploy to see if I need this
+      //TODO: Add routes; deploy to see if I need this
       this.vpc.isolatedSubnets.forEach(({routeTable: { routeTableId }}, index) => {
         new ec2.CfnRoute(this, "Route-Private-" + index, {
           destinationCidrBlock: this.destinationCidrStr,
