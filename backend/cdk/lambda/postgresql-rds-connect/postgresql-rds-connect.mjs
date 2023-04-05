@@ -1,4 +1,4 @@
-//TODO: add layer for pg, need to make bucket name/PROXY_ENDPOINT not hardcoded, and figure out how to set the process.env stuff
+//TODO: add layer for pg
 
 import pg from "pg";
 // import AWS from "aws-sdk";
@@ -8,9 +8,7 @@ import pg from "pg";
 // const bucketName = process.env.S3_BUCKET_NAME;
 // todo: err handling, env var
 
-// const PROXY_ENDPOINT = process.env.PGHOST;
-const PROXY_ENDPOINT =
-  "postgres-proxy.proxy-coyl0mh3hp8c.ca-central-1.rds.amazonaws.com";
+const PROXY_ENDPOINT = process.env.PGHOST;
 
 let pool;
 const connectDb = async () => {

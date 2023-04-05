@@ -119,7 +119,7 @@ export class DatabaseStack extends Stack {
         this.postgresqlRDSConnectLambda = new lambda.Function(this, postgresqlRDSConnectLambdaName, {
             runtime: postgresqlRDSConnectLambdaRuntime,
             functionName: postgresqlRDSConnectLambdaName,
-            handler: postgresqlRDSConnectLambdaFileName + ".lambda_handler",
+            handler: postgresqlRDSConnectLambdaFileName + ".handler",
             code: lambda.Code.fromAsset("./lambda/" + postgresqlRDSConnectLambdaFileName),
             timeout: Duration.minutes(3),
             memorySize: 512,

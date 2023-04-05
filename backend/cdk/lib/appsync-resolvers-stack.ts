@@ -9,6 +9,7 @@ import { VPCStack } from './vpc-stack';
 import { DataWorkflowStack } from './data-workflow-stack';
 import { AthenaGlueStack } from './athena-glue-stack';
 import { DatabaseStack } from './database-stack';
+import * as console from "console";
 
 export class AppsyncStack extends Stack {
     constructor(scope: App, id: string, vpcStack: VPCStack, dataWorkflowStack: DataWorkflowStack, 
@@ -27,20 +28,6 @@ export class AppsyncStack extends Stack {
         const queryS3DataSourceRoleName = "BalanceTest-appsync-queryS3DataSource-Role";
         const deleteEventDataSourceRoleName = "BalanceTest-appsync-deleteEventDataSource-Role";
         
-        //TODO: remove the below new api placeholder after figuring out the above. then test deployment
-        // const api = new appsync.GraphqlApi(this, appsyncName, {
-        //     name: appsyncName,
-        //     schema: appsync.SchemaFile.fromAsset("../../../amplify/backend/api/balancetest/schema.graphql"),
-        //     authorizationConfig: {
-        //         defaultAuthorization: {
-        //             authorizationType: appsync.AuthorizationType.API_KEY, //should be lambda, but will use this for now
-        //             // lambdaAuthorizerConfig: {
-        //             //     handler: 
-        //             // },
-        //         },
-        //     }
-        // });
-
         //TODO: get graphql api ID from Parameter Store
         const apiId = ssm.StringParameter.fromStringParameterAttributes(this, "BalanceTestAppsyncApiId", {
             parameterName: "GraphqlApiId",
@@ -48,7 +35,7 @@ export class AppsyncStack extends Stack {
 
         const api = appsync.GraphqlApi.fromGraphqlApiAttributes(this, appsyncName, {
             graphqlApiId: apiId
-        })
+        });
 
         // getting needed Lambda functions for data sources
         const generateReportLambda = dataWorkflowStack.getGenerateReportLambda();
@@ -113,21 +100,12 @@ export class AppsyncStack extends Stack {
             serviceRole: generateReportDataSourceRole
         });
 
-        const postgresqlRDSConnectLambdaDataSource = new appsync.CfnDataSource(this, 'postgresqlDataSource', {
-            apiId: api.apiId,
+        const postgresqlRDSConnectLambdaDataSource = new appsync.LambdaDataSource(this, postgresqlRDSLambdaDataSourceName, {
+            api: api,
+            lambdaFunction: postgresqlRDSConnectLambda,
             name: postgresqlRDSLambdaDataSourceName,
-            type: "AWS_LAMBDA",
-            lambdaConfig: {
-                lambdaFunctionArn: postgresqlRDSConnectLambda.functionArn
-            },
-            serviceRoleArn: postgresqlRDSConnectDataSourceRole.roleArn
+            serviceRole: postgresqlRDSConnectDataSourceRole
         });
-        // new appsync.LambdaDataSource(this, postgresqlRDSLambdaDataSourceName, {
-        //     api: api,
-        //     lambdaFunction: postgresqlRDSConnectLambda,
-        //     name: postgresqlRDSLambdaDataSourceName,
-        //     serviceRole: postgresqlRDSConnectDataSourceRole
-        // });
 
         const queryS3LambdaDataSource = new appsync.LambdaDataSource(this, queryS3LambdaDataSourceName, {
             api: api,
@@ -154,9 +132,7 @@ export class AppsyncStack extends Stack {
             name: s3DownloadAppsyncFunctionName,
             dataSource: generateReportLambdaDataSource,
             runtime: appsync.FunctionRuntime.JS_1_0_0,
-            // code: ,
-            // requestMappingTemplate: ,
-            // responseMappingTempalte: ,
+            code: appsync.Code.fromAsset('appsync/AppsyncFunctions/redirect_s3_download_function.js'),
         });
 
         const s3DataRetrievalAppsyncFunction = new appsync.AppsyncFunction(this, s3DataRetrievalAppsyncFunctionName, {
@@ -164,60 +140,87 @@ export class AppsyncStack extends Stack {
             name: s3DataRetrievalAppsyncFunctionName,
             dataSource: queryS3LambdaDataSource,
             runtime: appsync.FunctionRuntime.JS_1_0_0,
-            // code: ,
-            // requestMappingTemplate: ,
-            // responseMappingTempalte: ,
+            code: appsync.Code.fromAsset('appsync/AppsyncFunctions/redirect_s3_data_retrieval_function.js'),
         });
 
-        // const postgresqlRDSAppsyncFunction = new appsync.AppsyncFunction(this, postgresqlRDSAppsyncFunctionName, {
-        //     api: api,
-        //     name: postgresqlRDSAppsyncFunctionName,
-        //     dataSource: postgresqlRDSConnectLambdaDataSource,
-        //     runtime: appsync.FunctionRuntime.JS_1_0_0,
-        //     // code: ,
-        //     // requestMappingTemplate: ,
-        //     // responseMappingTempalte: ,
-        // });
+        const postgresqlRDSAppsyncFunction = new appsync.AppsyncFunction(this, postgresqlRDSAppsyncFunctionName, {
+            api: api,
+            name: postgresqlRDSAppsyncFunctionName,
+            dataSource: postgresqlRDSConnectLambdaDataSource,
+            runtime: appsync.FunctionRuntime.JS_1_0_0,
+            code: appsync.Code.fromAsset('appsync/AppsyncFunctions/redirect_postgresql_rds_function.js'),
+        });
         
         const deleteEventAppsyncFunction = new appsync.AppsyncFunction(this, deleteEventAppsyncFunctionName, {
             api: api,
             name: deleteEventAppsyncFunctionName,
             dataSource: deleteEventLambdaDataSource,
             runtime: appsync.FunctionRuntime.JS_1_0_0,
-            // code: ,
-            // requestMappingTemplate: ,
-            // responseMappingTempalte: ,
+            code: appsync.Code.fromAsset('appsync/AppsyncFunctions/redirect_delete_event_function.js'),
         });
         
-        // TODO: make the resolvers, and change apiID to the one from Parameter Store
-        let postgresqlDBQueryList = ["getCareproviderById",'getPatientById','getTestEventById','getPatientsForCareprovider','getAllPatients','getTestEvents','getPatientAssignedTests','getAllAvailableTests','getScoreStatsOverTime',
-        'createPatient','createCareProvider','addPatientToCareProvider','recordConsentDate','assignTestToPatient','removeTestFromPatient','putTestResult','putBalanceScore','addTestType','deleteTestEventFromDB']
-        let s3QueryList = ['getMeasurementRange','getMeasurementData','downloadTestEventDetails']
-        let deleteEventResolverNameList = ["deleteTestEventFromS3"]
+        //TODO: update the appsync/resolverMappingFunctions folder with any new queries/mutations
+        let deleteEventResolverNameList = ["deleteTestEventFromS3"];
+        let s3DownloadResolverNameList = ["downloadTestEventDetails"];
+        let s3DataRetrievalResolverNameList = ['getMeasurementRange','getMeasurementData'];
 
-        //TODO: see if I need the code or if schema is better
+        let postgresqlRDSQueryResolverNameList = ['getAllAvailableTests', 'getAllPatients', "getCareproviderById", 'getPatientAssignedTests', 'getPatientById', 'getPatientsForCareprovider', 'getScoreStatsOverTime', 'getTestEventById', 'getTestEvents'];
+        let postgresqlRDSMutationResolverNameList = ['addPatientToCareProvider', 'addTestType', 'assignTestToPatient', 'createCareProvider', 'createPatient', 'deleteTestEventFromDB', 'putBalanceScore', 'putTestResult', 'recordConsentDate', 'removeTestFromPatient'];
+
+        //TODO: double check overall Appsync flow & configuration and if the resolvers work on console
         for (let i = 0; i < deleteEventResolverNameList.length; i++) {
-            const deleteEventResolver = new appsync.CfnResolver(this, deleteEventResolverNameList[i], {
-                apiId: api.apiId,
+            let deleteEventResolver = new appsync.Resolver(this, deleteEventResolverNameList[i], {
+                api: api,
                 fieldName: deleteEventResolverNameList[i],
                 typeName: "Mutation",
-                dataSourceName: deleteEventLambdaDataSource.name,
-                pipelineConfig: {
-                    functions: [deleteEventAppsyncFunctionName]
-                },
-                
+                runtime: appsync.FunctionRuntime.JS_1_0_0,
+                code: appsync.Code.fromAsset('appsync/resolverMappingFunctions/' + deleteEventResolverNameList[i] + ".js"),
+                pipelineConfig: [deleteEventAppsyncFunction],
             });
         }
-        for(let i = 0; i<postgresqlDBQueryList.length; i++){
-            const resolver = new appsync.CfnResolver(this, postgresqlDBQueryList[i], {
-                apiId: api.apiId,
-                fieldName: postgresqlDBQueryList[i],
-                typeName: 'Query',
-                dataSourceName: postgresqlRDSConnectLambdaDataSource.name,
+
+        for (let i = 0; i < s3DownloadResolverNameList.length; i++) {
+            let s3DownloadResolver = new appsync.Resolver(this, s3DownloadResolverNameList[i], {
+                api: api,
+                fieldName: s3DownloadResolverNameList[i],
+                typeName: "Query",
+                runtime: appsync.FunctionRuntime.JS_1_0_0,
+                code: appsync.Code.fromAsset('appsync/resolverMappingFunctions/' + s3DownloadResolverNameList[i] + ".js"),
+                pipelineConfig: [s3DownloadAppsyncFunction],
             });
-            // resolver.addDependsOn(postgresqlRDSConnectLambdaDataSource);
-            // resolver.addDependsOn(apiSchema);
-    }
-            
+        }
+
+        for (let i = 0; i < s3DataRetrievalResolverNameList.length; i++) {
+            let s3DataRetrievalResolver = new appsync.Resolver(this, s3DataRetrievalResolverNameList[i], {
+                api: api,
+                fieldName: s3DataRetrievalResolverNameList[i],
+                typeName: "Query",
+                runtime: appsync.FunctionRuntime.JS_1_0_0,
+                code: appsync.Code.fromAsset('appsync/resolverMappingFunctions/' + s3DataRetrievalResolverNameList[i] + ".js"),
+                pipelineConfig: [s3DataRetrievalAppsyncFunction],
+            });
+        }
+
+        for (let i = 0; i < postgresqlRDSQueryResolverNameList.length; i++) {
+            let postgresqlRDSQueryResolver = new appsync.Resolver(this, postgresqlRDSQueryResolverNameList[i], {
+                api: api,
+                fieldName: postgresqlRDSQueryResolverNameList[i],
+                typeName: "Query",
+                runtime: appsync.FunctionRuntime.JS_1_0_0,
+                code: appsync.Code.fromAsset('appsync/resolverMappingFunctions/' + postgresqlRDSQueryResolverNameList[i] + ".js"),
+                pipelineConfig: [postgresqlRDSAppsyncFunction],
+            });
+        }
+
+        for (let i = 0; i < postgresqlRDSMutationResolverNameList.length; i++) {
+            let postgresqlRDSMutationResolver = new appsync.Resolver(this, postgresqlRDSMutationResolverNameList[i], {
+                api: api,
+                fieldName: postgresqlRDSMutationResolverNameList[i],
+                typeName: "Mutation",
+                runtime: appsync.FunctionRuntime.JS_1_0_0,
+                code: appsync.Code.fromAsset('appsync/resolverMappingFunctions/' + postgresqlRDSMutationResolverNameList[i] + ".js"),
+                pipelineConfig: [postgresqlRDSAppsyncFunction],
+            });
+        }
     }
 }
