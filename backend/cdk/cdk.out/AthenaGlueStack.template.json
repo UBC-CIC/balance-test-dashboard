@@ -1,15 +1,15 @@
 {
  "Resources": {
-  "BalanceTestSensorDataGlueDb": {
+  "balancetestsensordatagluedb": {
    "Type": "AWS::Glue::Database",
    "Properties": {
     "CatalogId": "684904187051",
     "DatabaseInput": {
-     "Name": "BalanceTest-SensorData-GlueDb"
+     "Name": "balancetest-sensordata-gluedb"
     }
    },
    "Metadata": {
-    "aws:cdk:path": "AthenaGlueStack/BalanceTest-SensorData-GlueDb"
+    "aws:cdk:path": "AthenaGlueStack/balancetest-sensordata-gluedb"
    }
   },
   "BalanceTestSensorDataGlueCrawlerRole1D4EBF44": {
@@ -21,7 +21,7 @@
        "Action": "sts:AssumeRole",
        "Effect": "Allow",
        "Principal": {
-        "Service": "lambda.amazonaws.com"
+        "Service": "glue.amazonaws.com"
        }
       }
      ],
@@ -37,7 +37,7 @@
         {
          "Ref": "AWS::Partition"
         },
-        ":iam::aws:policy/AWSGlueServiceRole"
+        ":iam::aws:policy/service-role/AWSGlueServiceRole"
        ]
       ]
      }
@@ -56,8 +56,9 @@
           "Fn::Join": [
            "",
            [
+            "arn:aws:s3:::",
             {
-             "Fn::ImportValue": "DataWorkflowStack:ExportsOutputFnGetAttbalancetestdatastoragebucketD25B585EArnFFCC6A0F"
+             "Fn::ImportValue": "DataWorkflowStack:ExportsOutputRefBalanceTestRecordingsBucketArnParameterB5195FA2"
             },
             "/parquet_data/patient_tests/*"
            ]
@@ -94,7 +95,7 @@
          [
           "s3://",
           {
-           "Fn::ImportValue": "DataWorkflowStack:ExportsOutputRefbalancetestdatastoragebucketD25B585E3C53CCB4"
+           "Fn::ImportValue": "DataWorkflowStack:ExportsOutputRefBalanceTestRecordingsBucketArnParameterB5195FA2"
           },
           "/parquet_data/patient_tests/*"
          ]
@@ -103,7 +104,7 @@
       }
      ]
     },
-    "DatabaseName": "BalanceTest-SensorData-GlueDb",
+    "DatabaseName": "balancetest-sensordata-gluedb",
     "Description": "For crawling parquet data within the S3 bucket for Athena querying",
     "Name": "BalanceTest-SensorData-GlueCrawler",
     "RecrawlPolicy": {
@@ -207,13 +208,27 @@
    "Properties": {
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-684904187051-ca-central-1",
-     "S3Key": "68cbd50f69e1fae5685fb89cacf389f9bd962e32ce3042aca6d8dc9fd194315c.zip"
+     "S3Key": "613583d6535ea2fbc09bf56ead88bf53117f398e230c78a695eea41e865f620e.zip"
     },
     "Role": {
      "Fn::GetAtt": [
       "BalanceTestAthenaQueryS3LambdaRole29CCB440",
       "Arn"
      ]
+    },
+    "Environment": {
+     "Variables": {
+      "S3_BUCKET_NAME": {
+       "Fn::ImportValue": "DataWorkflowStack:ExportsOutputRefBalanceTestRecordingsBucketArnParameterB5195FA2"
+      },
+      "IDENTITY_POOL_ID": {
+       "Ref": "BalanceTestCognitoIdentityPoolIdParameter"
+      },
+      "USER_POOL_ID": {
+       "Ref": "BalanceTestCognitoUserPoolIdParameter"
+      },
+      "REGION": "ca-central-1"
+     }
     },
     "FunctionName": "BalanceTest-query-S3",
     "Handler": "query-s3.handler",
@@ -226,7 +241,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "AthenaGlueStack/BalanceTest-query-S3/Resource",
-    "aws:asset:path": "asset.68cbd50f69e1fae5685fb89cacf389f9bd962e32ce3042aca6d8dc9fd194315c",
+    "aws:asset:path": "asset.613583d6535ea2fbc09bf56ead88bf53117f398e230c78a695eea41e865f620e",
     "aws:asset:is-bundled": false,
     "aws:asset:property": "Code"
    }
@@ -247,7 +262,7 @@
   "CDKMetadata": {
    "Type": "AWS::CDK::Metadata",
    "Properties": {
-    "Analytics": "v2:deflate64:H4sIAAAAAAAA/zVOy27CMBD8Fu7OllCJqkcIggun8AFo42xdE8dGXrscLP87dgqH1by0mtnA9hvWK3xwI8epMXqAdAkoJ1Gsa1ImEqTuxx4w4IBMovDO48OQz0LjDKl3ZnErZmGcYkhnp07exXv137xkOA8jQjpGK4N2tqZvngV/XpGZAsOuQtGwj3KisK+1GH7JIryWdOVKUxY9sYteklh+ynClrVrWvIIsrBsJbvzx126h/YJ2dWOtGx9t0DNB/49PapOVfwcBAAA="
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/zVPMW7DMAx8S3aZjVsgRcbEQbt0KNwHBLTMKLJlqRClZhD090pOMhB3PBK84yvs9rDd4I0bOc6N0QOkn4ByFkU6J2UiQeou9oQBB2QShXceb4Z8FhoXSL0zq1oxC+MUQ/py6tO7+Fv1Jy8zXIYRIX1EK4N2tk6fPAt+OyMzBYZDhdLDMcqZwrHaYriSRXgk6UoVpyx6Yhe9XAN8o8eFAnmxHihfKG3VGu2xlYV1I8HEL3/tDtp3aDcTa934aINeCPo7/gNeUBNQFAEAAA=="
    },
    "Metadata": {
     "aws:cdk:path": "AthenaGlueStack/CDKMetadata/Default"
@@ -255,6 +270,14 @@
   }
  },
  "Parameters": {
+  "BalanceTestCognitoIdentityPoolIdParameter": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "IdentityPoolId"
+  },
+  "BalanceTestCognitoUserPoolIdParameter": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "UserPoolId"
+  },
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",
    "Default": "/cdk-bootstrap/hnb659fds/version",

@@ -569,6 +569,14 @@
   }
  },
  "Outputs": {
+  "ExportsOutputRefbalanceTestVPCFBF0FFB322759C6A": {
+   "Value": {
+    "Ref": "balanceTestVPCFBF0FFB3"
+   },
+   "Export": {
+    "Name": "VPCStack:ExportsOutputRefbalanceTestVPCFBF0FFB322759C6A"
+   }
+  },
   "ExportsOutputRefbalanceTestVPCprivatesubnetSubnet1Subnet8BA87DE45B0B5EB2": {
    "Value": {
     "Ref": "balanceTestVPCprivatesubnetSubnet1Subnet8BA87DE4"
@@ -585,12 +593,15 @@
     "Name": "VPCStack:ExportsOutputRefbalanceTestVPCprivatesubnetSubnet2SubnetD1E1933170382F7C"
    }
   },
-  "ExportsOutputRefbalanceTestVPCFBF0FFB322759C6A": {
+  "ExportsOutputFnGetAttbalanceTestVPCFBF0FFB3DefaultSecurityGroupDA29CDF5": {
    "Value": {
-    "Ref": "balanceTestVPCFBF0FFB3"
+    "Fn::GetAtt": [
+     "balanceTestVPCFBF0FFB3",
+     "DefaultSecurityGroup"
+    ]
    },
    "Export": {
-    "Name": "VPCStack:ExportsOutputRefbalanceTestVPCFBF0FFB322759C6A"
+    "Name": "VPCStack:ExportsOutputFnGetAttbalanceTestVPCFBF0FFB3DefaultSecurityGroupDA29CDF5"
    }
   }
  },

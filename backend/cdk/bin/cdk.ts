@@ -46,6 +46,6 @@ const athenaGlueStack = new AthenaGlueStack(app, "AthenaGlueStack", dataWorkflow
     env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
 });
 
-const appsyncStack = new AppsyncStack(app, "AppsyncStack", vpcStack, dataWorkflowStack, athenaGlueStack, databaseStack, {
-    env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION }
-});
+// const appsyncStack = new AppsyncStack(app, "AppsyncStack", vpcStack, dataWorkflowStack, athenaGlueStack, databaseStack, {
+//     env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION }
+// });

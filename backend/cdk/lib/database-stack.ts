@@ -26,27 +26,69 @@ export class DatabaseStack extends Stack {
 
         const port = ec2.Port.tcp(dbPort);
 
-        // const rdsLambdaSecurityGroup = new ec2.SecurityGroup(this, 'rdsLambdaSecurityGroup', {
+
+        const vpcSecurityGroup = new ec2.SecurityGroup(this, 'vpcSecurityGroup', {
+            vpc: vpcStack.vpc,
+            description: 'allow traffic from this security group and rds proxy',
+        })
+
+        vpcSecurityGroup.addIngressRule(
+            ec2.Peer.ipv4(vpcStack.cidrStr),
+            port,
+            'allow traffic from within vpc'
+        )
+
+        // const rdsSecurityGroup = new ec2.SecurityGroup(this, 'rdsSecurityGroup', {
         //     vpc: vpcStack.vpc,
-        //     description: 'allow traffic from this security group and rds proxy',
+        //     description: 'allow traffic from lambda and proxy',
         // })
 
         // const proxySecurityGroup = new ec2.SecurityGroup(this, 'proxySecurityGroup', {
         //     vpc: vpcStack.vpc,
-        //     description: 'allow traffic from rds',
+        //     description: 'allow traffic from rds and lambda',
         // })
 
+        // const lambdaSecurityGroup = new ec2.SecurityGroup(this, 'lambdaSecurityGroup', {
+        //     vpc: vpcStack.vpc,
+        //     description: 'allow traffic from rds and proxy',
+        // })
+
+        // rdsSecurityGroup.addIngressRule(
+        //     ec2.Peer.securityGroupId(proxySecurityGroup.securityGroupId), 
+        //     port, 
+        //     'allow traffic from proxy', 
+        // )
+
+        // rdsSecurityGroup.addIngressRule(
+        //     ec2.Peer.securityGroupId(lambdaSecurityGroup.securityGroupId), 
+        //     port, 
+        //     'allow traffic from lambda', 
+        // )
+
         // proxySecurityGroup.addIngressRule(
-        //     ec2.Peer.securityGroupId(rdsLambdaSecurityGroup.securityGroupId), 
+        //     ec2.Peer.securityGroupId(rdsSecurityGroup.securityGroupId), 
         //     port, 
         //     'allow traffic from rds', 
         // )
 
-        // rdsLambdaSecurityGroup.addIngressRule(
-        //     ec2.Peer.securityGroupId(rdsLambdaSecurityGroup.securityGroupId), 
+        // proxySecurityGroup.addIngressRule(
+        //     ec2.Peer.securityGroupId(lambdaSecurityGroup.securityGroupId), 
         //     port, 
-        //     'allow traffic from this security group', 
+        //     'allow traffic from lambda', 
         // )
+
+        // lambdaSecurityGroup.addIngressRule(
+        //     ec2.Peer.securityGroupId(rdsSecurityGroup.securityGroupId), 
+        //     port, 
+        //     'allow traffic from rds', 
+        // )
+
+        // lambdaSecurityGroup.addIngressRule(
+        //     ec2.Peer.securityGroupId(proxySecurityGroup.securityGroupId), 
+        //     port, 
+        //     'allow traffic from proxy', 
+        // )
+
 
         // rdsLambdaSecurityGroup.addIngressRule(
         //     ec2.Peer.securityGroupId(proxySecurityGroup.securityGroupId), 
@@ -97,13 +139,15 @@ export class DatabaseStack extends Stack {
             removalPolicy: RemovalPolicy.RETAIN,
             monitoringInterval: cdk.Duration.seconds(60),
             monitoringRole: monitoringRole,
-            // securityGroups: [rdsLambdaSecurityGroup]
+            securityGroups: [vpcSecurityGroup]
         })
 
         const proxy = new rds.DatabaseProxy(this, 'Proxy', {
             proxyTarget: rds.ProxyTarget.fromInstance(rdsInstance),
             secrets: [rdsCredentialSecret],
             vpc: vpcStack.vpc,
+            securityGroups: [vpcSecurityGroup],
+            requireTLS: false
         });
 
         const dbProxyRole = new iam.Role(this, 'DBProxyRole', { assumedBy: new iam.AccountPrincipal(this.account) });
@@ -169,7 +213,7 @@ export class DatabaseStack extends Stack {
             vpcSubnets: {
                 subnetType: ec2.SubnetType.PRIVATE_ISOLATED
             },
-            // securityGroups: [rdsLambdaSecurityGroup]
+            securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(this, 'vpcDefaultSecurityGroup', vpcStack.vpc.vpcDefaultSecurityGroup)]
         });
     }
 
