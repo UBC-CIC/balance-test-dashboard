@@ -70,15 +70,6 @@
       "IpProtocol": "-1"
      }
     ],
-    "SecurityGroupIngress": [
-     {
-      "CidrIp": "11.0.0.0/16",
-      "Description": "BalanceTest-RDS-Postgres-Ingress",
-      "FromPort": 5432,
-      "IpProtocol": "tcp",
-      "ToPort": 5432
-     }
-    ],
     "VpcId": {
      "Fn::ImportValue": "VPCStack:ExportsOutputRefbalanceTestVPCFBF0FFB322759C6A"
     }
@@ -500,7 +491,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-684904187051-ca-central-1",
-     "S3Key": "ae2ae9b8bf2107ede110be0a61a7cdf8326edc6cc4065ed89df3f936c1889f1d.zip"
+     "S3Key": "8db36d1f3d54fc18cadc9d5ef58b00b7b9b612810249497070b6a2be7fd34ccc.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -545,7 +536,7 @@
      }
     },
     "FunctionName": "BalanceTest-postgresql-RDS-connect",
-    "Handler": "postgresql-rds-connect.lambda_handler",
+    "Handler": "postgresql-rds-connect.handler",
     "Layers": [
      {
       "Ref": "postgresqlRDSConnectLayerD9176A9D"
@@ -553,7 +544,7 @@
     ],
     "MemorySize": 512,
     "Runtime": "nodejs16.x",
-    "Timeout": 180,
+    "Timeout": 30,
     "VpcConfig": {
      "SecurityGroupIds": [
       {
@@ -578,7 +569,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "DatabaseStack/BalanceTest-postgresql-RDS-connect/Resource",
-    "aws:asset:path": "asset.ae2ae9b8bf2107ede110be0a61a7cdf8326edc6cc4065ed89df3f936c1889f1d",
+    "aws:asset:path": "asset.8db36d1f3d54fc18cadc9d5ef58b00b7b9b612810249497070b6a2be7fd34ccc",
     "aws:asset:is-bundled": false,
     "aws:asset:property": "Code"
    }

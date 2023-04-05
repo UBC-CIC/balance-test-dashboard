@@ -7,6 +7,7 @@ import * as lambda from "aws-cdk-lib/aws-lambda";
 import * as logs from "aws-cdk-lib/aws-logs";
 import { VPCStack } from "./vpc-stack";
 import * as cdk from 'aws-cdk-lib';
+import { SecurityGroup } from 'aws-cdk-lib/aws-ec2';
 
 export class DatabaseStack extends Stack {
 
@@ -22,6 +23,36 @@ export class DatabaseStack extends Stack {
         const postgresqlRDSConnectLambdaLogGroupName = "BalanceTest-postgresqlRDSConnect-Logs";
         const dbPort = 5432;
         const rdsMonitoringRoleName = 'balancetest-rds-monitoring-role';
+
+        const port = ec2.Port.tcp(dbPort);
+
+        // const rdsLambdaSecurityGroup = new ec2.SecurityGroup(this, 'rdsLambdaSecurityGroup', {
+        //     vpc: vpcStack.vpc,
+        //     description: 'allow traffic from this security group and rds proxy',
+        // })
+
+        // const proxySecurityGroup = new ec2.SecurityGroup(this, 'proxySecurityGroup', {
+        //     vpc: vpcStack.vpc,
+        //     description: 'allow traffic from rds',
+        // })
+
+        // proxySecurityGroup.addIngressRule(
+        //     ec2.Peer.securityGroupId(rdsLambdaSecurityGroup.securityGroupId), 
+        //     port, 
+        //     'allow traffic from rds', 
+        // )
+
+        // rdsLambdaSecurityGroup.addIngressRule(
+        //     ec2.Peer.securityGroupId(rdsLambdaSecurityGroup.securityGroupId), 
+        //     port, 
+        //     'allow traffic from this security group', 
+        // )
+
+        // rdsLambdaSecurityGroup.addIngressRule(
+        //     ec2.Peer.securityGroupId(proxySecurityGroup.securityGroupId), 
+        //     port, 
+        //     'allow traffic from rds proxy', 
+        // )
 
         // database secret
         const rdsCredentialSecret = new sm.Secret(this, 'Secret', {
@@ -65,7 +96,8 @@ export class DatabaseStack extends Stack {
             },
             removalPolicy: RemovalPolicy.RETAIN,
             monitoringInterval: cdk.Duration.seconds(60),
-            monitoringRole: monitoringRole
+            monitoringRole: monitoringRole,
+            // securityGroups: [rdsLambdaSecurityGroup]
         })
 
         const proxy = new rds.DatabaseProxy(this, 'Proxy', {
@@ -78,16 +110,17 @@ export class DatabaseStack extends Stack {
         proxy.grantConnect(dbProxyRole, 'admin'); // Grant the role connection access to the DB Proxy for database user 'admin'.
         
         //TODO: check if we need this
-        const port = ec2.Port.tcp(dbPort);
-        rdsInstance.connections.securityGroups.forEach((securityGroup) => {
-            securityGroup.addIngressRule(ec2.Peer.ipv4(vpcStack.cidrStr), port, "BalanceTest-RDS-Postgres-Ingress")
-        });
+        // const port = ec2.Port.tcp(dbPort);
+        // rdsInstance.connections.securityGroups.forEach((securityGroup) => {
+        //     securityGroup.addIngressRule(ec2.Peer.ipv4(vpcStack.cidrStr), port, "BalanceTest-RDS-Postgres-Ingress")
+        // });
 
         // make log group for Lambda that connects to PostgreSQL RDS
         const postgresqlRDSConnectLambdaLogGroup = new logs.LogGroup(this, postgresqlRDSConnectLambdaLogGroupName, {
             logGroupName: `/aws/lambda/${postgresqlRDSConnectLambdaName}`,
             removalPolicy: RemovalPolicy.DESTROY
           });
+
 
         //TODO: change permissions to restrictive ones, and remove managed policies
         // make IAM role for Lambda that generates a report
@@ -119,9 +152,9 @@ export class DatabaseStack extends Stack {
         this.postgresqlRDSConnectLambda = new lambda.Function(this, postgresqlRDSConnectLambdaName, {
             runtime: postgresqlRDSConnectLambdaRuntime,
             functionName: postgresqlRDSConnectLambdaName,
-            handler: postgresqlRDSConnectLambdaFileName + ".lambda_handler",
+            handler: postgresqlRDSConnectLambdaFileName + ".handler",
             code: lambda.Code.fromAsset("./lambda/" + postgresqlRDSConnectLambdaFileName),
-            timeout: Duration.minutes(3),
+            timeout: Duration.seconds(30),
             memorySize: 512,
             role: postgresqlRDSConnectLambdaRole,
             environment: {
@@ -133,6 +166,10 @@ export class DatabaseStack extends Stack {
             },
             layers: [postgresqlRDSConnectLambdaLayer],
             vpc: vpcStack.vpc,
+            vpcSubnets: {
+                subnetType: ec2.SubnetType.PRIVATE_ISOLATED
+            },
+            // securityGroups: [rdsLambdaSecurityGroup]
         });
     }
 

@@ -1024,15 +1024,6 @@
                             "ipProtocol": "-1"
                           }
                         ],
-                        "securityGroupIngress": [
-                          {
-                            "cidrIp": "11.0.0.0/16",
-                            "ipProtocol": "tcp",
-                            "fromPort": 5432,
-                            "toPort": 5432,
-                            "description": "BalanceTest-RDS-Postgres-Ingress"
-                          }
-                        ],
                         "vpcId": {
                           "Fn::ImportValue": "VPCStack:ExportsOutputRefbalanceTestVPCFBF0FFB322759C6A"
                         }
@@ -1707,7 +1698,7 @@
                   "aws:cdk:cloudformation:props": {
                     "code": {
                       "s3Bucket": "cdk-hnb659fds-assets-684904187051-ca-central-1",
-                      "s3Key": "ae2ae9b8bf2107ede110be0a61a7cdf8326edc6cc4065ed89df3f936c1889f1d.zip"
+                      "s3Key": "8db36d1f3d54fc18cadc9d5ef58b00b7b9b612810249497070b6a2be7fd34ccc.zip"
                     },
                     "role": {
                       "Fn::GetAtt": [
@@ -1752,7 +1743,7 @@
                       }
                     },
                     "functionName": "BalanceTest-postgresql-RDS-connect",
-                    "handler": "postgresql-rds-connect.lambda_handler",
+                    "handler": "postgresql-rds-connect.handler",
                     "layers": [
                       {
                         "Ref": "postgresqlRDSConnectLayerD9176A9D"
@@ -1760,7 +1751,7 @@
                     ],
                     "memorySize": 512,
                     "runtime": "nodejs16.x",
-                    "timeout": 180,
+                    "timeout": 30,
                     "vpcConfig": {
                       "subnetIds": [
                         {
