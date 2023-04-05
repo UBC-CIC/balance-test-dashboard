@@ -160,6 +160,7 @@ export class AppsyncStack extends Stack {
         });
         
         //TODO: update the appsync/resolverMappingFunctions folder with any new queries/mutations
+        // make resolvers by looping through each list and getting the associated code
         let deleteEventResolverNameList = ["deleteTestEventFromS3"];
         let s3DownloadResolverNameList = ["downloadTestEventDetails"];
         let s3DataRetrievalResolverNameList = ['getMeasurementRange','getMeasurementData'];
