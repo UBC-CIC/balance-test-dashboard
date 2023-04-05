@@ -1,5 +1,7 @@
 *.js
 !jest.config.js
+!appsync/AppsyncFunctions/*.js
+!appsync/resolverMappingFunctions/*.js
 *.d.ts
 node_modules
 
