@@ -5,7 +5,7 @@
   "javascript": {
     "framework": "none",
     "config": {
-      "SourceDir": "src",
+      "SourceDir": "frontend/src",
       "DistributionDir": "dist",
       "BuildCommand": "npm.cmd run-script build",
       "StartCommand": "npm.cmd run-script start"

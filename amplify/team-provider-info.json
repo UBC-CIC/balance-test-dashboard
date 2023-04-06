@@ -20,15 +20,15 @@
       "function": {
         "balancetestdashboard733fb088PreTokenGeneration": {
           "deploymentBucketName": "amplify-balancetestdashboard-dev-160420-deployment",
-          "s3Key": "amplify-builds/balancetestdashboard733fb088PreTokenGeneration-383738666850714e4b5a-build.zip"
+          "s3Key": "amplify-builds/balancetestdashboard733fb088PreTokenGeneration-6f655a3577327264722b-build.zip"
         },
         "balancetestdashboard733fb088PostConfirmation": {
           "deploymentBucketName": "amplify-balancetestdashboard-dev-160420-deployment",
-          "s3Key": "amplify-builds/balancetestdashboard733fb088PostConfirmation-66507068596a67713574-build.zip"
+          "s3Key": "amplify-builds/balancetestdashboard733fb088PostConfirmation-6b4d6b642f676c65576a-build.zip"
         },
         "graphQlLambdaAuthorizera86a1dbf": {
           "deploymentBucketName": "amplify-balancetestdashboard-dev-160420-deployment",
-          "s3Key": "amplify-builds/graphQlLambdaAuthorizera86a1dbf-307033454a686e347976-build.zip"
+          "s3Key": "amplify-builds/graphQlLambdaAuthorizera86a1dbf-7a6c54576a432f2b764f-build.zip"
         }
       },
       "api": {

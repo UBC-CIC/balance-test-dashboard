@@ -28,7 +28,7 @@
             "Name"
           ],
           "category": "function",
-          "resourceName": "balancetestdashboard733fb088PreTokenGeneration",
+          "resourceName": "balancetestdashboard733fb088PostConfirmation",
           "triggerProvider": "Cognito"
         },
         {
@@ -37,7 +37,7 @@
             "Name"
           ],
           "category": "function",
-          "resourceName": "balancetestdashboard733fb088PostConfirmation",
+          "resourceName": "balancetestdashboard733fb088PreTokenGeneration",
           "triggerProvider": "Cognito"
         }
       ],

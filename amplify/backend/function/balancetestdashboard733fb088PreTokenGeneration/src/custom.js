@@ -8,10 +8,9 @@ exports.handler = (event, context, callback) => {
     claimsOverrideDetails: {
       claimsToAddOrOverride: {
         user_type:
-          event.request.userAttributes["custom:user_type"] ==
-          "care_provider_user"
-            ? "care_provider_user"
-            : "patient_user",
+          event.request.userAttributes["custom:user_type"] == "careProvider"
+            ? "careProvider"
+            : "patient",
       },
     },
   };

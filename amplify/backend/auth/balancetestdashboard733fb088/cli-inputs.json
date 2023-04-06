@@ -77,7 +77,7 @@
     "dependsOn": [
       {
         "category": "function",
-        "resourceName": "balancetestdashboard733fb088PreTokenGeneration",
+        "resourceName": "balancetestdashboard733fb088PostConfirmation",
         "triggerProvider": "Cognito",
         "attributes": [
           "Arn",
@@ -86,7 +86,7 @@
       },
       {
         "category": "function",
-        "resourceName": "balancetestdashboard733fb088PostConfirmation",
+        "resourceName": "balancetestdashboard733fb088PreTokenGeneration",
         "triggerProvider": "Cognito",
         "attributes": [
           "Arn",
@@ -97,7 +97,7 @@
     "permissions": [],
     "authTriggerConnections": "[\n  {\n    \"triggerType\": \"PostConfirmation\",\n    \"lambdaFunctionName\": \"balancetestdashboard733fb088PostConfirmation\"\n  },\n  {\n    \"triggerType\": \"PreTokenGeneration\",\n    \"lambdaFunctionName\": \"balancetestdashboard733fb088PreTokenGeneration\"\n  }\n]",
     "thirdPartyAuth": false,
-    "userPoolGroups": true,
+    "userPoolGroups": false,
     "adminQueries": false,
     "hostedUI": false,
     "authProviders": [],

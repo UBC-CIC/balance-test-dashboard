@@ -8,7 +8,7 @@ import React from "react";
 import { NavBar } from "../components/nav/Navbar";
 import awsconfig from "../aws-exports";
 import { redirect, useNavigate, Link } from "react-router-dom";
-import { PatientsTable } from "../components/patient_list/PatientsTable"
+import { PatientsTable } from "../components/patient_list/PatientsTable";
 
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -35,7 +35,7 @@ export default function AuthenticationPage() {
 
       username = username.toLowerCase(); //username field is email in this case
       attributes.email = attributes.email.toLowerCase();
-      attributes["custom:user_type"] = "care_provider_user";
+      attributes["custom:user_type"] = "careProvider";
       attributes["custom:identity_id"] = "null";
 
       return Auth.signUp({
@@ -50,56 +50,56 @@ export default function AuthenticationPage() {
   };
 
   async function makeCareProvider(email) {
-      let sesh = await Auth.currentSession();
-      let idtoken = sesh.idToken.jwtToken;
+    let sesh = await Auth.currentSession();
+    let idtoken = sesh.idToken.jwtToken;
 
-      let userCreds = await Auth.currentUserCredentials();
-      let identity_id = userCreds["identityId"];
+    let userCreds = await Auth.currentUserCredentials();
+    let identity_id = userCreds["identityId"];
 
-      
-      try {
-        
-        identity_id = identity_id.split(":")[1]; //get id without the region
-       
-        let response = await API.graphql({
-          query: createCareProvider,
-          variables: {
-            care_provider_id: identity_id,
-            email: email
-          },
-          authToken: idtoken,
-        });
+    try {
+      identity_id = identity_id.split(":")[1]; //get id without the region
 
-      } catch (err) {
-        console.log(err);
-      }
+      let response = await API.graphql({
+        query: createCareProvider,
+        variables: {
+          care_provider_id: identity_id,
+          email: email,
+        },
+        authToken: idtoken,
+      });
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   return (
     <Box>
       <Authenticator services={authServices}>
         {({ signOut, user }) => {
-            let userGroupArr = user["signInUserSession"]["accessToken"]["payload"]["cognito:groups"];
-            let user_id = user['username'];
-            let email = user["attributes"]["email"];
+          console.log("user", user);
+          let userGroupArr =
+            user["signInUserSession"]["accessToken"]["payload"][
+              "cognito:groups"
+            ];
+          let user_id = user["username"];
+          let email = user["attributes"]["email"];
 
-            if (userGroupArr.includes("care_provider_user")) {
-                navigate('/patientTable');
-                makeCareProvider(email);
-                            
-            } else {
-                Auth.signOut(); 
-                setShowAccessDenied(true);
-            }
+          if (userGroupArr.includes("careProvider")) {
+            navigate("/patientTable");
+            makeCareProvider(email);
+          } else {
+            Auth.signOut();
+            setShowAccessDenied(true);
+          }
         }}
       </Authenticator>
       <Snackbar
         open={showAccessDenied}
         autoHideDuration={5000}
-        anchorOrigin = {{'horizontal': 'center', 'vertical': 'bottom'}}
+        anchorOrigin={{ horizontal: "center", vertical: "bottom" }}
         onClose={handleDeniedClose}
         message="No Permissions to Access."
       />
     </Box>
-  )
+  );
 }
