@@ -28,7 +28,7 @@
         },
         "graphQlLambdaAuthorizera86a1dbf": {
           "deploymentBucketName": "amplify-balancetestdashboard-dev-160420-deployment",
-          "s3Key": "amplify-builds/graphQlLambdaAuthorizera86a1dbf-7a6c54576a432f2b764f-build.zip"
+          "s3Key": "amplify-builds/graphQlLambdaAuthorizera86a1dbf-6f5268427545414c5054-build.zip"
         }
       },
       "api": {
