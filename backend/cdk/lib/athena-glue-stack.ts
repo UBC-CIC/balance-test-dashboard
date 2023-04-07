@@ -21,7 +21,7 @@ export class AthenaGlueStack extends Stack {
       const glueDbName = "balancetest-sensordata-gluedb";
       const glueSensorDataCrawlerS3Arn = dataWorkflowStack.getS3BucketArn() + "/parquet_data/patient_tests/*";
       const glueSensorDataCrawlerRoleName = "BalanceTest-SensorData-GlueCrawler-Role";
-      const glueSensorDataCrawlerS3Path = "s3://" + dataWorkflowStack.getS3BucketName() + "/parquet_data/patient_tests/*";
+      const glueSensorDataCrawlerS3Path = "s3://" + dataWorkflowStack.getS3BucketName() + "/parquet_data/patient_tests/";
       const glueSensorDataCrawlerName = "BalanceTest-SensorData-GlueCrawler";
     
       let accountId = "";
@@ -67,7 +67,7 @@ export class AthenaGlueStack extends Stack {
             path: glueSensorDataCrawlerS3Path
           }]
         },
-        databaseName: glueDbName,
+        databaseName: glueDb.ref,
         name: glueSensorDataCrawlerName,
         description: "For crawling parquet data within the S3 bucket for Athena querying",
         recrawlPolicy: {
@@ -77,6 +77,7 @@ export class AthenaGlueStack extends Stack {
           updateBehavior: "UPDATE_IN_DATABASE",
           deleteBehavior: "DEPRECATE_IN_DATABASE"
         },
+        schedule:{scheduleExpression:'cron(0 0 * * ? *)'},
         //TODO: deploy and test to see if table prefix is needed to help organize tables
       });
       
@@ -144,8 +145,9 @@ export class AthenaGlueStack extends Stack {
         type: "GLUE",
         parameters: {["catalog-id"]: accountId}
       });
-
     }
+
+    // todo: set athena output location
 
     public getAthenaS3QueryLambda(): lambda.Function {
       return this.athenaS3QueryLambda;

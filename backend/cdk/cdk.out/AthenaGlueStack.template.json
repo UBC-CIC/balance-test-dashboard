@@ -97,18 +97,23 @@
           {
            "Fn::ImportValue": "DataWorkflowStack:ExportsOutputRefBalanceTestRecordingsBucketArnParameterB5195FA2"
           },
-          "/parquet_data/patient_tests/*"
+          "/parquet_data/patient_tests/"
          ]
         ]
        }
       }
      ]
     },
-    "DatabaseName": "balancetest-sensordata-gluedb",
+    "DatabaseName": {
+     "Ref": "balancetestsensordatagluedb"
+    },
     "Description": "For crawling parquet data within the S3 bucket for Athena querying",
     "Name": "BalanceTest-SensorData-GlueCrawler",
     "RecrawlPolicy": {
      "RecrawlBehavior": "CRAWL_EVERYTHING"
+    },
+    "Schedule": {
+     "ScheduleExpression": "cron(0 0 * * ? *)"
     },
     "SchemaChangePolicy": {
      "DeleteBehavior": "DEPRECATE_IN_DATABASE",
