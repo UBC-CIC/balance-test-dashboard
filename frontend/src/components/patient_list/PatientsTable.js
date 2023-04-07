@@ -99,7 +99,6 @@ const testRows = [
     last_movement_tested: "Sit-to-Stand",
     last_test_score: 23,
   },
-  
 ];
 
 function FixedHeaderRow() {
@@ -302,7 +301,6 @@ function DisplaySearchResults({
         return (
           <TableRow>
             {headerColumns.map((column) => {
-              
               if (column.id === "see_patient_data") {
                 return (
                   <TableCell
@@ -391,7 +389,7 @@ function DisplaySearchResults({
 export function PatientsTable() {
   let data = [];
   // let data = testRows;
-  
+
   // careProviderId = 1;
   const [careProviderId, setCareProviderId] = React.useState("");
 
@@ -410,15 +408,16 @@ export function PatientsTable() {
   async function fetchData() {
     let sesh = await Auth.currentSession();
     let idtoken = sesh.idToken.jwtToken;
+    console.log("idtoken", idtoken);
     let data = [];
 
     let userCreds = await Auth.currentUserCredentials();
     let identity_id = userCreds["identityId"];
-    
+
     identity_id = identity_id.split(":")[1]; //get id without the region
-    
+
     setCareProviderId(identity_id);
-    
+
     // console.log("in fetchdata");
     try {
       // console.log("in fetchdata try block");
@@ -479,7 +478,8 @@ export function PatientsTable() {
         await retrieveAssignedTests(patientsInfo[p].patient_id).then(
           (checkbox_obj) => {
             data.push({
-              patient_name: patientsInfo[p].last_name + ", " + patientsInfo[p].first_name,
+              patient_name:
+                patientsInfo[p].last_name + ", " + patientsInfo[p].first_name,
               user_id: patientsInfo[p].patient_id,
               assigned_test_num: res1.data.getPatientAssignedTests.length,
               last_movement_tested: lastMovementAssigned,
@@ -499,7 +499,6 @@ export function PatientsTable() {
         // });
       }
       updatePatientDataRowsArr(data);
-
     } catch (err) {
       console.log(err);
       return new Promise((resolve, reject) => reject(err));
@@ -509,7 +508,6 @@ export function PatientsTable() {
   useEffect(() => {
     // console.log("in useeffect");
     fetchData().then(() => setLoading(false));
-
   }, []);
 
   const handleChangeRowsPerPage = (event) => {

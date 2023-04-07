@@ -1822,6 +1822,22 @@
                   "fqn": "aws-cdk-lib.CfnOutput",
                   "version": "2.69.0"
                 }
+              },
+              "Output{\"Fn::GetAtt\":[\"BalanceTestgeneratereportfordownload0C388CF5\",\"Arn\"]}": {
+                "id": "Output{\"Fn::GetAtt\":[\"BalanceTestgeneratereportfordownload0C388CF5\",\"Arn\"]}",
+                "path": "DataWorkflowStack/Exports/Output{\"Fn::GetAtt\":[\"BalanceTestgeneratereportfordownload0C388CF5\",\"Arn\"]}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "2.69.0"
+                }
+              },
+              "Output{\"Fn::GetAtt\":[\"BalanceTestdeletes3record4746C1B8\",\"Arn\"]}": {
+                "id": "Output{\"Fn::GetAtt\":[\"BalanceTestdeletes3record4746C1B8\",\"Arn\"]}",
+                "path": "DataWorkflowStack/Exports/Output{\"Fn::GetAtt\":[\"BalanceTestdeletes3record4746C1B8\",\"Arn\"]}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "2.69.0"
+                }
               }
             },
             "constructInfo": {
@@ -2616,7 +2632,7 @@
                   "aws:cdk:cloudformation:props": {
                     "code": {
                       "s3Bucket": "cdk-hnb659fds-assets-684904187051-ca-central-1",
-                      "s3Key": "72448b931402faabd9146e026f793b950a16215b08aaa0a2ca64eee46cd9d9e5.zip"
+                      "s3Key": "db03a011e78d101d7e6b05c0347dc45934b90138d595641918756fa88363bc28.zip"
                     },
                     "role": {
                       "Fn::GetAtt": [
@@ -2707,6 +2723,24 @@
                 "path": "DatabaseStack/CDKMetadata/Default",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "2.69.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.1.284"
+            }
+          },
+          "Exports": {
+            "id": "Exports",
+            "path": "DatabaseStack/Exports",
+            "children": {
+              "Output{\"Fn::GetAtt\":[\"BalanceTestpostgresqlRDSconnect4A449849\",\"Arn\"]}": {
+                "id": "Output{\"Fn::GetAtt\":[\"BalanceTestpostgresqlRDSconnect4A449849\",\"Arn\"]}",
+                "path": "DatabaseStack/Exports/Output{\"Fn::GetAtt\":[\"BalanceTestpostgresqlRDSconnect4A449849\",\"Arn\"]}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
                   "version": "2.69.0"
                 }
               }
@@ -2870,18 +2904,23 @@
                             {
                               "Fn::ImportValue": "DataWorkflowStack:ExportsOutputRefBalanceTestRecordingsBucketArnParameterB5195FA2"
                             },
-                            "/parquet_data/patient_tests/*"
+                            "/parquet_data/patient_tests/"
                           ]
                         ]
                       }
                     }
                   ]
                 },
-                "databaseName": "balancetest-sensordata-gluedb",
+                "databaseName": {
+                  "Ref": "balancetestsensordatagluedb"
+                },
                 "description": "For crawling parquet data within the S3 bucket for Athena querying",
                 "name": "BalanceTest-SensorData-GlueCrawler",
                 "recrawlPolicy": {
                   "recrawlBehavior": "CRAWL_EVERYTHING"
+                },
+                "schedule": {
+                  "scheduleExpression": "cron(0 0 * * ? *)"
                 },
                 "schemaChangePolicy": {
                   "updateBehavior": "UPDATE_IN_DATABASE",
@@ -3160,6 +3199,24 @@
               "version": "10.1.284"
             }
           },
+          "Exports": {
+            "id": "Exports",
+            "path": "AthenaGlueStack/Exports",
+            "children": {
+              "Output{\"Fn::GetAtt\":[\"BalanceTestqueryS3B568AEB2\",\"Arn\"]}": {
+                "id": "Output{\"Fn::GetAtt\":[\"BalanceTestqueryS3B568AEB2\",\"Arn\"]}",
+                "path": "AthenaGlueStack/Exports/Output{\"Fn::GetAtt\":[\"BalanceTestqueryS3B568AEB2\",\"Arn\"]}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "2.69.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.1.284"
+            }
+          },
           "BootstrapVersion": {
             "id": "BootstrapVersion",
             "path": "AthenaGlueStack/BootstrapVersion",
@@ -3171,6 +3228,2540 @@
           "CheckBootstrapVersion": {
             "id": "CheckBootstrapVersion",
             "path": "AthenaGlueStack/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "2.69.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "2.69.0"
+        }
+      },
+      "AppsyncStack": {
+        "id": "AppsyncStack",
+        "path": "AppsyncStack",
+        "children": {
+          "BalanceTestAppsyncApiId.Parameter": {
+            "id": "BalanceTestAppsyncApiId.Parameter",
+            "path": "AppsyncStack/BalanceTestAppsyncApiId.Parameter",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "2.69.0"
+            }
+          },
+          "BalanceTestAppsyncApiId": {
+            "id": "BalanceTestAppsyncApiId",
+            "path": "AppsyncStack/BalanceTestAppsyncApiId",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "2.69.0"
+            }
+          },
+          "BalanceTest-API": {
+            "id": "BalanceTest-API",
+            "path": "AppsyncStack/BalanceTest-API",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_appsync.GraphqlApiBase",
+              "version": "2.69.0"
+            }
+          },
+          "BalanceTest-appsync-generateReportDataSource-Role": {
+            "id": "BalanceTest-appsync-generateReportDataSource-Role",
+            "path": "AppsyncStack/BalanceTest-appsync-generateReportDataSource-Role",
+            "children": {
+              "ImportBalanceTest-appsync-generateReportDataSource-Role": {
+                "id": "ImportBalanceTest-appsync-generateReportDataSource-Role",
+                "path": "AppsyncStack/BalanceTest-appsync-generateReportDataSource-Role/ImportBalanceTest-appsync-generateReportDataSource-Role",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "2.69.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "AppsyncStack/BalanceTest-appsync-generateReportDataSource-Role/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "appsync.amazonaws.com"
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "policies": [
+                      {
+                        "policyName": "BalanceTest-generateReportDataSourcePolicy",
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "lambda:invokeFunction",
+                              "Effect": "Allow",
+                              "Resource": {
+                                "Fn::ImportValue": "DataWorkflowStack:ExportsOutputFnGetAttBalanceTestgeneratereportfordownload0C388CF5Arn329D400D"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    ],
+                    "roleName": "BalanceTest-appsync-generateReportDataSource-Role"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                  "version": "2.69.0"
+                }
+              },
+              "DefaultPolicy": {
+                "id": "DefaultPolicy",
+                "path": "AppsyncStack/BalanceTest-appsync-generateReportDataSource-Role/DefaultPolicy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "AppsyncStack/BalanceTest-appsync-generateReportDataSource-Role/DefaultPolicy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "lambda:InvokeFunction",
+                              "Effect": "Allow",
+                              "Resource": [
+                                {
+                                  "Fn::ImportValue": "DataWorkflowStack:ExportsOutputFnGetAttBalanceTestgeneratereportfordownload0C388CF5Arn329D400D"
+                                },
+                                {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      {
+                                        "Fn::ImportValue": "DataWorkflowStack:ExportsOutputFnGetAttBalanceTestgeneratereportfordownload0C388CF5Arn329D400D"
+                                      },
+                                      ":*"
+                                    ]
+                                  ]
+                                }
+                              ]
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policyName": "BalanceTestappsyncgenerateReportDataSourceRoleDefaultPolicy9E3E0C1E",
+                        "roles": [
+                          {
+                            "Ref": "BalanceTestappsyncgenerateReportDataSourceRoleD42BBF4A"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                      "version": "2.69.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Policy",
+                  "version": "2.69.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_iam.Role",
+              "version": "2.69.0"
+            }
+          },
+          "BalanceTest-appsync-postgresqlRDSConnectDataSource-Role": {
+            "id": "BalanceTest-appsync-postgresqlRDSConnectDataSource-Role",
+            "path": "AppsyncStack/BalanceTest-appsync-postgresqlRDSConnectDataSource-Role",
+            "children": {
+              "ImportBalanceTest-appsync-postgresqlRDSConnectDataSource-Role": {
+                "id": "ImportBalanceTest-appsync-postgresqlRDSConnectDataSource-Role",
+                "path": "AppsyncStack/BalanceTest-appsync-postgresqlRDSConnectDataSource-Role/ImportBalanceTest-appsync-postgresqlRDSConnectDataSource-Role",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "2.69.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "AppsyncStack/BalanceTest-appsync-postgresqlRDSConnectDataSource-Role/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "appsync.amazonaws.com"
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "policies": [
+                      {
+                        "policyName": "BalanceTest-postgresqlRDSConnectDataSourcePolicy",
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "lambda:invokeFunction",
+                              "Effect": "Allow",
+                              "Resource": {
+                                "Fn::ImportValue": "DatabaseStack:ExportsOutputFnGetAttBalanceTestpostgresqlRDSconnect4A449849Arn75E70BB3"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    ],
+                    "roleName": "BalanceTest-appsync-postgresqlRDSConnectDataSource-Role"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                  "version": "2.69.0"
+                }
+              },
+              "DefaultPolicy": {
+                "id": "DefaultPolicy",
+                "path": "AppsyncStack/BalanceTest-appsync-postgresqlRDSConnectDataSource-Role/DefaultPolicy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "AppsyncStack/BalanceTest-appsync-postgresqlRDSConnectDataSource-Role/DefaultPolicy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "lambda:InvokeFunction",
+                              "Effect": "Allow",
+                              "Resource": [
+                                {
+                                  "Fn::ImportValue": "DatabaseStack:ExportsOutputFnGetAttBalanceTestpostgresqlRDSconnect4A449849Arn75E70BB3"
+                                },
+                                {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      {
+                                        "Fn::ImportValue": "DatabaseStack:ExportsOutputFnGetAttBalanceTestpostgresqlRDSconnect4A449849Arn75E70BB3"
+                                      },
+                                      ":*"
+                                    ]
+                                  ]
+                                }
+                              ]
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policyName": "BalanceTestappsyncpostgresqlRDSConnectDataSourceRoleDefaultPolicy46F270CA",
+                        "roles": [
+                          {
+                            "Ref": "BalanceTestappsyncpostgresqlRDSConnectDataSourceRoleD6799D8A"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                      "version": "2.69.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Policy",
+                  "version": "2.69.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_iam.Role",
+              "version": "2.69.0"
+            }
+          },
+          "BalanceTest-appsync-queryS3DataSource-Role": {
+            "id": "BalanceTest-appsync-queryS3DataSource-Role",
+            "path": "AppsyncStack/BalanceTest-appsync-queryS3DataSource-Role",
+            "children": {
+              "ImportBalanceTest-appsync-queryS3DataSource-Role": {
+                "id": "ImportBalanceTest-appsync-queryS3DataSource-Role",
+                "path": "AppsyncStack/BalanceTest-appsync-queryS3DataSource-Role/ImportBalanceTest-appsync-queryS3DataSource-Role",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "2.69.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "AppsyncStack/BalanceTest-appsync-queryS3DataSource-Role/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "appsync.amazonaws.com"
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "policies": [
+                      {
+                        "policyName": "BalanceTest-queryS3DataSourcePolicy",
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "lambda:invokeFunction",
+                              "Effect": "Allow",
+                              "Resource": {
+                                "Fn::ImportValue": "AthenaGlueStack:ExportsOutputFnGetAttBalanceTestqueryS3B568AEB2ArnF0C52D1D"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    ],
+                    "roleName": "BalanceTest-appsync-queryS3DataSource-Role"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                  "version": "2.69.0"
+                }
+              },
+              "DefaultPolicy": {
+                "id": "DefaultPolicy",
+                "path": "AppsyncStack/BalanceTest-appsync-queryS3DataSource-Role/DefaultPolicy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "AppsyncStack/BalanceTest-appsync-queryS3DataSource-Role/DefaultPolicy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "lambda:InvokeFunction",
+                              "Effect": "Allow",
+                              "Resource": [
+                                {
+                                  "Fn::ImportValue": "AthenaGlueStack:ExportsOutputFnGetAttBalanceTestqueryS3B568AEB2ArnF0C52D1D"
+                                },
+                                {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      {
+                                        "Fn::ImportValue": "AthenaGlueStack:ExportsOutputFnGetAttBalanceTestqueryS3B568AEB2ArnF0C52D1D"
+                                      },
+                                      ":*"
+                                    ]
+                                  ]
+                                }
+                              ]
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policyName": "BalanceTestappsyncqueryS3DataSourceRoleDefaultPolicyB9542837",
+                        "roles": [
+                          {
+                            "Ref": "BalanceTestappsyncqueryS3DataSourceRoleC7D587D0"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                      "version": "2.69.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Policy",
+                  "version": "2.69.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_iam.Role",
+              "version": "2.69.0"
+            }
+          },
+          "BalanceTest-appsync-deleteEventDataSource-Role": {
+            "id": "BalanceTest-appsync-deleteEventDataSource-Role",
+            "path": "AppsyncStack/BalanceTest-appsync-deleteEventDataSource-Role",
+            "children": {
+              "ImportBalanceTest-appsync-deleteEventDataSource-Role": {
+                "id": "ImportBalanceTest-appsync-deleteEventDataSource-Role",
+                "path": "AppsyncStack/BalanceTest-appsync-deleteEventDataSource-Role/ImportBalanceTest-appsync-deleteEventDataSource-Role",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "2.69.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "AppsyncStack/BalanceTest-appsync-deleteEventDataSource-Role/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "appsync.amazonaws.com"
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "policies": [
+                      {
+                        "policyName": "BalanceTest-deleteEventDataSourcePolicy",
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "lambda:invokeFunction",
+                              "Effect": "Allow",
+                              "Resource": {
+                                "Fn::ImportValue": "DataWorkflowStack:ExportsOutputFnGetAttBalanceTestdeletes3record4746C1B8ArnE3D18380"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    ],
+                    "roleName": "BalanceTest-appsync-deleteEventDataSource-Role"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                  "version": "2.69.0"
+                }
+              },
+              "DefaultPolicy": {
+                "id": "DefaultPolicy",
+                "path": "AppsyncStack/BalanceTest-appsync-deleteEventDataSource-Role/DefaultPolicy",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "AppsyncStack/BalanceTest-appsync-deleteEventDataSource-Role/DefaultPolicy/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                      "aws:cdk:cloudformation:props": {
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "lambda:InvokeFunction",
+                              "Effect": "Allow",
+                              "Resource": [
+                                {
+                                  "Fn::ImportValue": "DataWorkflowStack:ExportsOutputFnGetAttBalanceTestdeletes3record4746C1B8ArnE3D18380"
+                                },
+                                {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      {
+                                        "Fn::ImportValue": "DataWorkflowStack:ExportsOutputFnGetAttBalanceTestdeletes3record4746C1B8ArnE3D18380"
+                                      },
+                                      ":*"
+                                    ]
+                                  ]
+                                }
+                              ]
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "policyName": "BalanceTestappsyncdeleteEventDataSourceRoleDefaultPolicy59D53FCF",
+                        "roles": [
+                          {
+                            "Ref": "BalanceTestappsyncdeleteEventDataSourceRole27E8434D"
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                      "version": "2.69.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Policy",
+                  "version": "2.69.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_iam.Role",
+              "version": "2.69.0"
+            }
+          },
+          "BalanceTest_generate_report_s3_lambda": {
+            "id": "BalanceTest_generate_report_s3_lambda",
+            "path": "AppsyncStack/BalanceTest_generate_report_s3_lambda",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "AppsyncStack/BalanceTest_generate_report_s3_lambda/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::DataSource",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Ref": "BalanceTestAppsyncApiIdParameter"
+                    },
+                    "name": "BalanceTest_generate_report_s3_lambda",
+                    "type": "AWS_LAMBDA",
+                    "lambdaConfig": {
+                      "lambdaFunctionArn": {
+                        "Fn::ImportValue": "DataWorkflowStack:ExportsOutputFnGetAttBalanceTestgeneratereportfordownload0C388CF5Arn329D400D"
+                      }
+                    },
+                    "serviceRoleArn": {
+                      "Fn::GetAtt": [
+                        "BalanceTestappsyncgenerateReportDataSourceRoleD42BBF4A",
+                        "Arn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnDataSource",
+                  "version": "2.69.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_appsync.LambdaDataSource",
+              "version": "2.69.0"
+            }
+          },
+          "BalanceTest_postgresql_connection_lambda": {
+            "id": "BalanceTest_postgresql_connection_lambda",
+            "path": "AppsyncStack/BalanceTest_postgresql_connection_lambda",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "AppsyncStack/BalanceTest_postgresql_connection_lambda/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::DataSource",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Ref": "BalanceTestAppsyncApiIdParameter"
+                    },
+                    "name": "BalanceTest_postgresql_connection_lambda",
+                    "type": "AWS_LAMBDA",
+                    "lambdaConfig": {
+                      "lambdaFunctionArn": {
+                        "Fn::ImportValue": "DatabaseStack:ExportsOutputFnGetAttBalanceTestpostgresqlRDSconnect4A449849Arn75E70BB3"
+                      }
+                    },
+                    "serviceRoleArn": {
+                      "Fn::GetAtt": [
+                        "BalanceTestappsyncpostgresqlRDSConnectDataSourceRoleD6799D8A",
+                        "Arn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnDataSource",
+                  "version": "2.69.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_appsync.LambdaDataSource",
+              "version": "2.69.0"
+            }
+          },
+          "BalanceTest_query_s3_lambda": {
+            "id": "BalanceTest_query_s3_lambda",
+            "path": "AppsyncStack/BalanceTest_query_s3_lambda",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "AppsyncStack/BalanceTest_query_s3_lambda/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::DataSource",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Ref": "BalanceTestAppsyncApiIdParameter"
+                    },
+                    "name": "BalanceTest_query_s3_lambda",
+                    "type": "AWS_LAMBDA",
+                    "lambdaConfig": {
+                      "lambdaFunctionArn": {
+                        "Fn::ImportValue": "AthenaGlueStack:ExportsOutputFnGetAttBalanceTestqueryS3B568AEB2ArnF0C52D1D"
+                      }
+                    },
+                    "serviceRoleArn": {
+                      "Fn::GetAtt": [
+                        "BalanceTestappsyncqueryS3DataSourceRoleC7D587D0",
+                        "Arn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnDataSource",
+                  "version": "2.69.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_appsync.LambdaDataSource",
+              "version": "2.69.0"
+            }
+          },
+          "BalanceTest_delete_event_record_lambda": {
+            "id": "BalanceTest_delete_event_record_lambda",
+            "path": "AppsyncStack/BalanceTest_delete_event_record_lambda",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "AppsyncStack/BalanceTest_delete_event_record_lambda/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::DataSource",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Ref": "BalanceTestAppsyncApiIdParameter"
+                    },
+                    "name": "BalanceTest_delete_event_record_lambda",
+                    "type": "AWS_LAMBDA",
+                    "lambdaConfig": {
+                      "lambdaFunctionArn": {
+                        "Fn::ImportValue": "DataWorkflowStack:ExportsOutputFnGetAttBalanceTestdeletes3record4746C1B8ArnE3D18380"
+                      }
+                    },
+                    "serviceRoleArn": {
+                      "Fn::GetAtt": [
+                        "BalanceTestappsyncdeleteEventDataSourceRole27E8434D",
+                        "Arn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnDataSource",
+                  "version": "2.69.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_appsync.LambdaDataSource",
+              "version": "2.69.0"
+            }
+          },
+          "redirect_s3_download_function": {
+            "id": "redirect_s3_download_function",
+            "path": "AppsyncStack/redirect_s3_download_function",
+            "children": {
+              "Code": {
+                "id": "Code",
+                "path": "AppsyncStack/redirect_s3_download_function/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "AppsyncStack/redirect_s3_download_function/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.69.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "AppsyncStack/redirect_s3_download_function/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.69.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.69.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "AppsyncStack/redirect_s3_download_function/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::FunctionConfiguration",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Ref": "BalanceTestAppsyncApiIdParameter"
+                    },
+                    "dataSourceName": "BalanceTest_generate_report_s3_lambda",
+                    "name": "redirect_s3_download_function",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/28735a8c309355275f86385cbe993eaf9a328414d4a855a213e82b2905150081.js",
+                    "functionVersion": "2018-05-29",
+                    "runtime": {
+                      "name": "APPSYNC_JS",
+                      "runtimeVersion": "1.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnFunctionConfiguration",
+                  "version": "2.69.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_appsync.AppsyncFunction",
+              "version": "2.69.0"
+            }
+          },
+          "redirect_s3_data_retrieval_function": {
+            "id": "redirect_s3_data_retrieval_function",
+            "path": "AppsyncStack/redirect_s3_data_retrieval_function",
+            "children": {
+              "Code": {
+                "id": "Code",
+                "path": "AppsyncStack/redirect_s3_data_retrieval_function/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "AppsyncStack/redirect_s3_data_retrieval_function/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.69.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "AppsyncStack/redirect_s3_data_retrieval_function/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.69.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.69.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "AppsyncStack/redirect_s3_data_retrieval_function/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::FunctionConfiguration",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Ref": "BalanceTestAppsyncApiIdParameter"
+                    },
+                    "dataSourceName": "BalanceTest_query_s3_lambda",
+                    "name": "redirect_s3_data_retrieval_function",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/28735a8c309355275f86385cbe993eaf9a328414d4a855a213e82b2905150081.js",
+                    "functionVersion": "2018-05-29",
+                    "runtime": {
+                      "name": "APPSYNC_JS",
+                      "runtimeVersion": "1.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnFunctionConfiguration",
+                  "version": "2.69.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_appsync.AppsyncFunction",
+              "version": "2.69.0"
+            }
+          },
+          "redirect_postgresql_rds_function": {
+            "id": "redirect_postgresql_rds_function",
+            "path": "AppsyncStack/redirect_postgresql_rds_function",
+            "children": {
+              "Code": {
+                "id": "Code",
+                "path": "AppsyncStack/redirect_postgresql_rds_function/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "AppsyncStack/redirect_postgresql_rds_function/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.69.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "AppsyncStack/redirect_postgresql_rds_function/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.69.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.69.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "AppsyncStack/redirect_postgresql_rds_function/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::FunctionConfiguration",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Ref": "BalanceTestAppsyncApiIdParameter"
+                    },
+                    "dataSourceName": "BalanceTest_postgresql_connection_lambda",
+                    "name": "redirect_postgresql_rds_function",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/28735a8c309355275f86385cbe993eaf9a328414d4a855a213e82b2905150081.js",
+                    "functionVersion": "2018-05-29",
+                    "runtime": {
+                      "name": "APPSYNC_JS",
+                      "runtimeVersion": "1.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnFunctionConfiguration",
+                  "version": "2.69.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_appsync.AppsyncFunction",
+              "version": "2.69.0"
+            }
+          },
+          "redirect_delete_event_function": {
+            "id": "redirect_delete_event_function",
+            "path": "AppsyncStack/redirect_delete_event_function",
+            "children": {
+              "Code": {
+                "id": "Code",
+                "path": "AppsyncStack/redirect_delete_event_function/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "AppsyncStack/redirect_delete_event_function/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.69.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "AppsyncStack/redirect_delete_event_function/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.69.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.69.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "AppsyncStack/redirect_delete_event_function/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::FunctionConfiguration",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Ref": "BalanceTestAppsyncApiIdParameter"
+                    },
+                    "dataSourceName": "BalanceTest_delete_event_record_lambda",
+                    "name": "redirect_delete_event_function",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/28735a8c309355275f86385cbe993eaf9a328414d4a855a213e82b2905150081.js",
+                    "functionVersion": "2018-05-29",
+                    "runtime": {
+                      "name": "APPSYNC_JS",
+                      "runtimeVersion": "1.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnFunctionConfiguration",
+                  "version": "2.69.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_appsync.AppsyncFunction",
+              "version": "2.69.0"
+            }
+          },
+          "deleteTestEventFromS3": {
+            "id": "deleteTestEventFromS3",
+            "path": "AppsyncStack/deleteTestEventFromS3",
+            "children": {
+              "Code": {
+                "id": "Code",
+                "path": "AppsyncStack/deleteTestEventFromS3/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "AppsyncStack/deleteTestEventFromS3/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.69.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "AppsyncStack/deleteTestEventFromS3/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.69.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.69.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "AppsyncStack/deleteTestEventFromS3/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Ref": "BalanceTestAppsyncApiIdParameter"
+                    },
+                    "fieldName": "deleteTestEventFromS3",
+                    "typeName": "Mutation",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/03b666df465f4cb77d2e803618fcb06777820376c9fb4f2150ae7e30380f8826.js",
+                    "kind": "PIPELINE",
+                    "pipelineConfig": {
+                      "functions": [
+                        {
+                          "Fn::GetAtt": [
+                            "redirectdeleteeventfunction2460DB96",
+                            "FunctionId"
+                          ]
+                        }
+                      ]
+                    },
+                    "runtime": {
+                      "name": "APPSYNC_JS",
+                      "runtimeVersion": "1.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                  "version": "2.69.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+              "version": "2.69.0"
+            }
+          },
+          "downloadTestEventDetails": {
+            "id": "downloadTestEventDetails",
+            "path": "AppsyncStack/downloadTestEventDetails",
+            "children": {
+              "Code": {
+                "id": "Code",
+                "path": "AppsyncStack/downloadTestEventDetails/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "AppsyncStack/downloadTestEventDetails/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.69.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "AppsyncStack/downloadTestEventDetails/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.69.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.69.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "AppsyncStack/downloadTestEventDetails/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Ref": "BalanceTestAppsyncApiIdParameter"
+                    },
+                    "fieldName": "downloadTestEventDetails",
+                    "typeName": "Query",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/1417748595b9bc762ee0150e41fb3e7623ec03e210bfebbfb14f9ce1f4864857.js",
+                    "kind": "PIPELINE",
+                    "pipelineConfig": {
+                      "functions": [
+                        {
+                          "Fn::GetAtt": [
+                            "redirects3downloadfunctionC880ECBE",
+                            "FunctionId"
+                          ]
+                        }
+                      ]
+                    },
+                    "runtime": {
+                      "name": "APPSYNC_JS",
+                      "runtimeVersion": "1.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                  "version": "2.69.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+              "version": "2.69.0"
+            }
+          },
+          "getMeasurementRange": {
+            "id": "getMeasurementRange",
+            "path": "AppsyncStack/getMeasurementRange",
+            "children": {
+              "Code": {
+                "id": "Code",
+                "path": "AppsyncStack/getMeasurementRange/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "AppsyncStack/getMeasurementRange/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.69.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "AppsyncStack/getMeasurementRange/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.69.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.69.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "AppsyncStack/getMeasurementRange/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Ref": "BalanceTestAppsyncApiIdParameter"
+                    },
+                    "fieldName": "getMeasurementRange",
+                    "typeName": "Query",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/624ca0f1fa299e76091da12d2a9117f144274595c1fae5be97c85d5b6fa93ec6.js",
+                    "kind": "PIPELINE",
+                    "pipelineConfig": {
+                      "functions": [
+                        {
+                          "Fn::GetAtt": [
+                            "redirects3dataretrievalfunction04D43655",
+                            "FunctionId"
+                          ]
+                        }
+                      ]
+                    },
+                    "runtime": {
+                      "name": "APPSYNC_JS",
+                      "runtimeVersion": "1.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                  "version": "2.69.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+              "version": "2.69.0"
+            }
+          },
+          "getMeasurementData": {
+            "id": "getMeasurementData",
+            "path": "AppsyncStack/getMeasurementData",
+            "children": {
+              "Code": {
+                "id": "Code",
+                "path": "AppsyncStack/getMeasurementData/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "AppsyncStack/getMeasurementData/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.69.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "AppsyncStack/getMeasurementData/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.69.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.69.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "AppsyncStack/getMeasurementData/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Ref": "BalanceTestAppsyncApiIdParameter"
+                    },
+                    "fieldName": "getMeasurementData",
+                    "typeName": "Query",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/9b943f1efb1239e650ac1e54845fd1799b1e56ef6857d9df0d792b8e78071d8b.js",
+                    "kind": "PIPELINE",
+                    "pipelineConfig": {
+                      "functions": [
+                        {
+                          "Fn::GetAtt": [
+                            "redirects3dataretrievalfunction04D43655",
+                            "FunctionId"
+                          ]
+                        }
+                      ]
+                    },
+                    "runtime": {
+                      "name": "APPSYNC_JS",
+                      "runtimeVersion": "1.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                  "version": "2.69.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+              "version": "2.69.0"
+            }
+          },
+          "getAllAvailableTests": {
+            "id": "getAllAvailableTests",
+            "path": "AppsyncStack/getAllAvailableTests",
+            "children": {
+              "Code": {
+                "id": "Code",
+                "path": "AppsyncStack/getAllAvailableTests/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "AppsyncStack/getAllAvailableTests/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.69.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "AppsyncStack/getAllAvailableTests/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.69.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.69.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "AppsyncStack/getAllAvailableTests/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Ref": "BalanceTestAppsyncApiIdParameter"
+                    },
+                    "fieldName": "getAllAvailableTests",
+                    "typeName": "Query",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/ad5babc432fd36f7cbff972ca47437d7a3210d636591278bfee63136e83983f0.js",
+                    "kind": "PIPELINE",
+                    "pipelineConfig": {
+                      "functions": [
+                        {
+                          "Fn::GetAtt": [
+                            "redirectpostgresqlrdsfunction2B6C7888",
+                            "FunctionId"
+                          ]
+                        }
+                      ]
+                    },
+                    "runtime": {
+                      "name": "APPSYNC_JS",
+                      "runtimeVersion": "1.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                  "version": "2.69.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+              "version": "2.69.0"
+            }
+          },
+          "getAllPatients": {
+            "id": "getAllPatients",
+            "path": "AppsyncStack/getAllPatients",
+            "children": {
+              "Code": {
+                "id": "Code",
+                "path": "AppsyncStack/getAllPatients/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "AppsyncStack/getAllPatients/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.69.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "AppsyncStack/getAllPatients/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.69.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.69.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "AppsyncStack/getAllPatients/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Ref": "BalanceTestAppsyncApiIdParameter"
+                    },
+                    "fieldName": "getAllPatients",
+                    "typeName": "Query",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/8c126736eaaafc289e736b7bdda928f70402d04bc2f5f81ad502eeed830730d3.js",
+                    "kind": "PIPELINE",
+                    "pipelineConfig": {
+                      "functions": [
+                        {
+                          "Fn::GetAtt": [
+                            "redirectpostgresqlrdsfunction2B6C7888",
+                            "FunctionId"
+                          ]
+                        }
+                      ]
+                    },
+                    "runtime": {
+                      "name": "APPSYNC_JS",
+                      "runtimeVersion": "1.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                  "version": "2.69.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+              "version": "2.69.0"
+            }
+          },
+          "getCareproviderById": {
+            "id": "getCareproviderById",
+            "path": "AppsyncStack/getCareproviderById",
+            "children": {
+              "Code": {
+                "id": "Code",
+                "path": "AppsyncStack/getCareproviderById/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "AppsyncStack/getCareproviderById/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.69.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "AppsyncStack/getCareproviderById/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.69.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.69.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "AppsyncStack/getCareproviderById/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Ref": "BalanceTestAppsyncApiIdParameter"
+                    },
+                    "fieldName": "getCareproviderById",
+                    "typeName": "Query",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/38b48e18570470d0c8df943e916d4084911780961f68cc3a10e5d1432578efde.js",
+                    "kind": "PIPELINE",
+                    "pipelineConfig": {
+                      "functions": [
+                        {
+                          "Fn::GetAtt": [
+                            "redirectpostgresqlrdsfunction2B6C7888",
+                            "FunctionId"
+                          ]
+                        }
+                      ]
+                    },
+                    "runtime": {
+                      "name": "APPSYNC_JS",
+                      "runtimeVersion": "1.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                  "version": "2.69.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+              "version": "2.69.0"
+            }
+          },
+          "getPatientAssignedTests": {
+            "id": "getPatientAssignedTests",
+            "path": "AppsyncStack/getPatientAssignedTests",
+            "children": {
+              "Code": {
+                "id": "Code",
+                "path": "AppsyncStack/getPatientAssignedTests/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "AppsyncStack/getPatientAssignedTests/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.69.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "AppsyncStack/getPatientAssignedTests/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.69.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.69.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "AppsyncStack/getPatientAssignedTests/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Ref": "BalanceTestAppsyncApiIdParameter"
+                    },
+                    "fieldName": "getPatientAssignedTests",
+                    "typeName": "Query",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/e0d6e49137ce0d9ee036a4e1adeef594db12c2799715a9ff6e790c419b4a6e7b.js",
+                    "kind": "PIPELINE",
+                    "pipelineConfig": {
+                      "functions": [
+                        {
+                          "Fn::GetAtt": [
+                            "redirectpostgresqlrdsfunction2B6C7888",
+                            "FunctionId"
+                          ]
+                        }
+                      ]
+                    },
+                    "runtime": {
+                      "name": "APPSYNC_JS",
+                      "runtimeVersion": "1.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                  "version": "2.69.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+              "version": "2.69.0"
+            }
+          },
+          "getPatientById": {
+            "id": "getPatientById",
+            "path": "AppsyncStack/getPatientById",
+            "children": {
+              "Code": {
+                "id": "Code",
+                "path": "AppsyncStack/getPatientById/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "AppsyncStack/getPatientById/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.69.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "AppsyncStack/getPatientById/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.69.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.69.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "AppsyncStack/getPatientById/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Ref": "BalanceTestAppsyncApiIdParameter"
+                    },
+                    "fieldName": "getPatientById",
+                    "typeName": "Query",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/d5993348c43c76e5ed9b27568adffcef1ee1079f4a8b1833ab37f312a8ea9c17.js",
+                    "kind": "PIPELINE",
+                    "pipelineConfig": {
+                      "functions": [
+                        {
+                          "Fn::GetAtt": [
+                            "redirectpostgresqlrdsfunction2B6C7888",
+                            "FunctionId"
+                          ]
+                        }
+                      ]
+                    },
+                    "runtime": {
+                      "name": "APPSYNC_JS",
+                      "runtimeVersion": "1.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                  "version": "2.69.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+              "version": "2.69.0"
+            }
+          },
+          "getPatientsForCareprovider": {
+            "id": "getPatientsForCareprovider",
+            "path": "AppsyncStack/getPatientsForCareprovider",
+            "children": {
+              "Code": {
+                "id": "Code",
+                "path": "AppsyncStack/getPatientsForCareprovider/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "AppsyncStack/getPatientsForCareprovider/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.69.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "AppsyncStack/getPatientsForCareprovider/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.69.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.69.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "AppsyncStack/getPatientsForCareprovider/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Ref": "BalanceTestAppsyncApiIdParameter"
+                    },
+                    "fieldName": "getPatientsForCareprovider",
+                    "typeName": "Query",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/db0e93ecff4017301c5368bfeeccc52f76e6cef856ea77ace5bed1f59980e0d9.js",
+                    "kind": "PIPELINE",
+                    "pipelineConfig": {
+                      "functions": [
+                        {
+                          "Fn::GetAtt": [
+                            "redirectpostgresqlrdsfunction2B6C7888",
+                            "FunctionId"
+                          ]
+                        }
+                      ]
+                    },
+                    "runtime": {
+                      "name": "APPSYNC_JS",
+                      "runtimeVersion": "1.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                  "version": "2.69.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+              "version": "2.69.0"
+            }
+          },
+          "getScoreStatsOverTime": {
+            "id": "getScoreStatsOverTime",
+            "path": "AppsyncStack/getScoreStatsOverTime",
+            "children": {
+              "Code": {
+                "id": "Code",
+                "path": "AppsyncStack/getScoreStatsOverTime/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "AppsyncStack/getScoreStatsOverTime/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.69.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "AppsyncStack/getScoreStatsOverTime/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.69.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.69.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "AppsyncStack/getScoreStatsOverTime/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Ref": "BalanceTestAppsyncApiIdParameter"
+                    },
+                    "fieldName": "getScoreStatsOverTime",
+                    "typeName": "Query",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/20cdfb5eb4ae37685be4bf29a1d835e16698297a2e0232586506db0d9bde0b93.js",
+                    "kind": "PIPELINE",
+                    "pipelineConfig": {
+                      "functions": [
+                        {
+                          "Fn::GetAtt": [
+                            "redirectpostgresqlrdsfunction2B6C7888",
+                            "FunctionId"
+                          ]
+                        }
+                      ]
+                    },
+                    "runtime": {
+                      "name": "APPSYNC_JS",
+                      "runtimeVersion": "1.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                  "version": "2.69.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+              "version": "2.69.0"
+            }
+          },
+          "getTestEventById": {
+            "id": "getTestEventById",
+            "path": "AppsyncStack/getTestEventById",
+            "children": {
+              "Code": {
+                "id": "Code",
+                "path": "AppsyncStack/getTestEventById/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "AppsyncStack/getTestEventById/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.69.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "AppsyncStack/getTestEventById/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.69.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.69.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "AppsyncStack/getTestEventById/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Ref": "BalanceTestAppsyncApiIdParameter"
+                    },
+                    "fieldName": "getTestEventById",
+                    "typeName": "Query",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/66720e2a227eb3480a17b84f5887888878abb5b3b2573e287a91a744a63e3710.js",
+                    "kind": "PIPELINE",
+                    "pipelineConfig": {
+                      "functions": [
+                        {
+                          "Fn::GetAtt": [
+                            "redirectpostgresqlrdsfunction2B6C7888",
+                            "FunctionId"
+                          ]
+                        }
+                      ]
+                    },
+                    "runtime": {
+                      "name": "APPSYNC_JS",
+                      "runtimeVersion": "1.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                  "version": "2.69.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+              "version": "2.69.0"
+            }
+          },
+          "getTestEvents": {
+            "id": "getTestEvents",
+            "path": "AppsyncStack/getTestEvents",
+            "children": {
+              "Code": {
+                "id": "Code",
+                "path": "AppsyncStack/getTestEvents/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "AppsyncStack/getTestEvents/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.69.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "AppsyncStack/getTestEvents/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.69.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.69.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "AppsyncStack/getTestEvents/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Ref": "BalanceTestAppsyncApiIdParameter"
+                    },
+                    "fieldName": "getTestEvents",
+                    "typeName": "Query",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/140c72a9f0ace327aca51d7ed3cfc9497a88da95d0bf6bbd3ac103cd8436569a.js",
+                    "kind": "PIPELINE",
+                    "pipelineConfig": {
+                      "functions": [
+                        {
+                          "Fn::GetAtt": [
+                            "redirectpostgresqlrdsfunction2B6C7888",
+                            "FunctionId"
+                          ]
+                        }
+                      ]
+                    },
+                    "runtime": {
+                      "name": "APPSYNC_JS",
+                      "runtimeVersion": "1.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                  "version": "2.69.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+              "version": "2.69.0"
+            }
+          },
+          "addPatientToCareProvider": {
+            "id": "addPatientToCareProvider",
+            "path": "AppsyncStack/addPatientToCareProvider",
+            "children": {
+              "Code": {
+                "id": "Code",
+                "path": "AppsyncStack/addPatientToCareProvider/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "AppsyncStack/addPatientToCareProvider/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.69.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "AppsyncStack/addPatientToCareProvider/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.69.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.69.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "AppsyncStack/addPatientToCareProvider/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Ref": "BalanceTestAppsyncApiIdParameter"
+                    },
+                    "fieldName": "addPatientToCareProvider",
+                    "typeName": "Mutation",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/d6b02755e306aed1a028c368c4e667376b51bbcd4deb7cdb38570b4c73475e7b.js",
+                    "kind": "PIPELINE",
+                    "pipelineConfig": {
+                      "functions": [
+                        {
+                          "Fn::GetAtt": [
+                            "redirectpostgresqlrdsfunction2B6C7888",
+                            "FunctionId"
+                          ]
+                        }
+                      ]
+                    },
+                    "runtime": {
+                      "name": "APPSYNC_JS",
+                      "runtimeVersion": "1.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                  "version": "2.69.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+              "version": "2.69.0"
+            }
+          },
+          "addTestType": {
+            "id": "addTestType",
+            "path": "AppsyncStack/addTestType",
+            "children": {
+              "Code": {
+                "id": "Code",
+                "path": "AppsyncStack/addTestType/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "AppsyncStack/addTestType/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.69.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "AppsyncStack/addTestType/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.69.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.69.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "AppsyncStack/addTestType/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Ref": "BalanceTestAppsyncApiIdParameter"
+                    },
+                    "fieldName": "addTestType",
+                    "typeName": "Mutation",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/b359c6f607cdbc9297a2bd3300ee4abf411665b12e18c0518c8d7089d19a995e.js",
+                    "kind": "PIPELINE",
+                    "pipelineConfig": {
+                      "functions": [
+                        {
+                          "Fn::GetAtt": [
+                            "redirectpostgresqlrdsfunction2B6C7888",
+                            "FunctionId"
+                          ]
+                        }
+                      ]
+                    },
+                    "runtime": {
+                      "name": "APPSYNC_JS",
+                      "runtimeVersion": "1.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                  "version": "2.69.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+              "version": "2.69.0"
+            }
+          },
+          "assignTestToPatient": {
+            "id": "assignTestToPatient",
+            "path": "AppsyncStack/assignTestToPatient",
+            "children": {
+              "Code": {
+                "id": "Code",
+                "path": "AppsyncStack/assignTestToPatient/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "AppsyncStack/assignTestToPatient/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.69.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "AppsyncStack/assignTestToPatient/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.69.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.69.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "AppsyncStack/assignTestToPatient/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Ref": "BalanceTestAppsyncApiIdParameter"
+                    },
+                    "fieldName": "assignTestToPatient",
+                    "typeName": "Mutation",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/248647d3e798dbe95eb4519659b92994d9de592664911bc4f0958f0c77031581.js",
+                    "kind": "PIPELINE",
+                    "pipelineConfig": {
+                      "functions": [
+                        {
+                          "Fn::GetAtt": [
+                            "redirectpostgresqlrdsfunction2B6C7888",
+                            "FunctionId"
+                          ]
+                        }
+                      ]
+                    },
+                    "runtime": {
+                      "name": "APPSYNC_JS",
+                      "runtimeVersion": "1.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                  "version": "2.69.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+              "version": "2.69.0"
+            }
+          },
+          "createCareProvider": {
+            "id": "createCareProvider",
+            "path": "AppsyncStack/createCareProvider",
+            "children": {
+              "Code": {
+                "id": "Code",
+                "path": "AppsyncStack/createCareProvider/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "AppsyncStack/createCareProvider/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.69.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "AppsyncStack/createCareProvider/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.69.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.69.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "AppsyncStack/createCareProvider/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Ref": "BalanceTestAppsyncApiIdParameter"
+                    },
+                    "fieldName": "createCareProvider",
+                    "typeName": "Mutation",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/3f3cf540e7ac47520ea65692d092f5cdb930374abacc4ae6b7e27b6dda4fe9b9.js",
+                    "kind": "PIPELINE",
+                    "pipelineConfig": {
+                      "functions": [
+                        {
+                          "Fn::GetAtt": [
+                            "redirectpostgresqlrdsfunction2B6C7888",
+                            "FunctionId"
+                          ]
+                        }
+                      ]
+                    },
+                    "runtime": {
+                      "name": "APPSYNC_JS",
+                      "runtimeVersion": "1.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                  "version": "2.69.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+              "version": "2.69.0"
+            }
+          },
+          "createPatient": {
+            "id": "createPatient",
+            "path": "AppsyncStack/createPatient",
+            "children": {
+              "Code": {
+                "id": "Code",
+                "path": "AppsyncStack/createPatient/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "AppsyncStack/createPatient/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.69.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "AppsyncStack/createPatient/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.69.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.69.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "AppsyncStack/createPatient/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Ref": "BalanceTestAppsyncApiIdParameter"
+                    },
+                    "fieldName": "createPatient",
+                    "typeName": "Mutation",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/98856c90076a66b257236940ccd83e9eab6c1950fb55e29b8304467dd1e26743.js",
+                    "kind": "PIPELINE",
+                    "pipelineConfig": {
+                      "functions": [
+                        {
+                          "Fn::GetAtt": [
+                            "redirectpostgresqlrdsfunction2B6C7888",
+                            "FunctionId"
+                          ]
+                        }
+                      ]
+                    },
+                    "runtime": {
+                      "name": "APPSYNC_JS",
+                      "runtimeVersion": "1.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                  "version": "2.69.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+              "version": "2.69.0"
+            }
+          },
+          "deleteTestEventFromDB": {
+            "id": "deleteTestEventFromDB",
+            "path": "AppsyncStack/deleteTestEventFromDB",
+            "children": {
+              "Code": {
+                "id": "Code",
+                "path": "AppsyncStack/deleteTestEventFromDB/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "AppsyncStack/deleteTestEventFromDB/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.69.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "AppsyncStack/deleteTestEventFromDB/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.69.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.69.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "AppsyncStack/deleteTestEventFromDB/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Ref": "BalanceTestAppsyncApiIdParameter"
+                    },
+                    "fieldName": "deleteTestEventFromDB",
+                    "typeName": "Mutation",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/bae3879d903c5af2a49be8d45c40ff5d52d85748c71436192ad593f469b57ce9.js",
+                    "kind": "PIPELINE",
+                    "pipelineConfig": {
+                      "functions": [
+                        {
+                          "Fn::GetAtt": [
+                            "redirectpostgresqlrdsfunction2B6C7888",
+                            "FunctionId"
+                          ]
+                        }
+                      ]
+                    },
+                    "runtime": {
+                      "name": "APPSYNC_JS",
+                      "runtimeVersion": "1.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                  "version": "2.69.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+              "version": "2.69.0"
+            }
+          },
+          "putBalanceScore": {
+            "id": "putBalanceScore",
+            "path": "AppsyncStack/putBalanceScore",
+            "children": {
+              "Code": {
+                "id": "Code",
+                "path": "AppsyncStack/putBalanceScore/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "AppsyncStack/putBalanceScore/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.69.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "AppsyncStack/putBalanceScore/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.69.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.69.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "AppsyncStack/putBalanceScore/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Ref": "BalanceTestAppsyncApiIdParameter"
+                    },
+                    "fieldName": "putBalanceScore",
+                    "typeName": "Mutation",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/01dfa272140a8116c68ea9133f55bda580c9d371bcfb26cef0bbc66621f9f2d3.js",
+                    "kind": "PIPELINE",
+                    "pipelineConfig": {
+                      "functions": [
+                        {
+                          "Fn::GetAtt": [
+                            "redirectpostgresqlrdsfunction2B6C7888",
+                            "FunctionId"
+                          ]
+                        }
+                      ]
+                    },
+                    "runtime": {
+                      "name": "APPSYNC_JS",
+                      "runtimeVersion": "1.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                  "version": "2.69.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+              "version": "2.69.0"
+            }
+          },
+          "putTestResult": {
+            "id": "putTestResult",
+            "path": "AppsyncStack/putTestResult",
+            "children": {
+              "Code": {
+                "id": "Code",
+                "path": "AppsyncStack/putTestResult/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "AppsyncStack/putTestResult/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.69.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "AppsyncStack/putTestResult/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.69.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.69.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "AppsyncStack/putTestResult/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Ref": "BalanceTestAppsyncApiIdParameter"
+                    },
+                    "fieldName": "putTestResult",
+                    "typeName": "Mutation",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/70b2bdf9b2544d1ab085a1f180998e015275e7d7fc0d38d25df9309f61408b2a.js",
+                    "kind": "PIPELINE",
+                    "pipelineConfig": {
+                      "functions": [
+                        {
+                          "Fn::GetAtt": [
+                            "redirectpostgresqlrdsfunction2B6C7888",
+                            "FunctionId"
+                          ]
+                        }
+                      ]
+                    },
+                    "runtime": {
+                      "name": "APPSYNC_JS",
+                      "runtimeVersion": "1.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                  "version": "2.69.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+              "version": "2.69.0"
+            }
+          },
+          "recordConsentDate": {
+            "id": "recordConsentDate",
+            "path": "AppsyncStack/recordConsentDate",
+            "children": {
+              "Code": {
+                "id": "Code",
+                "path": "AppsyncStack/recordConsentDate/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "AppsyncStack/recordConsentDate/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.69.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "AppsyncStack/recordConsentDate/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.69.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.69.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "AppsyncStack/recordConsentDate/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Ref": "BalanceTestAppsyncApiIdParameter"
+                    },
+                    "fieldName": "recordConsentDate",
+                    "typeName": "Mutation",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/a4af5dad8aab229cebbdc396b587dbaa940e10e2c9e3337c0243d2e6ba99260d.js",
+                    "kind": "PIPELINE",
+                    "pipelineConfig": {
+                      "functions": [
+                        {
+                          "Fn::GetAtt": [
+                            "redirectpostgresqlrdsfunction2B6C7888",
+                            "FunctionId"
+                          ]
+                        }
+                      ]
+                    },
+                    "runtime": {
+                      "name": "APPSYNC_JS",
+                      "runtimeVersion": "1.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                  "version": "2.69.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+              "version": "2.69.0"
+            }
+          },
+          "removeTestFromPatient": {
+            "id": "removeTestFromPatient",
+            "path": "AppsyncStack/removeTestFromPatient",
+            "children": {
+              "Code": {
+                "id": "Code",
+                "path": "AppsyncStack/removeTestFromPatient/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "AppsyncStack/removeTestFromPatient/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.69.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "AppsyncStack/removeTestFromPatient/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.69.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.69.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "AppsyncStack/removeTestFromPatient/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::AppSync::Resolver",
+                  "aws:cdk:cloudformation:props": {
+                    "apiId": {
+                      "Ref": "BalanceTestAppsyncApiIdParameter"
+                    },
+                    "fieldName": "removeTestFromPatient",
+                    "typeName": "Mutation",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/d3d8f6627b02d69ab0ad687517b5f687d96f332217e2e87bdd7acc6eb90c8b1f.js",
+                    "kind": "PIPELINE",
+                    "pipelineConfig": {
+                      "functions": [
+                        {
+                          "Fn::GetAtt": [
+                            "redirectpostgresqlrdsfunction2B6C7888",
+                            "FunctionId"
+                          ]
+                        }
+                      ]
+                    },
+                    "runtime": {
+                      "name": "APPSYNC_JS",
+                      "runtimeVersion": "1.0.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_appsync.CfnResolver",
+                  "version": "2.69.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_appsync.Resolver",
+              "version": "2.69.0"
+            }
+          },
+          "CDKMetadata": {
+            "id": "CDKMetadata",
+            "path": "AppsyncStack/CDKMetadata",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "AppsyncStack/CDKMetadata/Default",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "2.69.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.1.284"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "AppsyncStack/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "2.69.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "AppsyncStack/CheckBootstrapVersion",
             "constructInfo": {
               "fqn": "aws-cdk-lib.CfnRule",
               "version": "2.69.0"

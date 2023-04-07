@@ -97,18 +97,23 @@
           {
            "Fn::ImportValue": "DataWorkflowStack:ExportsOutputRefBalanceTestRecordingsBucketArnParameterB5195FA2"
           },
-          "/parquet_data/patient_tests/*"
+          "/parquet_data/patient_tests/"
          ]
         ]
        }
       }
      ]
     },
-    "DatabaseName": "balancetest-sensordata-gluedb",
+    "DatabaseName": {
+     "Ref": "balancetestsensordatagluedb"
+    },
     "Description": "For crawling parquet data within the S3 bucket for Athena querying",
     "Name": "BalanceTest-SensorData-GlueCrawler",
     "RecrawlPolicy": {
      "RecrawlBehavior": "CRAWL_EVERYTHING"
+    },
+    "Schedule": {
+     "ScheduleExpression": "cron(0 0 * * ? *)"
     },
     "SchemaChangePolicy": {
      "DeleteBehavior": "DEPRECATE_IN_DATABASE",
@@ -282,6 +287,19 @@
    "Type": "AWS::SSM::Parameter::Value<String>",
    "Default": "/cdk-bootstrap/hnb659fds/version",
    "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Outputs": {
+  "ExportsOutputFnGetAttBalanceTestqueryS3B568AEB2ArnF0C52D1D": {
+   "Value": {
+    "Fn::GetAtt": [
+     "BalanceTestqueryS3B568AEB2",
+     "Arn"
+    ]
+   },
+   "Export": {
+    "Name": "AthenaGlueStack:ExportsOutputFnGetAttBalanceTestqueryS3B568AEB2ArnF0C52D1D"
+   }
   }
  },
  "Rules": {

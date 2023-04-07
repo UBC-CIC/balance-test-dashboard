@@ -12,7 +12,7 @@ athena = boto3.client('athena')
 cognito_identity = boto3.client('cognito-identity')
 
 
-def lambda_handler(event, context):
+def handler(event, context):
     # print('event')
     # print(event)
     # todo: remove hard-coded val
@@ -30,7 +30,7 @@ def lambda_handler(event, context):
     logins = {
         f'cognito-idp.{region}.amazonaws.com/{user_pool_id}': id_token
     }
-    
+
     identityId = cognito_identity.get_id(
         IdentityPoolId=identity_pool_id,
         Logins={
@@ -44,7 +44,7 @@ def lambda_handler(event, context):
             f'cognito-idp.{region}.amazonaws.com/{user_pool_id}': id_token
         }
     )['Credentials']
-    
+
     s3 = boto3.client('s3', aws_access_key_id=aws_cred['AccessKeyId'],
                       aws_secret_access_key=aws_cred['SecretKey'],
                       aws_session_token=aws_cred['SessionToken'])

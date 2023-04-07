@@ -29,6 +29,62 @@ const connectDb = async () => {
   }
 };
 
+const createTableSql = `CREATE TABLE "TestEvent" (
+  "test_event_id" varchar PRIMARY KEY,
+  "patient_id" varchar NOT NULL,
+  "test_type" varchar NOT NULL,
+  "balance_score" integer,
+  "doctor_score" integer,
+  "notes" text,
+  "start_time" timestamp,
+  "end_time" timestamp
+);
+
+CREATE TABLE "Patient" (
+  "patient_id" varchar PRIMARY KEY,
+  "first_name" varchar,
+  "middle_name" varchar,
+  "last_name" varchar,
+  "email" varchar,
+  "privacy_consent_date" timestamp 
+);
+
+CREATE TABLE "CareProvider" (
+  "care_provider_id" varchar PRIMARY KEY,
+  "email" varchar UNIQUE NOT NULL
+);
+
+CREATE TABLE "PatientCareProvider" (
+  "care_provider_id" varchar NOT NULL,
+  "patient_id" varchar NOT NULL,
+  PRIMARY KEY ("care_provider_id", "patient_id")
+);
+
+CREATE TABLE "PatientTestAssignment" (
+  "patient_id" varchar NOT NULL,
+  "test_type" varchar NOT NULL,
+  PRIMARY KEY ("patient_id", "test_type")
+);
+
+CREATE TABLE "Test" (
+  "test_type" varchar PRIMARY KEY,
+  "instructions" text,
+  "duration_in_seconds" integer
+);
+
+ALTER TABLE "PatientCareProvider" ADD FOREIGN KEY ("patient_id") REFERENCES "Patient" ("patient_id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE "PatientCareProvider" ADD FOREIGN KEY ("care_provider_id") REFERENCES "CareProvider" ("care_provider_id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE "TestEvent" ADD FOREIGN KEY ("patient_id") REFERENCES "Patient" ("patient_id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE "TestEvent" ADD FOREIGN KEY ("test_type") REFERENCES "Test" ("test_type") ON DELETE NO ACTION ON UPDATE CASCADE;
+
+ALTER TABLE "PatientTestAssignment" ADD FOREIGN KEY ("patient_id") REFERENCES "Patient" ("patient_id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE "PatientTestAssignment" ADD FOREIGN KEY ("test_type") REFERENCES "Test" ("test_type") ON DELETE CASCADE ON UPDATE CASCADE;
+`;
+
 // Use this code snippet in your app.
 // If you need more information about configurations or implementing the sample code, visit the AWS docs:
 // https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/getting-started.html
@@ -66,42 +122,28 @@ const connectDb = async () => {
 export const handler = async (event, context) => {
   let response;
   try {
+    await connectDb();
+    let createTablesRes = await pool.query(createTableSql);
+  } catch (e) {
+    console.log("tables already created");
+  }
+  try {
     if (event.payload.sql) {
       // console.log("event", event);
       // console.log('context',context)
       let sql = event.payload.sql;
       // let sql=`delete from "TestEvent" where patient_id='1ec6234a-232a-415d-9d31-f059c2cc4afa'`;
-      await connectDb();
       console.log(`about to execute sql: `, sql);
       let res = await pool.query(sql);
-      // console.log("sql execution result", res);
+      console.log("sql execution result", res);
 
       response = {
         statusCode: 200,
         body: res.rows,
       };
-    } 
-    // else if (event.payload.s3QueryParams) {
-    //   const params = {
-    //     Bucket: bucketName,
-    //     Key: s3QueryParams.key,
-    //   };
-    //   console.log(
-    //     "Retrieving object from bucket: " +
-    //       bucketName +
-    //       ", s3 params: " +
-    //       JSON.stringify(params)
-    //   );
-    //   const data = await s3.getObject(params).promise();
-    //   console.log("data", data);
-    //   const content = data.Body.toString("utf-8");
-    //   console.log("content", content);
-    //   resp = {
-    //     content: content,
-    //   };
-    // }
+    }
   } catch (e) {
-    response = { statusCode: 200, body: e };
+    response = { statusCode: 500, body: e };
   }
   return response;
 };

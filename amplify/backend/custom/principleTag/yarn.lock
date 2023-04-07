@@ -533,7 +533,20 @@
     "@aws-cdk/core" "1.172.0"
     constructs "^3.3.69"
 
-"@aws-cdk/aws-sns@1.172.0":
+"@aws-cdk/aws-sns-subscriptions@~1.172.0":
+  version "1.172.0"
+  resolved "https://registry.yarnpkg.com/@aws-cdk/aws-sns-subscriptions/-/aws-sns-subscriptions-1.172.0.tgz#6c096b3cdd6bd19e5d720d7b401317633f118ec6"
+  integrity sha512-MIP0+ozakV95yBrmp4sm7pTKUMN6nY0N5rAUyNsXN36o/tW0sUnHEVkIiu9Q/wxdgljWfb/6aOmrv9k8KPtyVQ==
+  dependencies:
+    "@aws-cdk/aws-iam" "1.172.0"
+    "@aws-cdk/aws-kms" "1.172.0"
+    "@aws-cdk/aws-lambda" "1.172.0"
+    "@aws-cdk/aws-sns" "1.172.0"
+    "@aws-cdk/aws-sqs" "1.172.0"
+    "@aws-cdk/core" "1.172.0"
+    constructs "^3.3.69"
+
+"@aws-cdk/aws-sns@1.172.0", "@aws-cdk/aws-sns@~1.172.0":
   version "1.172.0"
   resolved "https://registry.yarnpkg.com/@aws-cdk/aws-sns/-/aws-sns-1.172.0.tgz#0d9b2b59614bf9cecb7ceb61a6332b30b7980ec1"
   integrity sha512-y9V+jqRU4Y3/iCaL5I8S675l3ZsV9jpACTXwBIToEx3As/wAKHzKxvp0jvinh0QT5HGu3DvXG7d+fZMYcFdB9A==
@@ -2283,9 +2296,9 @@ v8-compile-cache-lib@^3.0.1:
   integrity sha512-wa7YjyUGfNZngI/vtK0UHAN+lgDCxBPCylVXGp0zu59Fz5aiGtNXaq3DhIov063MorB+VfufLh3JlF2KdTK3xg==
 
 vm2@^3.9.11, vm2@^3.9.8:
-  version "3.9.14"
-  resolved "https://registry.yarnpkg.com/vm2/-/vm2-3.9.14.tgz#964042b474cf1e6e4f475a39144773cdb9deb734"
-  integrity sha512-HgvPHYHeQy8+QhzlFryvSteA4uQLBCOub02mgqdR+0bN/akRZ48TGB1v0aCv7ksyc0HXx16AZtMHKS38alc6TA==
+  version "3.9.15"
+  resolved "https://registry.yarnpkg.com/vm2/-/vm2-3.9.15.tgz#c544e6a9bc31e4e40d2e5f532342cf799ea56a6e"
+  integrity sha512-XqNqknHGw2avJo13gbIwLNZUumvrSHc9mLqoadFZTpo3KaNEJoe1I0lqTFhRXmXD7WkLyG01aaraXdXT0pa4ag==
   dependencies:
     acorn "^8.7.0"
     acorn-walk "^8.2.0"

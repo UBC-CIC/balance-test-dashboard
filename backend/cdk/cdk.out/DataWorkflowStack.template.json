@@ -617,6 +617,28 @@
    "Export": {
     "Name": "DataWorkflowStack:ExportsOutputRefBalanceTestRecordingsBucketArnParameterB5195FA2"
    }
+  },
+  "ExportsOutputFnGetAttBalanceTestgeneratereportfordownload0C388CF5Arn329D400D": {
+   "Value": {
+    "Fn::GetAtt": [
+     "BalanceTestgeneratereportfordownload0C388CF5",
+     "Arn"
+    ]
+   },
+   "Export": {
+    "Name": "DataWorkflowStack:ExportsOutputFnGetAttBalanceTestgeneratereportfordownload0C388CF5Arn329D400D"
+   }
+  },
+  "ExportsOutputFnGetAttBalanceTestdeletes3record4746C1B8ArnE3D18380": {
+   "Value": {
+    "Fn::GetAtt": [
+     "BalanceTestdeletes3record4746C1B8",
+     "Arn"
+    ]
+   },
+   "Export": {
+    "Name": "DataWorkflowStack:ExportsOutputFnGetAttBalanceTestdeletes3record4746C1B8ArnE3D18380"
+   }
   }
  },
  "Rules": {

@@ -28,7 +28,7 @@
             "Name"
           ],
           "category": "function",
-          "resourceName": "balancetestdashboard733fb088PreTokenGeneration",
+          "resourceName": "balancetestdashboard733fb088PostConfirmation",
           "triggerProvider": "Cognito"
         },
         {
@@ -37,7 +37,7 @@
             "Name"
           ],
           "category": "function",
-          "resourceName": "balancetestdashboard733fb088PostConfirmation",
+          "resourceName": "balancetestdashboard733fb088PreTokenGeneration",
           "triggerProvider": "Cognito"
         }
       ],
@@ -118,6 +118,25 @@
       ],
       "providerPlugin": "awscloudformation",
       "service": "customCDK"
+    },
+    "principleTag": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "IdentityPoolId",
+            "IdentityPoolName",
+            "UserPoolId",
+            "UserPoolArn",
+            "UserPoolName",
+            "AppClientIDWeb",
+            "AppClientID"
+          ],
+          "category": "auth",
+          "resourceName": "balancetestdashboard733fb088"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "customCDK"
     }
   },
   "function": {
@@ -135,56 +154,6 @@
       "build": true,
       "providerPlugin": "awscloudformation",
       "service": "Lambda"
-    }
-  },
-  "parameters": {
-    "AMPLIFY_function_balancetestdashboard733fb088PostConfirmation_deploymentBucketName": {
-      "usedBy": [
-        {
-          "category": "function",
-          "resourceName": "balancetestdashboard733fb088PostConfirmation"
-        }
-      ]
-    },
-    "AMPLIFY_function_balancetestdashboard733fb088PostConfirmation_s3Key": {
-      "usedBy": [
-        {
-          "category": "function",
-          "resourceName": "balancetestdashboard733fb088PostConfirmation"
-        }
-      ]
-    },
-    "AMPLIFY_function_balancetestdashboard733fb088PreTokenGeneration_deploymentBucketName": {
-      "usedBy": [
-        {
-          "category": "function",
-          "resourceName": "balancetestdashboard733fb088PreTokenGeneration"
-        }
-      ]
-    },
-    "AMPLIFY_function_balancetestdashboard733fb088PreTokenGeneration_s3Key": {
-      "usedBy": [
-        {
-          "category": "function",
-          "resourceName": "balancetestdashboard733fb088PreTokenGeneration"
-        }
-      ]
-    },
-    "AMPLIFY_function_graphQlLambdaAuthorizera86a1dbf_deploymentBucketName": {
-      "usedBy": [
-        {
-          "category": "function",
-          "resourceName": "graphQlLambdaAuthorizera86a1dbf"
-        }
-      ]
-    },
-    "AMPLIFY_function_graphQlLambdaAuthorizera86a1dbf_s3Key": {
-      "usedBy": [
-        {
-          "category": "function",
-          "resourceName": "graphQlLambdaAuthorizera86a1dbf"
-        }
-      ]
     }
   },
   "storage": {

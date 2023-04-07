@@ -45,7 +45,7 @@ exports.handler = async (event) => {
 
   const response = {
     isAuthorized:
-      userType == "care_provider_user" ||
+      userType == "careProvider" ||
       // 'ca-central-1:'+
       patient_id === identityId,
     // resolverContext: {

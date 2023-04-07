@@ -33,7 +33,7 @@ type Query {
   getPatientById(patient_id: String!): Patient @aws_lambda
   getTestEventById(test_event_id: String!, patient_id: String!): TestEvent
     @aws_lambda
-  # @aws_cognito_user_pools(cognito_groups: ["care_provider_user"])
+  # @aws_cognito_user_pools(cognito_groups: ["careProvider"])
 
   getPatientsForCareprovider(care_provider_id: String!): [Patient]
   getAllPatients: [Patient]

@@ -7,6 +7,9 @@
 // };
 
 exports.handler = async (event, context, callback) => {
+  console.log("Event: ", event);
+  console.log("Context: ", context);
+
   const AWS = require("aws-sdk");
   // const cognito_isp = require("@aws-sdk/cognito-identity-provider");
 
@@ -16,15 +19,10 @@ exports.handler = async (event, context, callback) => {
 
   let params = {};
 
-  console.log("Event: ", event);
-  console.log("Context: ", context);
-
   if (event.request.userAttributes["custom:user_type"]) {
-    if (
-      event.request.userAttributes["custom:user_type"] == "care_provider_user"
-    ) {
+    if (event.request.userAttributes["custom:user_type"] == "careProvider") {
       params = {
-        GroupName: "care_provider_user",
+        GroupName: "careProvider",
         UserPoolId: event.userPoolId,
         Username: event.userName,
       };
@@ -32,7 +30,7 @@ exports.handler = async (event, context, callback) => {
     }
   } else {
     params = {
-      GroupName: "patient_user",
+      GroupName: "patient",
       UserPoolId: event.userPoolId,
       Username: event.userName,
     };

@@ -462,7 +462,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-684904187051-ca-central-1",
-     "S3Key": "72448b931402faabd9146e026f793b950a16215b08aaa0a2ca64eee46cd9d9e5.zip"
+     "S3Key": "db03a011e78d101d7e6b05c0347dc45934b90138d595641918756fa88363bc28.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -537,7 +537,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "DatabaseStack/BalanceTest-postgresql-RDS-connect/Resource",
-    "aws:asset:path": "asset.72448b931402faabd9146e026f793b950a16215b08aaa0a2ca64eee46cd9d9e5",
+    "aws:asset:path": "asset.db03a011e78d101d7e6b05c0347dc45934b90138d595641918756fa88363bc28",
     "aws:asset:is-bundled": false,
     "aws:asset:property": "Code"
    }
@@ -549,6 +549,19 @@
    },
    "Metadata": {
     "aws:cdk:path": "DatabaseStack/CDKMetadata/Default"
+   }
+  }
+ },
+ "Outputs": {
+  "ExportsOutputFnGetAttBalanceTestpostgresqlRDSconnect4A449849Arn75E70BB3": {
+   "Value": {
+    "Fn::GetAtt": [
+     "BalanceTestpostgresqlRDSconnect4A449849",
+     "Arn"
+    ]
+   },
+   "Export": {
+    "Name": "DatabaseStack:ExportsOutputFnGetAttBalanceTestpostgresqlRDSconnect4A449849Arn75E70BB3"
    }
   }
  },
