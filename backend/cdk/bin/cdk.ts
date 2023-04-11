@@ -24,6 +24,7 @@ const app = new cdk.App();
 
 //   /* For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html */
 // });
+
 const vpcStack = new VPCStack(app, "VPCStack", {
     env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION }
 });

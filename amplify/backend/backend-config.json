@@ -85,6 +85,29 @@
   },
   "custom": {
     "authRoles": {
+      "dependsOn": [
+        {
+          "attributes": [
+            "BucketName",
+            "Region"
+          ],
+          "category": "storage",
+          "resourceName": "balanceTestS3"
+        },
+        {
+          "attributes": [
+            "IdentityPoolId",
+            "IdentityPoolName",
+            "UserPoolId",
+            "UserPoolArn",
+            "UserPoolName",
+            "AppClientIDWeb",
+            "AppClientID"
+          ],
+          "category": "auth",
+          "resourceName": "balancetestdashboard733fb088"
+        }
+      ],
       "providerPlugin": "awscloudformation",
       "service": "customCDK"
     },
