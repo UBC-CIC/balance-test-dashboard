@@ -5,17 +5,17 @@ import * as iam from "aws-cdk-lib/aws-iam";
 import * as lambda from "aws-cdk-lib/aws-lambda";
 import * as logs from "aws-cdk-lib/aws-logs";
 import * as ssm from "aws-cdk-lib/aws-ssm";
+import * as ec2 from "aws-cdk-lib/aws-ec2";
 import { DataWorkflowStack } from './data-workflow-stack';
 import { VPCStack } from "./vpc-stack";
 import * as cdk from 'aws-cdk-lib';
-import * as console from "console"; //TODO: remove after testing
 
 export class AthenaGlueStack extends Stack {
 
     private readonly athenaS3QueryLambda: lambda.Function;
 
-    // constructor(scope: App, id: string, vpcStack: VPCStack, dataWorkflowStack: DataWorkflowStack, props: StackProps) {
-    constructor(scope: App, id: string, dataWorkflowStack: DataWorkflowStack, props: StackProps) {
+    constructor(scope: App, id: string, vpcStack: VPCStack, dataWorkflowStack: DataWorkflowStack, props: StackProps) {
+    // constructor(scope: App, id: string, dataWorkflowStack: DataWorkflowStack, props: StackProps) {
       super(scope, id, props);
 
       const glueDbName = "balancetest-sensordata-gluedb";
@@ -34,7 +34,6 @@ export class AthenaGlueStack extends Stack {
         region = props["env"]["region"]
       }
 
-      //TODO: check if props['env']['account'] gives account id
       // make Glue database
       const glueDb = new glue.CfnDatabase(this, glueDbName, {
         catalogId: accountId,
@@ -108,7 +107,8 @@ export class AthenaGlueStack extends Stack {
         roleName: athenaQueryS3RoleName,
         description: "Role gives access to appropriate S3 functions needed for querying from bucket for Lambda.",
         inlinePolicies: { ["BalanceTest-athenaQueryS3Policy"]: athenaQueryS3PolicyDocument },
-        managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName("AmazonS3FullAccess"), iam.ManagedPolicy.fromAwsManagedPolicyName("AmazonAthenaFullAccess")]
+        managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName("AmazonS3FullAccess"), iam.ManagedPolicy.fromAwsManagedPolicyName("AmazonAthenaFullAccess"),
+                          iam.ManagedPolicy.fromAwsManagedPolicyName("service-role/AWSLambdaVPCAccessExecutionRole")]
       });
 
       //TODO: change to secured StringParameter
@@ -136,7 +136,12 @@ export class AthenaGlueStack extends Stack {
           "USER_POOL_ID": cognitoUserPoolId,
           "REGION": region,
         },
-        //vpc: vpcStack.vpc,
+        vpc: vpcStack.vpc,
+        vpcSubnets: {
+            subnetType: ec2.SubnetType.PRIVATE_ISOLATED
+        },
+        securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(this, 'vpcDefaultSecurityGroup', vpcStack.vpc.vpcDefaultSecurityGroup)]
+    
       });    
 
       //TODO: check athena configuration and other related parts; see if we actually need this by deploying

@@ -12,6 +12,7 @@ import { SecurityGroup } from 'aws-cdk-lib/aws-ec2';
 export class DatabaseStack extends Stack {
 
     private readonly postgresqlRDSConnectLambda: lambda.Function;
+    private readonly rdsCredentialSecret: sm.Secret;
 
     constructor(scope: App, id: string, vpcStack: VPCStack, props?: StackProps) {
         super(scope, id, props);
@@ -97,7 +98,7 @@ export class DatabaseStack extends Stack {
         // )
 
         // database secret
-        const rdsCredentialSecret = new sm.Secret(this, 'Secret', {
+        this.rdsCredentialSecret = new sm.Secret(this, 'Secret', {
             generateSecretString: {
                 secretStringTemplate: JSON.stringify({ username: 'postgres' }),
                 generateStringKey: 'password',
@@ -133,8 +134,8 @@ export class DatabaseStack extends Stack {
                 subnetType: ec2.SubnetType.PRIVATE_ISOLATED
             },
             credentials: {
-                username: rdsCredentialSecret.secretValueFromJson('username').unsafeUnwrap(),
-                password: rdsCredentialSecret.secretValueFromJson('password')
+                username: this.rdsCredentialSecret.secretValueFromJson('username').unsafeUnwrap(),
+                password: this.rdsCredentialSecret.secretValueFromJson('password')
             },
             removalPolicy: RemovalPolicy.RETAIN,
             monitoringInterval: cdk.Duration.seconds(60),
@@ -144,7 +145,7 @@ export class DatabaseStack extends Stack {
 
         const proxy = new rds.DatabaseProxy(this, 'Proxy', {
             proxyTarget: rds.ProxyTarget.fromInstance(rdsInstance),
-            secrets: [rdsCredentialSecret],
+            secrets: [this.rdsCredentialSecret],
             vpc: vpcStack.vpc,
             securityGroups: [vpcSecurityGroup],
             requireTLS: false
@@ -191,7 +192,7 @@ export class DatabaseStack extends Stack {
             description: "Contains libraries for the " + postgresqlRDSConnectLambdaName + " function."
         });
         
-        //TODO: check environment variables; use parameter store to get the values for environment variables if needed
+        //TODO: use secrets manager for pg credentials
         // make Lambda to generate a PDF report for downloading in dashboard
         this.postgresqlRDSConnectLambda = new lambda.Function(this, postgresqlRDSConnectLambdaName, {
             runtime: postgresqlRDSConnectLambdaRuntime,
@@ -204,8 +205,9 @@ export class DatabaseStack extends Stack {
             environment: {
                 "PGDATABASE": rdsInstanceName,
                 "PGHOST": proxy.endpoint,
-                "PGUSER": rdsCredentialSecret.secretValueFromJson('username').unsafeUnwrap(),
-                "PGPASSWORD": rdsCredentialSecret.secretValueFromJson('password').unsafeUnwrap(),
+                "PG_SECRET_NAME": this.rdsCredentialSecret.secretName,
+                "PGUSER": this.rdsCredentialSecret.secretValueFromJson('username').unsafeUnwrap(),
+                "PGPASSWORD": this.rdsCredentialSecret.secretValueFromJson('password').unsafeUnwrap(),
                 "PGPORT": String(dbPort)
             },
             layers: [postgresqlRDSConnectLambdaLayer],
@@ -219,5 +221,13 @@ export class DatabaseStack extends Stack {
 
     public getPostgresqlRDSConnectLambda(): lambda.Function {
         return this.postgresqlRDSConnectLambda;
+    }
+
+    public getDatabaseSecretName(): string {
+        return this.rdsCredentialSecret.secretName;
+    }
+
+    public getDatabaseSecretArn(): string {
+        return this.rdsCredentialSecret.secretArn;
     }
 }

@@ -28,7 +28,7 @@ export class AppsyncStack extends Stack {
         const queryS3DataSourceRoleName = "BalanceTest-appsync-queryS3DataSource-Role";
         const deleteEventDataSourceRoleName = "BalanceTest-appsync-deleteEventDataSource-Role";
         
-        //TODO: get graphql api ID from Parameter Store
+        // getting GraphQL API ID from Parameter Store
         const apiId = ssm.StringParameter.fromStringParameterAttributes(this, "BalanceTestAppsyncApiId", {
             parameterName: "GraphqlApiId",
         }).stringValue;
@@ -121,7 +121,7 @@ export class AppsyncStack extends Stack {
             serviceRole: deleteEventDataSourceRole
         });
 
-        //TODO: finish making functions
+        // make Appsync Functions
         const s3DownloadAppsyncFunctionName = "redirect_s3_download_function";
         const s3DataRetrievalAppsyncFunctionName = "redirect_s3_data_retrieval_function";
         const postgresqlRDSAppsyncFunctionName = "redirect_postgresql_rds_function";
