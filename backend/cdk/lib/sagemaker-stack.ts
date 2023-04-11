@@ -22,6 +22,7 @@ export class SagemakerStack extends Stack {
         const sagemakerBucketName = "balancetest-sagemaker-bucket";
         const sagemakerNotebookName = "BalanceTest-sit-to-stand-model-notebook";
         const sagemakerNotebookRoleName = "BalanceTest-sit-to-stand-model-notebook-role";
+        const sagemakerBucketAccessPointName = "balancetest-sm-accesspt";
         
         //TODO: Add the code to the Lambda file
         const sagemakerCalls_LambdaFileName = "sagemaker-calls";
@@ -39,7 +40,23 @@ export class SagemakerStack extends Stack {
             versioned: true,
             encryption: s3.BucketEncryption.S3_MANAGED,
             objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_ENFORCED
-        })
+        });
+
+        // add an access point for VPC
+        const sagemakerBucketAccessPoint = new s3.CfnAccessPoint(this, sagemakerBucketAccessPointName, {
+            bucket: this.sagemakerBucket.bucketName,
+            bucketAccountId: props?.env?.account,
+            name: sagemakerBucketAccessPointName,
+            publicAccessBlockConfiguration: {
+                blockPublicAcls: true,
+                blockPublicPolicy: true,
+                restrictPublicBuckets: true,
+                ignorePublicAcls: true,
+            },
+            vpcConfiguration: {
+                vpcId: vpcStack.vpc.vpcId,
+            }
+        });
 
         //TODO: limit IAM permissions; change the bucket arn if needed
         // make Sagemaker notebook permissions/role
