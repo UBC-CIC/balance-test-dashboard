@@ -10,7 +10,7 @@ import * as cdk from 'aws-cdk-lib';
 import { VPCStack } from './vpc-stack';
 
 //TODO: figure out if we want to change this to only S3-related stack, and then have Sagemaker as its own stack
-//TODO: figure out how to add access point/connect to vpc; add vpc back to this stack
+
 export class DataWorkflowStack extends Stack {
 
     // private readonly balanceTestBucket: s3.Bucket;
@@ -18,11 +18,11 @@ export class DataWorkflowStack extends Stack {
     private readonly generateReportLambda: lambda.Function;
     private readonly deleteS3RecordLambda: lambda.Function;
 
-    // constructor(scope: App, id: string, vpcStack: VPCStack, props?: StackProps) {
-    constructor(scope: App, id: string, props: StackProps) {
+    constructor(scope: App, id: string, vpcStack: VPCStack, props: StackProps) {
+    // constructor(scope: App, id: string, props: StackProps) {
       super(scope, id, props);
       
-      const balanceTestBucketAccessPointName = "BalanceTest-DataStorage-Bucket-AccessPoint";
+      const balanceTestBucketAccessPointName = "balancetest-accesspt";
       const s3LambdaTriggerName = "BalanceTest-convert-json-to-parquet-and-csv";
       const s3LambdaTriggerFileName = "s3-trigger-convert-json-to-parquet-and-csv";
       const logGroupName = "BalanceTest-S3LambdaTrigger-Logs";
@@ -62,24 +62,21 @@ export class DataWorkflowStack extends Stack {
       // get data storage bucket using bucket ARN
       this.balanceTestBucket = s3.Bucket.fromBucketArn(this, "balancetestrecordings160420-dev", "arn:aws:s3:::" + balanceTestBucketName);
 
-      // this.balanceTestBucket.applyRemovalPolicy(RemovalPolicy.RETAIN); //TODO: see if I need this; doesn't work
-
-      //TODO: uncomment this
       // add an access point for VPC
-      // const balanceTestBucketAccessPoint = new s3.CfnAccessPoint(this, balanceTestBucketAccessPointName, {
-      //   bucket: this.balanceTestBucket.bucketName,
-      //   bucketAccountId: props?.env?.account,
-      //   name: balanceTestBucketAccessPointName,
-      //   publicAccessBlockConfiguration: {
-      //     blockPublicAcls: true,
-      //     blockPublicPolicy: true,
-      //     restrictPublicBuckets: true
-      //   },
-      //   vpcConfiguration: {
-      //     vpcId: vpcStack.vpc.vpcId,
-      //   }
-
-      // });
+      const balanceTestBucketAccessPoint = new s3.CfnAccessPoint(this, balanceTestBucketAccessPointName, {
+        bucket: this.balanceTestBucket.bucketName,
+        bucketAccountId: props?.env?.account,
+        name: balanceTestBucketAccessPointName,
+        publicAccessBlockConfiguration: {
+          blockPublicAcls: true,
+          blockPublicPolicy: true,
+          restrictPublicBuckets: true,
+          ignorePublicAcls: true,
+        },
+        vpcConfiguration: {
+          vpcId: vpcStack.vpc.vpcId,
+        }
+      });
 
       // let balanceTestIVPC = ec2.Vpc.fromLookup(this, "BalanceTest-iVPC", {
       //   vpcId: vpcStack.vpc.vpcId
@@ -88,6 +85,8 @@ export class DataWorkflowStack extends Stack {
       // let vpcLambdaSubnetSelection = {
       //   subnetType: ec2.SubnetType.PRIVATE_ISOLATED
       // };
+
+      let securityGroup = ec2.SecurityGroup.fromSecurityGroupId(this, 'vpcDefaultSecurityGroup', vpcStack.vpc.vpcDefaultSecurityGroup);
 
       //TODO: see if we need to delete logs when destroying stacks, or retain
       // create log group
@@ -115,13 +114,13 @@ export class DataWorkflowStack extends Stack {
           resources: [this.balanceTestBucket.bucketArn + "/private/*", this.balanceTestBucket.bucketArn]
         })],
       });
-      // s3LambdaTriggerPolicy.applyRemovalPolicy(RemovalPolicy.DESTROY);
       
       const s3LambdaTriggerRole = new iam.Role(this, s3LambdaTriggerRoleName, {
         assumedBy: new iam.ServicePrincipal("lambda.amazonaws.com"),
         roleName: s3LambdaTriggerRoleName,
         description: "Role gives access to appropriate S3 functions needed for file conversions and logging for Lambda.",
-        inlinePolicies: { ["BalanceTest-s3LambdaTriggerPolicy"]: s3LambdaTriggerPolicyDocument }
+        inlinePolicies: { ["BalanceTest-s3LambdaTriggerPolicy"]: s3LambdaTriggerPolicyDocument },
+        managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName("service-role/AWSLambdaVPCAccessExecutionRole")]
       });
 
       // make Lambda Trigger
@@ -133,8 +132,11 @@ export class DataWorkflowStack extends Stack {
         timeout: Duration.minutes(3),
         memorySize: 512,
         role: s3LambdaTriggerRole,
-        // vpc: balanceTestIVPC,
-        // vpcSubnets: vpcLambdaSubnetSelection,
+        vpc: vpcStack.vpc,
+        vpcSubnets: {
+            subnetType: ec2.SubnetType.PRIVATE_ISOLATED
+        },
+        securityGroups: [securityGroup],
       });
 
       // for adding Pandas library to the function
@@ -172,7 +174,7 @@ export class DataWorkflowStack extends Stack {
         roleName: generateReportLambdaRoleName,
         description: "Role gives access to appropriate S3 functions needed for doing S3 Select for Lambda.",
         inlinePolicies: { ["BalanceTest-generateReportLambdaPolicy"]: generateReportLambdaPolicyDocument },
-        managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName("AmazonS3FullAccess")]
+        managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName("AmazonS3FullAccess"), iam.ManagedPolicy.fromAwsManagedPolicyName("service-role/AWSLambdaVPCAccessExecutionRole")]
       });
 
       //TODO: test if layer works
@@ -197,8 +199,12 @@ export class DataWorkflowStack extends Stack {
           "S3_BUCKET_NAME": this.balanceTestBucket.bucketName
         },
         layers: [generateReportLambdaLayer],
-        // vpc: balanceTestIVPC,
-        // vpcSubnets: vpcLambdaSubnetSelection
+        vpc: vpcStack.vpc,
+        vpcSubnets: {
+            subnetType: ec2.SubnetType.PRIVATE_ISOLATED
+        },
+        securityGroups: [securityGroup]
+    
       });
 
       //TODO: see if we need to delete logs when destroying stacks, or retain
@@ -230,6 +236,7 @@ export class DataWorkflowStack extends Stack {
         roleName: deleteS3RecordLambdaRoleName,
         description: "Role gives access to appropriate S3 functions needed for Lambda.",
         inlinePolicies: { ["BalanceTest-deleteS3RecordLambdaPolicy"]: deleteS3RecordLambdaPolicyDocument },
+        managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName("service-role/AWSLambdaVPCAccessExecutionRole")]
       });
 
       //TODO: change to secured StringParameter
@@ -241,7 +248,6 @@ export class DataWorkflowStack extends Stack {
         parameterName: "UserPoolId"
       }).stringValue;
 
-      //TODO: add environment variables, and double check Lambda
       // make Lambda to delete a test event record from S3
       this.deleteS3RecordLambda = new lambda.Function(this, deleteS3RecordLambdaName, {
         runtime: lambda.Runtime.PYTHON_3_7,
@@ -257,8 +263,11 @@ export class DataWorkflowStack extends Stack {
           "USER_POOL_ID": cognitoUserPoolId,
           "REGION": region,
         },
-        // vpc: balanceTestIVPC,
-        // vpcSubnets: vpcLambdaSubnetSelection
+        vpc: vpcStack.vpc,
+        vpcSubnets: {
+            subnetType: ec2.SubnetType.PRIVATE_ISOLATED
+        },
+        securityGroups: [securityGroup]
       });
     }
 

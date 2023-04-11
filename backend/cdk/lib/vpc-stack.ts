@@ -5,7 +5,7 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2'
 import { NatProvider } from 'aws-cdk-lib/aws-ec2';
 import * as cdk from 'aws-cdk-lib';
 
-//TODO: add/change security groups, route tables, subnets, etc
+//TODO: double check configuration
 export class VPCStack extends Stack {
 
     public readonly vpc: ec2.Vpc;
@@ -71,7 +71,6 @@ export class VPCStack extends Stack {
         }
       });
 
-      //TODO: Add routes; deploy to see if I need this
       this.vpc.isolatedSubnets.forEach(({routeTable: { routeTableId }}, index) => {
         new ec2.CfnRoute(this, "Route-Private-" + index, {
           destinationCidrBlock: this.destinationCidrStr,
