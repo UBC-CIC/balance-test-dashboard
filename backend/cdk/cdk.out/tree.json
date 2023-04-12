@@ -114,7 +114,7 @@
                   "aws:cdk:cloudformation:props": {
                     "code": {
                       "s3Bucket": "cdk-hnb659fds-assets-684904187051-ca-central-1",
-                      "s3Key": "5e0ff3bb9d377382e5f965e126dc9206411191ad8fbc44ec748a8dc27f97033b.zip"
+                      "s3Key": "b98e4acccac03598642c7b2c9806c00dc0390f70ff0a6f9a0e94c185fe287af6.zip"
                     },
                     "role": {
                       "Fn::GetAtt": [
@@ -178,7 +178,7 @@
                   "aws:cdk:cloudformation:props": {
                     "code": {
                       "s3Bucket": "cdk-hnb659fds-assets-684904187051-ca-central-1",
-                      "s3Key": "1a537d4afaf6de060892af3222ca59dfb10679b1df9352fc56c7f3261741432e.zip"
+                      "s3Key": "7fd81ba7092e71604febfd9da1975d9054f59303ea7109db28cef14fd8a0a1c0.zip"
                     },
                     "role": {
                       "Fn::GetAtt": [
@@ -339,6 +339,40 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_cognito.UserPool",
+              "version": "2.69.0"
+            }
+          },
+          "BalanceTestPatientUserGroup": {
+            "id": "BalanceTestPatientUserGroup",
+            "path": "CognitoStack/BalanceTestPatientUserGroup",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::Cognito::UserPoolGroup",
+              "aws:cdk:cloudformation:props": {
+                "userPoolId": {
+                  "Ref": "BalanceTestUserPool00512217"
+                },
+                "groupName": "patient"
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_cognito.CfnUserPoolGroup",
+              "version": "2.69.0"
+            }
+          },
+          "BalanceTestCareProviderUserGroup": {
+            "id": "BalanceTestCareProviderUserGroup",
+            "path": "CognitoStack/BalanceTestCareProviderUserGroup",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::Cognito::UserPoolGroup",
+              "aws:cdk:cloudformation:props": {
+                "userPoolId": {
+                  "Ref": "BalanceTestUserPool00512217"
+                },
+                "groupName": "careProvider"
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_cognito.CfnUserPoolGroup",
               "version": "2.69.0"
             }
           },

@@ -84,6 +84,11 @@ export default function AuthenticationPage() {
           let user_id = user["username"];
           let email = user["attributes"]["email"];
 
+          if (!userGroupArr) {
+            console.log("backend authentication error");
+            Auth.signOut();
+          }
+
           if (userGroupArr.includes("careProvider")) {
             navigate("/patientTable");
             makeCareProvider(email);

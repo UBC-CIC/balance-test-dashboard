@@ -108,6 +108,19 @@ export class CognitoStack extends Stack {
         });
         this.UserPoolId = userPool.userPoolId;
 
+        const patientGroup = new cognito.CfnUserPoolGroup(this, 'BalanceTestPatientUserGroup', {
+            userPoolId: this.UserPoolId,
+            groupName: 'patient',
+            // roleArn: 'roleArn',
+        });
+
+        const careProviderGroup = new cognito.CfnUserPoolGroup(this, 'BalanceTestCareProviderUserGroup', {
+            userPoolId: this.UserPoolId,
+            groupName: 'careProvider',
+            // roleArn: 'roleArn',
+        });
+
+
         // User Pool Client
         const userPoolClient = new cognito.CfnUserPoolClient(this, 'BalanceTestUserPoolClient', {
             clientName: 'BalanceTestUserPoolClient',

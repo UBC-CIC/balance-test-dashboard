@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::684904187051:role/cdk-hnb659fds-deploy-role-684904187051-ca-central-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::684904187051:role/cdk-hnb659fds-cfn-exec-role-684904187051-ca-central-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/0674b12dc7e496a850e472d58a2f838719dcfa3c1c993cdbf0c2968a21405122.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/ce1259a62804980e6cd2a7ec93d43be25887b60b032d44661c7498bb3377c07f.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -67,6 +67,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "BalanceTestUserPool00512217"
+          }
+        ],
+        "/CognitoStack/BalanceTestPatientUserGroup": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BalanceTestPatientUserGroup"
+          }
+        ],
+        "/CognitoStack/BalanceTestCareProviderUserGroup": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BalanceTestCareProviderUserGroup"
           }
         ],
         "/CognitoStack/BalanceTestUserPoolClient": [
