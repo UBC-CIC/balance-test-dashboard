@@ -9,12 +9,13 @@ import * as ec2 from "aws-cdk-lib/aws-ec2";
 import { DataWorkflowStack } from './data-workflow-stack';
 import { VPCStack } from "./vpc-stack";
 import * as cdk from 'aws-cdk-lib';
+import { CognitoStack } from './cognito-stack';
 
 export class AthenaGlueStack extends Stack {
 
     private readonly athenaS3QueryLambda: lambda.Function;
 
-    constructor(scope: App, id: string, vpcStack: VPCStack, dataWorkflowStack: DataWorkflowStack, props: StackProps) {
+    constructor(scope: App, id: string, vpcStack: VPCStack, cognitoStack: CognitoStack, dataWorkflowStack: DataWorkflowStack, props: StackProps) {
     // constructor(scope: App, id: string, dataWorkflowStack: DataWorkflowStack, props: StackProps) {
       super(scope, id, props);
 
@@ -116,9 +117,10 @@ export class AthenaGlueStack extends Stack {
         parameterName: "IdentityPoolId"
       }).stringValue;
 
-      const cognitoUserPoolId = ssm.StringParameter.fromStringParameterAttributes(this, "BalanceTestCognitoUserPoolId", {
-        parameterName: "UserPoolId"
-      }).stringValue;
+      // const cognitoUserPoolId = ssm.StringParameter.fromStringParameterAttributes(this, "BalanceTestCognitoUserPoolId", {
+      //   parameterName: "UserPoolId"
+      // }).stringValue;
+      const cognitoUserPoolId = cognitoStack.UserPoolId;
 
       //TODO: add other needed environment variables
       //make Lambda for Athena to query to S3

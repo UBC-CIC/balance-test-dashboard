@@ -27,7 +27,12 @@
       "serviceType": "imported"
     }
   },
-  "custom": {},
+  "custom": {
+    "graphqlApiIdParamStore": {
+      "providerPlugin": "awscloudformation",
+      "service": "customCDK"
+    }
+  },
   "function": {
     "balancetestdashboard733fb088PostConfirmation": {
       "build": true,

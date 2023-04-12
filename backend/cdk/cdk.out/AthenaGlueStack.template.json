@@ -57,7 +57,7 @@
            "",
            [
             {
-             "Fn::ImportValue": "DataWorkflowStack:ExportsOutputFnGetAttbalancetestrecordingsbucketA5C211E0ArnCD616F4B"
+             "Fn::ImportValue": "DataWorkflowStack:ExportsOutputFnGetAttbalancetestrawrecordingsbucket6127ADBCArn6B54D663"
             },
             "/parquet_data/patient_tests/*"
            ]
@@ -94,7 +94,7 @@
          [
           "s3://",
           {
-           "Fn::ImportValue": "DataWorkflowStack:ExportsOutputRefbalancetestrecordingsbucketA5C211E0DBE9D240"
+           "Fn::ImportValue": "DataWorkflowStack:ExportsOutputRefbalancetestrawrecordingsbucket6127ADBCD559FDBB"
           },
           "/parquet_data/patient_tests/"
          ]
@@ -235,13 +235,13 @@
     "Environment": {
      "Variables": {
       "S3_BUCKET_NAME": {
-       "Fn::ImportValue": "DataWorkflowStack:ExportsOutputRefbalancetestrecordingsbucketA5C211E0DBE9D240"
+       "Fn::ImportValue": "DataWorkflowStack:ExportsOutputRefbalancetestrawrecordingsbucket6127ADBCD559FDBB"
       },
       "IDENTITY_POOL_ID": {
        "Ref": "BalanceTestCognitoIdentityPoolIdParameter"
       },
       "USER_POOL_ID": {
-       "Ref": "BalanceTestCognitoUserPoolIdParameter"
+       "Fn::ImportValue": "CognitoStack:ExportsOutputRefBalanceTestUserPool005122174B1ED610"
       },
       "REGION": "ca-central-1"
      }
@@ -304,10 +304,6 @@
   "BalanceTestCognitoIdentityPoolIdParameter": {
    "Type": "AWS::SSM::Parameter::Value<String>",
    "Default": "IdentityPoolId"
-  },
-  "BalanceTestCognitoUserPoolIdParameter": {
-   "Type": "AWS::SSM::Parameter::Value<String>",
-   "Default": "UserPoolId"
   },
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",
