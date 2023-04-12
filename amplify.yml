@@ -9,16 +9,20 @@ env:
     # AMPLIFY_NATIVECLIENT_ID: $(aws ssm get-parameter --name UserPoolClientId --query Parameter.Value --output text || echo "")
 backend:
   phases:
-    # preBuild:
-    #   commands:
-    #     - sh import_resources.sh
+    preBuild:
+      commands:
+        - echo $(aws ssm get-parameter --name CognitoUserPoolId --query Parameter.Value --output text)
+        - AMPLIFY_USERPOOL_ID=$(aws ssm get-parameter --name CognitoUserPoolId --query Parameter.Value --output text || echo "err")
+        - AMPLIFY_WEBCLIENT_ID=$(aws ssm get-parameter --name UserPoolClientId --query Parameter.Value --output text || echo "err")
+        - AMPLIFY_IDENTITYPOOL_ID=$(aws ssm get-parameter --name IdentityPoolId --query Parameter.Value --output text || echo "err")
+        - AMPLIFY_NATIVECLIENT_ID=$(aws ssm get-parameter --name UserPoolClientId --query Parameter.Value --output text || echo "err")
     build:
       commands:
         - '# Execute Amplify CLI with the helper script'
-        - AMPLIFY_USERPOOL_ID=$(aws ssm get-parameter --name CognitoUserPoolId --query Parameter.Value --output text || echo "")
-        - AMPLIFY_WEBCLIENT_ID=$(aws ssm get-parameter --name UserPoolClientId --query Parameter.Value --output text || echo "")
-        - AMPLIFY_IDENTITYPOOL_ID=$(aws ssm get-parameter --name IdentityPoolId --query Parameter.Value --output text || echo "")
-        - AMPLIFY_NATIVECLIENT_ID=$(aws ssm get-parameter --name UserPoolClientId --query Parameter.Value --output text || echo "")
+        # - AMPLIFY_USERPOOL_ID=$(aws ssm get-parameter --name CognitoUserPoolId --query Parameter.Value --output text || echo "")
+        # - AMPLIFY_WEBCLIENT_ID=$(aws ssm get-parameter --name UserPoolClientId --query Parameter.Value --output text || echo "")
+        # - AMPLIFY_IDENTITYPOOL_ID=$(aws ssm get-parameter --name IdentityPoolId --query Parameter.Value --output text || echo "")
+        # - AMPLIFY_NATIVECLIENT_ID=$(aws ssm get-parameter --name UserPoolClientId --query Parameter.Value --output text || echo "")
         - amplifyPush --simple
 frontend:
   phases:
