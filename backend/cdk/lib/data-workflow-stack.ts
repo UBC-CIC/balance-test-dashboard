@@ -8,6 +8,7 @@ import * as ssm from "aws-cdk-lib/aws-ssm";
 import * as ec2 from "aws-cdk-lib/aws-ec2";
 import * as cdk from 'aws-cdk-lib';
 import { VPCStack } from './vpc-stack';
+import { CognitoStack } from './cognito-stack';
 
 //TODO: figure out if we want to change this to only S3-related stack, and then have Sagemaker as its own stack
 
@@ -18,12 +19,12 @@ export class DataWorkflowStack extends Stack {
     private readonly generateReportLambda: lambda.Function;
     private readonly deleteS3RecordLambda: lambda.Function;
 
-    constructor(scope: App, id: string, vpcStack: VPCStack, props: StackProps) {
+    constructor(scope: App, id: string, vpcStack: VPCStack, cognitoStack: CognitoStack, props: StackProps) {
     // constructor(scope: App, id: string, props: StackProps) {
       super(scope, id, props);
       
-      const balanceTestBucketName = 'balancetest-recordings-bucket'
-      const balanceTestBucketAccessPointName = "balancetest-accesspt";
+      const balanceTestBucketName = 'balancetest-raw-recordings-bucket'
+      const balanceTestBucketAccessPointName = "balancetest-accesspoint";
       const s3LambdaTriggerName = "BalanceTest-convert-json-to-parquet-and-csv";
       const s3LambdaTriggerFileName = "s3-trigger-convert-json-to-parquet-and-csv";
       const logGroupName = "BalanceTest-S3LambdaTrigger-Logs";
@@ -245,9 +246,10 @@ export class DataWorkflowStack extends Stack {
         parameterName: "IdentityPoolId"
       }).stringValue;
 
-      const cognitoUserPoolId = ssm.StringParameter.fromStringParameterAttributes(this, "BalanceTestCognitoUserPoolId", {
-        parameterName: "UserPoolId"
-      }).stringValue;
+      // const cognitoUserPoolId = ssm.StringParameter.fromStringParameterAttributes(this, "BalanceTestCognitoUserPoolId", {
+      //   parameterName: "UserPoolId"
+      // }).stringValue;
+      const cognitoUserPoolId = cognitoStack.UserPoolId;
 
       // make Lambda to delete a test event record from S3
       this.deleteS3RecordLambda = new lambda.Function(this, deleteS3RecordLambdaName, {

@@ -1,6 +1,6 @@
 {
  "Resources": {
-  "balancetestrecordingsbucketA5C211E0": {
+  "balancetestrawrecordingsbucket6127ADBC": {
    "Type": "AWS::S3::Bucket",
    "Properties": {
     "BucketEncryption": {
@@ -12,7 +12,7 @@
       }
      ]
     },
-    "BucketName": "balancetest-recordings-bucket",
+    "BucketName": "balancetest-raw-recordings-bucket",
     "OwnershipControls": {
      "Rules": [
       {
@@ -33,10 +33,10 @@
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain",
    "Metadata": {
-    "aws:cdk:path": "DataWorkflowStack/balancetest-recordings-bucket/Resource"
+    "aws:cdk:path": "DataWorkflowStack/balancetest-raw-recordings-bucket/Resource"
    }
   },
-  "balancetestrecordingsbucketNotifications21BFBA79": {
+  "balancetestrawrecordingsbucketNotificationsD4CB8490": {
    "Type": "Custom::S3BucketNotifications",
    "Properties": {
     "ServiceToken": {
@@ -46,7 +46,7 @@
      ]
     },
     "BucketName": {
-     "Ref": "balancetestrecordingsbucketA5C211E0"
+     "Ref": "balancetestrawrecordingsbucket6127ADBC"
     },
     "NotificationConfiguration": {
      "LambdaFunctionConfigurations": [
@@ -80,13 +80,13 @@
     "Managed": true
    },
    "DependsOn": [
-    "balancetestrecordingsbucketAllowBucketNotificationsToDataWorkflowStackBalanceTestconvertjsontoparquetandcsv0BBF71252D5693E0"
+    "balancetestrawrecordingsbucketAllowBucketNotificationsToDataWorkflowStackBalanceTestconvertjsontoparquetandcsv0BBF7125BB0269BE"
    ],
    "Metadata": {
-    "aws:cdk:path": "DataWorkflowStack/balancetest-recordings-bucket/Notifications/Resource"
+    "aws:cdk:path": "DataWorkflowStack/balancetest-raw-recordings-bucket/Notifications/Resource"
    }
   },
-  "balancetestrecordingsbucketAllowBucketNotificationsToDataWorkflowStackBalanceTestconvertjsontoparquetandcsv0BBF71252D5693E0": {
+  "balancetestrawrecordingsbucketAllowBucketNotificationsToDataWorkflowStackBalanceTestconvertjsontoparquetandcsv0BBF7125BB0269BE": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -100,23 +100,23 @@
     "SourceAccount": "684904187051",
     "SourceArn": {
      "Fn::GetAtt": [
-      "balancetestrecordingsbucketA5C211E0",
+      "balancetestrawrecordingsbucket6127ADBC",
       "Arn"
      ]
     }
    },
    "Metadata": {
-    "aws:cdk:path": "DataWorkflowStack/balancetest-recordings-bucket/AllowBucketNotificationsToDataWorkflowStackBalanceTestconvertjsontoparquetandcsv0BBF7125"
+    "aws:cdk:path": "DataWorkflowStack/balancetest-raw-recordings-bucket/AllowBucketNotificationsToDataWorkflowStackBalanceTestconvertjsontoparquetandcsv0BBF7125"
    }
   },
-  "balancetestaccesspt": {
+  "balancetestaccesspoint": {
    "Type": "AWS::S3::AccessPoint",
    "Properties": {
     "Bucket": {
-     "Ref": "balancetestrecordingsbucketA5C211E0"
+     "Ref": "balancetestrawrecordingsbucket6127ADBC"
     },
     "BucketAccountId": "684904187051",
-    "Name": "balancetest-accesspt",
+    "Name": "balancetest-accesspoint",
     "PublicAccessBlockConfiguration": {
      "BlockPublicAcls": true,
      "BlockPublicPolicy": true,
@@ -130,7 +130,7 @@
     }
    },
    "Metadata": {
-    "aws:cdk:path": "DataWorkflowStack/balancetest-accesspt"
+    "aws:cdk:path": "DataWorkflowStack/balancetest-accesspoint"
    }
   },
   "BalanceTestS3LambdaTriggerLogs612C9428": {
@@ -188,7 +188,7 @@
            [
             {
              "Fn::GetAtt": [
-              "balancetestrecordingsbucketA5C211E0",
+              "balancetestrawrecordingsbucket6127ADBC",
               "Arn"
              ]
             },
@@ -220,7 +220,7 @@
            [
             {
              "Fn::GetAtt": [
-              "balancetestrecordingsbucketA5C211E0",
+              "balancetestrawrecordingsbucket6127ADBC",
               "Arn"
              ]
             },
@@ -235,7 +235,7 @@
          "Resource": [
           {
            "Fn::GetAtt": [
-            "balancetestrecordingsbucketA5C211E0",
+            "balancetestrawrecordingsbucket6127ADBC",
             "Arn"
            ]
           },
@@ -245,7 +245,7 @@
             [
              {
               "Fn::GetAtt": [
-               "balancetestrecordingsbucketA5C211E0",
+               "balancetestrawrecordingsbucket6127ADBC",
                "Arn"
               ]
              },
@@ -518,7 +518,7 @@
     "Environment": {
      "Variables": {
       "S3_BUCKET_NAME": {
-       "Ref": "balancetestrecordingsbucketA5C211E0"
+       "Ref": "balancetestrawrecordingsbucket6127ADBC"
       }
      }
     },
@@ -628,7 +628,7 @@
             [
              {
               "Fn::GetAtt": [
-               "balancetestrecordingsbucketA5C211E0",
+               "balancetestrawrecordingsbucket6127ADBC",
                "Arn"
               ]
              },
@@ -642,7 +642,7 @@
             [
              {
               "Fn::GetAtt": [
-               "balancetestrecordingsbucketA5C211E0",
+               "balancetestrawrecordingsbucket6127ADBC",
                "Arn"
               ]
              },
@@ -680,13 +680,13 @@
     "Environment": {
      "Variables": {
       "S3_BUCKET_NAME": {
-       "Ref": "balancetestrecordingsbucketA5C211E0"
+       "Ref": "balancetestrawrecordingsbucket6127ADBC"
       },
       "IDENTITY_POOL_ID": {
        "Ref": "BalanceTestCognitoIdentityPoolIdParameter"
       },
       "USER_POOL_ID": {
-       "Ref": "BalanceTestCognitoUserPoolIdParameter"
+       "Fn::ImportValue": "CognitoStack:ExportsOutputRefBalanceTestUserPool005122174B1ED610"
       },
       "REGION": "ca-central-1"
      }
@@ -737,57 +737,10 @@
    "Type": "AWS::SSM::Parameter::Value<String>",
    "Default": "IdentityPoolId"
   },
-  "BalanceTestCognitoUserPoolIdParameter": {
-   "Type": "AWS::SSM::Parameter::Value<String>",
-   "Default": "UserPoolId"
-  },
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",
    "Default": "/cdk-bootstrap/hnb659fds/version",
    "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
-  }
- },
- "Outputs": {
-  "ExportsOutputFnGetAttbalancetestrecordingsbucketA5C211E0ArnCD616F4B": {
-   "Value": {
-    "Fn::GetAtt": [
-     "balancetestrecordingsbucketA5C211E0",
-     "Arn"
-    ]
-   },
-   "Export": {
-    "Name": "DataWorkflowStack:ExportsOutputFnGetAttbalancetestrecordingsbucketA5C211E0ArnCD616F4B"
-   }
-  },
-  "ExportsOutputRefbalancetestrecordingsbucketA5C211E0DBE9D240": {
-   "Value": {
-    "Ref": "balancetestrecordingsbucketA5C211E0"
-   },
-   "Export": {
-    "Name": "DataWorkflowStack:ExportsOutputRefbalancetestrecordingsbucketA5C211E0DBE9D240"
-   }
-  },
-  "ExportsOutputFnGetAttBalanceTestgeneratereportfordownload0C388CF5Arn329D400D": {
-   "Value": {
-    "Fn::GetAtt": [
-     "BalanceTestgeneratereportfordownload0C388CF5",
-     "Arn"
-    ]
-   },
-   "Export": {
-    "Name": "DataWorkflowStack:ExportsOutputFnGetAttBalanceTestgeneratereportfordownload0C388CF5Arn329D400D"
-   }
-  },
-  "ExportsOutputFnGetAttBalanceTestdeletes3record4746C1B8ArnE3D18380": {
-   "Value": {
-    "Fn::GetAtt": [
-     "BalanceTestdeletes3record4746C1B8",
-     "Arn"
-    ]
-   },
-   "Export": {
-    "Name": "DataWorkflowStack:ExportsOutputFnGetAttBalanceTestdeletes3record4746C1B8ArnE3D18380"
-   }
   }
  },
  "Rules": {

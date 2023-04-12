@@ -605,19 +605,6 @@
    }
   }
  },
- "Outputs": {
-  "ExportsOutputFnGetAttBalanceTestpostgresqlRDSconnect4A449849Arn75E70BB3": {
-   "Value": {
-    "Fn::GetAtt": [
-     "BalanceTestpostgresqlRDSconnect4A449849",
-     "Arn"
-    ]
-   },
-   "Export": {
-    "Name": "DatabaseStack:ExportsOutputFnGetAttBalanceTestpostgresqlRDSconnect4A449849Arn75E70BB3"
-   }
-  }
- },
  "Parameters": {
   "BootstrapVersion": {
    "Type": "AWS::SSM::Parameter::Value<String>",
