@@ -3,10 +3,10 @@ env:
   variables:
     AMPLIFY_STORAGE_REGION: 'ca-central-1'
     AMPLIFY_STORAGE_BUCKET_NAME: 'balancetest-raw-recordings-bucket'
-    AMPLIFY_USERPOOL_ID: ${aws ssm get-parameter --name CognitoUserPoolId --query Parameter.Value --output text}
-    AMPLIFY_WEBCLIENT_ID: ${aws ssm get-parameter --name UserPoolClientId --query Parameter.Value --output text}
-    AMPLIFY_IDENTITYPOOL_ID: ${aws ssm get-parameter --name IdentityPoolId --query Parameter.Value --output text}
-    AMPLIFY_NATIVECLIENT_ID: ${aws ssm get-parameter --name UserPoolClientId --query Parameter.Value --output text}
+    # AMPLIFY_USERPOOL_ID: ${aws ssm get-parameter --name CognitoUserPoolId --query Parameter.Value --output text}
+    # AMPLIFY_WEBCLIENT_ID: ${aws ssm get-parameter --name UserPoolClientId --query Parameter.Value --output text}
+    # AMPLIFY_IDENTITYPOOL_ID: ${aws ssm get-parameter --name IdentityPoolId --query Parameter.Value --output text}
+    # AMPLIFY_NATIVECLIENT_ID: ${aws ssm get-parameter --name UserPoolClientId --query Parameter.Value --output text}
     # AMPLIFY_USERPOOL_ID: $(aws ssm get-parameter --name CognitoUserPoolId --query Parameter.Value --output text || echo "")
     # AMPLIFY_WEBCLIENT_ID: $(aws ssm get-parameter --name UserPoolClientId --query Parameter.Value --output text || echo "")
     # AMPLIFY_IDENTITYPOOL_ID: $(aws ssm get-parameter --name IdentityPoolId --query Parameter.Value --output text || echo "")
