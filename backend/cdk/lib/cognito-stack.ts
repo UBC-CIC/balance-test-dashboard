@@ -11,52 +11,61 @@ import { DataWorkflowStack } from './data-workflow-stack';
 import { AthenaGlueStack } from './athena-glue-stack';
 import { DatabaseStack } from './database-stack';
 import * as console from "console";
+import { StringAttribute } from 'aws-cdk-lib/aws-cognito';
 
 export class CognitoStack extends Stack {
+    public readonly UserPoolId: string;
+
     constructor(scope: App, id: string, props?: StackProps) {
         super(scope, id, props);
 
-        const lambdaRole = new iam.Role(this, 'HealthPlatformCognitoLambdaRole', {
-            roleName: 'HealthPlatformCognitoLambdaRole',
-            assumedBy: new ServicePrincipal('lambda.amazonaws.com'),
+
+        const lambdaTriggerRole = new iam.Role(this, 'BalanceTestCognitoLambdaRole', {
+            roleName: 'BalanceTestCognitoLambdaRole',
+            assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
             inlinePolicies: {
-                additional: new PolicyDocument({
+                additional: new iam.PolicyDocument({
                         statements: [
-                        new PolicyStatement({
-                            effect: Effect.ALLOW,
+                        new iam.PolicyStatement({
+                            effect: iam.Effect.ALLOW,
                             actions: [
-                                // DynamoDB
-                                'dynamodb:Scan',
-                                'dynamodb:GetItem',
-                                'dynamodb:PutItem',
-                                'dynamodb:Query',
-                                'dynamodb:UpdateItem',
-                                'dynamodb:DeleteItem',
-                                'dynamodb:BatchWriteItem',
-                                'dynamodb:BatchGetItem',
                                 // Lambda
                                 'lambda:InvokeFunction',
                                 // CloudWatch
-                                'cloudwatch:*',
-                                'logs:*',
-                                //SSM
-                                'ssm:*',
+                                "logs:CreateLogStream",
+                                "logs:CreateLogGroup",
+                                "logs:PutLogEvents",
+                                // Cognito
+                                "cognito-idp:AdminAddUserToGroup",
                             ],
-                            resources: ['*']
+                            resources: [
+                                `arn:aws:cognito-idp:${this.region}:${this.account}:userpool/${this.UserPoolId}`,
+                                "arn:aws:logs:*:*:*",
+                            ]
                         })
                     ]
                 }),
             },
         });
 
-        const createPatientsDetailFunction = new lambda.Function(this, 'CreatePatientsDetailFunction', {
-            functionName: "Patients-Detail-Create",
-            code: new lambda.AssetCode('build/src'),
-            handler: 'patients-detail-create.handler',
-            runtime: lambda.Runtime.NODEJS_12_X,
+        const assignUserGroupFunction = new lambda.Function(this, 'AssignUserGroupFunction', {
+            functionName: "BalanceTestAssignUserGroupFunction",
+            code: lambda.Code.fromAsset("./lambda/" + 'assignUserGroup'),
+            handler: 'assign-user-group.handler',
+            runtime: lambda.Runtime.NODEJS_14_X,
             memorySize: 512,
             timeout: cdk.Duration.seconds(30),
-            role: lambdaRole,
+            role: lambdaTriggerRole,
+        });
+
+        const addClaimsFunction = new lambda.Function(this, 'AddClaimsFunction', {
+            functionName: "BalanceTestAddClaimsFunction",
+            code: lambda.Code.fromAsset("./lambda/" + 'addClaims'),
+            handler: 'add-usertype-claim.handler',
+            runtime: lambda.Runtime.NODEJS_14_X,
+            memorySize: 512,
+            timeout: cdk.Duration.seconds(30),
+            role: lambdaTriggerRole,
         });
 
         // User Pool
@@ -86,27 +95,54 @@ export class CognitoStack extends Stack {
                 },
             },
             customAttributes: {
-                'joinedOn': new DateTimeAttribute(),
+                // 'joinedOn': new DateTimeAttribute(),
+                'user_type': new StringAttribute(),
+                'identity_id': new StringAttribute(),
             },
-            accountRecovery: AccountRecovery.EMAIL_ONLY,
+            accountRecovery: cognito.AccountRecovery.EMAIL_ONLY,
             lambdaTriggers: {
-                postConfirmation: createPatientsDetailFunction,
+                // postConfirmation: createPatientsDetailFunction,
+                postConfirmation: assignUserGroupFunction,
+                preTokenGeneration: addClaimsFunction
             }
         });
         this.UserPoolId = userPool.userPoolId;
 
         // User Pool Client
-        const userPoolClient = new CfnUserPoolClient(this, 'HealthPlatformUserPoolClient', {
-            clientName: 'HealthPlatformUserPoolClient',
+        const userPoolClient = new cognito.CfnUserPoolClient(this, 'BalanceTestUserPoolClient', {
+            clientName: 'BalanceTestUserPoolClient',
             userPoolId: userPool.userPoolId,
             explicitAuthFlows: [
                 "ALLOW_USER_SRP_AUTH",
-                "ALLOW_REFRESH_TOKEN_AUTH"
-            ]
+                "ALLOW_REFRESH_TOKEN_AUTH",
+                // "ALLOW_ADMIN_USER_PASSWORD_AUTH",
+                "ALLOW_CUSTOM_AUTH"
+            ],
+            readAttributes:[
+                "custom:identity_id",
+                "email",
+                "email_verified",
+                "family_name",
+                "given_name",
+                "name",
+                "updated_at",
+                "zoneinfo"
+            ],
+            // writeAttributes:[
+            //     "custom:identity_id",
+            //     "email",
+            //     "email_verified",
+            //     "family_name",
+            //     "given_name",
+            //     "name",
+            //     "updated_at",
+            //     "zoneinfo"
+            // ]
         });
 
         // Identity Pool
-        const identityPool = new CfnIdentityPool(this, 'HealthPlatformIdentityPool', {
+        const identityPool = new cognito.CfnIdentityPool(this, 'BalanceTestIdentityPool', {
+            identityPoolName: 'BalanceTestIdentityPool',
             allowUnauthenticatedIdentities: false,
             cognitoIdentityProviders: [{
                 clientId: userPoolClient.ref,
@@ -115,12 +151,12 @@ export class CognitoStack extends Stack {
         });
 
         // Unauthenticated Role
-        const unauthenticatedRole = new Role(
+        const unauthenticatedRole = new iam.Role(
             this,
-            "HealthPlatform_Website_Unauthenticated_Role",
+            "BalanceTest_Website_Unauthenticated_Role",
             {
-                roleName: "HealthPlatform_Website_Unauthenticated_Role",
-                assumedBy: new FederatedPrincipal(
+                roleName: "BalanceTest_Website_Unauthenticated_Role",
+                assumedBy: new iam.FederatedPrincipal(
                     "cognito-identity.amazonaws.com",
                     {
                         StringEquals: {
@@ -136,12 +172,12 @@ export class CognitoStack extends Stack {
         );
 
         // Authenticated Role
-        const authenticatedRole = new Role(
+        const authenticatedRole = new iam.Role(
             this,
-            "HealthPlatform_Website_Authenticated_Role",
+            "BalanceTest_Website_Authenticated_Role",
             {
-                roleName: "HealthPlatform_Website_Authenticated_Role",
-                assumedBy: new FederatedPrincipal(
+                roleName: "BalanceTest_Website_Authenticated_Role",
+                assumedBy: new iam.FederatedPrincipal(
                     "cognito-identity.amazonaws.com",
                     {
                         StringEquals: {
@@ -155,12 +191,57 @@ export class CognitoStack extends Stack {
                 )
             }
         );
-        authenticatedRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('AWSAppSyncInvokeFullAccess'))
+        if (authenticatedRole.assumeRolePolicy){
+            authenticatedRole.assumeRolePolicy.addStatements(
+                new iam.PolicyStatement({
+                    principals: [
+                    new iam.FederatedPrincipal('cognito-identity.amazonaws.com', {
+                        "StringEquals": { "cognito-identity.amazonaws.com:aud": identityPool.ref },
+                        "ForAnyValue:StringLike": { "cognito-identity.amazonaws.com:amr": "authenticated" },
+                    })
+                    ],
+                    actions:["sts:TagSession", 'sts:AssumeRoleWithWebIdentity']
+                })
+            )
+        }
+        // authenticatedRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('AWSAppSyncInvokeFullAccess'))
+        authenticatedRole.addToPolicy(new iam.PolicyStatement({
+            effect: iam.Effect.ALLOW,
+            actions: [
+                "s3:PutObject",
+                "s3:GetObject",
+                "s3:DeleteObject"
+            ],
+            resources: ["arn:aws:s3:::json-to-parquet-poc-bucket/parquet_data/patient_tests/user_id=${cognito-identity.amazonaws.com:sub}/*",
+                    "arn:aws:s3:::json-to-parquet-poc-bucket/private/${cognito-identity.amazonaws.com:sub}/*"],
+        }));
+        authenticatedRole.addToPolicy(new iam.PolicyStatement({
+            effect: iam.Effect.ALLOW,
+            actions: [
+                "s3:PutObject",
+                "s3:GetObject",
+                "s3:DeleteObject"
+            ],
+            resources: ["arn:aws:s3:::json-to-parquet-poc-bucket/*"],
+            conditions:{
+            'StringEquals':{"aws:PrincipalTag/user_type": "care_provider_user"}
+            }
+        }));
+        authenticatedRole.addManagedPolicy(iam.ManagedPolicy.fromManagedPolicyArn(this, 'athenaManagedPolicy', 'arn:aws:iam::aws:policy/AmazonAthenaFullAccess'));
+        authenticatedRole.addToPolicy(new iam.PolicyStatement({
+            effect: iam.Effect.ALLOW,
+            actions: [
+                "mobileanalytics:PutEvents",
+                "cognito-sync:*",
+                "cognito-identity:*"
+            ],
+            resources: ["*"],
+        }));
 
         // Identity Pool Role Attachment
-        new CfnIdentityPoolRoleAttachment(
+        new cognito.CfnIdentityPoolRoleAttachment(
             this,
-            "HealthPlatformIdentityPoolRoleAttachment",
+            "BalanceTestIdentityPoolRoleAttachment",
             {
                 identityPoolId: identityPool.ref,
                 roles: {
@@ -171,25 +252,25 @@ export class CognitoStack extends Stack {
         );
 
         // outputs
-        new CfnOutput(this, 'UserPoolId', {
+        new cdk.CfnOutput(this, 'UserPoolId', {
             value: userPool.userPoolId
         });
 
-        new CfnOutput(this, 'UserPoolClientId', {
+        new cdk.CfnOutput(this, 'UserPoolClientId', {
             value: userPoolClient.ref
         });
 
-        new CfnOutput(this, 'IdentityPoolId', {
+        new cdk.CfnOutput(this, 'IdentityPoolId', {
             value: identityPool.ref
         });
 
-        new CfnOutput(this, "AuthenticatedRole", {
-            value: authenticatedRole.roleArn,
-        });
+        // new cdk.CfnOutput(this, "AuthenticatedRole", {
+        //     value: authenticatedRole.roleArn,
+        // });
 
-        new CfnOutput(this, "UnauthenticatedRole", {
-            value: unauthenticatedRole.roleArn,
-        });
+        // new cdk.CfnOutput(this, "UnauthenticatedRole", {
+        //     value: unauthenticatedRole.roleArn,
+        // });
 
         new ssm.StringParameter(this, 'CognitoUserPoolId', {
             description: 'Cognito User Pool Id',
@@ -209,15 +290,16 @@ export class CognitoStack extends Stack {
             stringValue: identityPool.ref
         }); 
 
-        new ssm.StringParameter(this, 'CognitoUnauthenticatedRole', {
-            description: 'Unauthenticated Role',
-            parameterName: 'UnauthenticatedRole',
-            stringValue: unauthenticatedRole.roleArn
-        }); 
+        // new ssm.StringParameter(this, 'CognitoUnauthenticatedRole', {
+        //     description: 'Unauthenticated Role',
+        //     parameterName: 'UnauthenticatedRole',
+        //     stringValue: unauthenticatedRole.roleArn
+        // }); 
 
-        new ssm.StringParameter(this, 'CognitoAuthenticatedRole', {
-            description: 'Authenticated Role',
-            parameterName: 'AuthenticatedRole',
-            stringValue: authenticatedRole.roleArn
-        });     }
+        // new ssm.StringParameter(this, 'CognitoAuthenticatedRole', {
+        //     description: 'Authenticated Role',
+        //     parameterName: 'AuthenticatedRole',
+        //     stringValue: authenticatedRole.roleArn
+        // });     }
+    }
 }

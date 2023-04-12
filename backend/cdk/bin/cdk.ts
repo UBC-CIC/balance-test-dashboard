@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
+import { CognitoStack } from '../lib/cognito-stack';
 import { DataWorkflowStack } from '../lib/data-workflow-stack';
 import { VPCStack } from '../lib/vpc-stack';
 import { DatabaseStack } from '../lib/database-stack';
@@ -24,6 +25,10 @@ const app = new cdk.App();
 
 //   /* For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html */
 // });
+
+const cognitoStack = new CognitoStack(app, "CognitoStack", {
+    env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION }
+});
 
 const vpcStack = new VPCStack(app, "VPCStack", {
     env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION }

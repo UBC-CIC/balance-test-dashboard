@@ -441,7 +441,7 @@
    "Properties": {
     "Content": {
      "S3Bucket": "cdk-hnb659fds-assets-684904187051-ca-central-1",
-     "S3Key": "8e0fbb0f6c0547fcecaf694c22ac02dc594d058bcadf5e479469a04e09abc02f.zip"
+     "S3Key": "f59f4121318cb1f52308fa20490d34305bb91ed413a9ea3c763f3cfd22aced2c.zip"
     },
     "CompatibleRuntimes": [
      "nodejs16.x"
@@ -452,7 +452,7 @@
    "DeletionPolicy": "Delete",
    "Metadata": {
     "aws:cdk:path": "DatabaseStack/postgresqlRDSConnectLayer/Resource",
-    "aws:asset:path": "asset.8e0fbb0f6c0547fcecaf694c22ac02dc594d058bcadf5e479469a04e09abc02f.zip",
+    "aws:asset:path": "asset.f59f4121318cb1f52308fa20490d34305bb91ed413a9ea3c763f3cfd22aced2c.zip",
     "aws:asset:is-bundled": false,
     "aws:asset:property": "Content"
    }
@@ -477,6 +477,59 @@
        "Fn::GetAtt": [
         "ProxyCB0DFB71",
         "Endpoint"
+       ]
+      },
+      "PG_SECRET_NAME": {
+       "Fn::Join": [
+        "-",
+        [
+         {
+          "Fn::Select": [
+           0,
+           {
+            "Fn::Split": [
+             "-",
+             {
+              "Fn::Select": [
+               6,
+               {
+                "Fn::Split": [
+                 ":",
+                 {
+                  "Ref": "SecretA720EF05"
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         },
+         {
+          "Fn::Select": [
+           1,
+           {
+            "Fn::Split": [
+             "-",
+             {
+              "Fn::Select": [
+               6,
+               {
+                "Fn::Split": [
+                 ":",
+                 {
+                  "Ref": "SecretA720EF05"
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
        ]
       },
       "PGUSER": {

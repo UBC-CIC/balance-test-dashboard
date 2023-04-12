@@ -1,25 +1,42 @@
 {
- "Parameters": {
-  "BalanceTestRecordingsBucketArnParameter": {
-   "Type": "AWS::SSM::Parameter::Value<String>",
-   "Default": "S3BucketName"
-  },
-  "BalanceTestCognitoIdentityPoolIdParameter": {
-   "Type": "AWS::SSM::Parameter::Value<String>",
-   "Default": "IdentityPoolId"
-  },
-  "BalanceTestCognitoUserPoolIdParameter": {
-   "Type": "AWS::SSM::Parameter::Value<String>",
-   "Default": "UserPoolId"
-  },
-  "BootstrapVersion": {
-   "Type": "AWS::SSM::Parameter::Value<String>",
-   "Default": "/cdk-bootstrap/hnb659fds/version",
-   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
-  }
- },
  "Resources": {
-  "balancetestrecordings160420devNotifications99916FC2": {
+  "balancetestrecordingsbucketA5C211E0": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "BucketEncryption": {
+     "ServerSideEncryptionConfiguration": [
+      {
+       "ServerSideEncryptionByDefault": {
+        "SSEAlgorithm": "AES256"
+       }
+      }
+     ]
+    },
+    "BucketName": "balancetest-recordings-bucket",
+    "OwnershipControls": {
+     "Rules": [
+      {
+       "ObjectOwnership": "BucketOwnerEnforced"
+      }
+     ]
+    },
+    "PublicAccessBlockConfiguration": {
+     "BlockPublicAcls": true,
+     "BlockPublicPolicy": true,
+     "IgnorePublicAcls": true,
+     "RestrictPublicBuckets": true
+    },
+    "VersioningConfiguration": {
+     "Status": "Enabled"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "DataWorkflowStack/balancetest-recordings-bucket/Resource"
+   }
+  },
+  "balancetestrecordingsbucketNotifications21BFBA79": {
    "Type": "Custom::S3BucketNotifications",
    "Properties": {
     "ServiceToken": {
@@ -29,7 +46,7 @@
      ]
     },
     "BucketName": {
-     "Ref": "BalanceTestRecordingsBucketArnParameter"
+     "Ref": "balancetestrecordingsbucketA5C211E0"
     },
     "NotificationConfiguration": {
      "LambdaFunctionConfigurations": [
@@ -60,16 +77,16 @@
       }
      ]
     },
-    "Managed": false
+    "Managed": true
    },
    "DependsOn": [
-    "balancetestrecordings160420devAllowBucketNotificationsToDataWorkflowStackBalanceTestconvertjsontoparquetandcsv0BBF712512B02A20"
+    "balancetestrecordingsbucketAllowBucketNotificationsToDataWorkflowStackBalanceTestconvertjsontoparquetandcsv0BBF71252D5693E0"
    ],
    "Metadata": {
-    "aws:cdk:path": "DataWorkflowStack/balancetestrecordings160420-dev/Notifications/Resource"
+    "aws:cdk:path": "DataWorkflowStack/balancetest-recordings-bucket/Notifications/Resource"
    }
   },
-  "balancetestrecordings160420devAllowBucketNotificationsToDataWorkflowStackBalanceTestconvertjsontoparquetandcsv0BBF712512B02A20": {
+  "balancetestrecordingsbucketAllowBucketNotificationsToDataWorkflowStackBalanceTestconvertjsontoparquetandcsv0BBF71252D5693E0": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -82,19 +99,38 @@
     "Principal": "s3.amazonaws.com",
     "SourceAccount": "684904187051",
     "SourceArn": {
-     "Fn::Join": [
-      "",
-      [
-       "arn:aws:s3:::",
-       {
-        "Ref": "BalanceTestRecordingsBucketArnParameter"
-       }
-      ]
+     "Fn::GetAtt": [
+      "balancetestrecordingsbucketA5C211E0",
+      "Arn"
      ]
     }
    },
    "Metadata": {
-    "aws:cdk:path": "DataWorkflowStack/balancetestrecordings160420-dev/AllowBucketNotificationsToDataWorkflowStackBalanceTestconvertjsontoparquetandcsv0BBF7125"
+    "aws:cdk:path": "DataWorkflowStack/balancetest-recordings-bucket/AllowBucketNotificationsToDataWorkflowStackBalanceTestconvertjsontoparquetandcsv0BBF7125"
+   }
+  },
+  "balancetestaccesspt": {
+   "Type": "AWS::S3::AccessPoint",
+   "Properties": {
+    "Bucket": {
+     "Ref": "balancetestrecordingsbucketA5C211E0"
+    },
+    "BucketAccountId": "684904187051",
+    "Name": "balancetest-accesspt",
+    "PublicAccessBlockConfiguration": {
+     "BlockPublicAcls": true,
+     "BlockPublicPolicy": true,
+     "IgnorePublicAcls": true,
+     "RestrictPublicBuckets": true
+    },
+    "VpcConfiguration": {
+     "VpcId": {
+      "Fn::ImportValue": "VPCStack:ExportsOutputRefbalanceTestVPCFBF0FFB322759C6A"
+     }
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "DataWorkflowStack/balancetest-accesspt"
    }
   },
   "BalanceTestS3LambdaTriggerLogs612C9428": {
@@ -125,6 +161,20 @@
      "Version": "2012-10-17"
     },
     "Description": "Role gives access to appropriate S3 functions needed for file conversions and logging for Lambda.",
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+       ]
+      ]
+     }
+    ],
     "Policies": [
      {
       "PolicyDocument": {
@@ -136,9 +186,11 @@
           "Fn::Join": [
            "",
            [
-            "arn:aws:s3:::",
             {
-             "Ref": "BalanceTestRecordingsBucketArnParameter"
+             "Fn::GetAtt": [
+              "balancetestrecordingsbucketA5C211E0",
+              "Arn"
+             ]
             },
             "/private/*"
            ]
@@ -166,9 +218,11 @@
           "Fn::Join": [
            "",
            [
-            "arn:aws:s3:::",
             {
-             "Ref": "BalanceTestRecordingsBucketArnParameter"
+             "Fn::GetAtt": [
+              "balancetestrecordingsbucketA5C211E0",
+              "Arn"
+             ]
             },
             "/parquet_data/*"
            ]
@@ -180,25 +234,22 @@
          "Effect": "Allow",
          "Resource": [
           {
-           "Fn::Join": [
-            "",
-            [
-             "arn:aws:s3:::",
-             {
-              "Ref": "BalanceTestRecordingsBucketArnParameter"
-             },
-             "/private/*"
-            ]
+           "Fn::GetAtt": [
+            "balancetestrecordingsbucketA5C211E0",
+            "Arn"
            ]
           },
           {
            "Fn::Join": [
             "",
             [
-             "arn:aws:s3:::",
              {
-              "Ref": "BalanceTestRecordingsBucketArnParameter"
-             }
+              "Fn::GetAtt": [
+               "balancetestrecordingsbucketA5C211E0",
+               "Arn"
+              ]
+             },
+             "/private/*"
             ]
            ]
           }
@@ -236,7 +287,22 @@
     ],
     "MemorySize": 512,
     "Runtime": "python3.9",
-    "Timeout": 180
+    "Timeout": 180,
+    "VpcConfig": {
+     "SecurityGroupIds": [
+      {
+       "Fn::ImportValue": "VPCStack:ExportsOutputFnGetAttbalanceTestVPCFBF0FFB3DefaultSecurityGroupDA29CDF5"
+      }
+     ],
+     "SubnetIds": [
+      {
+       "Fn::ImportValue": "VPCStack:ExportsOutputRefbalanceTestVPCprivatesubnetSubnet1Subnet8BA87DE45B0B5EB2"
+      },
+      {
+       "Fn::ImportValue": "VPCStack:ExportsOutputRefbalanceTestVPCprivatesubnetSubnet2SubnetD1E1933170382F7C"
+      }
+     ]
+    }
    },
    "DependsOn": [
     "BalanceTestS3LambdaTriggerRole83B886E8"
@@ -288,10 +354,7 @@
     "PolicyDocument": {
      "Statement": [
       {
-       "Action": [
-        "s3:GetBucketNotification",
-        "s3:PutBucketNotification"
-       ],
+       "Action": "s3:PutBucketNotification",
        "Effect": "Allow",
        "Resource": "*"
       }
@@ -374,6 +437,18 @@
         ":iam::aws:policy/AmazonS3FullAccess"
        ]
       ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+       ]
+      ]
      }
     ],
     "Policies": [
@@ -443,7 +518,7 @@
     "Environment": {
      "Variables": {
       "S3_BUCKET_NAME": {
-       "Ref": "BalanceTestRecordingsBucketArnParameter"
+       "Ref": "balancetestrecordingsbucketA5C211E0"
       }
      }
     },
@@ -456,7 +531,22 @@
     ],
     "MemorySize": 512,
     "Runtime": "python3.7",
-    "Timeout": 180
+    "Timeout": 180,
+    "VpcConfig": {
+     "SecurityGroupIds": [
+      {
+       "Fn::ImportValue": "VPCStack:ExportsOutputFnGetAttbalanceTestVPCFBF0FFB3DefaultSecurityGroupDA29CDF5"
+      }
+     ],
+     "SubnetIds": [
+      {
+       "Fn::ImportValue": "VPCStack:ExportsOutputRefbalanceTestVPCprivatesubnetSubnet1Subnet8BA87DE45B0B5EB2"
+      },
+      {
+       "Fn::ImportValue": "VPCStack:ExportsOutputRefbalanceTestVPCprivatesubnetSubnet2SubnetD1E1933170382F7C"
+      }
+     ]
+    }
    },
    "DependsOn": [
     "BalanceTestgenerateReportLambdaRole9D91E4EE"
@@ -496,6 +586,20 @@
      "Version": "2012-10-17"
     },
     "Description": "Role gives access to appropriate S3 functions needed for Lambda.",
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+       ]
+      ]
+     }
+    ],
     "Policies": [
      {
       "PolicyDocument": {
@@ -522,9 +626,11 @@
            "Fn::Join": [
             "",
             [
-             "arn:aws:s3:::",
              {
-              "Ref": "BalanceTestRecordingsBucketArnParameter"
+              "Fn::GetAtt": [
+               "balancetestrecordingsbucketA5C211E0",
+               "Arn"
+              ]
              },
              "/parquet_data/*"
             ]
@@ -534,9 +640,11 @@
            "Fn::Join": [
             "",
             [
-             "arn:aws:s3:::",
              {
-              "Ref": "BalanceTestRecordingsBucketArnParameter"
+              "Fn::GetAtt": [
+               "balancetestrecordingsbucketA5C211E0",
+               "Arn"
+              ]
              },
              "/private/*"
             ]
@@ -572,7 +680,7 @@
     "Environment": {
      "Variables": {
       "S3_BUCKET_NAME": {
-       "Ref": "BalanceTestRecordingsBucketArnParameter"
+       "Ref": "balancetestrecordingsbucketA5C211E0"
       },
       "IDENTITY_POOL_ID": {
        "Ref": "BalanceTestCognitoIdentityPoolIdParameter"
@@ -587,7 +695,22 @@
     "Handler": "delete-s3-record.lambda_handler",
     "MemorySize": 512,
     "Runtime": "python3.7",
-    "Timeout": 180
+    "Timeout": 180,
+    "VpcConfig": {
+     "SecurityGroupIds": [
+      {
+       "Fn::ImportValue": "VPCStack:ExportsOutputFnGetAttbalanceTestVPCFBF0FFB3DefaultSecurityGroupDA29CDF5"
+      }
+     ],
+     "SubnetIds": [
+      {
+       "Fn::ImportValue": "VPCStack:ExportsOutputRefbalanceTestVPCprivatesubnetSubnet1Subnet8BA87DE45B0B5EB2"
+      },
+      {
+       "Fn::ImportValue": "VPCStack:ExportsOutputRefbalanceTestVPCprivatesubnetSubnet2SubnetD1E1933170382F7C"
+      }
+     ]
+    }
    },
    "DependsOn": [
     "BalanceTestdeleteS3RecordLambdaRole1BF66223"
@@ -602,20 +725,46 @@
   "CDKMetadata": {
    "Type": "AWS::CDK::Metadata",
    "Properties": {
-    "Analytics": "v2:deflate64:H4sIAAAAAAAA/02PzW4CMQyEn4V71u0WiYpjqdReOKBF4opM1l2ZzU8VJyAU5d3ZTWnV03yesaXxC6zW8LzAqzS6HxvDJ8j7iHpU719uhwEtRQqqI/EpaFLT4jHLEjZJjxQ3KKQM2lOPkOcDCpZF2Dv1kZyOM0z2H2/xRuFAQR7B/7ko4weBvPXDZ/Dpu+YPLorRQu68odmuuvOG9a3WrFSULI8oQlHgbZZSV3+LV2v6bGA3FOV8T3CWp0u7gvYV2sVZmJuQXGRL0P3oHX/lDyIcAQAA"
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/02PQWvDMAyFf0vvjras0LFjO+guPYQOdi2qowU1sT0se6MY//c5Tul2ep/eexLoCTYv8LjCH2l0PzYTnyG9B9SjKtYpyRrSLuqRgnr9tH+01ZpEOsc2qMXdoVBWE5pzj5BKpSNvWISdVftodZih2Hc+4JX8B3m5Bf/ncsgNAunghjfv4lfNb5wVo4F0dBPNdtXOTayv87hQVrI+oQgFge0suVZJXPSa1B1qVt4d2A51Gz0aCuSzsq4nuMjDd7uB9hna1UWYGx9tYENwXPQX05QrHD4BAAA="
    },
    "Metadata": {
     "aws:cdk:path": "DataWorkflowStack/CDKMetadata/Default"
    }
   }
  },
+ "Parameters": {
+  "BalanceTestCognitoIdentityPoolIdParameter": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "IdentityPoolId"
+  },
+  "BalanceTestCognitoUserPoolIdParameter": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "UserPoolId"
+  },
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
  "Outputs": {
-  "ExportsOutputRefBalanceTestRecordingsBucketArnParameterB5195FA2": {
+  "ExportsOutputFnGetAttbalancetestrecordingsbucketA5C211E0ArnCD616F4B": {
    "Value": {
-    "Ref": "BalanceTestRecordingsBucketArnParameter"
+    "Fn::GetAtt": [
+     "balancetestrecordingsbucketA5C211E0",
+     "Arn"
+    ]
    },
    "Export": {
-    "Name": "DataWorkflowStack:ExportsOutputRefBalanceTestRecordingsBucketArnParameterB5195FA2"
+    "Name": "DataWorkflowStack:ExportsOutputFnGetAttbalancetestrecordingsbucketA5C211E0ArnCD616F4B"
+   }
+  },
+  "ExportsOutputRefbalancetestrecordingsbucketA5C211E0DBE9D240": {
+   "Value": {
+    "Ref": "balancetestrecordingsbucketA5C211E0"
+   },
+   "Export": {
+    "Name": "DataWorkflowStack:ExportsOutputRefbalancetestrecordingsbucketA5C211E0DBE9D240"
    }
   },
   "ExportsOutputFnGetAttBalanceTestgeneratereportfordownload0C388CF5Arn329D400D": {

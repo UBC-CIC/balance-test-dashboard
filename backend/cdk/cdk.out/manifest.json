@@ -1,6 +1,167 @@
 {
   "version": "31.0.0",
   "artifacts": {
+    "CognitoStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "CognitoStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "CognitoStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://684904187051/ca-central-1",
+      "properties": {
+        "templateFile": "CognitoStack.template.json",
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::684904187051:role/cdk-hnb659fds-deploy-role-684904187051-ca-central-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::684904187051:role/cdk-hnb659fds-cfn-exec-role-684904187051-ca-central-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/f087d116ee67d7c14c1e3cddd936b897030401f6fefe5e5a34c2f3b8cfb8dc56.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "CognitoStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::684904187051:role/cdk-hnb659fds-lookup-role-684904187051-ca-central-1",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "CognitoStack.assets"
+      ],
+      "metadata": {
+        "/CognitoStack/BalanceTestCognitoLambdaRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BalanceTestCognitoLambdaRoleE5D63388"
+          }
+        ],
+        "/CognitoStack/AssignUserGroupFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AssignUserGroupFunctionF2EB0C44"
+          }
+        ],
+        "/CognitoStack/AddClaimsFunction/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AddClaimsFunction4110AA51"
+          }
+        ],
+        "/CognitoStack/BalanceTestUserPool/PostConfirmationCognito": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BalanceTestUserPoolPostConfirmationCognitoE3DADAB2"
+          }
+        ],
+        "/CognitoStack/BalanceTestUserPool/PreTokenGenerationCognito": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BalanceTestUserPoolPreTokenGenerationCognito5614F78D"
+          }
+        ],
+        "/CognitoStack/BalanceTestUserPool/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BalanceTestUserPool00512217"
+          }
+        ],
+        "/CognitoStack/BalanceTestUserPoolClient": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BalanceTestUserPoolClient"
+          }
+        ],
+        "/CognitoStack/BalanceTestIdentityPool": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BalanceTestIdentityPool"
+          }
+        ],
+        "/CognitoStack/BalanceTest_Website_Unauthenticated_Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BalanceTestWebsiteUnauthenticatedRoleFA02EDCE"
+          }
+        ],
+        "/CognitoStack/BalanceTest_Website_Authenticated_Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BalanceTestWebsiteAuthenticatedRoleBDC41AB2"
+          }
+        ],
+        "/CognitoStack/BalanceTest_Website_Authenticated_Role/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BalanceTestWebsiteAuthenticatedRoleDefaultPolicy1639557D"
+          }
+        ],
+        "/CognitoStack/BalanceTestIdentityPoolRoleAttachment": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BalanceTestIdentityPoolRoleAttachment"
+          }
+        ],
+        "/CognitoStack/UserPoolId": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserPoolId"
+          }
+        ],
+        "/CognitoStack/UserPoolClientId": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "UserPoolClientId"
+          }
+        ],
+        "/CognitoStack/IdentityPoolId": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "IdentityPoolId"
+          }
+        ],
+        "/CognitoStack/CognitoUserPoolId/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CognitoUserPoolIdE8BC6937"
+          }
+        ],
+        "/CognitoStack/CognitoUserPoolClientId/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CognitoUserPoolClientId296DDBFD"
+          }
+        ],
+        "/CognitoStack/CognitoIdentityPoolId/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CognitoIdentityPoolIdFD9654E6"
+          }
+        ],
+        "/CognitoStack/CDKMetadata/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadata"
+          }
+        ],
+        "/CognitoStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/CognitoStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "CognitoStack"
+    },
     "VPCStack.assets": {
       "type": "cdk:asset-manifest",
       "properties": {
@@ -250,7 +411,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::684904187051:role/cdk-hnb659fds-deploy-role-684904187051-ca-central-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::684904187051:role/cdk-hnb659fds-cfn-exec-role-684904187051-ca-central-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/f177dad613bddd1199d677529a88a91e7f8ef4a57917e2a79299a880581b4696.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/7be02b29c32080ea4def81a00516586be9ef7cf9bb29c160554be6eb441e1a48.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -263,25 +424,32 @@
         }
       },
       "dependencies": [
+        "VPCStack",
         "DataWorkflowStack.assets"
       ],
       "metadata": {
-        "/DataWorkflowStack/BalanceTestRecordingsBucketArn.Parameter": [
+        "/DataWorkflowStack/balancetest-recordings-bucket/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "BalanceTestRecordingsBucketArnParameter"
+            "data": "balancetestrecordingsbucketA5C211E0"
           }
         ],
-        "/DataWorkflowStack/balancetestrecordings160420-dev/Notifications/Resource": [
+        "/DataWorkflowStack/balancetest-recordings-bucket/Notifications/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "balancetestrecordings160420devNotifications99916FC2"
+            "data": "balancetestrecordingsbucketNotifications21BFBA79"
           }
         ],
-        "/DataWorkflowStack/balancetestrecordings160420-dev/AllowBucketNotificationsToDataWorkflowStackBalanceTestconvertjsontoparquetandcsv0BBF7125": [
+        "/DataWorkflowStack/balancetest-recordings-bucket/AllowBucketNotificationsToDataWorkflowStackBalanceTestconvertjsontoparquetandcsv0BBF7125": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "balancetestrecordings160420devAllowBucketNotificationsToDataWorkflowStackBalanceTestconvertjsontoparquetandcsv0BBF712512B02A20"
+            "data": "balancetestrecordingsbucketAllowBucketNotificationsToDataWorkflowStackBalanceTestconvertjsontoparquetandcsv0BBF71252D5693E0"
+          }
+        ],
+        "/DataWorkflowStack/balancetest-accesspt": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "balancetestaccesspt"
           }
         ],
         "/DataWorkflowStack/BalanceTest-S3LambdaTrigger-Logs/Resource": [
@@ -380,10 +548,16 @@
             "data": "CDKMetadata"
           }
         ],
-        "/DataWorkflowStack/Exports/Output{\"Ref\":\"BalanceTestRecordingsBucketArnParameter\"}": [
+        "/DataWorkflowStack/Exports/Output{\"Fn::GetAtt\":[\"balancetestrecordingsbucketA5C211E0\",\"Arn\"]}": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefBalanceTestRecordingsBucketArnParameterB5195FA2"
+            "data": "ExportsOutputFnGetAttbalancetestrecordingsbucketA5C211E0ArnCD616F4B"
+          }
+        ],
+        "/DataWorkflowStack/Exports/Output{\"Ref\":\"balancetestrecordingsbucketA5C211E0\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefbalancetestrecordingsbucketA5C211E0DBE9D240"
           }
         ],
         "/DataWorkflowStack/Exports/Output{\"Fn::GetAtt\":[\"BalanceTestgeneratereportfordownload0C388CF5\",\"Arn\"]}": [
@@ -429,7 +603,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::684904187051:role/cdk-hnb659fds-deploy-role-684904187051-ca-central-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::684904187051:role/cdk-hnb659fds-cfn-exec-role-684904187051-ca-central-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/5a4c797eab8e8a6bfb260d6dc3908892f072b6b73bdd0a436dd4f912d406da7c.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/5b2f3b0dac588c1ef66a44446c56b6119b62f15ffbcc2d61f4debeb35c0b4d60.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -585,7 +759,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::684904187051:role/cdk-hnb659fds-deploy-role-684904187051-ca-central-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::684904187051:role/cdk-hnb659fds-cfn-exec-role-684904187051-ca-central-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/26006f8b27133abca088ea89d73528f21523dec597df422bd35ad1ea5af28972.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/76bddfdc751ab58d6f40aee3c10b2aeda5149d50d0a028f8db3e353716036e70.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -598,6 +772,7 @@
         }
       },
       "dependencies": [
+        "VPCStack",
         "DataWorkflowStack",
         "AthenaGlueStack.assets"
       ],

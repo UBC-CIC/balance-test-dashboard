@@ -56,9 +56,8 @@
           "Fn::Join": [
            "",
            [
-            "arn:aws:s3:::",
             {
-             "Fn::ImportValue": "DataWorkflowStack:ExportsOutputRefBalanceTestRecordingsBucketArnParameterB5195FA2"
+             "Fn::ImportValue": "DataWorkflowStack:ExportsOutputFnGetAttbalancetestrecordingsbucketA5C211E0ArnCD616F4B"
             },
             "/parquet_data/patient_tests/*"
            ]
@@ -95,7 +94,7 @@
          [
           "s3://",
           {
-           "Fn::ImportValue": "DataWorkflowStack:ExportsOutputRefBalanceTestRecordingsBucketArnParameterB5195FA2"
+           "Fn::ImportValue": "DataWorkflowStack:ExportsOutputRefbalancetestrecordingsbucketA5C211E0DBE9D240"
           },
           "/parquet_data/patient_tests/"
          ]
@@ -176,6 +175,18 @@
         ":iam::aws:policy/AmazonAthenaFullAccess"
        ]
       ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+       ]
+      ]
      }
     ],
     "Policies": [
@@ -213,7 +224,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-684904187051-ca-central-1",
-     "S3Key": "613583d6535ea2fbc09bf56ead88bf53117f398e230c78a695eea41e865f620e.zip"
+     "S3Key": "11bcb3001ea27d32b2c5fd579dc6874c4d00656a5a6e6072af48419036f32864.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -224,7 +235,7 @@
     "Environment": {
      "Variables": {
       "S3_BUCKET_NAME": {
-       "Fn::ImportValue": "DataWorkflowStack:ExportsOutputRefBalanceTestRecordingsBucketArnParameterB5195FA2"
+       "Fn::ImportValue": "DataWorkflowStack:ExportsOutputRefbalancetestrecordingsbucketA5C211E0DBE9D240"
       },
       "IDENTITY_POOL_ID": {
        "Ref": "BalanceTestCognitoIdentityPoolIdParameter"
@@ -239,14 +250,29 @@
     "Handler": "query-s3.handler",
     "MemorySize": 512,
     "Runtime": "python3.9",
-    "Timeout": 180
+    "Timeout": 180,
+    "VpcConfig": {
+     "SecurityGroupIds": [
+      {
+       "Fn::ImportValue": "VPCStack:ExportsOutputFnGetAttbalanceTestVPCFBF0FFB3DefaultSecurityGroupDA29CDF5"
+      }
+     ],
+     "SubnetIds": [
+      {
+       "Fn::ImportValue": "VPCStack:ExportsOutputRefbalanceTestVPCprivatesubnetSubnet1Subnet8BA87DE45B0B5EB2"
+      },
+      {
+       "Fn::ImportValue": "VPCStack:ExportsOutputRefbalanceTestVPCprivatesubnetSubnet2SubnetD1E1933170382F7C"
+      }
+     ]
+    }
    },
    "DependsOn": [
     "BalanceTestAthenaQueryS3LambdaRole29CCB440"
    ],
    "Metadata": {
     "aws:cdk:path": "AthenaGlueStack/BalanceTest-query-S3/Resource",
-    "aws:asset:path": "asset.613583d6535ea2fbc09bf56ead88bf53117f398e230c78a695eea41e865f620e",
+    "aws:asset:path": "asset.11bcb3001ea27d32b2c5fd579dc6874c4d00656a5a6e6072af48419036f32864",
     "aws:asset:is-bundled": false,
     "aws:asset:property": "Code"
    }

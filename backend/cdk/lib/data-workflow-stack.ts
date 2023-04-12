@@ -22,6 +22,7 @@ export class DataWorkflowStack extends Stack {
     // constructor(scope: App, id: string, props: StackProps) {
       super(scope, id, props);
       
+      const balanceTestBucketName = 'balancetest-recordings-bucket'
       const balanceTestBucketAccessPointName = "balancetest-accesspt";
       const s3LambdaTriggerName = "BalanceTest-convert-json-to-parquet-and-csv";
       const s3LambdaTriggerFileName = "s3-trigger-convert-json-to-parquet-and-csv";
@@ -44,23 +45,23 @@ export class DataWorkflowStack extends Stack {
       }
 
       //must ensure that this is a PRIVATE/BLOCK_ALL public access bucket!
-      // this.balanceTestBucket = new s3.Bucket(this, balanceTestBucketName, {
-      //   bucketName: balanceTestBucketName,
-      //   removalPolicy: RemovalPolicy.RETAIN,
-      //   blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
-      //   publicReadAccess: false,
-      //   versioned: true,
-      //   encryption: s3.BucketEncryption.S3_MANAGED,
-      //   objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_ENFORCED
-      // }); 
+      this.balanceTestBucket = new s3.Bucket(this, balanceTestBucketName, {
+        bucketName: balanceTestBucketName,
+        removalPolicy: RemovalPolicy.RETAIN,
+        blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+        publicReadAccess: false,
+        versioned: true,
+        encryption: s3.BucketEncryption.S3_MANAGED,
+        objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_ENFORCED
+      }); 
 
       //TODO: change to secured StringParameter
-      const balanceTestBucketName = ssm.StringParameter.fromStringParameterAttributes(this, "BalanceTestRecordingsBucketArn", {
-        parameterName: "S3BucketName"
-      }).stringValue;
+      // const balanceTestBucketName = ssm.StringParameter.fromStringParameterAttributes(this, "BalanceTestRecordingsBucketArn", {
+      //   parameterName: "S3BucketName"
+      // }).stringValue;
 
       // get data storage bucket using bucket ARN
-      this.balanceTestBucket = s3.Bucket.fromBucketArn(this, "balancetestrecordings160420-dev", "arn:aws:s3:::" + balanceTestBucketName);
+      // this.balanceTestBucket = s3.Bucket.fromBucketArn(this, "balancetestrecordings160420-dev", "arn:aws:s3:::" + balanceTestBucketName);
 
       // add an access point for VPC
       const balanceTestBucketAccessPoint = new s3.CfnAccessPoint(this, balanceTestBucketAccessPointName, {
