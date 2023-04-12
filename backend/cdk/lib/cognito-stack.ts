@@ -11,9 +11,8 @@ import { AthenaGlueStack } from './athena-glue-stack';
 import { DatabaseStack } from './database-stack';
 import * as console from "console";
 
-export class AppsyncStack extends Stack {
-    constructor(scope: App, id: string, vpcStack: VPCStack, dataWorkflowStack: DataWorkflowStack, 
-                athenaGlueStack: AthenaGlueStack, databaseStack: DatabaseStack, props?: StackProps) {
+export class CognitoStack extends Stack {
+    constructor(scope: App, id: string, props?: StackProps) {
         super(scope, id, props);
 
         const appsyncName = "BalanceTest-API";
