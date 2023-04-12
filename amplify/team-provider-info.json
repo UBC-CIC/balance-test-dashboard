@@ -13,10 +13,6 @@
       "AuthTriggerTemplateURL": "https://s3.amazonaws.com/amplify-balancetestdashboard-dev-160420-deployment/amplify-cfn-templates/auth/auth-trigger-cloudformation-template.json"
     },
     "categories": {
-      "auth": {
-        "balancetestdashboard733fb088": {},
-        "userPoolGroups": {}
-      },
       "function": {
         "balancetestdashboard733fb088PreTokenGeneration": {
           "deploymentBucketName": "amplify-balancetestdashboard-dev-160420-deployment",
@@ -34,12 +30,26 @@
       "api": {
         "balancetestdashboard": {}
       },
-      "storage": {
-        "balanceTestS3": {}
+      "auth": {
+        "balancetestdashboardf52840bc": {
+          "userPoolId": "ca-central-1_82JKf7kZF",
+          "userPoolName": "test-userpool",
+          "webClientId": "3ice1dahl2q6u46593nu3ooms6",
+          "nativeClientId": "3ice1dahl2q6u46593nu3ooms6",
+          "identityPoolId": "ca-central-1:3e95ed36-bfe4-451e-9779-3d58ce794c71",
+          "identityPoolName": "test-identitypool",
+          "allowUnauthenticatedIdentities": false,
+          "authRoleArn": "arn:aws:iam::684904187051:role/Cognito_testidentitypoolAuth_Role",
+          "authRoleName": "Cognito_testidentitypoolAuth_Role",
+          "unauthRoleArn": "arn:aws:iam::684904187051:role/Cognito_testidentitypoolUnauth_Role",
+          "unauthRoleName": "Cognito_testidentitypoolUnauth_Role"
+        }
       },
-      "custom": {
-        "paramStoreParams": {},
-        "authRoles": {}
+      "storage": {
+        "balancetestdashboard89967b51": {
+          "bucketName": "balancetestrecordings160420-dev",
+          "region": "ca-central-1"
+        }
       }
     }
   }

@@ -1,6 +1,9 @@
 version: 1
 backend:
   phases:
+    # preBuild:
+    #   commands:
+    #     - sh import_resources.sh
     build:
       commands:
         - '# Execute Amplify CLI with the helper script'

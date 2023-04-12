@@ -19,134 +19,15 @@
     }
   },
   "auth": {
-    "balancetestdashboard733fb088": {
+    "balancetestdashboardf52840bc": {
       "customAuth": false,
-      "dependsOn": [
-        {
-          "attributes": [
-            "Arn",
-            "Name"
-          ],
-          "category": "function",
-          "resourceName": "balancetestdashboard733fb088PostConfirmation",
-          "triggerProvider": "Cognito"
-        },
-        {
-          "attributes": [
-            "Arn",
-            "Name"
-          ],
-          "category": "function",
-          "resourceName": "balancetestdashboard733fb088PreTokenGeneration",
-          "triggerProvider": "Cognito"
-        }
-      ],
-      "frontendAuthConfig": {
-        "mfaConfiguration": "OPTIONAL",
-        "mfaTypes": [
-          "TOTP"
-        ],
-        "passwordProtectionSettings": {
-          "passwordPolicyCharacters": [],
-          "passwordPolicyMinLength": 8
-        },
-        "signupAttributes": [
-          "EMAIL",
-          "FAMILY_NAME",
-          "GIVEN_NAME"
-        ],
-        "socialProviders": [],
-        "usernameAttributes": [
-          "EMAIL"
-        ],
-        "verificationMechanisms": [
-          "EMAIL"
-        ]
-      },
+      "dependsOn": [],
       "providerPlugin": "awscloudformation",
-      "service": "Cognito"
-    },
-    "userPoolGroups": {
-      "dependsOn": [
-        {
-          "attributes": [
-            "UserPoolId",
-            "AppClientIDWeb",
-            "AppClientID",
-            "IdentityPoolId"
-          ],
-          "category": "auth",
-          "resourceName": "balancetestdashboard733fb088"
-        }
-      ],
-      "providerPlugin": "awscloudformation",
-      "service": "Cognito-UserPool-Groups"
+      "service": "Cognito",
+      "serviceType": "imported"
     }
   },
-  "custom": {
-    "authRoles": {
-      "dependsOn": [
-        {
-          "attributes": [
-            "BucketName",
-            "Region"
-          ],
-          "category": "storage",
-          "resourceName": "balanceTestS3"
-        },
-        {
-          "attributes": [
-            "IdentityPoolId",
-            "IdentityPoolName",
-            "UserPoolId",
-            "UserPoolArn",
-            "UserPoolName",
-            "AppClientIDWeb",
-            "AppClientID"
-          ],
-          "category": "auth",
-          "resourceName": "balancetestdashboard733fb088"
-        }
-      ],
-      "providerPlugin": "awscloudformation",
-      "service": "customCDK"
-    },
-    "paramStoreParams": {
-      "dependsOn": [
-        {
-          "attributes": [
-            "GraphQLAPIIdOutput",
-            "GraphQLAPIEndpointOutput"
-          ],
-          "category": "api",
-          "resourceName": "balancetestdashboard"
-        },
-        {
-          "attributes": [
-            "IdentityPoolId",
-            "IdentityPoolName",
-            "UserPoolId",
-            "UserPoolArn",
-            "UserPoolName",
-            "AppClientIDWeb",
-            "AppClientID"
-          ],
-          "category": "auth",
-          "resourceName": "balancetestdashboard733fb088"
-        },
-        {
-          "attributes": [
-            "BucketName",
-            "Region"
-          ],
-          "category": "storage",
-          "resourceName": "balanceTestS3"
-        }
-      ],
-      "providerPlugin": "awscloudformation",
-      "service": "customCDK"
-    }
-  },
+  "custom": {},
   "function": {
     "balancetestdashboard733fb088PostConfirmation": {
       "build": true,
@@ -165,6 +46,94 @@
     }
   },
   "parameters": {
+    "AMPLIFY_auth_balancetestdashboardf52840bc_allowUnauthenticatedIdentities": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "balancetestdashboardf52840bc"
+        }
+      ]
+    },
+    "AMPLIFY_auth_balancetestdashboardf52840bc_authRoleArn": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "balancetestdashboardf52840bc"
+        }
+      ]
+    },
+    "AMPLIFY_auth_balancetestdashboardf52840bc_authRoleName": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "balancetestdashboardf52840bc"
+        }
+      ]
+    },
+    "AMPLIFY_auth_balancetestdashboardf52840bc_identityPoolId": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "balancetestdashboardf52840bc"
+        }
+      ]
+    },
+    "AMPLIFY_auth_balancetestdashboardf52840bc_identityPoolName": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "balancetestdashboardf52840bc"
+        }
+      ]
+    },
+    "AMPLIFY_auth_balancetestdashboardf52840bc_nativeClientId": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "balancetestdashboardf52840bc"
+        }
+      ]
+    },
+    "AMPLIFY_auth_balancetestdashboardf52840bc_unauthRoleArn": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "balancetestdashboardf52840bc"
+        }
+      ]
+    },
+    "AMPLIFY_auth_balancetestdashboardf52840bc_unauthRoleName": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "balancetestdashboardf52840bc"
+        }
+      ]
+    },
+    "AMPLIFY_auth_balancetestdashboardf52840bc_userPoolId": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "balancetestdashboardf52840bc"
+        }
+      ]
+    },
+    "AMPLIFY_auth_balancetestdashboardf52840bc_userPoolName": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "balancetestdashboardf52840bc"
+        }
+      ]
+    },
+    "AMPLIFY_auth_balancetestdashboardf52840bc_webClientId": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "balancetestdashboardf52840bc"
+        }
+      ]
+    },
     "AMPLIFY_function_balancetestdashboard733fb088PostConfirmation_deploymentBucketName": {
       "usedBy": [
         {
@@ -212,13 +181,30 @@
           "resourceName": "graphQlLambdaAuthorizera86a1dbf"
         }
       ]
+    },
+    "AMPLIFY_storage_balancetestdashboard89967b51_bucketName": {
+      "usedBy": [
+        {
+          "category": "storage",
+          "resourceName": "balancetestdashboard89967b51"
+        }
+      ]
+    },
+    "AMPLIFY_storage_balancetestdashboard89967b51_region": {
+      "usedBy": [
+        {
+          "category": "storage",
+          "resourceName": "balancetestdashboard89967b51"
+        }
+      ]
     }
   },
   "storage": {
-    "balanceTestS3": {
+    "balancetestdashboard89967b51": {
       "dependsOn": [],
       "providerPlugin": "awscloudformation",
-      "service": "S3"
+      "service": "S3",
+      "serviceType": "imported"
     }
   }
 }

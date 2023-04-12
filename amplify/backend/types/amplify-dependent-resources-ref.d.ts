@@ -5,21 +5,6 @@ export type AmplifyDependentResourcesAttributes = {
       "GraphQLAPIIdOutput": "string"
     }
   },
-  "auth": {
-    "balancetestdashboard733fb088": {
-      "AppClientID": "string",
-      "AppClientIDWeb": "string",
-      "IdentityPoolId": "string",
-      "IdentityPoolName": "string",
-      "UserPoolArn": "string",
-      "UserPoolId": "string",
-      "UserPoolName": "string"
-    },
-    "userPoolGroups": {
-      "careProviderGroupRole": "string",
-      "patientGroupRole": "string"
-    }
-  },
   "function": {
     "balancetestdashboard733fb088PostConfirmation": {
       "Arn": "string",
@@ -40,12 +25,6 @@ export type AmplifyDependentResourcesAttributes = {
       "LambdaExecutionRole": "string",
       "LambdaExecutionRoleArn": "string",
       "Name": "string",
-      "Region": "string"
-    }
-  },
-  "storage": {
-    "balanceTestS3": {
-      "BucketName": "string",
       "Region": "string"
     }
   }
