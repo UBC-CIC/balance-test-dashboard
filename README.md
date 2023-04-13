@@ -32,33 +32,34 @@ For instructions on how to navigate the web app interface, refer to the [Web App
 ├── backend/
 ├── node_modules
 ├── public
-├── src/
-│   ├── actions
-|   ├── assets/images
-│   ├── components/
-│   │   ├── AdminDashboard/
-│   │   ├── authentication/
-│   │   ├── Rankings/
-│   │   ├── ResearcherProfile/
-│   │   ├── SearchResearchers/
-│   │   │   ├── AdvancedSearch/
-│   │   │   └── Search/
-│   │   ├── Metrics/
-│   │   ├── LoadingWheel.js
-│   │   └── NavigationBar.js
-│   ├── graphql/
-│   ├── reducers/
-│   ├── views/
-│   ├── .gitignore
-│   ├── App.css
-│   ├── App.js
-│   ├── App.test.js
-│   ├── aws-exports.js
-│   ├── index.css
-│   ├── index.js
-│   ├── reportWebVitals.js
-│   ├── setupTests.js
-│   └── themes.js
+├── frontend
+│   ├── src/
+│   │   ├── actions
+│   |   ├── assets/images
+│   │   ├── components/
+│   │   │   ├── AdminDashboard/
+│   │   │   ├── authentication/
+│   │   │   ├── Rankings/
+│   │   │   ├── ResearcherProfile/
+│   │   │   ├── SearchResearchers/
+│   │   │   │   ├── AdvancedSearch/
+|   │   │   │   └── Search/
+|   │   │   ├── Metrics/
+|   │   │   ├── LoadingWheel.js
+|   │   │   └── NavigationBar.js
+|   │   ├── graphql/
+|   │   ├── reducers/
+|   │   ├── views/
+|   │   ├── .gitignore
+|   │   ├── App.css
+|   │   ├── App.js
+|   │   ├── App.test.js
+|   │   ├── aws-exports.js
+|   │   ├── index.css
+|   │   ├── index.js
+|   │   ├── reportWebVitals.js
+|   │   ├── setupTests.js
+|   │   └── themes.js
 ├── .gitignore
 ├── .graphqlconfig.yml
 ├── package-lock.json

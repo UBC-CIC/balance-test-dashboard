@@ -87,9 +87,7 @@ export default function AuthenticationPage() {
           if (!userGroupArr) {
             console.log("backend authentication error");
             Auth.signOut();
-          }
-
-          if (userGroupArr.includes("careProvider")) {
+          } else if (userGroupArr.includes("careProvider")) {
             navigate("/patientTable");
             makeCareProvider(email);
           } else {
