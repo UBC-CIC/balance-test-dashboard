@@ -3,7 +3,7 @@
   "balancetestsensordatagluedb": {
    "Type": "AWS::Glue::Database",
    "Properties": {
-    "CatalogId": "684904187051",
+    "CatalogId": "160092849934",
     "DatabaseInput": {
      "Name": "balancetest-sensordata-gluedb"
     }
@@ -223,7 +223,7 @@
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
-     "S3Bucket": "cdk-hnb659fds-assets-684904187051-ca-central-1",
+     "S3Bucket": "cdk-hnb659fds-assets-160092849934-ca-central-1",
      "S3Key": "11bcb3001ea27d32b2c5fd579dc6874c4d00656a5a6e6072af48419036f32864.zip"
     },
     "Role": {
@@ -283,7 +283,7 @@
     "Name": "BalanceTestAthenaDataCatalog",
     "Type": "GLUE",
     "Parameters": {
-     "catalog-id": "684904187051"
+     "catalog-id": "160092849934"
     }
    },
    "Metadata": {

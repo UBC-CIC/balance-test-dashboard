@@ -2,6 +2,8 @@
 !jest.config.js
 !appsync/AppsyncFunctions/*.js
 !appsync/resolverMappingFunctions/*.js
+!add-usertype-claim.js
+!assign-user-group.js
 *.d.ts
 node_modules
 

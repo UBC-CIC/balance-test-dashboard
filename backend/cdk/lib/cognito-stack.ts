@@ -19,35 +19,6 @@ export class CognitoStack extends Stack {
     constructor(scope: App, id: string, props?: StackProps) {
         super(scope, id, props);
 
-
-        const lambdaTriggerRole = new iam.Role(this, 'BalanceTestCognitoLambdaRole', {
-            roleName: 'BalanceTestCognitoLambdaRole',
-            assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
-            inlinePolicies: {
-                additional: new iam.PolicyDocument({
-                        statements: [
-                        new iam.PolicyStatement({
-                            effect: iam.Effect.ALLOW,
-                            actions: [
-                                // Lambda
-                                'lambda:InvokeFunction',
-                                // CloudWatch
-                                "logs:CreateLogStream",
-                                "logs:CreateLogGroup",
-                                "logs:PutLogEvents",
-                                // Cognito
-                                "cognito-idp:AdminAddUserToGroup",
-                            ],
-                            resources: [
-                                `arn:aws:cognito-idp:${this.region}:${this.account}:userpool/${this.UserPoolId}`,
-                                "arn:aws:logs:*:*:*",
-                            ]
-                        })
-                    ]
-                }),
-            },
-        });
-
         const assignUserGroupFunction = new lambda.Function(this, 'AssignUserGroupFunction', {
             functionName: "BalanceTestAssignUserGroupFunction",
             code: lambda.Code.fromAsset("./lambda/" + 'assignUserGroup'),
@@ -55,7 +26,7 @@ export class CognitoStack extends Stack {
             runtime: lambda.Runtime.NODEJS_14_X,
             memorySize: 512,
             timeout: cdk.Duration.seconds(30),
-            role: lambdaTriggerRole,
+            // role: lambdaTriggerRole,
         });
 
         const addClaimsFunction = new lambda.Function(this, 'AddClaimsFunction', {
@@ -65,9 +36,8 @@ export class CognitoStack extends Stack {
             runtime: lambda.Runtime.NODEJS_14_X,
             memorySize: 512,
             timeout: cdk.Duration.seconds(30),
-            role: lambdaTriggerRole,
-        });
-
+            // role: lambdaTriggerRole,
+        });        
         // User Pool
         const userPool = new cognito.UserPool(this, 'BalanceTestUserPool', {
             userPoolName: 'balance-test-user-pool',
@@ -107,6 +77,82 @@ export class CognitoStack extends Stack {
             }
         });
         this.UserPoolId = userPool.userPoolId;
+        
+        // const lambdaTriggerRole = new iam.Role(this, 'BalanceTestCognitoLambdaRole', {
+        //     roleName: 'BalanceTestCognitoLambdaRole',
+        //     assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com'),
+        //     inlinePolicies: {
+        //         additional: new iam.PolicyDocument({
+        //                 statements: [
+        //                 new iam.PolicyStatement({
+        //                     effect: iam.Effect.ALLOW,
+        //                     actions: [
+        //                         // Lambda
+        //                         'lambda:InvokeFunction',
+        //                         // CloudWatch
+        //                         "logs:CreateLogStream",
+        //                         "logs:CreateLogGroup",
+        //                         "logs:PutLogEvents",
+        //                         // Cognito
+        //                         "cognito-idp:AdminAddUserToGroup",
+        //                     ],
+        //                     resources: [
+        //                         `arn:aws:cognito-idp:${this.region}:${this.account}:userpool/${this.UserPoolId}`,
+        //                         "arn:aws:logs:*:*:*",
+        //                     ]
+        //                 })
+        //             ]
+        //         }),
+        //     },
+        // });
+
+        assignUserGroupFunction.role!.grantAssumeRole(new iam.ServicePrincipal('lambda.amazonaws.com'))
+        
+        assignUserGroupFunction.role!.attachInlinePolicy(new iam.Policy(this, 'AssignUserGroupPolicy', {
+            statements: [ 
+                new iam.PolicyStatement({
+                    effect: iam.Effect.ALLOW,
+                    actions: [
+                        // Lambda
+                        'lambda:InvokeFunction',
+                        // CloudWatch
+                        "logs:CreateLogStream",
+                        "logs:CreateLogGroup",
+                        "logs:PutLogEvents",
+                        // Cognito
+                        "cognito-idp:AdminAddUserToGroup",
+                    ],
+                    resources: [
+                        `arn:aws:cognito-idp:${this.region}:${this.account}:userpool/${this.UserPoolId}`,
+                        "arn:aws:logs:*:*:*",
+                    ]
+                })
+            ]
+        }));
+
+        addClaimsFunction.role!.grantAssumeRole(new iam.ServicePrincipal('lambda.amazonaws.com'))
+        
+        addClaimsFunction.role!.attachInlinePolicy(new iam.Policy(this, 'AddClaimsPolicy', {
+            statements: [ 
+                new iam.PolicyStatement({
+                    effect: iam.Effect.ALLOW,
+                    actions: [
+                        // Lambda
+                        'lambda:InvokeFunction',
+                        // CloudWatch
+                        "logs:CreateLogStream",
+                        "logs:CreateLogGroup",
+                        "logs:PutLogEvents",
+                        // Cognito
+                        // "cognito-idp:AdminAddUserToGroup",
+                    ],
+                    resources: [
+                        `arn:aws:cognito-idp:${this.region}:${this.account}:userpool/${this.UserPoolId}`,
+                        "arn:aws:logs:*:*:*",
+                    ]
+                })
+            ]
+        }));
 
         const patientGroup = new cognito.CfnUserPoolGroup(this, 'BalanceTestPatientUserGroup', {
             userPoolId: this.UserPoolId,
@@ -237,7 +283,7 @@ export class CognitoStack extends Stack {
             ],
             resources: ["arn:aws:s3:::json-to-parquet-poc-bucket/*"],
             conditions:{
-            'StringEquals':{"aws:PrincipalTag/user_type": "care_provider_user"}
+            'StringEquals':{"aws:PrincipalTag/user_type": "careProvider"}
             }
         }));
         authenticatedRole.addManagedPolicy(iam.ManagedPolicy.fromManagedPolicyArn(this, 'athenaManagedPolicy', 'arn:aws:iam::aws:policy/AmazonAthenaFullAccess'));

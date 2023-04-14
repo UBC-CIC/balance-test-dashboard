@@ -97,7 +97,7 @@
      ]
     },
     "Principal": "s3.amazonaws.com",
-    "SourceAccount": "684904187051",
+    "SourceAccount": "160092849934",
     "SourceArn": {
      "Fn::GetAtt": [
       "balancetestrawrecordingsbucket6127ADBC",
@@ -115,7 +115,7 @@
     "Bucket": {
      "Ref": "balancetestrawrecordingsbucket6127ADBC"
     },
-    "BucketAccountId": "684904187051",
+    "BucketAccountId": "160092849934",
     "Name": "balancetest-accesspoint",
     "PublicAccessBlockConfiguration": {
      "BlockPublicAcls": true,
@@ -271,7 +271,7 @@
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
-     "S3Bucket": "cdk-hnb659fds-assets-684904187051-ca-central-1",
+     "S3Bucket": "cdk-hnb659fds-assets-160092849934-ca-central-1",
      "S3Key": "86f34e0d43218d8102e9a365636e568dc4f9bd3a8889d64d34b6588fcad24474.zip"
     },
     "Role": {
@@ -485,7 +485,7 @@
    "Type": "AWS::Lambda::LayerVersion",
    "Properties": {
     "Content": {
-     "S3Bucket": "cdk-hnb659fds-assets-684904187051-ca-central-1",
+     "S3Bucket": "cdk-hnb659fds-assets-160092849934-ca-central-1",
      "S3Key": "07c4934444be84969c7ccfeb533965193dbd02c14f340fd2429147a5bab3a32f.zip"
     },
     "CompatibleRuntimes": [
@@ -506,7 +506,7 @@
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
-     "S3Bucket": "cdk-hnb659fds-assets-684904187051-ca-central-1",
+     "S3Bucket": "cdk-hnb659fds-assets-160092849934-ca-central-1",
      "S3Key": "640c240b4dccd6e5383ed94289d2222a24e6fde1f31a2cc33f226a5766cf573c.zip"
     },
     "Role": {
@@ -668,7 +668,7 @@
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
-     "S3Bucket": "cdk-hnb659fds-assets-684904187051-ca-central-1",
+     "S3Bucket": "cdk-hnb659fds-assets-160092849934-ca-central-1",
      "S3Key": "328fa161f4d106e3485dfbef5984fe7f8497e4e4985e08542f1a4c2b16b3696d.zip"
     },
     "Role": {

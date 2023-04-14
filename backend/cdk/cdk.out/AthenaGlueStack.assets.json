@@ -7,25 +7,25 @@
         "packaging": "zip"
       },
       "destinations": {
-        "684904187051-ca-central-1": {
-          "bucketName": "cdk-hnb659fds-assets-684904187051-ca-central-1",
+        "160092849934-ca-central-1": {
+          "bucketName": "cdk-hnb659fds-assets-160092849934-ca-central-1",
           "objectKey": "11bcb3001ea27d32b2c5fd579dc6874c4d00656a5a6e6072af48419036f32864.zip",
           "region": "ca-central-1",
-          "assumeRoleArn": "arn:${AWS::Partition}:iam::684904187051:role/cdk-hnb659fds-file-publishing-role-684904187051-ca-central-1"
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::160092849934:role/cdk-hnb659fds-file-publishing-role-160092849934-ca-central-1"
         }
       }
     },
-    "71b999b6cc349b74de864bc257817c65855326a2e1c793a07142f8d6eaa41371": {
+    "81472742aea5252d69fa58d24060f5a19adc34cd2aec37fd80414230b151a99a": {
       "source": {
         "path": "AthenaGlueStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "684904187051-ca-central-1": {
-          "bucketName": "cdk-hnb659fds-assets-684904187051-ca-central-1",
-          "objectKey": "71b999b6cc349b74de864bc257817c65855326a2e1c793a07142f8d6eaa41371.json",
+        "160092849934-ca-central-1": {
+          "bucketName": "cdk-hnb659fds-assets-160092849934-ca-central-1",
+          "objectKey": "81472742aea5252d69fa58d24060f5a19adc34cd2aec37fd80414230b151a99a.json",
           "region": "ca-central-1",
-          "assumeRoleArn": "arn:${AWS::Partition}:iam::684904187051:role/cdk-hnb659fds-file-publishing-role-684904187051-ca-central-1"
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::160092849934:role/cdk-hnb659fds-file-publishing-role-160092849934-ca-central-1"
         }
       }
     }

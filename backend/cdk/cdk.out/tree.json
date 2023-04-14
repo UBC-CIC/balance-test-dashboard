@@ -8,78 +8,67 @@
         "id": "CognitoStack",
         "path": "CognitoStack",
         "children": {
-          "BalanceTestCognitoLambdaRole": {
-            "id": "BalanceTestCognitoLambdaRole",
-            "path": "CognitoStack/BalanceTestCognitoLambdaRole",
-            "children": {
-              "ImportBalanceTestCognitoLambdaRole": {
-                "id": "ImportBalanceTestCognitoLambdaRole",
-                "path": "CognitoStack/BalanceTestCognitoLambdaRole/ImportBalanceTestCognitoLambdaRole",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.Resource",
-                  "version": "2.69.0"
-                }
-              },
-              "Resource": {
-                "id": "Resource",
-                "path": "CognitoStack/BalanceTestCognitoLambdaRole/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                  "aws:cdk:cloudformation:props": {
-                    "assumeRolePolicyDocument": {
-                      "Statement": [
-                        {
-                          "Action": "sts:AssumeRole",
-                          "Effect": "Allow",
-                          "Principal": {
-                            "Service": "lambda.amazonaws.com"
-                          }
-                        }
-                      ],
-                      "Version": "2012-10-17"
-                    },
-                    "policies": [
-                      {
-                        "policyName": "additional",
-                        "policyDocument": {
-                          "Statement": [
-                            {
-                              "Action": [
-                                "cognito-idp:AdminAddUserToGroup",
-                                "lambda:InvokeFunction",
-                                "logs:CreateLogGroup",
-                                "logs:CreateLogStream",
-                                "logs:PutLogEvents"
-                              ],
-                              "Effect": "Allow",
-                              "Resource": [
-                                "arn:aws:cognito-idp:ca-central-1:684904187051:userpool/undefined",
-                                "arn:aws:logs:*:*:*"
-                              ]
-                            }
-                          ],
-                          "Version": "2012-10-17"
-                        }
-                      }
-                    ],
-                    "roleName": "BalanceTestCognitoLambdaRole"
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                  "version": "2.69.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_iam.Role",
-              "version": "2.69.0"
-            }
-          },
           "AssignUserGroupFunction": {
             "id": "AssignUserGroupFunction",
             "path": "CognitoStack/AssignUserGroupFunction",
             "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "CognitoStack/AssignUserGroupFunction/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "CognitoStack/AssignUserGroupFunction/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "2.69.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "CognitoStack/AssignUserGroupFunction/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "2.69.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "2.69.0"
+                }
+              },
               "Code": {
                 "id": "Code",
                 "path": "CognitoStack/AssignUserGroupFunction/Code",
@@ -113,12 +102,12 @@
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                   "aws:cdk:cloudformation:props": {
                     "code": {
-                      "s3Bucket": "cdk-hnb659fds-assets-684904187051-ca-central-1",
+                      "s3Bucket": "cdk-hnb659fds-assets-160092849934-ca-central-1",
                       "s3Key": "b98e4acccac03598642c7b2c9806c00dc0390f70ff0a6f9a0e94c185fe287af6.zip"
                     },
                     "role": {
                       "Fn::GetAtt": [
-                        "BalanceTestCognitoLambdaRoleE5D63388",
+                        "AssignUserGroupFunctionServiceRoleC10E9FDE",
                         "Arn"
                       ]
                     },
@@ -144,6 +133,63 @@
             "id": "AddClaimsFunction",
             "path": "CognitoStack/AddClaimsFunction",
             "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "CognitoStack/AddClaimsFunction/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "CognitoStack/AddClaimsFunction/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "2.69.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "CognitoStack/AddClaimsFunction/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "2.69.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "2.69.0"
+                }
+              },
               "Code": {
                 "id": "Code",
                 "path": "CognitoStack/AddClaimsFunction/Code",
@@ -177,12 +223,12 @@
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                   "aws:cdk:cloudformation:props": {
                     "code": {
-                      "s3Bucket": "cdk-hnb659fds-assets-684904187051-ca-central-1",
-                      "s3Key": "7fd81ba7092e71604febfd9da1975d9054f59303ea7109db28cef14fd8a0a1c0.zip"
+                      "s3Bucket": "cdk-hnb659fds-assets-160092849934-ca-central-1",
+                      "s3Key": "8bcd26854bfcb5f7e6d0ec7044edaa77e03fb9a5b8d3144444259947d3956861.zip"
                     },
                     "role": {
                       "Fn::GetAtt": [
-                        "BalanceTestCognitoLambdaRoleE5D63388",
+                        "AddClaimsFunctionServiceRole61728394",
                         "Arn"
                       ]
                     },
@@ -339,6 +385,121 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_cognito.UserPool",
+              "version": "2.69.0"
+            }
+          },
+          "AssignUserGroupPolicy": {
+            "id": "AssignUserGroupPolicy",
+            "path": "CognitoStack/AssignUserGroupPolicy",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "CognitoStack/AssignUserGroupPolicy/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                  "aws:cdk:cloudformation:props": {
+                    "policyDocument": {
+                      "Statement": [
+                        {
+                          "Action": [
+                            "cognito-idp:AdminAddUserToGroup",
+                            "lambda:InvokeFunction",
+                            "logs:CreateLogGroup",
+                            "logs:CreateLogStream",
+                            "logs:PutLogEvents"
+                          ],
+                          "Effect": "Allow",
+                          "Resource": [
+                            "arn:aws:logs:*:*:*",
+                            {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "arn:aws:cognito-idp:ca-central-1:160092849934:userpool/",
+                                  {
+                                    "Ref": "BalanceTestUserPool00512217"
+                                  }
+                                ]
+                              ]
+                            }
+                          ]
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "policyName": "AssignUserGroupPolicyE37E392B",
+                    "roles": [
+                      {
+                        "Ref": "AssignUserGroupFunctionServiceRoleC10E9FDE"
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                  "version": "2.69.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_iam.Policy",
+              "version": "2.69.0"
+            }
+          },
+          "AddClaimsPolicy": {
+            "id": "AddClaimsPolicy",
+            "path": "CognitoStack/AddClaimsPolicy",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "CognitoStack/AddClaimsPolicy/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                  "aws:cdk:cloudformation:props": {
+                    "policyDocument": {
+                      "Statement": [
+                        {
+                          "Action": [
+                            "lambda:InvokeFunction",
+                            "logs:CreateLogGroup",
+                            "logs:CreateLogStream",
+                            "logs:PutLogEvents"
+                          ],
+                          "Effect": "Allow",
+                          "Resource": [
+                            "arn:aws:logs:*:*:*",
+                            {
+                              "Fn::Join": [
+                                "",
+                                [
+                                  "arn:aws:cognito-idp:ca-central-1:160092849934:userpool/",
+                                  {
+                                    "Ref": "BalanceTestUserPool00512217"
+                                  }
+                                ]
+                              ]
+                            }
+                          ]
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "policyName": "AddClaimsPolicyE20D8C10",
+                    "roles": [
+                      {
+                        "Ref": "AddClaimsFunctionServiceRole61728394"
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                  "version": "2.69.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_iam.Policy",
               "version": "2.69.0"
             }
           },
@@ -593,7 +754,7 @@
                               ],
                               "Condition": {
                                 "StringEquals": {
-                                  "aws:PrincipalTag/user_type": "care_provider_user"
+                                  "aws:PrincipalTag/user_type": "careProvider"
                                 }
                               },
                               "Effect": "Allow",
@@ -1808,7 +1969,7 @@
                       ]
                     },
                     "principal": "s3.amazonaws.com",
-                    "sourceAccount": "684904187051",
+                    "sourceAccount": "160092849934",
                     "sourceArn": {
                       "Fn::GetAtt": [
                         "balancetestrawrecordingsbucket6127ADBC",
@@ -1837,7 +1998,7 @@
                 "bucket": {
                   "Ref": "balancetestrawrecordingsbucket6127ADBC"
                 },
-                "bucketAccountId": "684904187051",
+                "bucketAccountId": "160092849934",
                 "name": "balancetest-accesspoint",
                 "publicAccessBlockConfiguration": {
                   "blockPublicAcls": true,
@@ -2072,7 +2233,7 @@
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                   "aws:cdk:cloudformation:props": {
                     "code": {
-                      "s3Bucket": "cdk-hnb659fds-assets-684904187051-ca-central-1",
+                      "s3Bucket": "cdk-hnb659fds-assets-160092849934-ca-central-1",
                       "s3Key": "86f34e0d43218d8102e9a365636e568dc4f9bd3a8889d64d34b6588fcad24474.zip"
                     },
                     "role": {
@@ -2396,7 +2557,7 @@
                   "aws:cdk:cloudformation:type": "AWS::Lambda::LayerVersion",
                   "aws:cdk:cloudformation:props": {
                     "content": {
-                      "s3Bucket": "cdk-hnb659fds-assets-684904187051-ca-central-1",
+                      "s3Bucket": "cdk-hnb659fds-assets-160092849934-ca-central-1",
                       "s3Key": "07c4934444be84969c7ccfeb533965193dbd02c14f340fd2429147a5bab3a32f.zip"
                     },
                     "compatibleRuntimes": [
@@ -2453,7 +2614,7 @@
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                   "aws:cdk:cloudformation:props": {
                     "code": {
-                      "s3Bucket": "cdk-hnb659fds-assets-684904187051-ca-central-1",
+                      "s3Bucket": "cdk-hnb659fds-assets-160092849934-ca-central-1",
                       "s3Key": "640c240b4dccd6e5383ed94289d2222a24e6fde1f31a2cc33f226a5766cf573c.zip"
                     },
                     "role": {
@@ -2702,7 +2863,7 @@
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                   "aws:cdk:cloudformation:props": {
                     "code": {
-                      "s3Bucket": "cdk-hnb659fds-assets-684904187051-ca-central-1",
+                      "s3Bucket": "cdk-hnb659fds-assets-160092849934-ca-central-1",
                       "s3Key": "328fa161f4d106e3485dfbef5984fe7f8497e4e4985e08542f1a4c2b16b3696d.zip"
                     },
                     "role": {
@@ -3312,7 +3473,7 @@
                           "Action": "sts:AssumeRole",
                           "Effect": "Allow",
                           "Principal": {
-                            "AWS": "arn:aws:iam::684904187051:root"
+                            "AWS": "arn:aws:iam::160092849934:root"
                           }
                         }
                       ],
@@ -3344,7 +3505,7 @@
                                 "Fn::Join": [
                                   "",
                                   [
-                                    "arn:aws:rds-db:ca-central-1:684904187051:dbuser:",
+                                    "arn:aws:rds-db:ca-central-1:160092849934:dbuser:",
                                     {
                                       "Fn::Select": [
                                         6,
@@ -3539,7 +3700,7 @@
                   "aws:cdk:cloudformation:type": "AWS::Lambda::LayerVersion",
                   "aws:cdk:cloudformation:props": {
                     "content": {
-                      "s3Bucket": "cdk-hnb659fds-assets-684904187051-ca-central-1",
+                      "s3Bucket": "cdk-hnb659fds-assets-160092849934-ca-central-1",
                       "s3Key": "f59f4121318cb1f52308fa20490d34305bb91ed413a9ea3c763f3cfd22aced2c.zip"
                     },
                     "compatibleRuntimes": [
@@ -3604,7 +3765,7 @@
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                   "aws:cdk:cloudformation:props": {
                     "code": {
-                      "s3Bucket": "cdk-hnb659fds-assets-684904187051-ca-central-1",
+                      "s3Bucket": "cdk-hnb659fds-assets-160092849934-ca-central-1",
                       "s3Key": "db03a011e78d101d7e6b05c0347dc45934b90138d595641918756fa88363bc28.zip"
                     },
                     "role": {
@@ -3808,7 +3969,7 @@
             "attributes": {
               "aws:cdk:cloudformation:type": "AWS::Glue::Database",
               "aws:cdk:cloudformation:props": {
-                "catalogId": "684904187051",
+                "catalogId": "160092849934",
                 "databaseInput": {
                   "name": "balancetest-sensordata-gluedb"
                 }
@@ -4151,7 +4312,7 @@
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                   "aws:cdk:cloudformation:props": {
                     "code": {
-                      "s3Bucket": "cdk-hnb659fds-assets-684904187051-ca-central-1",
+                      "s3Bucket": "cdk-hnb659fds-assets-160092849934-ca-central-1",
                       "s3Key": "11bcb3001ea27d32b2c5fd579dc6874c4d00656a5a6e6072af48419036f32864.zip"
                     },
                     "role": {
@@ -4216,7 +4377,7 @@
                 "name": "BalanceTestAthenaDataCatalog",
                 "type": "GLUE",
                 "parameters": {
-                  "catalog-id": "684904187051"
+                  "catalog-id": "160092849934"
                 }
               }
             },
@@ -4968,7 +5129,7 @@
                     },
                     "dataSourceName": "BalanceTest_generate_report_s3_lambda",
                     "name": "redirect_s3_download_function",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/28735a8c309355275f86385cbe993eaf9a328414d4a855a213e82b2905150081.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-160092849934-ca-central-1/28735a8c309355275f86385cbe993eaf9a328414d4a855a213e82b2905150081.js",
                     "functionVersion": "2018-05-29",
                     "runtime": {
                       "name": "APPSYNC_JS",
@@ -5028,7 +5189,7 @@
                     },
                     "dataSourceName": "BalanceTest_query_s3_lambda",
                     "name": "redirect_s3_data_retrieval_function",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/28735a8c309355275f86385cbe993eaf9a328414d4a855a213e82b2905150081.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-160092849934-ca-central-1/28735a8c309355275f86385cbe993eaf9a328414d4a855a213e82b2905150081.js",
                     "functionVersion": "2018-05-29",
                     "runtime": {
                       "name": "APPSYNC_JS",
@@ -5088,7 +5249,7 @@
                     },
                     "dataSourceName": "BalanceTest_postgresql_connection_lambda",
                     "name": "redirect_postgresql_rds_function",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/28735a8c309355275f86385cbe993eaf9a328414d4a855a213e82b2905150081.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-160092849934-ca-central-1/28735a8c309355275f86385cbe993eaf9a328414d4a855a213e82b2905150081.js",
                     "functionVersion": "2018-05-29",
                     "runtime": {
                       "name": "APPSYNC_JS",
@@ -5148,7 +5309,7 @@
                     },
                     "dataSourceName": "BalanceTest_delete_event_record_lambda",
                     "name": "redirect_delete_event_function",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/28735a8c309355275f86385cbe993eaf9a328414d4a855a213e82b2905150081.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-160092849934-ca-central-1/28735a8c309355275f86385cbe993eaf9a328414d4a855a213e82b2905150081.js",
                     "functionVersion": "2018-05-29",
                     "runtime": {
                       "name": "APPSYNC_JS",
@@ -5208,7 +5369,7 @@
                     },
                     "fieldName": "deleteTestEventFromS3",
                     "typeName": "Mutation",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/03b666df465f4cb77d2e803618fcb06777820376c9fb4f2150ae7e30380f8826.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-160092849934-ca-central-1/03b666df465f4cb77d2e803618fcb06777820376c9fb4f2150ae7e30380f8826.js",
                     "kind": "PIPELINE",
                     "pipelineConfig": {
                       "functions": [
@@ -5278,7 +5439,7 @@
                     },
                     "fieldName": "downloadTestEventDetails",
                     "typeName": "Query",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/1417748595b9bc762ee0150e41fb3e7623ec03e210bfebbfb14f9ce1f4864857.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-160092849934-ca-central-1/1417748595b9bc762ee0150e41fb3e7623ec03e210bfebbfb14f9ce1f4864857.js",
                     "kind": "PIPELINE",
                     "pipelineConfig": {
                       "functions": [
@@ -5348,7 +5509,7 @@
                     },
                     "fieldName": "getMeasurementRange",
                     "typeName": "Query",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/624ca0f1fa299e76091da12d2a9117f144274595c1fae5be97c85d5b6fa93ec6.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-160092849934-ca-central-1/624ca0f1fa299e76091da12d2a9117f144274595c1fae5be97c85d5b6fa93ec6.js",
                     "kind": "PIPELINE",
                     "pipelineConfig": {
                       "functions": [
@@ -5418,7 +5579,7 @@
                     },
                     "fieldName": "getMeasurementData",
                     "typeName": "Query",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/9b943f1efb1239e650ac1e54845fd1799b1e56ef6857d9df0d792b8e78071d8b.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-160092849934-ca-central-1/9b943f1efb1239e650ac1e54845fd1799b1e56ef6857d9df0d792b8e78071d8b.js",
                     "kind": "PIPELINE",
                     "pipelineConfig": {
                       "functions": [
@@ -5488,7 +5649,7 @@
                     },
                     "fieldName": "getAllAvailableTests",
                     "typeName": "Query",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/ad5babc432fd36f7cbff972ca47437d7a3210d636591278bfee63136e83983f0.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-160092849934-ca-central-1/ad5babc432fd36f7cbff972ca47437d7a3210d636591278bfee63136e83983f0.js",
                     "kind": "PIPELINE",
                     "pipelineConfig": {
                       "functions": [
@@ -5558,7 +5719,7 @@
                     },
                     "fieldName": "getAllPatients",
                     "typeName": "Query",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/8c126736eaaafc289e736b7bdda928f70402d04bc2f5f81ad502eeed830730d3.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-160092849934-ca-central-1/8c126736eaaafc289e736b7bdda928f70402d04bc2f5f81ad502eeed830730d3.js",
                     "kind": "PIPELINE",
                     "pipelineConfig": {
                       "functions": [
@@ -5628,7 +5789,7 @@
                     },
                     "fieldName": "getCareproviderById",
                     "typeName": "Query",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/38b48e18570470d0c8df943e916d4084911780961f68cc3a10e5d1432578efde.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-160092849934-ca-central-1/38b48e18570470d0c8df943e916d4084911780961f68cc3a10e5d1432578efde.js",
                     "kind": "PIPELINE",
                     "pipelineConfig": {
                       "functions": [
@@ -5698,7 +5859,7 @@
                     },
                     "fieldName": "getPatientAssignedTests",
                     "typeName": "Query",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/e0d6e49137ce0d9ee036a4e1adeef594db12c2799715a9ff6e790c419b4a6e7b.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-160092849934-ca-central-1/e0d6e49137ce0d9ee036a4e1adeef594db12c2799715a9ff6e790c419b4a6e7b.js",
                     "kind": "PIPELINE",
                     "pipelineConfig": {
                       "functions": [
@@ -5768,7 +5929,7 @@
                     },
                     "fieldName": "getPatientById",
                     "typeName": "Query",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/d5993348c43c76e5ed9b27568adffcef1ee1079f4a8b1833ab37f312a8ea9c17.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-160092849934-ca-central-1/d5993348c43c76e5ed9b27568adffcef1ee1079f4a8b1833ab37f312a8ea9c17.js",
                     "kind": "PIPELINE",
                     "pipelineConfig": {
                       "functions": [
@@ -5838,7 +5999,7 @@
                     },
                     "fieldName": "getPatientsForCareprovider",
                     "typeName": "Query",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/db0e93ecff4017301c5368bfeeccc52f76e6cef856ea77ace5bed1f59980e0d9.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-160092849934-ca-central-1/db0e93ecff4017301c5368bfeeccc52f76e6cef856ea77ace5bed1f59980e0d9.js",
                     "kind": "PIPELINE",
                     "pipelineConfig": {
                       "functions": [
@@ -5908,7 +6069,7 @@
                     },
                     "fieldName": "getScoreStatsOverTime",
                     "typeName": "Query",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/20cdfb5eb4ae37685be4bf29a1d835e16698297a2e0232586506db0d9bde0b93.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-160092849934-ca-central-1/20cdfb5eb4ae37685be4bf29a1d835e16698297a2e0232586506db0d9bde0b93.js",
                     "kind": "PIPELINE",
                     "pipelineConfig": {
                       "functions": [
@@ -5978,7 +6139,7 @@
                     },
                     "fieldName": "getTestEventById",
                     "typeName": "Query",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/66720e2a227eb3480a17b84f5887888878abb5b3b2573e287a91a744a63e3710.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-160092849934-ca-central-1/66720e2a227eb3480a17b84f5887888878abb5b3b2573e287a91a744a63e3710.js",
                     "kind": "PIPELINE",
                     "pipelineConfig": {
                       "functions": [
@@ -6048,7 +6209,7 @@
                     },
                     "fieldName": "getTestEvents",
                     "typeName": "Query",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/140c72a9f0ace327aca51d7ed3cfc9497a88da95d0bf6bbd3ac103cd8436569a.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-160092849934-ca-central-1/140c72a9f0ace327aca51d7ed3cfc9497a88da95d0bf6bbd3ac103cd8436569a.js",
                     "kind": "PIPELINE",
                     "pipelineConfig": {
                       "functions": [
@@ -6118,7 +6279,7 @@
                     },
                     "fieldName": "addPatientToCareProvider",
                     "typeName": "Mutation",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/d6b02755e306aed1a028c368c4e667376b51bbcd4deb7cdb38570b4c73475e7b.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-160092849934-ca-central-1/d6b02755e306aed1a028c368c4e667376b51bbcd4deb7cdb38570b4c73475e7b.js",
                     "kind": "PIPELINE",
                     "pipelineConfig": {
                       "functions": [
@@ -6188,7 +6349,7 @@
                     },
                     "fieldName": "addTestType",
                     "typeName": "Mutation",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/b359c6f607cdbc9297a2bd3300ee4abf411665b12e18c0518c8d7089d19a995e.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-160092849934-ca-central-1/b359c6f607cdbc9297a2bd3300ee4abf411665b12e18c0518c8d7089d19a995e.js",
                     "kind": "PIPELINE",
                     "pipelineConfig": {
                       "functions": [
@@ -6258,7 +6419,7 @@
                     },
                     "fieldName": "assignTestToPatient",
                     "typeName": "Mutation",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/248647d3e798dbe95eb4519659b92994d9de592664911bc4f0958f0c77031581.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-160092849934-ca-central-1/248647d3e798dbe95eb4519659b92994d9de592664911bc4f0958f0c77031581.js",
                     "kind": "PIPELINE",
                     "pipelineConfig": {
                       "functions": [
@@ -6328,7 +6489,7 @@
                     },
                     "fieldName": "createCareProvider",
                     "typeName": "Mutation",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/3f3cf540e7ac47520ea65692d092f5cdb930374abacc4ae6b7e27b6dda4fe9b9.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-160092849934-ca-central-1/3f3cf540e7ac47520ea65692d092f5cdb930374abacc4ae6b7e27b6dda4fe9b9.js",
                     "kind": "PIPELINE",
                     "pipelineConfig": {
                       "functions": [
@@ -6398,7 +6559,7 @@
                     },
                     "fieldName": "createPatient",
                     "typeName": "Mutation",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/98856c90076a66b257236940ccd83e9eab6c1950fb55e29b8304467dd1e26743.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-160092849934-ca-central-1/98856c90076a66b257236940ccd83e9eab6c1950fb55e29b8304467dd1e26743.js",
                     "kind": "PIPELINE",
                     "pipelineConfig": {
                       "functions": [
@@ -6468,7 +6629,7 @@
                     },
                     "fieldName": "deleteTestEventFromDB",
                     "typeName": "Mutation",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/bae3879d903c5af2a49be8d45c40ff5d52d85748c71436192ad593f469b57ce9.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-160092849934-ca-central-1/bae3879d903c5af2a49be8d45c40ff5d52d85748c71436192ad593f469b57ce9.js",
                     "kind": "PIPELINE",
                     "pipelineConfig": {
                       "functions": [
@@ -6538,7 +6699,7 @@
                     },
                     "fieldName": "putBalanceScore",
                     "typeName": "Mutation",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/01dfa272140a8116c68ea9133f55bda580c9d371bcfb26cef0bbc66621f9f2d3.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-160092849934-ca-central-1/01dfa272140a8116c68ea9133f55bda580c9d371bcfb26cef0bbc66621f9f2d3.js",
                     "kind": "PIPELINE",
                     "pipelineConfig": {
                       "functions": [
@@ -6608,7 +6769,7 @@
                     },
                     "fieldName": "putTestResult",
                     "typeName": "Mutation",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/70b2bdf9b2544d1ab085a1f180998e015275e7d7fc0d38d25df9309f61408b2a.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-160092849934-ca-central-1/70b2bdf9b2544d1ab085a1f180998e015275e7d7fc0d38d25df9309f61408b2a.js",
                     "kind": "PIPELINE",
                     "pipelineConfig": {
                       "functions": [
@@ -6678,7 +6839,7 @@
                     },
                     "fieldName": "recordConsentDate",
                     "typeName": "Mutation",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/a4af5dad8aab229cebbdc396b587dbaa940e10e2c9e3337c0243d2e6ba99260d.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-160092849934-ca-central-1/a4af5dad8aab229cebbdc396b587dbaa940e10e2c9e3337c0243d2e6ba99260d.js",
                     "kind": "PIPELINE",
                     "pipelineConfig": {
                       "functions": [
@@ -6748,7 +6909,7 @@
                     },
                     "fieldName": "removeTestFromPatient",
                     "typeName": "Mutation",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/d3d8f6627b02d69ab0ad687517b5f687d96f332217e2e87bdd7acc6eb90c8b1f.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-160092849934-ca-central-1/d3d8f6627b02d69ab0ad687517b5f687d96f332217e2e87bdd7acc6eb90c8b1f.js",
                     "kind": "PIPELINE",
                     "pipelineConfig": {
                       "functions": [

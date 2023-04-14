@@ -83,6 +83,9 @@ ALTER TABLE "TestEvent" ADD FOREIGN KEY ("test_type") REFERENCES "Test" ("test_t
 ALTER TABLE "PatientTestAssignment" ADD FOREIGN KEY ("patient_id") REFERENCES "Patient" ("patient_id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 ALTER TABLE "PatientTestAssignment" ADD FOREIGN KEY ("test_type") REFERENCES "Test" ("test_type") ON DELETE CASCADE ON UPDATE CASCADE;
+
+INSERT INTO "Test" (test_type, instructions, duration_in_seconds)
+    VALUES ('sit-to-stand', '1. Sit on a chair with knees bent at a 90-degree angle and both feet flat on the floor\n2. Attach your mobile device to your chest with the chest strap\n3. Click the start button on the next page to begin recording your movement\n4. Stand up - Try to avoid using your hands for support\n5. Tap on the screen to end the recording\n6. Review recording details and add additional notes if needed\n7. Click send to send to your doctor or back to restart', 60);
 `;
 
 // Use this code snippet in your app.
