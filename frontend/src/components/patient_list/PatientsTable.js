@@ -132,7 +132,7 @@ function DisplayRows({
 
   let navigate = useNavigate();
 
-  // console.log("Display All Patients.");
+  console.log("Display All Patients.");
 
   if (patientDataRowsArr.length === 0) {
     return (
@@ -168,7 +168,7 @@ function DisplayRows({
                       <Button
                         onClick={() => {
                           // navigate("/patient");
-                          // console.log("row", row);
+                          console.log("row", row);
                           navigate(`/patient/${row.user_id}`);
                         }}
                       >
@@ -281,7 +281,7 @@ function DisplaySearchResults({
   const [numTestsAssigned, setNumTestsAssigned] = React.useState(0);
 
   let navigate = useNavigate();
-  // console.log("Display Search Results.");
+  console.log("Display Search Results.");
 
   if (searchResults.length === 0) {
     return (
@@ -312,7 +312,7 @@ function DisplaySearchResults({
                     {column.id === "see_patient_data" && (
                       <Button
                         onClick={() => {
-                          // console.log("row.patient_id", row.user_id);
+                          console.log("row.patient_id", row.user_id);
                           navigate(`/patient/${row.user_id}`);
                           // navigate(`/patient`);
                         }}
@@ -406,22 +406,22 @@ export function PatientsTable() {
   };
 
   async function fetchData() {
+    console.log("in fetchdata");
     let sesh = await Auth.currentSession();
     let idtoken = sesh.idToken.jwtToken;
     console.log("idtoken", idtoken);
     let data = [];
 
     let userCreds = await Auth.currentUserCredentials();
+    console.log("usrecreds", userCreds);
     let identity_id = userCreds["identityId"];
 
     identity_id = identity_id.split(":")[1]; //get id without the region
 
     setCareProviderId(identity_id);
+    console.log("care provider: ", careProviderId);
 
-    // console.log("in fetchdata");
     try {
-      // console.log("in fetchdata try block");
-
       let response = await API.graphql({
         query: getPatientsForCareprovider,
         variables: {
@@ -431,7 +431,7 @@ export function PatientsTable() {
       });
 
       let patientsInfo = response.data.getPatientsForCareprovider;
-      // console.log("patientsInfo", patientsInfo);
+      console.log("patientsInfo", patientsInfo);
 
       for (let p = 0; p < patientsInfo.length; p++) {
         let res1 = await API.graphql({
@@ -441,7 +441,7 @@ export function PatientsTable() {
           },
           authToken: idtoken,
         });
-        // console.log("res1", res1);
+        console.log("res1", res1);
 
         let res2 = await API.graphql({
           query: getTestEvents,
@@ -456,7 +456,7 @@ export function PatientsTable() {
             return 0;
           }
         });
-        // console.log("res2", res2);
+        console.log("res2", res2);
 
         let lastMovementAssigned =
           res2 == null
@@ -506,7 +506,7 @@ export function PatientsTable() {
   }
 
   useEffect(() => {
-    // console.log("in useeffect");
+    console.log("in useeffect");
     fetchData().then(() => setLoading(false));
   }, []);
 
