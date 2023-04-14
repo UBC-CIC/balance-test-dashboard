@@ -13,11 +13,13 @@ export class DatabaseStack extends Stack {
 
     private readonly postgresqlRDSConnectLambda: lambda.Function;
     private readonly rdsCredentialSecret: sm.Secret;
+    private readonly rdsInstanceName: string;
+    private readonly proxy: rds.DatabaseProxy;
 
     constructor(scope: App, id: string, vpcStack: VPCStack, props?: StackProps) {
         super(scope, id, props);
 
-        const rdsInstanceName = "balancetest_postgresql_instance";
+        this.rdsInstanceName = "balancetest_postgresql_instance";
         const postgresqlRDSConnectLambdaName = "BalanceTest-postgresql-RDS-connect";
         const postgresqlRDSConnectLambdaFileName = "postgresql-rds-connect";
         const postgresqlRDSConnectLambdaRoleName = "BalanceTest-postgresqlRDSConnectLambda-Role";
@@ -115,9 +117,9 @@ export class DatabaseStack extends Stack {
 
         //TODO: double this configuration
         // make single-AZ RDS instance 
-        const rdsInstance = new rds.DatabaseInstance(this, rdsInstanceName, {
+        const rdsInstance = new rds.DatabaseInstance(this, this.rdsInstanceName, {
             engine: rds.DatabaseInstanceEngine.POSTGRES,
-            databaseName: rdsInstanceName,
+            databaseName: this.rdsInstanceName,
             multiAz: true,
             instanceType: ec2.InstanceType.of(ec2.InstanceClass.T3, ec2.InstanceSize.MICRO),
             storageType: rds.StorageType.GP2,
@@ -143,7 +145,7 @@ export class DatabaseStack extends Stack {
             securityGroups: [vpcSecurityGroup]
         })
 
-        const proxy = new rds.DatabaseProxy(this, 'Proxy', {
+        this.proxy = new rds.DatabaseProxy(this, 'Proxy', {
             proxyTarget: rds.ProxyTarget.fromInstance(rdsInstance),
             secrets: [this.rdsCredentialSecret],
             vpc: vpcStack.vpc,
@@ -152,7 +154,7 @@ export class DatabaseStack extends Stack {
         });
 
         const dbProxyRole = new iam.Role(this, 'DBProxyRole', { assumedBy: new iam.AccountPrincipal(this.account) });
-        proxy.grantConnect(dbProxyRole, 'admin'); // Grant the role connection access to the DB Proxy for database user 'admin'.
+        this.proxy.grantConnect(dbProxyRole, 'admin'); // Grant the role connection access to the DB Proxy for database user 'admin'.
         
         //TODO: check if we need this
         // const port = ec2.Port.tcp(dbPort);
@@ -203,8 +205,8 @@ export class DatabaseStack extends Stack {
             memorySize: 512,
             role: postgresqlRDSConnectLambdaRole,
             environment: {
-                "PGDATABASE": rdsInstanceName,
-                "PGHOST": proxy.endpoint,
+                "PGDATABASE": this.rdsInstanceName,
+                "PGHOST": this.proxy.endpoint,
                 "PG_SECRET_NAME": this.rdsCredentialSecret.secretName,
                 "PGUSER": this.rdsCredentialSecret.secretValueFromJson('username').unsafeUnwrap(),
                 "PGPASSWORD": this.rdsCredentialSecret.secretValueFromJson('password').unsafeUnwrap(),
@@ -229,5 +231,13 @@ export class DatabaseStack extends Stack {
 
     public getDatabaseSecretArn(): string {
         return this.rdsCredentialSecret.secretArn;
+    }
+
+    public getDatabaseName(): string {
+        return this.rdsInstanceName;
+    }
+
+    public getDatabaseProxyEndpoint(): string {
+        return this.proxy.endpoint; 
     }
 }
