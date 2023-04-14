@@ -312,7 +312,6 @@ function DisplaySearchResults({
                     {column.id === "see_patient_data" && (
                       <Button
                         onClick={() => {
-                          console.log("row.patient_id", row.user_id);
                           navigate(`/patient/${row.user_id}`);
                           // navigate(`/patient`);
                         }}
@@ -406,14 +405,11 @@ export function PatientsTable() {
   };
 
   async function fetchData() {
-    console.log("in fetchdata");
     let sesh = await Auth.currentSession();
     let idtoken = sesh.idToken.jwtToken;
-    console.log("idtoken", idtoken);
     let data = [];
 
     let userCreds = await Auth.currentUserCredentials();
-    console.log("usrecreds", userCreds);
     let identity_id = userCreds["identityId"];
 
     identity_id = identity_id.split(":")[1]; //get id without the region
@@ -441,7 +437,6 @@ export function PatientsTable() {
           },
           authToken: idtoken,
         });
-        console.log("res1", res1);
 
         let res2 = await API.graphql({
           query: getTestEvents,
@@ -456,7 +451,6 @@ export function PatientsTable() {
             return 0;
           }
         });
-        console.log("res2", res2);
 
         let lastMovementAssigned =
           res2 == null
@@ -506,7 +500,6 @@ export function PatientsTable() {
   }
 
   useEffect(() => {
-    console.log("in useeffect");
     fetchData().then(() => setLoading(false));
   }, []);
 

@@ -58,7 +58,6 @@ export default function AuthenticationPage() {
 
     try {
       identity_id = identity_id.split(":")[1]; //get id without the region
-      console.log("identityid", identity_id);
 
       let response = await API.graphql({
         query: createCareProvider,
@@ -77,7 +76,6 @@ export default function AuthenticationPage() {
     <Box>
       <Authenticator services={authServices}>
         {({ signOut, user }) => {
-          console.log("user", user);
           let userGroupArr =
             user["signInUserSession"]["accessToken"]["payload"][
               "cognito:groups"

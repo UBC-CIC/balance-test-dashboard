@@ -1,5 +1,5 @@
 # Deployment Guide
-## Backend Deployment
+
 The `backend` folder contains AWS CDK stacks and AWS Lambda function code that will manage the data stores and corresponding interactions with the webapp.
 
 | Index                                                      | Description                                               |
@@ -34,6 +34,7 @@ cd ../..
 Initialize the CDK stacks (required only if you have not deployed this stack before).
 ```
 cdk synth --profile balance-test
+todo: needed?
 cdk bootstrap aws://YOUR_AWS_ACCOUNT_ID/us-west-2 --profile balance-test
 ```
 

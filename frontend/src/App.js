@@ -12,7 +12,7 @@ import Navbar from "./components/nav/Navbar";
 import Box from "@mui/material/Box";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { TestDetails } from "./pages/TestDetails";
-import { Auth , Hub} from 'aws-amplify';
+import { Auth, Hub } from "aws-amplify";
 // import "@aws-amplify/ui-react/styles.css";
 import AuthenticationPage from "./pages/Authentication";
 import { PatientsTable } from "./components/patient_list/PatientsTable";
@@ -40,7 +40,7 @@ function App() {
   const theme = createTheme();
 
   async function setAuthListener() {
-    Hub.listen('auth', (listenerData) => {
+    Hub.listen("auth", (listenerData) => {
       switch (listenerData.payload.event) {
         case "signOut":
           // console.log("signOut")
@@ -53,47 +53,37 @@ function App() {
         default:
           break;
       }
-      
     });
   }
 
   React.useEffect(() => {
     setAuthListener();
-  }, [])
+  }, []);
 
   React.useEffect(() => {
     console.log("Login state (App): ", loginState);
-    
-    const { userInfo } = Auth.currentAuthenticatedUser()
-                        .then((user) => {
-                          setLoginState(true);
-                      
-                        }).catch((err) => {
-                          setLoginState(false);
-                          console.log(err);
-                        });
-    
 
+    const { userInfo } = Auth.currentAuthenticatedUser()
+      .then((user) => {
+        setLoginState(true);
+      })
+      .catch((err) => {
+        setLoginState(false);
+        console.log(err);
+      });
   }, [loginState]);
-  
+
   return (
     <>
       {loginState == true ? (
         <BrowserRouter>
           <Navbar loginState={loginState} setLoginState={setLoginState} />
           <ThemeProvider theme={theme}>
-            
-
             <Container maxWidth="lg">
               <Routes>
                 <Route path="/" element={<AuthenticationPage />} />
                 <Route index path="/patientTable" element={<PatientsTable />} />
-                <Route
-                  path="patient/:patient_id"
-                  element={
-                    <PatientPage />
-                  }
-                />
+                <Route path="patient/:patient_id" element={<PatientPage />} />
                 <Route
                   path="testDetails/:patient_id/:test_event_id"
                   element={<TestDetails />}
@@ -106,7 +96,11 @@ function App() {
                     routes for. */}
                 <Route
                   path="*"
-                  element={<Box sx={{display: 'flex', justifyContent: 'center'}}>Sorry, you've reached an unavailable page</Box>}
+                  element={
+                    <Box sx={{ display: "flex", justifyContent: "center" }}>
+                      Sorry, you've reached an unavailable page
+                    </Box>
+                  }
                 />
               </Routes>
             </Container>
@@ -117,7 +111,6 @@ function App() {
           <Navbar />
           <ThemeProvider theme={theme}>
             <Container maxWidth="lg">
-
               <Routes>
                 <Route index path="/" element={<AuthenticationPage />} />
                 <Route
@@ -125,11 +118,10 @@ function App() {
                   element={<Box>Sorry, you've reached an unavailable page</Box>}
                 />
               </Routes>
-
             </Container>
           </ThemeProvider>
         </BrowserRouter>
-      )} 
+      )}
     </>
   );
 }

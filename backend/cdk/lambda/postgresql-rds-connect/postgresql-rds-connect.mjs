@@ -6,7 +6,6 @@ import pg from "pg";
 // const s3 = new AWS.S3();
 // const bucketName = process.env.BUCKET_NAME;
 // const bucketName = process.env.S3_BUCKET_NAME;
-// todo: err handling, env var
 
 const PROXY_ENDPOINT = process.env.PGHOST;
 
@@ -100,7 +99,7 @@ INSERT INTO "Test" (test_type, instructions, duration_in_seconds)
 // const secret_name = "postgres-credentials";
 
 // const client = new SecretsManagerClient({
-//   region: "ca-central-1",
+//   region: process.env.AWS_REGION,
 // });
 
 // let response;
@@ -132,13 +131,9 @@ export const handler = async (event, context) => {
   }
   try {
     if (event.payload.sql) {
-      // console.log("event", event);
-      // console.log('context',context)
       let sql = event.payload.sql;
-      // let sql=`delete from "TestEvent" where patient_id='1ec6234a-232a-415d-9d31-f059c2cc4afa'`;
       console.log(`about to execute sql: `, sql);
       let res = await pool.query(sql);
-      console.log("sql execution result", res);
 
       response = {
         statusCode: 200,

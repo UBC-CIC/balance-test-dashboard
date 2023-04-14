@@ -60,7 +60,6 @@ export function TestDetails() {
       //   Authorization: `prefix-${idtoken}`,
       // },
     });
-    // console.log("reslambdaauth", reslambdaauth);
     let resPatient = await API.graphql({
       query: getPatientById,
       variables: { patient_id: patient_id },
@@ -82,7 +81,6 @@ export function TestDetails() {
   };
 
   const fetchMeasurement = async () => {
-    // console.log("76");
     let sesh = await Auth.currentSession();
     let idtoken = sesh.idToken.jwtToken;
 
@@ -104,14 +102,12 @@ export function TestDetails() {
 
       authToken: `${idtoken}`,
     });
-    // console.log("resmeasurement", resmeasurement);
     setMeasurementData(
       resmeasurement.data.getMeasurementData.ts.map((ts, i) => ({
         ts: ts,
         val: resmeasurement.data.getMeasurementData.val[i],
       }))
     );
-    // console.log("measurementData", measurementData);
     // }
   };
 
@@ -120,13 +116,11 @@ export function TestDetails() {
   }, []);
 
   useEffect(() => {
-    // console.log("112");
     fetchMeasurement();
   }, [measurementSelected]);
 
   const handleChange = (event) => {
     setMeasurementSelected(event.target.value);
-    // console.log("measurementSelected", measurementSelected);
   };
 
   const handleDownload = async (e) => {
@@ -152,11 +146,6 @@ export function TestDetails() {
     // window.open(pdfUrl);
     let rawUrl = resdownload.data.downloadTestEventDetails.raw_url;
     // window.open(rawUrl);
-
-    // pdfUrl = "a";
-    // rawUrl = "b";
-    // console.log("pdfUrl", pdfUrl);
-    // console.log("rawUrl", rawUrl);
 
     let downloadLink = document.createElement("a");
     downloadLink.download = rawUrl;

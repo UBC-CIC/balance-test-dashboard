@@ -59,7 +59,6 @@ export async function retrieveAssignedTests(user_id) {
     for (const movement of movement_tests) {
       if (testsArr.includes(movement)) {
         checkboxInitStateObj[movement] = true;
-
       } else {
         checkboxInitStateObj[movement] = false;
       }
@@ -80,8 +79,10 @@ export function ManageTests({
 
   const checkboxInitStateObj = initMovementsAssignedObj();
 
-  const [checkboxStates, setCheckboxStates] = React.useState(checkboxInitStateObj);
-  const [prevCheckboxStates, setPrevCheckboxStates] = React.useState(checkboxInitStateObj);
+  const [checkboxStates, setCheckboxStates] =
+    React.useState(checkboxInitStateObj);
+  const [prevCheckboxStates, setPrevCheckboxStates] =
+    React.useState(checkboxInitStateObj);
 
   React.useEffect(() => {
     retrieveAssignedTests(user_id)
@@ -128,12 +129,12 @@ export function ManageTests({
       let idtoken = sesh.idToken.jwtToken;
 
       let response = await API.graphql({
-        query: removeTestFromPatient, 
+        query: removeTestFromPatient,
         variables: {
           patient_id: user_id,
           test_type: testStr,
         },
-        authToken: idtoken
+        authToken: idtoken,
       });
 
       // console.log("removeTestFromPatient Response: ");
@@ -200,7 +201,6 @@ export function ManageTests({
             Select the movement(s) to assign to the patient.
           </DialogContentText>
           {movement_tests.map((movement_test) => {
-            // console.log("Checked: " + movement_test + "-" + checkboxStates[movement_test])
             return (
               <FormGroup key={movement_test}>
                 <FormControlLabel

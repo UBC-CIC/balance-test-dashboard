@@ -1,22 +1,18 @@
 import pg from "pg";
 import AWS from "aws-sdk";
-// const AWS = require("aws-sdk");
 const s3 = new AWS.S3();
-// const bucketName = process.env.BUCKET_NAME;
-const bucketName = "json-to-parquet-poc-bucket";
-// todo: err handling, env var
-
-const PROXY_ENDPOINT =
-  "postgres-proxy.proxy-coyl0mh3hp8c.ca-central-1.rds.amazonaws.com";
+const sm = new AWS.SecretsManagerClient();
+const bucketName = process.env.BUCKET_NAME;
 
 let pool;
 const connectDb = async () => {
   try {
     pool = new pg.Pool({
       user: process.env.PGUSER,
-      host: PROXY_ENDPOINT,
+      host: process.env.PROXY_ENDPOINT,
       database: process.env.PGDATABASE,
-      password: process.env.PGPASSWORD,
+      // password: process.env.PGPASSWORD,
+      password: dbPassword,
       port: process.env.PGPORT,
     });
     await pool.connect();
@@ -32,35 +28,27 @@ const connectDb = async () => {
 // If you need more information about configurations or implementing the sample code, visit the AWS docs:
 // https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/getting-started.html
 
-// import {
-//   SecretsManagerClient,
-//   GetSecretValueCommand,
-// } from "@aws-sdk/client-secrets-manager";
+const secret_name = "postgres-credentials";
 
-// const secret_name = "postgres-credentials";
+const client = new sm.SecretsManagerClient({
+  region: process.env.AWS_REGION,
+});
 
-// const client = new SecretsManagerClient({
-//   region: "ca-central-1",
-// });
+let response;
 
-// let response;
+try {
+  response = await client.send(
+    new GetSecretValueCommand({
+      SecretId: secret_name,
+    })
+  );
+} catch (error) {
+  // For a list of exceptions thrown, see
+  // https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_GetSecretValue.html
+  throw error;
+}
 
-// try {
-//   response = await client.send(
-//     new GetSecretValueCommand({
-//       SecretId: secret_name,
-//       VersionStage: "AWSCURRENT", // VersionStage defaults to AWSCURRENT if unspecified
-//     })
-//   );
-// } catch (error) {
-//   // For a list of exceptions thrown, see
-//   // https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_GetSecretValue.html
-//   throw error;
-// }
-
-// const secret = response.SecretString;
-
-// Your code goes here
+const dbPassword = response.SecretString;
 
 export const handler = async (event) => {
   let response;
@@ -72,29 +60,10 @@ export const handler = async (event) => {
       await connectDb();
       console.log(`about to execute sql: `, sql);
       let res = await pool.query(sql);
-      console.log("sql execution result", res);
 
       response = {
         statusCode: 200,
         body: res.rows,
-      };
-    } else if (event.payload.s3QueryParams) {
-      const params = {
-        Bucket: bucketName,
-        Key: s3QueryParams.key,
-      };
-      console.log(
-        "Retrieving object from bucket: " +
-          bucketName +
-          ", s3 params: " +
-          JSON.stringify(params)
-      );
-      const data = await s3.getObject(params).promise();
-      console.log("data", data);
-      const content = data.Body.toString("utf-8");
-      console.log("content", content);
-      resp = {
-        content: content,
       };
     }
   } catch (e) {

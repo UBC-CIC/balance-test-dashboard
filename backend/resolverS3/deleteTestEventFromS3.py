@@ -1,10 +1,11 @@
 import boto3
 import json
+import os
 
-bucket = "json-to-parquet-poc-bucket"
-identity_pool_id = 'ca-central-1:966e3d18-034c-451a-a396-e8df41963374'
-user_pool_id = 'ca-central-1_qBJ3I7w8V'
-region = 'ca-central-1'
+bucket = os.environ["BUCKET_NAME"]
+identity_pool_id = os.environ["IDENTITY_POOL_ID"]
+user_pool_id = os.environ["USER_POOL_ID"]
+region = os.environ["AWS_REGION"]
 
 
 cognito_identity = boto3.client('cognito-identity')
@@ -16,20 +17,20 @@ def lambda_handler(event, context):
     # todo: remove hard-coded val
     id_token = event['payload']['authorization']
     logins = {
-        f'cognito-idp.ca-central-1.amazonaws.com/{user_pool_id}': id_token
+        f'cognito-idp.{region}.amazonaws.com/{user_pool_id}': id_token
     }
     print('logins', logins)
     identityId = cognito_identity.get_id(
         IdentityPoolId=identity_pool_id,
         Logins={
-            f'cognito-idp.ca-central-1.amazonaws.com/{user_pool_id}': id_token
+            f'cognito-idp.{region}.amazonaws.com/{user_pool_id}': id_token
         }
     )['IdentityId']
 
     aws_cred = cognito_identity.get_credentials_for_identity(
         IdentityId=identityId,
         Logins={
-            f'cognito-idp.ca-central-1.amazonaws.com/{user_pool_id}': id_token
+            f'cognito-idp.{region}.amazonaws.com/{user_pool_id}': id_token
         }
     )['Credentials']
     print('aws_cred', aws_cred)
