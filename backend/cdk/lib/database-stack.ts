@@ -240,4 +240,5 @@ export class DatabaseStack extends Stack {
     public getDatabaseProxyEndpoint(): string {
         return this.proxy.endpoint; 
     }
+
 }
