@@ -14,6 +14,8 @@ import psycopg2
 from sagemaker.serializers import JSONSerializer
 from sagemaker.deserializers import JSONDeserializer
 from sagemaker.tensorflow import TensorFlow
+from sagemaker.tensorflow.serving import TensorFlowModel
+from sagemaker.multidatamodel import MultiDataModel
 from sagemaker import get_execution_role
 from scipy.signal import stft
 
@@ -29,7 +31,6 @@ s3 = boto3.client('s3')
 ssm = boto3.client('ssm')
 sagemaker_runtime = boto3.client('sagemaker-runtime', config=config)
 sagemaker = boto3.client('sagemaker')
-
 
 def lambda_handler(event, context):
 
@@ -77,7 +78,7 @@ def lambda_handler(event, context):
         # Get list of parameters from Parameter Store to compare
         print("Getting list of parameters.")
         response_describe_param = ssm.describe_parameters()
-        print("Response, describe parameters:", response_describe_param)
+        print("Got response, describe parameters")
         parameters = response_describe_param['Parameters']
         print("Finished getting list of parameters.")
 
@@ -98,68 +99,54 @@ def lambda_handler(event, context):
         print(e)
         print("Error with getting values from Parameter Store.")
         raise e
-
+    
+    # Setting where the models should be saved
+    model_location_prefix = f's3://{bucket}/saved_models/movement={movement_str}/user_id={user_id}'
+    
+    # Checking if an endpoint exists, and whether to make a training job or invoke an endpoint
     if (endpoint_exists_bool == False):
         print("Make new endpoint by starting a training job.")
-
-    elif (training_bool == True and endpoint_exists_bool == True):  # TODO: change to True after testing
-        print("Endpoint exists; checking if model training requirement is satisfied.")
+        
         training_folder_path = os.path.split(key)[0] + "/"
-
-        # list the training files in the training folder, get the data, and send them to a training job
-        try:
-            response_list_obj = s3.list_objects_v2(
-                Bucket=bucket, StartAfter=training_folder_path, Prefix=training_folder_path)
-            training_object_count = response_list_obj['KeyCount']
-
-            if (training_object_count % 10 == 0 and training_object_count >= 10):
-                print("Send for Sagemaker Training Job")
-
-        #         list_of_obj = response_list_obj['Contents'][-10:]
-        #         list_of_training_data = []
-        #         list_of_paths = []
-
-        #         for i in range(0, len(list_of_obj)):
-        #             key_to_append = bucket + '/' + list_of_obj[i]['Key']
-        #             list_of_paths.append(key_to_append)
-        # #             list_of_paths.append(f's3://{key_to_append}')
-        # #             response_s3_data_dict = get_object_from_s3(bucket, list_of_obj[i]['Key'])
-        # #             response_s3_data_str = json.dumps(response_s3_data_dict)
-        # #             list_of_training_data.append(response_s3_data_str)
-
-        # #         print(list_of_training_data)
-        # #         print("Length of list with training data:", len(list_of_training_data))
-        #         print(list_of_paths)
-                # print("Length of list with training data:", len(list_of_paths))
-
-                # TODO: modify the below lines for training
-                # tf_estimator = launch_training_job(bucket, training_folder_path)
-
-            else:
-                print("Not enough training recordings yet.")
-
-        except Exception as e:
-            print(e)
-            print('Error at path {} from bucket {}. Make sure they exist and your bucket is in the same region as this function.'.format(
-                training_folder_path, bucket))
-            raise e
-
+        
+        make_training_job_and_endpoint(bucket, training_folder_path, model_location_prefix)
+            
+    elif (training_bool == True and endpoint_exists_bool == True): # TODO: change to True after testing
+        print("Endpoint exists; checking if model training requirement is satisfied.")
+        
+        training_folder_path = os.path.split(key)[0] + "/"
+    
+        make_training_job_and_add_model(bucket, training_folder_path, model_location_prefix)
+    
     else:
-        print("Send to Sagemaker Endpoint")
-
+        print("Sending to Sagemaker Endpoint")
+        
         try:
             # TODO: remove after testing
             endpoint_parameter_value = os.environ['endpoint_name']
             # TODO: remove the line below after testing, and uncomment the line after
             target_model_name = 'p1'
             # target_model_name = user_id
-
+            
+            model_location_prefix = model_location_prefix + "/"
+            
             preprocessedArr = preprocess_data(response_get_body_dict)
             invokeEndpointInput = {"instances": preprocessedArr}
 
             serializer = JSONSerializer()
             invokeEndpointInput = serializer.serialize(invokeEndpointInput)
+            
+            # to get the most recent TargetModel for the user
+            try: 
+                response_list_obj = s3.list_objects_v2(Bucket=bucket, StartAfter=model_location_prefix, Prefix=model_location_prefix)
+                targetModelFileName = response_list_obj['Contents'][-1]
+                print("Target model file name: ", targetModelFileName)
 
+            except Exception as e:
+                print(e)
+                print("Error listing the model files in the bucket.")
+                raise e
+            
             # TODO: change the endpoint name to endpoint_parameter_value (whatever is in Parameter Store), and figure out how to get the name from TargetModel from saved_models folder in S3
             response_invoke = sagemaker_runtime.invoke_endpoint(EndpointName=endpoint_parameter_value,
                                                                 ContentType='application/json',
@@ -238,11 +225,131 @@ def convert_json_to_parquet(dataframe, bucket, output_s3_path, test_event_id):
 """
 
 """
-
-
-def check_training_requirement_and_make_training_job():
+def make_training_job_and_add_model(bucket, training_folder_path, model_location_prefix, user_id):
     print("Check training requirement and make training job.")
+    
+    # list the training files in the training folder, get the data, send them to a training job, and add a model to an endpoint
+    try:
+        response_list_obj = s3.list_objects_v2(Bucket=bucket, StartAfter=training_folder_path, Prefix=training_folder_path)
+        training_object_count = response_list_obj['KeyCount']
 
+        if (training_object_count % 10 != 0 and training_object_count >= 5): # TODO: fix the conditionals to == 0 and >= 10
+            print("Send for Sagemaker Training Job")
+
+    #         list_of_obj = response_list_obj['Contents'][-10:]
+    #         list_of_training_data = []
+    #         list_of_paths = []
+
+    #         for i in range(0, len(list_of_obj)):
+    #             key_to_append = bucket + '/' + list_of_obj[i]['Key']
+    #             list_of_paths.append(key_to_append)
+    # #             list_of_paths.append(f's3://{key_to_append}')
+    # #             response_s3_data_dict = get_object_from_s3(bucket, list_of_obj[i]['Key'])
+    # #             response_s3_data_str = json.dumps(response_s3_data_dict)
+    # #             list_of_training_data.append(response_s3_data_str)
+
+    # #         print(list_of_training_data)
+    # #         print("Length of list with training data:", len(list_of_training_data))
+    #         print(list_of_paths)
+            # print("Length of list with training data:", len(list_of_paths))
+
+            # TODO: modify the below lines for training
+            
+            try:
+                print("Getting execution role for Sagemaker.")
+                # role = get_execution_role()
+                role = os.environ['sagemaker_execution_role']
+                print("Finished getting execution role.")
+                
+            except Exception as e:
+                print(e)
+                print("Cannot get execution role for Sagemaker.")
+                raise e
+    
+            # launch training job
+            tf_estimator = launch_training_job(bucket, training_folder_path, role, model_location_prefix, user_id)
+            print("Training job launched: ", tf_estimator.latest_training_job.job_name)
+
+            # make model
+            model = TensorFlowModel(model_data=tf_estimator.model_data, role=role, framework_version="2.4",sagemaker_session=sagemaker.Session())
+            
+            # get artifact path
+            artifact_s3_uri = tf_estimator.latest_training_job.describe()["ModelArtifacts"]["S3ModelArtifacts"]
+            artifact_key = artifact_s3_uri.replace('s3://', '')
+            print("Artifact S3 key: ", artifact_key)
+            model_name = artifact_key.split("/")[-3] + ".tar.gz"
+            print("Model Name: ", model_name)
+
+            
+            # add model to endpoint
+            
+            
+        else:
+            print("Not enough training recordings yet.")
+
+
+    except Exception as e:
+        print(e)
+        print('Error at path {} from bucket {}. Make sure they exist and your bucket is in the same region as this function.'.format(training_folder_path, bucket))
+        raise e
+
+
+"""
+
+"""
+def make_training_job_and_endpoint(bucket, training_folder_path, model_location_prefix, user_id):
+    print("Making training job and endpoint.")
+    endpointName = os.environ['endpoint_name']
+
+    try:
+        response_list_obj = s3.list_objects_v2(Bucket=bucket, StartAfter=training_folder_path, Prefix=training_folder_path)
+        training_object_count = response_list_obj['KeyCount']
+
+        if (training_object_count % 10 != 0 and training_object_count >= 5): # TODO: fix the conditionals to == 0 and >= 10
+            print("Send for Sagemaker Training Job.")
+
+            try:
+                print("Getting execution role for Sagemaker.")
+                # role = get_execution_role()
+                role = os.environ['sagemaker_execution_role']
+                print("Finished getting execution role.")
+                
+            except Exception as e:
+                print(e)
+                print("Cannot get execution role for Sagemaker.")
+                raise e
+    
+            # launch training job
+            tf_estimator = launch_training_job(bucket, training_folder_path, role, model_location_prefix, user_id)
+            print("Training job launched: ", tf_estimator.latest_training_job.job_name)
+
+            # make model
+            session = sagemaker.Session()
+            model = TensorFlowModel(model_data=tf_estimator.model_data, name=user_id, role=role, framework_version="2.4",sagemaker_session=session)
+            multiModel = MultiDataModel(name=endpointName, model_data_prefix=model_location_prefix, model=model, sagemaker_session=session)
+            
+            print("Made multi-model. Making a new endpoint.")
+            
+            # deploy endpoint
+            predictor = multiModel.deploy(
+                initial_instance_count=1, instance_type="ml.m4.xlarge", endpoint_name=endpointName + "-production"
+            )
+            
+            print("New endpoint has been made.")
+            
+            predictor.serializer = JSONSerializer()
+            predictor.deserializer = JSONDeserializer()
+            
+            print("Added JSON serializer and deserializer to the multi-model endpoint.")
+            
+        else:
+            print("Not enough training recordings yet.")
+
+
+    except Exception as e:
+        print(e)
+        print('Error at path {} from bucket {}. Make sure they exist and your bucket is in the same region as this function.'.format(training_folder_path, bucket))
+        raise e
 
 """
 This function turns a Pandas Dataframe into the appropriate size and shape, while also doing other
@@ -259,38 +366,45 @@ def preprocess_data(df):
 
     pad_length = (2000-len(df['ax']))//2
     print("Pad Length: ", pad_length)
-
-    ax_normal_stft = np.abs(stft(np.pad(
-        df['ax'], (pad_length,), 'median'), scaling='psd', nperseg=512, fs=1)[2]**2)
-    ay_normal_stft = np.abs(stft(np.pad(
-        df['ay'], (pad_length,), 'median'), scaling='psd', nperseg=512, fs=1)[2]**2)
-    az_normal_stft = np.abs(stft(np.pad(
-        df['az'], (pad_length,), 'median'), scaling='psd', nperseg=512, fs=1)[2]**2)
-
-    ax_normal_stft_largest = nlargest(50, ax_normal_stft.flatten())
-    ax_normal_stft_smallest = nsmallest(50, ax_normal_stft.flatten())
-    ay_normal_stft_largest = nlargest(50, ay_normal_stft.flatten())
-    ay_normal_stft_smallest = nsmallest(50, ay_normal_stft.flatten())
-    az_normal_stft_largest = nlargest(50, az_normal_stft.flatten())
-    az_normal_stft_smallest = nsmallest(50, az_normal_stft.flatten())
-
-    gx_normal_stft = np.abs(stft(np.pad(
-        df['gx'], (pad_length,), 'median'), scaling='psd', nperseg=512, fs=1)[2]**2)
-    gy_normal_stft = np.abs(stft(np.pad(
-        df['gy'], (pad_length,), 'median'), scaling='psd', nperseg=512, fs=1)[2]**2)
-    gz_normal_stft = np.abs(stft(np.pad(
-        df['gz'], (pad_length,), 'median'), scaling='psd', nperseg=512, fs=1)[2]**2)
-
-    gx_normal_stft_largest = nlargest(50, gx_normal_stft.flatten())
-    gx_normal_stft_smallest = nsmallest(50, gx_normal_stft.flatten())
-    gy_normal_stft_largest = nlargest(50, gy_normal_stft.flatten())
-    gy_normal_stft_smallest = nsmallest(50, gy_normal_stft.flatten())
-    gz_normal_stft_largest = nlargest(50, gz_normal_stft.flatten())
-    gz_normal_stft_smallest = nsmallest(50, gz_normal_stft.flatten())
-
-    data = [*ax_normal_stft_largest, *ax_normal_stft_smallest, *ay_normal_stft_largest, *ay_normal_stft_smallest, *az_normal_stft_largest, *az_normal_stft_smallest,
-            *gx_normal_stft_largest, *gx_normal_stft_smallest, *gy_normal_stft_largest, *gy_normal_stft_smallest, *gz_normal_stft_largest, *gz_normal_stft_smallest]
-
+    
+    ax_normal_stft=np.abs(stft(np.pad(df['ax'],(pad_length,),'median'), scaling='psd',nperseg=512,fs=1)[2]**2)
+    ay_normal_stft=np.abs(stft(np.pad(df['ay'],(pad_length,),'median'), scaling='psd',nperseg=512,fs=1)[2]**2)
+    az_normal_stft=np.abs(stft(np.pad(df['az'],(pad_length,),'median'), scaling='psd',nperseg=512,fs=1)[2]**2)
+    
+    ax_normal_stft_largest=nlargest(50,ax_normal_stft.flatten())
+    ax_normal_stft_smallest=nsmallest(50,ax_normal_stft.flatten())
+    ay_normal_stft_largest=nlargest(50,ay_normal_stft.flatten())
+    ay_normal_stft_smallest=nsmallest(50,ay_normal_stft.flatten())
+    az_normal_stft_largest=nlargest(50,az_normal_stft.flatten())
+    az_normal_stft_smallest=nsmallest(50,az_normal_stft.flatten())
+    
+    gx_normal_stft=np.abs(stft(np.pad(df['gx'],(pad_length,),'median'), scaling='psd',nperseg=512,fs=1)[2]**2)
+    gy_normal_stft=np.abs(stft(np.pad(df['gy'],(pad_length,),'median'), scaling='psd',nperseg=512,fs=1)[2]**2)
+    gz_normal_stft=np.abs(stft(np.pad(df['gz'],(pad_length,),'median'), scaling='psd',nperseg=512,fs=1)[2]**2)
+    
+    gx_normal_stft_largest=nlargest(50,gx_normal_stft.flatten())
+    gx_normal_stft_smallest=nsmallest(50,gx_normal_stft.flatten())
+    gy_normal_stft_largest=nlargest(50,gy_normal_stft.flatten())
+    gy_normal_stft_smallest=nsmallest(50,gy_normal_stft.flatten())
+    gz_normal_stft_largest=nlargest(50,gz_normal_stft.flatten())
+    gz_normal_stft_smallest=nsmallest(50,gz_normal_stft.flatten())
+    
+    # mx_normal_stft=np.abs(stft(np.pad(df['mx'],(pad_length,),'median'), scaling='psd',nperseg=512,fs=1)[2]**2)
+    # my_normal_stft=np.abs(stft(np.pad(df['my'],(pad_length,),'median'), scaling='psd',nperseg=512,fs=1)[2]**2)
+    # mz_normal_stft=np.abs(stft(np.pad(df['mz'],(pad_length,),'median'), scaling='psd',nperseg=512,fs=1)[2]**2)
+    
+    # mx_normal_stft_largest=nlargest(50,mx_normal_stft.flatten())
+    # mx_normal_stft_smallest=nsmallest(50,mx_normal_stft.flatten())
+    # my_normal_stft_largest=nlargest(50,my_normal_stft.flatten())
+    # my_normal_stft_smallest=nsmallest(50,my_normal_stft.flatten())
+    # mz_normal_stft_largest=nlargest(50,mz_normal_stft.flatten())
+    # mz_normal_stft_smallest=nsmallest(50,mz_normal_stft.flatten())
+    
+    # data = [*ax_normal_stft_largest,*ax_normal_stft_smallest,*ay_normal_stft_largest,*ay_normal_stft_smallest,*az_normal_stft_largest,*az_normal_stft_smallest,*gx_normal_stft_largest,*gx_normal_stft_smallest,*gy_normal_stft_largest,*gy_normal_stft_smallest,*gz_normal_stft_largest,*gz_normal_stft_smallest, 
+    #         *mx_normal_stft_largest,*mx_normal_stft_smallest,*my_normal_stft_largest,*my_normal_stft_smallest,*mz_normal_stft_largest,*mz_normal_stft_smallest]
+    
+    data = [*ax_normal_stft_largest,*ax_normal_stft_smallest,*ay_normal_stft_largest,*ay_normal_stft_smallest,*az_normal_stft_largest,*az_normal_stft_smallest,*gx_normal_stft_largest,*gx_normal_stft_smallest,*gy_normal_stft_largest,*gy_normal_stft_smallest,*gz_normal_stft_largest,*gz_normal_stft_smallest]
+    
     X = np.array(data)
     print("X shape: ", len(X))
 
@@ -308,32 +422,27 @@ training_folder_key: a string representing the training folder path within the b
 
 Returns - a TensorFlow estimator from Sagemaker
 """
-
-
-def launch_training_job(bucket, training_folder_key):
-
-    try:
-        role = get_execution_role()
-
-    except Exception as e:
-        print(e)
-        print("Cannot get execution role for Sagemaker training job.")
-        raise e
-
-    # TODO: add an environment variable with the arn for role
+def launch_training_job(bucket, training_folder_key, role, model_location_prefix, user_id):
+    
+    print("Sending data inputs for training job.")
+    
     tf_estimator = TensorFlow(
-        entry_point="LSTM.py",  # training script name
-        source_dir='code',  # training script source directory on your notebook
-        model_dir=f'/opt/ml/model',
+        entry_point="LSTM.py",#training script name
+        source_dir='ml-training-script',#training script source directory on your code
+        model_dir= f'/opt/ml/model',
         role=role,
         instance_count=1,
-        instance_type="ml.g4dn.8xlarge",  # training instance
-        framework_version="2.4",  # tensorflow version
-        py_version="py37",  # python version
+        instance_type="ml.g4dn.8xlarge",#training instance
+        framework_version="2.3.0",#tensorflow version; 2.4 currently has a bug when model is deployed
+        py_version="py37",#python version
+        code_location=model_location_prefix,
+        base_job_name=user_id,
     )
 
+    print("Fitting folder data into the Sagemaker Estimator.")
     tf_estimator.fit(f's3://{bucket}/{training_folder_key}')
-
+    
+    print("Returning the Sagemaker Estimator.")
     return tf_estimator
 
 
@@ -344,8 +453,6 @@ data: a dictionary representing the output from the ML model
 user_id: the string representing the patient id in the database
 test_event_id: the string representing the test event id in the database
 """
-
-
 def send_data_to_rds(data, user_id, test_event_id):
 
     secrets_manager_client = boto3.client("secretsmanager")
@@ -363,6 +470,7 @@ def send_data_to_rds(data, user_id, test_event_id):
 
     # TODO: see if we want environment variables for host
     try:
+        print("Starting connection to database.")
         rds_pg_connection = psycopg2.connect(
             user=secret["username"],
             password=secret["password"],

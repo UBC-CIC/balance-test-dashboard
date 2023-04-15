@@ -30,7 +30,7 @@ export class AthenaGlueStack extends Stack {
         accountId = props["env"]["account"];
       }
 
-      let region;
+      let region = '';
       if (props["env"] && props["env"]["region"]) {
         region = props["env"]["region"]
       }

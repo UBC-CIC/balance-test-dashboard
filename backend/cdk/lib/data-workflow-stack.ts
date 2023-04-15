@@ -25,13 +25,17 @@ export class DataWorkflowStack extends Stack {
       
       // const balanceTestBucketName = 'balancetest-datastorage-bucket'
       const balanceTestBucketAccessPointName = "balancetest-accesspt";
+      const sagemakerBucketName ='balancetest-sagemaker-bucket';
+      const sagemakerBucketAccessPointName = 'balancetest-sm-access';
+
       // const s3LambdaTriggerName = "BalanceTest-convert-json-to-parquet-and-csv";
       // const s3LambdaTriggerFileName = "s3-trigger-convert-json-to-parquet-and-csv";
       const s3LambdaTriggerName = "BalanceTest-data-workflow"
       const s3LambdaTriggerFolderName = "data-workflow-s3-lambda-trigger-image"
       const logGroupName = "BalanceTest-S3LambdaTrigger-Logs";
       const s3LambdaTriggerRoleName = "BalanceTest-S3LambdaTrigger-Role";
-      const endpointName = "mme-balance-test";
+      // const endpointName = "balance-test-multimodel-endpoint"; // TODO: uncomment this
+      const endpointName = 'mme-balance-test';
 
       const generateReportLambdaName = "BalanceTest-generate-report-for-download";
       const generateReportLambdaFileName = "generateReportForDownload";
@@ -88,6 +92,33 @@ export class DataWorkflowStack extends Stack {
         }
       });
 
+      const sagemakerBucket = new s3.Bucket(this, sagemakerBucketName, {
+        bucketName: sagemakerBucketName,
+        removalPolicy: RemovalPolicy.RETAIN,
+        blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+        publicReadAccess: false,
+        versioned: true,
+        encryption: s3.BucketEncryption.S3_MANAGED,
+        objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_ENFORCED
+      });
+
+      // add an access point for VPC
+      const sagemakerBucketAccessPoint = new s3.CfnAccessPoint(this, sagemakerBucketAccessPointName, {
+        bucket: sagemakerBucket.bucketName,
+        bucketAccountId: props?.env?.account,
+        name: sagemakerBucketAccessPointName,
+        publicAccessBlockConfiguration: {
+          blockPublicAcls: true,
+          blockPublicPolicy: true,
+          restrictPublicBuckets: true,
+          ignorePublicAcls: true,
+        },
+        vpcConfiguration: {
+          vpcId: vpcStack.vpc.vpcId,
+        }
+      });
+
+
       // let balanceTestIVPC = ec2.Vpc.fromLookup(this, "BalanceTest-iVPC", {
       //   vpcId: vpcStack.vpc.vpcId
       // });
@@ -125,7 +156,7 @@ export class DataWorkflowStack extends Stack {
       //   })],
       // });
 
-      //TODO: either add permissions to making training job, new endpoint, etc, here; or make a new policy and reference via arn within lambda
+      //TODO: make new Sagemaker role to add permissions to making training job, new endpoint, etc, here; or make a new policy and reference via arn within lambda
       const s3LambdaTriggerPolicyDocument = new iam.PolicyDocument({
         statements: [new iam.PolicyStatement({
             actions: ["s3:PutObject"],
@@ -168,7 +199,6 @@ export class DataWorkflowStack extends Stack {
         managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName("service-role/AWSLambdaVPCAccessExecutionRole")]
       });
 
-      //TODO: fix VPC security group
       // make Lambda Trigger
       const s3LambdaTrigger = new lambda.DockerImageFunction(this, s3LambdaTriggerName, {
         code: lambda.DockerImageCode.fromImageAsset("./lambda/" + s3LambdaTriggerFolderName),
@@ -182,7 +212,7 @@ export class DataWorkflowStack extends Stack {
         functionName: s3LambdaTriggerName,
         memorySize: 512,
         role: s3LambdaTriggerRole,
-        timeout: Duration.minutes(5),
+        timeout: Duration.minutes(5), //TODO: change this to 15 min
         vpc: vpcStack.vpc,
         vpcSubnets: {
             subnetType: ec2.SubnetType.PRIVATE_ISOLATED
