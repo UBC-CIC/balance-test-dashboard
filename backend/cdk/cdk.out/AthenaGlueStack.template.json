@@ -242,8 +242,7 @@
       },
       "USER_POOL_ID": {
        "Fn::ImportValue": "CognitoStack:ExportsOutputRefBalanceTestUserPool005122174B1ED610"
-      },
-      "REGION": "ca-central-1"
+      }
      }
     },
     "FunctionName": "BalanceTest-query-S3",

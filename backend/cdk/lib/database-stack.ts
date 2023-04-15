@@ -137,7 +137,7 @@ export class DatabaseStack extends Stack {
             },
             credentials: {
                 username: this.rdsCredentialSecret.secretValueFromJson('username').unsafeUnwrap(),
-                password: this.rdsCredentialSecret.secretValueFromJson('password')
+                // password: this.rdsCredentialSecret.secretValueFromJson('password')
             },
             removalPolicy: RemovalPolicy.RETAIN,
             monitoringInterval: cdk.Duration.seconds(60),
@@ -186,7 +186,7 @@ export class DatabaseStack extends Stack {
         });
         
         //TODO: test the layer, and figure out what is needed to connect to the lambda (appsync resolver)
-        const postgresqlRDSConnectLambdaRuntime = lambda.Runtime.NODEJS_16_X;
+        const postgresqlRDSConnectLambdaRuntime = lambda.Runtime.NODEJS_14_X;
         const postgresqlRDSConnectLambdaLayer = new lambda.LayerVersion(this, "postgresqlRDSConnectLayer", {
             code: lambda.Code.fromAsset('layers/postgresqlRDSConnectNodePackages.zip'),
             compatibleRuntimes: [postgresqlRDSConnectLambdaRuntime],

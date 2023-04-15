@@ -7,7 +7,7 @@ import * as ssm from "aws-cdk-lib/aws-ssm";
 import * as cognito from 'aws-cdk-lib/aws-cognito';
 import * as cdk from 'aws-cdk-lib';
 import { VPCStack } from './vpc-stack';
-import { DataWorkflowStack } from './data-workflow-stack';
+import { balanceTestBucketName, DataWorkflowStack } from './data-workflow-stack';
 import { AthenaGlueStack } from './athena-glue-stack';
 import { DatabaseStack } from './database-stack';
 import * as console from "console";
@@ -271,8 +271,8 @@ export class CognitoStack extends Stack {
                 "s3:GetObject",
                 "s3:DeleteObject"
             ],
-            resources: ["arn:aws:s3:::json-to-parquet-poc-bucket/parquet_data/patient_tests/user_id=${cognito-identity.amazonaws.com:sub}/*",
-                    "arn:aws:s3:::json-to-parquet-poc-bucket/private/${cognito-identity.amazonaws.com:sub}/*"],
+            resources: ['arn:aws:s3:::'+this.region+'/parquet_data/patient_tests/user_id=${cognito-identity.amazonaws.com:sub}/*',
+                    'arn:aws:s3:::'+balanceTestBucketName+'/private/${cognito-identity.amazonaws.com:sub}/*'],
         }));
         authenticatedRole.addToPolicy(new iam.PolicyStatement({
             effect: iam.Effect.ALLOW,
@@ -281,7 +281,7 @@ export class CognitoStack extends Stack {
                 "s3:GetObject",
                 "s3:DeleteObject"
             ],
-            resources: ["arn:aws:s3:::json-to-parquet-poc-bucket/*"],
+            resources: [`arn:aws:s3:::${balanceTestBucketName}/*`],
             conditions:{
             'StringEquals':{"aws:PrincipalTag/user_type": "careProvider"}
             }

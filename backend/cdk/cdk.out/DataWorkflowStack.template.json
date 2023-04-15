@@ -294,7 +294,7 @@
    "Properties": {
     "Code": {
      "ImageUri": {
-      "Fn::Sub": "684904187051.dkr.ecr.ca-central-1.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-684904187051-ca-central-1:da95c8358ea75fb8aee72f09e0944714a09efdfb7f6a360bfe49a4bfeeb44ab6"
+      "Fn::Sub": "684904187051.dkr.ecr.ca-central-1.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-684904187051-ca-central-1:a36ba3a4b089f78aab5dcb7ceaa37914b6c4e841a1cdbf26167341a1c0212cc8"
      }
     },
     "Role": {
@@ -390,7 +390,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "DataWorkflowStack/BalanceTest-data-workflow/Resource",
-    "aws:asset:path": "asset.da95c8358ea75fb8aee72f09e0944714a09efdfb7f6a360bfe49a4bfeeb44ab6",
+    "aws:asset:path": "asset.a36ba3a4b089f78aab5dcb7ceaa37914b6c4e841a1cdbf26167341a1c0212cc8",
     "aws:asset:dockerfile-path": "Dockerfile",
     "aws:asset:property": "Code.ImageUri"
    }
@@ -588,7 +588,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-684904187051-ca-central-1",
-     "S3Key": "640c240b4dccd6e5383ed94289d2222a24e6fde1f31a2cc33f226a5766cf573c.zip"
+     "S3Key": "4ec02bf3d6013ffb826617b4a6fc093821a6fdc923d107d62e9dad0bd2d7f58e.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -634,7 +634,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "DataWorkflowStack/BalanceTest-generate-report-for-download/Resource",
-    "aws:asset:path": "asset.640c240b4dccd6e5383ed94289d2222a24e6fde1f31a2cc33f226a5766cf573c",
+    "aws:asset:path": "asset.4ec02bf3d6013ffb826617b4a6fc093821a6fdc923d107d62e9dad0bd2d7f58e",
     "aws:asset:is-bundled": false,
     "aws:asset:property": "Code"
    }

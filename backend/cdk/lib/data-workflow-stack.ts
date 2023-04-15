@@ -11,7 +11,7 @@ import { VPCStack } from './vpc-stack';
 import { CognitoStack } from './cognito-stack';
 import { DatabaseStack } from './database-stack';
 
-
+export const balanceTestBucketName = 'balancetest-datastorage-bucket'
 export class DataWorkflowStack extends Stack {
 
     // private readonly balanceTestBucket: s3.Bucket;
@@ -23,7 +23,7 @@ export class DataWorkflowStack extends Stack {
     // constructor(scope: App, id: string, props: StackProps) {
       super(scope, id, props);
       
-      const balanceTestBucketName = 'balancetest-datastorage-bucket'
+      // const balanceTestBucketName = 'balancetest-datastorage-bucket'
       const balanceTestBucketAccessPointName = "balancetest-accesspt";
       // const s3LambdaTriggerName = "BalanceTest-convert-json-to-parquet-and-csv";
       // const s3LambdaTriggerFileName = "s3-trigger-convert-json-to-parquet-and-csv";

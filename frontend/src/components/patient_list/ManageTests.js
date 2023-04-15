@@ -17,13 +17,18 @@ import {
   assignTestToPatient,
   removeTestFromPatient,
 } from "../../graphql/mutations";
-import { getPatientAssignedTests } from "../../graphql/queries";
+import {
+  getAllAvailableTests,
+  getPatientAssignedTests,
+} from "../../graphql/queries";
 import { touchRippleClasses } from "@mui/material";
 Amplify.configure(awsconfig);
 
-const movement_tests = ["sit-to-stand", "movement 2", "movement 3"]; // modify the movement names if needed
+// const movement_tests = ["sit-to-stand", "movement 2", "movement 3"]; // modify the movement names if needed
 
-export function initMovementsAssignedObj() {
+// const movement_tests = [];
+
+export function initMovementsAssignedObj(movement_tests) {
   let checkboxInitStateObj = {};
   for (let i in movement_tests) {
     checkboxInitStateObj[movement_tests[i]] = false;
@@ -32,7 +37,7 @@ export function initMovementsAssignedObj() {
   return checkboxInitStateObj;
 }
 
-export async function retrieveAssignedTests(user_id) {
+export async function retrieveAssignedTests(user_id, movementTests) {
   let sesh = await Auth.currentSession();
   let idtoken = sesh.idToken.jwtToken;
   try {
@@ -56,13 +61,22 @@ export async function retrieveAssignedTests(user_id) {
 
     let checkboxInitStateObj = {};
 
-    for (const movement of movement_tests) {
+    console.log("movementtests", movementTests);
+    for (const movement of movementTests) {
       if (testsArr.includes(movement)) {
         checkboxInitStateObj[movement] = true;
       } else {
         checkboxInitStateObj[movement] = false;
       }
     }
+
+    // let responseAvailableTests = await API.graphql({
+    //   query: getAllAvailableTests,
+    //   authToken: idtoken,
+    // });
+
+    // console.log("responseAvailableTests", responseAvailableTests);
+
     return checkboxInitStateObj;
   } catch (err) {
     console.log(err);
@@ -74,10 +88,11 @@ export function ManageTests({
   user_id,
   patientDataRowsArr,
   updatePatientDataRowsArr,
+  movementTests,
 }) {
   const [modalOpen, setModalOpen] = React.useState(false);
 
-  const checkboxInitStateObj = initMovementsAssignedObj();
+  const checkboxInitStateObj = initMovementsAssignedObj(movementTests);
 
   const [checkboxStates, setCheckboxStates] =
     React.useState(checkboxInitStateObj);
@@ -85,7 +100,8 @@ export function ManageTests({
     React.useState(checkboxInitStateObj);
 
   React.useEffect(() => {
-    retrieveAssignedTests(user_id)
+    console.log("103", movementTests);
+    retrieveAssignedTests(user_id, [])
       .then((checkbox_obj) => {
         patientDataRowsArr[rowNum].assigned_test_num =
           Object.values(checkbox_obj).filter(Boolean).length;
@@ -200,7 +216,7 @@ export function ManageTests({
           <DialogContentText sx={{ padding: "0 0 20px 0" }}>
             Select the movement(s) to assign to the patient.
           </DialogContentText>
-          {movement_tests.map((movement_test) => {
+          {movementTests.map((movement_test) => {
             return (
               <FormGroup key={movement_test}>
                 <FormControlLabel
