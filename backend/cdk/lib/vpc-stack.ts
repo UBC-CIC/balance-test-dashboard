@@ -16,9 +16,6 @@ export class VPCStack extends Stack {
       super(scope, id, props);
       
       const vpcName = "balanceTest-VPC";
-      const rdsEndpointName = "RDS-Endpoint";
-      const cloudwatchEndpointName = "CloudWatch-Logs-Endpoint";
-      const ssmEndpointName = "Systems-Manager-Endpoint";
       this.cidrStr = '11.0.0.0/16';
       this.destinationCidrStr = '13.0.0.0/16';
 
@@ -55,7 +52,7 @@ export class VPCStack extends Stack {
       const securityGroup = ec2.SecurityGroup.fromSecurityGroupId(this, id, this.vpc.vpcDefaultSecurityGroup);
 
       // RDS endpoint for VPC
-      this.vpc.addInterfaceEndpoint(rdsEndpointName, {
+      this.vpc.addInterfaceEndpoint("RDS-Endpoint", {
         service: ec2.InterfaceVpcEndpointAwsService.RDS,
         securityGroups: [securityGroup],
         subnets: {
@@ -64,7 +61,7 @@ export class VPCStack extends Stack {
       });
 
       // CloudWatch Logs Endpoint for VPC
-      this.vpc.addInterfaceEndpoint(cloudwatchEndpointName, {
+      this.vpc.addInterfaceEndpoint("Cloudwatch-Logs-Endpoint", {
         service: ec2.InterfaceVpcEndpointAwsService.CLOUDWATCH_LOGS,
         securityGroups: [securityGroup],
         subnets: {
@@ -108,6 +105,15 @@ export class VPCStack extends Stack {
 
       this.vpc.addInterfaceEndpoint("EC2-Endpoint", {
         service: ec2.InterfaceVpcEndpointAwsService.EC2,
+        securityGroups: [securityGroup],
+        subnets: {
+          subnetType: ec2.SubnetType.PRIVATE_ISOLATED
+        }
+      });
+
+      // Secrets Manager endpoint for VPC
+      this.vpc.addInterfaceEndpoint("Secrets-Manager-Endpoint", {
+        service: ec2.InterfaceVpcEndpointAwsService.SECRETS_MANAGER,
         securityGroups: [securityGroup],
         subnets: {
           subnetType: ec2.SubnetType.PRIVATE_ISOLATED
