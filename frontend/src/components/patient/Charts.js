@@ -275,7 +275,6 @@ export const RangeChart = ({ patientId, measurement, fromDate, toDate }) => {
         `${item["year"]}-0${item["month"]}-${item["day"]}`
       ).format("YYYY MMM D");
       // .format("DD/MM/YYYY");
-      console.log("item", item);
       return item;
     });
 

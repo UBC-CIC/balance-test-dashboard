@@ -8,8 +8,7 @@
   ],
   "requiredAttributes": [
     "given_name",
-    "family_name",
-    "email"
+    "family_name"
   ],
   "passwordPolicyMinLength": 8,
   "passwordPolicyCharacters": [

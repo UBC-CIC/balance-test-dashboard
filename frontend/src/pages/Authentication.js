@@ -76,7 +76,6 @@ export default function AuthenticationPage() {
     <Box>
       <Authenticator services={authServices}>
         {({ signOut, user }) => {
-          console.log("user", user);
           let userGroupArr =
             user["signInUserSession"]["accessToken"]["payload"][
               "cognito:groups"

@@ -79,7 +79,6 @@ function PatientPage() {
   const fetchData = async () => {
     let sesh = await Auth.currentSession();
     let idtoken = sesh.idToken.jwtToken;
-    console.log("idtoken", idtoken);
     // get analytics
     // console.log("62");
     let resWeeklyAvg = await API.graphql({
@@ -128,7 +127,6 @@ function PatientPage() {
       },
       authToken: idtoken,
     });
-    console.log("resLastMonthAvg", resLastMonthAvg);
     setMonthlyAvg(parseFloat(resMonthlyAvg.data.getScoreStatsOverTime));
     setWeeklyAvg(parseFloat(resWeeklyAvg.data.getScoreStatsOverTime));
     setChangeFromLastMonth(
@@ -161,7 +159,6 @@ function PatientPage() {
     setPatientName(
       `${resPatient.data.getPatientById.last_name}, ${resPatient.data.getPatientById.first_name}`
     );
-    console.log("resPatient", resPatient);
     let resEventsGraph = await API.graphql({
       query: getTestEvents,
       variables: {
@@ -211,8 +208,6 @@ function PatientPage() {
   };
   const ref = React.useRef(null);
   const downloadScoreGraph = () => {
-    console.log("173");
-    console.log("ref", ref);
     // saveSvgAsPng(document.getElementById("scoreChart"), "scores.png");
   };
 
@@ -331,7 +326,6 @@ function PatientPage() {
             <Button
               variant="outlined"
               onClick={() => {
-                console.log("ref", ref);
                 exportComponentAsPDF(ref, {
                   pdfOptions: { w: 250, h: 90, orientation: "l" },
                   fileName: "scores",

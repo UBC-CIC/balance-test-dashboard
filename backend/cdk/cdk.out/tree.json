@@ -102,7 +102,7 @@
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                   "aws:cdk:cloudformation:props": {
                     "code": {
-                      "s3Bucket": "cdk-hnb659fds-assets-160092849934-ca-central-1",
+                      "s3Bucket": "cdk-hnb659fds-assets-684904187051-ca-central-1",
                       "s3Key": "b98e4acccac03598642c7b2c9806c00dc0390f70ff0a6f9a0e94c185fe287af6.zip"
                     },
                     "role": {
@@ -223,7 +223,7 @@
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                   "aws:cdk:cloudformation:props": {
                     "code": {
-                      "s3Bucket": "cdk-hnb659fds-assets-160092849934-ca-central-1",
+                      "s3Bucket": "cdk-hnb659fds-assets-684904187051-ca-central-1",
                       "s3Key": "8bcd26854bfcb5f7e6d0ec7044edaa77e03fb9a5b8d3144444259947d3956861.zip"
                     },
                     "role": {
@@ -415,7 +415,7 @@
                               "Fn::Join": [
                                 "",
                                 [
-                                  "arn:aws:cognito-idp:ca-central-1:160092849934:userpool/",
+                                  "arn:aws:cognito-idp:ca-central-1:684904187051:userpool/",
                                   {
                                     "Ref": "BalanceTestUserPool00512217"
                                   }
@@ -472,7 +472,7 @@
                               "Fn::Join": [
                                 "",
                                 [
-                                  "arn:aws:cognito-idp:ca-central-1:160092849934:userpool/",
+                                  "arn:aws:cognito-idp:ca-central-1:684904187051:userpool/",
                                   {
                                     "Ref": "BalanceTestUserPool00512217"
                                   }
@@ -1890,1117 +1890,6 @@
           "version": "2.69.0"
         }
       },
-      "DataWorkflowStack": {
-        "id": "DataWorkflowStack",
-        "path": "DataWorkflowStack",
-        "children": {
-          "balancetest-raw-recordings-bucket": {
-            "id": "balancetest-raw-recordings-bucket",
-            "path": "DataWorkflowStack/balancetest-raw-recordings-bucket",
-            "children": {
-              "Resource": {
-                "id": "Resource",
-                "path": "DataWorkflowStack/balancetest-raw-recordings-bucket/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
-                  "aws:cdk:cloudformation:props": {
-                    "bucketEncryption": {
-                      "serverSideEncryptionConfiguration": [
-                        {
-                          "serverSideEncryptionByDefault": {
-                            "sseAlgorithm": "AES256"
-                          }
-                        }
-                      ]
-                    },
-                    "bucketName": "balancetest-raw-recordings-bucket",
-                    "ownershipControls": {
-                      "rules": [
-                        {
-                          "objectOwnership": "BucketOwnerEnforced"
-                        }
-                      ]
-                    },
-                    "publicAccessBlockConfiguration": {
-                      "blockPublicAcls": true,
-                      "blockPublicPolicy": true,
-                      "ignorePublicAcls": true,
-                      "restrictPublicBuckets": true
-                    },
-                    "versioningConfiguration": {
-                      "status": "Enabled"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
-                  "version": "2.69.0"
-                }
-              },
-              "Notifications": {
-                "id": "Notifications",
-                "path": "DataWorkflowStack/balancetest-raw-recordings-bucket/Notifications",
-                "children": {
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "DataWorkflowStack/balancetest-raw-recordings-bucket/Notifications/Resource",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.CfnResource",
-                      "version": "2.69.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "constructs.Construct",
-                  "version": "10.1.284"
-                }
-              },
-              "AllowBucketNotificationsToDataWorkflowStackBalanceTestconvertjsontoparquetandcsv0BBF7125": {
-                "id": "AllowBucketNotificationsToDataWorkflowStackBalanceTestconvertjsontoparquetandcsv0BBF7125",
-                "path": "DataWorkflowStack/balancetest-raw-recordings-bucket/AllowBucketNotificationsToDataWorkflowStackBalanceTestconvertjsontoparquetandcsv0BBF7125",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
-                  "aws:cdk:cloudformation:props": {
-                    "action": "lambda:InvokeFunction",
-                    "functionName": {
-                      "Fn::GetAtt": [
-                        "BalanceTestconvertjsontoparquetandcsvF6E7C454",
-                        "Arn"
-                      ]
-                    },
-                    "principal": "s3.amazonaws.com",
-                    "sourceAccount": "160092849934",
-                    "sourceArn": {
-                      "Fn::GetAtt": [
-                        "balancetestrawrecordingsbucket6127ADBC",
-                        "Arn"
-                      ]
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
-                  "version": "2.69.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_s3.Bucket",
-              "version": "2.69.0"
-            }
-          },
-          "balancetest-accesspoint": {
-            "id": "balancetest-accesspoint",
-            "path": "DataWorkflowStack/balancetest-accesspoint",
-            "attributes": {
-              "aws:cdk:cloudformation:type": "AWS::S3::AccessPoint",
-              "aws:cdk:cloudformation:props": {
-                "bucket": {
-                  "Ref": "balancetestrawrecordingsbucket6127ADBC"
-                },
-                "bucketAccountId": "160092849934",
-                "name": "balancetest-accesspoint",
-                "publicAccessBlockConfiguration": {
-                  "blockPublicAcls": true,
-                  "blockPublicPolicy": true,
-                  "restrictPublicBuckets": true,
-                  "ignorePublicAcls": true
-                },
-                "vpcConfiguration": {
-                  "vpcId": {
-                    "Fn::ImportValue": "VPCStack:ExportsOutputRefbalanceTestVPCFBF0FFB322759C6A"
-                  }
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_s3.CfnAccessPoint",
-              "version": "2.69.0"
-            }
-          },
-          "vpcDefaultSecurityGroup": {
-            "id": "vpcDefaultSecurityGroup",
-            "path": "DataWorkflowStack/vpcDefaultSecurityGroup",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.Resource",
-              "version": "2.69.0"
-            }
-          },
-          "BalanceTest-S3LambdaTrigger-Logs": {
-            "id": "BalanceTest-S3LambdaTrigger-Logs",
-            "path": "DataWorkflowStack/BalanceTest-S3LambdaTrigger-Logs",
-            "children": {
-              "Resource": {
-                "id": "Resource",
-                "path": "DataWorkflowStack/BalanceTest-S3LambdaTrigger-Logs/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
-                  "aws:cdk:cloudformation:props": {
-                    "logGroupName": "/aws/lambda/BalanceTest-convert-json-to-parquet-and-csv",
-                    "retentionInDays": 731
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_logs.CfnLogGroup",
-                  "version": "2.69.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_logs.LogGroup",
-              "version": "2.69.0"
-            }
-          },
-          "BalanceTest-S3LambdaTrigger-Role": {
-            "id": "BalanceTest-S3LambdaTrigger-Role",
-            "path": "DataWorkflowStack/BalanceTest-S3LambdaTrigger-Role",
-            "children": {
-              "ImportBalanceTest-S3LambdaTrigger-Role": {
-                "id": "ImportBalanceTest-S3LambdaTrigger-Role",
-                "path": "DataWorkflowStack/BalanceTest-S3LambdaTrigger-Role/ImportBalanceTest-S3LambdaTrigger-Role",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.Resource",
-                  "version": "2.69.0"
-                }
-              },
-              "Resource": {
-                "id": "Resource",
-                "path": "DataWorkflowStack/BalanceTest-S3LambdaTrigger-Role/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                  "aws:cdk:cloudformation:props": {
-                    "assumeRolePolicyDocument": {
-                      "Statement": [
-                        {
-                          "Action": "sts:AssumeRole",
-                          "Effect": "Allow",
-                          "Principal": {
-                            "Service": "lambda.amazonaws.com"
-                          }
-                        }
-                      ],
-                      "Version": "2012-10-17"
-                    },
-                    "description": "Role gives access to appropriate S3 functions needed for file conversions and logging for Lambda.",
-                    "managedPolicyArns": [
-                      {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "arn:",
-                            {
-                              "Ref": "AWS::Partition"
-                            },
-                            ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
-                          ]
-                        ]
-                      }
-                    ],
-                    "policies": [
-                      {
-                        "policyName": "BalanceTest-s3LambdaTriggerPolicy",
-                        "policyDocument": {
-                          "Statement": [
-                            {
-                              "Action": "s3:GetObject",
-                              "Effect": "Allow",
-                              "Resource": {
-                                "Fn::Join": [
-                                  "",
-                                  [
-                                    {
-                                      "Fn::GetAtt": [
-                                        "balancetestrawrecordingsbucket6127ADBC",
-                                        "Arn"
-                                      ]
-                                    },
-                                    "/private/*"
-                                  ]
-                                ]
-                              }
-                            },
-                            {
-                              "Action": [
-                                "logs:CreateLogGroup",
-                                "logs:CreateLogStream",
-                                "logs:PutLogEvents"
-                              ],
-                              "Effect": "Allow",
-                              "Resource": {
-                                "Fn::GetAtt": [
-                                  "BalanceTestS3LambdaTriggerLogs612C9428",
-                                  "Arn"
-                                ]
-                              }
-                            },
-                            {
-                              "Action": "s3:PutObject",
-                              "Effect": "Allow",
-                              "Resource": {
-                                "Fn::Join": [
-                                  "",
-                                  [
-                                    {
-                                      "Fn::GetAtt": [
-                                        "balancetestrawrecordingsbucket6127ADBC",
-                                        "Arn"
-                                      ]
-                                    },
-                                    "/parquet_data/*"
-                                  ]
-                                ]
-                              }
-                            },
-                            {
-                              "Action": "s3:ListBucket",
-                              "Effect": "Allow",
-                              "Resource": [
-                                {
-                                  "Fn::GetAtt": [
-                                    "balancetestrawrecordingsbucket6127ADBC",
-                                    "Arn"
-                                  ]
-                                },
-                                {
-                                  "Fn::Join": [
-                                    "",
-                                    [
-                                      {
-                                        "Fn::GetAtt": [
-                                          "balancetestrawrecordingsbucket6127ADBC",
-                                          "Arn"
-                                        ]
-                                      },
-                                      "/private/*"
-                                    ]
-                                  ]
-                                }
-                              ]
-                            }
-                          ],
-                          "Version": "2012-10-17"
-                        }
-                      }
-                    ],
-                    "roleName": "BalanceTest-S3LambdaTrigger-Role"
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                  "version": "2.69.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_iam.Role",
-              "version": "2.69.0"
-            }
-          },
-          "BalanceTest-convert-json-to-parquet-and-csv": {
-            "id": "BalanceTest-convert-json-to-parquet-and-csv",
-            "path": "DataWorkflowStack/BalanceTest-convert-json-to-parquet-and-csv",
-            "children": {
-              "Code": {
-                "id": "Code",
-                "path": "DataWorkflowStack/BalanceTest-convert-json-to-parquet-and-csv/Code",
-                "children": {
-                  "Stage": {
-                    "id": "Stage",
-                    "path": "DataWorkflowStack/BalanceTest-convert-json-to-parquet-and-csv/Code/Stage",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.AssetStaging",
-                      "version": "2.69.0"
-                    }
-                  },
-                  "AssetBucket": {
-                    "id": "AssetBucket",
-                    "path": "DataWorkflowStack/BalanceTest-convert-json-to-parquet-and-csv/Code/AssetBucket",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                      "version": "2.69.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
-                  "version": "2.69.0"
-                }
-              },
-              "Resource": {
-                "id": "Resource",
-                "path": "DataWorkflowStack/BalanceTest-convert-json-to-parquet-and-csv/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
-                  "aws:cdk:cloudformation:props": {
-                    "code": {
-                      "s3Bucket": "cdk-hnb659fds-assets-160092849934-ca-central-1",
-                      "s3Key": "86f34e0d43218d8102e9a365636e568dc4f9bd3a8889d64d34b6588fcad24474.zip"
-                    },
-                    "role": {
-                      "Fn::GetAtt": [
-                        "BalanceTestS3LambdaTriggerRole83B886E8",
-                        "Arn"
-                      ]
-                    },
-                    "functionName": "BalanceTest-convert-json-to-parquet-and-csv",
-                    "handler": "s3-trigger-convert-json-to-parquet-and-csv.lambda_handler",
-                    "layers": [
-                      "arn:aws:lambda:ca-central-1:336392948345:layer:AWSSDKPandas-Python39:4"
-                    ],
-                    "memorySize": 512,
-                    "runtime": "python3.9",
-                    "timeout": 180,
-                    "vpcConfig": {
-                      "subnetIds": [
-                        {
-                          "Fn::ImportValue": "VPCStack:ExportsOutputRefbalanceTestVPCprivatesubnetSubnet1Subnet8BA87DE45B0B5EB2"
-                        },
-                        {
-                          "Fn::ImportValue": "VPCStack:ExportsOutputRefbalanceTestVPCprivatesubnetSubnet2SubnetD1E1933170382F7C"
-                        }
-                      ],
-                      "securityGroupIds": [
-                        {
-                          "Fn::ImportValue": "VPCStack:ExportsOutputFnGetAttbalanceTestVPCFBF0FFB3DefaultSecurityGroupDA29CDF5"
-                        }
-                      ]
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
-                  "version": "2.69.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_lambda.Function",
-              "version": "2.69.0"
-            }
-          },
-          "AWSSDKPandas-Python39": {
-            "id": "AWSSDKPandas-Python39",
-            "path": "DataWorkflowStack/AWSSDKPandas-Python39",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.Resource",
-              "version": "2.69.0"
-            }
-          },
-          "BucketNotificationsHandler050a0587b7544547bf325f094a3db834": {
-            "id": "BucketNotificationsHandler050a0587b7544547bf325f094a3db834",
-            "path": "DataWorkflowStack/BucketNotificationsHandler050a0587b7544547bf325f094a3db834",
-            "children": {
-              "Role": {
-                "id": "Role",
-                "path": "DataWorkflowStack/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role",
-                "children": {
-                  "ImportRole": {
-                    "id": "ImportRole",
-                    "path": "DataWorkflowStack/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/ImportRole",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.Resource",
-                      "version": "2.69.0"
-                    }
-                  },
-                  "Resource": {
-                    "id": "Resource",
-                    "path": "DataWorkflowStack/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/Resource",
-                    "attributes": {
-                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                      "aws:cdk:cloudformation:props": {
-                        "assumeRolePolicyDocument": {
-                          "Statement": [
-                            {
-                              "Action": "sts:AssumeRole",
-                              "Effect": "Allow",
-                              "Principal": {
-                                "Service": "lambda.amazonaws.com"
-                              }
-                            }
-                          ],
-                          "Version": "2012-10-17"
-                        },
-                        "managedPolicyArns": [
-                          {
-                            "Fn::Join": [
-                              "",
-                              [
-                                "arn:",
-                                {
-                                  "Ref": "AWS::Partition"
-                                },
-                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-                              ]
-                            ]
-                          }
-                        ]
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                      "version": "2.69.0"
-                    }
-                  },
-                  "DefaultPolicy": {
-                    "id": "DefaultPolicy",
-                    "path": "DataWorkflowStack/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/DefaultPolicy",
-                    "children": {
-                      "Resource": {
-                        "id": "Resource",
-                        "path": "DataWorkflowStack/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/DefaultPolicy/Resource",
-                        "attributes": {
-                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
-                          "aws:cdk:cloudformation:props": {
-                            "policyDocument": {
-                              "Statement": [
-                                {
-                                  "Action": "s3:PutBucketNotification",
-                                  "Effect": "Allow",
-                                  "Resource": "*"
-                                }
-                              ],
-                              "Version": "2012-10-17"
-                            },
-                            "policyName": "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36",
-                            "roles": [
-                              {
-                                "Ref": "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC"
-                              }
-                            ]
-                          }
-                        },
-                        "constructInfo": {
-                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
-                          "version": "2.69.0"
-                        }
-                      }
-                    },
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_iam.Policy",
-                      "version": "2.69.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.Role",
-                  "version": "2.69.0"
-                }
-              },
-              "Resource": {
-                "id": "Resource",
-                "path": "DataWorkflowStack/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Resource",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnResource",
-                  "version": "2.69.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.284"
-            }
-          },
-          "BalanceTest-generateReportLambda-Logs": {
-            "id": "BalanceTest-generateReportLambda-Logs",
-            "path": "DataWorkflowStack/BalanceTest-generateReportLambda-Logs",
-            "children": {
-              "Resource": {
-                "id": "Resource",
-                "path": "DataWorkflowStack/BalanceTest-generateReportLambda-Logs/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
-                  "aws:cdk:cloudformation:props": {
-                    "logGroupName": "/aws/lambda/BalanceTest-generate-report-for-download",
-                    "retentionInDays": 731
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_logs.CfnLogGroup",
-                  "version": "2.69.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_logs.LogGroup",
-              "version": "2.69.0"
-            }
-          },
-          "BalanceTest-generateReportLambda-Role": {
-            "id": "BalanceTest-generateReportLambda-Role",
-            "path": "DataWorkflowStack/BalanceTest-generateReportLambda-Role",
-            "children": {
-              "ImportBalanceTest-generateReportLambda-Role": {
-                "id": "ImportBalanceTest-generateReportLambda-Role",
-                "path": "DataWorkflowStack/BalanceTest-generateReportLambda-Role/ImportBalanceTest-generateReportLambda-Role",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.Resource",
-                  "version": "2.69.0"
-                }
-              },
-              "Resource": {
-                "id": "Resource",
-                "path": "DataWorkflowStack/BalanceTest-generateReportLambda-Role/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                  "aws:cdk:cloudformation:props": {
-                    "assumeRolePolicyDocument": {
-                      "Statement": [
-                        {
-                          "Action": "sts:AssumeRole",
-                          "Effect": "Allow",
-                          "Principal": {
-                            "Service": "lambda.amazonaws.com"
-                          }
-                        }
-                      ],
-                      "Version": "2012-10-17"
-                    },
-                    "description": "Role gives access to appropriate S3 functions needed for doing S3 Select for Lambda.",
-                    "managedPolicyArns": [
-                      {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "arn:",
-                            {
-                              "Ref": "AWS::Partition"
-                            },
-                            ":iam::aws:policy/AmazonS3FullAccess"
-                          ]
-                        ]
-                      },
-                      {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "arn:",
-                            {
-                              "Ref": "AWS::Partition"
-                            },
-                            ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
-                          ]
-                        ]
-                      }
-                    ],
-                    "policies": [
-                      {
-                        "policyName": "BalanceTest-generateReportLambdaPolicy",
-                        "policyDocument": {
-                          "Statement": [
-                            {
-                              "Action": [
-                                "logs:CreateLogGroup",
-                                "logs:CreateLogStream",
-                                "logs:PutLogEvents"
-                              ],
-                              "Effect": "Allow",
-                              "Resource": {
-                                "Fn::GetAtt": [
-                                  "BalanceTestgenerateReportLambdaLogs1B9361FA",
-                                  "Arn"
-                                ]
-                              }
-                            }
-                          ],
-                          "Version": "2012-10-17"
-                        }
-                      }
-                    ],
-                    "roleName": "BalanceTest-generateReportLambda-Role"
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                  "version": "2.69.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_iam.Role",
-              "version": "2.69.0"
-            }
-          },
-          "generateReportPythonLayer": {
-            "id": "generateReportPythonLayer",
-            "path": "DataWorkflowStack/generateReportPythonLayer",
-            "children": {
-              "Code": {
-                "id": "Code",
-                "path": "DataWorkflowStack/generateReportPythonLayer/Code",
-                "children": {
-                  "Stage": {
-                    "id": "Stage",
-                    "path": "DataWorkflowStack/generateReportPythonLayer/Code/Stage",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.AssetStaging",
-                      "version": "2.69.0"
-                    }
-                  },
-                  "AssetBucket": {
-                    "id": "AssetBucket",
-                    "path": "DataWorkflowStack/generateReportPythonLayer/Code/AssetBucket",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                      "version": "2.69.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
-                  "version": "2.69.0"
-                }
-              },
-              "Resource": {
-                "id": "Resource",
-                "path": "DataWorkflowStack/generateReportPythonLayer/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::Lambda::LayerVersion",
-                  "aws:cdk:cloudformation:props": {
-                    "content": {
-                      "s3Bucket": "cdk-hnb659fds-assets-160092849934-ca-central-1",
-                      "s3Key": "07c4934444be84969c7ccfeb533965193dbd02c14f340fd2429147a5bab3a32f.zip"
-                    },
-                    "compatibleRuntimes": [
-                      "python3.7"
-                    ],
-                    "description": "Contains libraries for the BalanceTest-generate-report-for-download function."
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_lambda.CfnLayerVersion",
-                  "version": "2.69.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_lambda.LayerVersion",
-              "version": "2.69.0"
-            }
-          },
-          "BalanceTest-generate-report-for-download": {
-            "id": "BalanceTest-generate-report-for-download",
-            "path": "DataWorkflowStack/BalanceTest-generate-report-for-download",
-            "children": {
-              "Code": {
-                "id": "Code",
-                "path": "DataWorkflowStack/BalanceTest-generate-report-for-download/Code",
-                "children": {
-                  "Stage": {
-                    "id": "Stage",
-                    "path": "DataWorkflowStack/BalanceTest-generate-report-for-download/Code/Stage",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.AssetStaging",
-                      "version": "2.69.0"
-                    }
-                  },
-                  "AssetBucket": {
-                    "id": "AssetBucket",
-                    "path": "DataWorkflowStack/BalanceTest-generate-report-for-download/Code/AssetBucket",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                      "version": "2.69.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
-                  "version": "2.69.0"
-                }
-              },
-              "Resource": {
-                "id": "Resource",
-                "path": "DataWorkflowStack/BalanceTest-generate-report-for-download/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
-                  "aws:cdk:cloudformation:props": {
-                    "code": {
-                      "s3Bucket": "cdk-hnb659fds-assets-160092849934-ca-central-1",
-                      "s3Key": "640c240b4dccd6e5383ed94289d2222a24e6fde1f31a2cc33f226a5766cf573c.zip"
-                    },
-                    "role": {
-                      "Fn::GetAtt": [
-                        "BalanceTestgenerateReportLambdaRole9D91E4EE",
-                        "Arn"
-                      ]
-                    },
-                    "environment": {
-                      "variables": {
-                        "S3_BUCKET_NAME": {
-                          "Ref": "balancetestrawrecordingsbucket6127ADBC"
-                        }
-                      }
-                    },
-                    "functionName": "BalanceTest-generate-report-for-download",
-                    "handler": "generateReportForDownload.lambda_handler",
-                    "layers": [
-                      {
-                        "Ref": "generateReportPythonLayerE2A84CC2"
-                      }
-                    ],
-                    "memorySize": 512,
-                    "runtime": "python3.7",
-                    "timeout": 180,
-                    "vpcConfig": {
-                      "subnetIds": [
-                        {
-                          "Fn::ImportValue": "VPCStack:ExportsOutputRefbalanceTestVPCprivatesubnetSubnet1Subnet8BA87DE45B0B5EB2"
-                        },
-                        {
-                          "Fn::ImportValue": "VPCStack:ExportsOutputRefbalanceTestVPCprivatesubnetSubnet2SubnetD1E1933170382F7C"
-                        }
-                      ],
-                      "securityGroupIds": [
-                        {
-                          "Fn::ImportValue": "VPCStack:ExportsOutputFnGetAttbalanceTestVPCFBF0FFB3DefaultSecurityGroupDA29CDF5"
-                        }
-                      ]
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
-                  "version": "2.69.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_lambda.Function",
-              "version": "2.69.0"
-            }
-          },
-          "BalanceTest-deleteS3RecordLambda-Logs": {
-            "id": "BalanceTest-deleteS3RecordLambda-Logs",
-            "path": "DataWorkflowStack/BalanceTest-deleteS3RecordLambda-Logs",
-            "children": {
-              "Resource": {
-                "id": "Resource",
-                "path": "DataWorkflowStack/BalanceTest-deleteS3RecordLambda-Logs/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
-                  "aws:cdk:cloudformation:props": {
-                    "logGroupName": "/aws/lambda/BalanceTest-delete-s3-record",
-                    "retentionInDays": 731
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_logs.CfnLogGroup",
-                  "version": "2.69.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_logs.LogGroup",
-              "version": "2.69.0"
-            }
-          },
-          "BalanceTest-deleteS3RecordLambda-Role": {
-            "id": "BalanceTest-deleteS3RecordLambda-Role",
-            "path": "DataWorkflowStack/BalanceTest-deleteS3RecordLambda-Role",
-            "children": {
-              "ImportBalanceTest-deleteS3RecordLambda-Role": {
-                "id": "ImportBalanceTest-deleteS3RecordLambda-Role",
-                "path": "DataWorkflowStack/BalanceTest-deleteS3RecordLambda-Role/ImportBalanceTest-deleteS3RecordLambda-Role",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.Resource",
-                  "version": "2.69.0"
-                }
-              },
-              "Resource": {
-                "id": "Resource",
-                "path": "DataWorkflowStack/BalanceTest-deleteS3RecordLambda-Role/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
-                  "aws:cdk:cloudformation:props": {
-                    "assumeRolePolicyDocument": {
-                      "Statement": [
-                        {
-                          "Action": "sts:AssumeRole",
-                          "Effect": "Allow",
-                          "Principal": {
-                            "Service": "lambda.amazonaws.com"
-                          }
-                        }
-                      ],
-                      "Version": "2012-10-17"
-                    },
-                    "description": "Role gives access to appropriate S3 functions needed for Lambda.",
-                    "managedPolicyArns": [
-                      {
-                        "Fn::Join": [
-                          "",
-                          [
-                            "arn:",
-                            {
-                              "Ref": "AWS::Partition"
-                            },
-                            ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
-                          ]
-                        ]
-                      }
-                    ],
-                    "policies": [
-                      {
-                        "policyName": "BalanceTest-deleteS3RecordLambdaPolicy",
-                        "policyDocument": {
-                          "Statement": [
-                            {
-                              "Action": [
-                                "logs:CreateLogGroup",
-                                "logs:CreateLogStream",
-                                "logs:PutLogEvents"
-                              ],
-                              "Effect": "Allow",
-                              "Resource": {
-                                "Fn::GetAtt": [
-                                  "BalanceTestdeleteS3RecordLambdaLogsF37604F7",
-                                  "Arn"
-                                ]
-                              }
-                            },
-                            {
-                              "Action": "s3:DeleteObject",
-                              "Effect": "Allow",
-                              "Resource": [
-                                {
-                                  "Fn::Join": [
-                                    "",
-                                    [
-                                      {
-                                        "Fn::GetAtt": [
-                                          "balancetestrawrecordingsbucket6127ADBC",
-                                          "Arn"
-                                        ]
-                                      },
-                                      "/parquet_data/*"
-                                    ]
-                                  ]
-                                },
-                                {
-                                  "Fn::Join": [
-                                    "",
-                                    [
-                                      {
-                                        "Fn::GetAtt": [
-                                          "balancetestrawrecordingsbucket6127ADBC",
-                                          "Arn"
-                                        ]
-                                      },
-                                      "/private/*"
-                                    ]
-                                  ]
-                                }
-                              ]
-                            }
-                          ],
-                          "Version": "2012-10-17"
-                        }
-                      }
-                    ],
-                    "roleName": "BalanceTest-deleteS3RecordLambda-Role"
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
-                  "version": "2.69.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_iam.Role",
-              "version": "2.69.0"
-            }
-          },
-          "BalanceTestCognitoIdentityPoolId.Parameter": {
-            "id": "BalanceTestCognitoIdentityPoolId.Parameter",
-            "path": "DataWorkflowStack/BalanceTestCognitoIdentityPoolId.Parameter",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnParameter",
-              "version": "2.69.0"
-            }
-          },
-          "BalanceTestCognitoIdentityPoolId": {
-            "id": "BalanceTestCognitoIdentityPoolId",
-            "path": "DataWorkflowStack/BalanceTestCognitoIdentityPoolId",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.Resource",
-              "version": "2.69.0"
-            }
-          },
-          "BalanceTest-delete-s3-record": {
-            "id": "BalanceTest-delete-s3-record",
-            "path": "DataWorkflowStack/BalanceTest-delete-s3-record",
-            "children": {
-              "Code": {
-                "id": "Code",
-                "path": "DataWorkflowStack/BalanceTest-delete-s3-record/Code",
-                "children": {
-                  "Stage": {
-                    "id": "Stage",
-                    "path": "DataWorkflowStack/BalanceTest-delete-s3-record/Code/Stage",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.AssetStaging",
-                      "version": "2.69.0"
-                    }
-                  },
-                  "AssetBucket": {
-                    "id": "AssetBucket",
-                    "path": "DataWorkflowStack/BalanceTest-delete-s3-record/Code/AssetBucket",
-                    "constructInfo": {
-                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
-                      "version": "2.69.0"
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
-                  "version": "2.69.0"
-                }
-              },
-              "Resource": {
-                "id": "Resource",
-                "path": "DataWorkflowStack/BalanceTest-delete-s3-record/Resource",
-                "attributes": {
-                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
-                  "aws:cdk:cloudformation:props": {
-                    "code": {
-                      "s3Bucket": "cdk-hnb659fds-assets-160092849934-ca-central-1",
-                      "s3Key": "328fa161f4d106e3485dfbef5984fe7f8497e4e4985e08542f1a4c2b16b3696d.zip"
-                    },
-                    "role": {
-                      "Fn::GetAtt": [
-                        "BalanceTestdeleteS3RecordLambdaRole1BF66223",
-                        "Arn"
-                      ]
-                    },
-                    "environment": {
-                      "variables": {
-                        "S3_BUCKET_NAME": {
-                          "Ref": "balancetestrawrecordingsbucket6127ADBC"
-                        },
-                        "IDENTITY_POOL_ID": {
-                          "Ref": "BalanceTestCognitoIdentityPoolIdParameter"
-                        },
-                        "USER_POOL_ID": {
-                          "Fn::ImportValue": "CognitoStack:ExportsOutputRefBalanceTestUserPool005122174B1ED610"
-                        },
-                        "REGION": "ca-central-1"
-                      }
-                    },
-                    "functionName": "BalanceTest-delete-s3-record",
-                    "handler": "delete-s3-record.lambda_handler",
-                    "memorySize": 512,
-                    "runtime": "python3.7",
-                    "timeout": 180,
-                    "vpcConfig": {
-                      "subnetIds": [
-                        {
-                          "Fn::ImportValue": "VPCStack:ExportsOutputRefbalanceTestVPCprivatesubnetSubnet1Subnet8BA87DE45B0B5EB2"
-                        },
-                        {
-                          "Fn::ImportValue": "VPCStack:ExportsOutputRefbalanceTestVPCprivatesubnetSubnet2SubnetD1E1933170382F7C"
-                        }
-                      ],
-                      "securityGroupIds": [
-                        {
-                          "Fn::ImportValue": "VPCStack:ExportsOutputFnGetAttbalanceTestVPCFBF0FFB3DefaultSecurityGroupDA29CDF5"
-                        }
-                      ]
-                    }
-                  }
-                },
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
-                  "version": "2.69.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.aws_lambda.Function",
-              "version": "2.69.0"
-            }
-          },
-          "CDKMetadata": {
-            "id": "CDKMetadata",
-            "path": "DataWorkflowStack/CDKMetadata",
-            "children": {
-              "Default": {
-                "id": "Default",
-                "path": "DataWorkflowStack/CDKMetadata/Default",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnResource",
-                  "version": "2.69.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.284"
-            }
-          },
-          "Exports": {
-            "id": "Exports",
-            "path": "DataWorkflowStack/Exports",
-            "children": {
-              "Output{\"Fn::GetAtt\":[\"balancetestrawrecordingsbucket6127ADBC\",\"Arn\"]}": {
-                "id": "Output{\"Fn::GetAtt\":[\"balancetestrawrecordingsbucket6127ADBC\",\"Arn\"]}",
-                "path": "DataWorkflowStack/Exports/Output{\"Fn::GetAtt\":[\"balancetestrawrecordingsbucket6127ADBC\",\"Arn\"]}",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnOutput",
-                  "version": "2.69.0"
-                }
-              },
-              "Output{\"Ref\":\"balancetestrawrecordingsbucket6127ADBC\"}": {
-                "id": "Output{\"Ref\":\"balancetestrawrecordingsbucket6127ADBC\"}",
-                "path": "DataWorkflowStack/Exports/Output{\"Ref\":\"balancetestrawrecordingsbucket6127ADBC\"}",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnOutput",
-                  "version": "2.69.0"
-                }
-              },
-              "Output{\"Fn::GetAtt\":[\"BalanceTestgeneratereportfordownload0C388CF5\",\"Arn\"]}": {
-                "id": "Output{\"Fn::GetAtt\":[\"BalanceTestgeneratereportfordownload0C388CF5\",\"Arn\"]}",
-                "path": "DataWorkflowStack/Exports/Output{\"Fn::GetAtt\":[\"BalanceTestgeneratereportfordownload0C388CF5\",\"Arn\"]}",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnOutput",
-                  "version": "2.69.0"
-                }
-              },
-              "Output{\"Fn::GetAtt\":[\"BalanceTestdeletes3record4746C1B8\",\"Arn\"]}": {
-                "id": "Output{\"Fn::GetAtt\":[\"BalanceTestdeletes3record4746C1B8\",\"Arn\"]}",
-                "path": "DataWorkflowStack/Exports/Output{\"Fn::GetAtt\":[\"BalanceTestdeletes3record4746C1B8\",\"Arn\"]}",
-                "constructInfo": {
-                  "fqn": "aws-cdk-lib.CfnOutput",
-                  "version": "2.69.0"
-                }
-              }
-            },
-            "constructInfo": {
-              "fqn": "constructs.Construct",
-              "version": "10.1.284"
-            }
-          },
-          "BootstrapVersion": {
-            "id": "BootstrapVersion",
-            "path": "DataWorkflowStack/BootstrapVersion",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnParameter",
-              "version": "2.69.0"
-            }
-          },
-          "CheckBootstrapVersion": {
-            "id": "CheckBootstrapVersion",
-            "path": "DataWorkflowStack/CheckBootstrapVersion",
-            "constructInfo": {
-              "fqn": "aws-cdk-lib.CfnRule",
-              "version": "2.69.0"
-            }
-          }
-        },
-        "constructInfo": {
-          "fqn": "aws-cdk-lib.Stack",
-          "version": "2.69.0"
-        }
-      },
       "DatabaseStack": {
         "id": "DatabaseStack",
         "path": "DatabaseStack",
@@ -3473,7 +2362,7 @@
                           "Action": "sts:AssumeRole",
                           "Effect": "Allow",
                           "Principal": {
-                            "AWS": "arn:aws:iam::160092849934:root"
+                            "AWS": "arn:aws:iam::684904187051:root"
                           }
                         }
                       ],
@@ -3505,7 +2394,7 @@
                                 "Fn::Join": [
                                   "",
                                   [
-                                    "arn:aws:rds-db:ca-central-1:160092849934:dbuser:",
+                                    "arn:aws:rds-db:ca-central-1:684904187051:dbuser:",
                                     {
                                       "Fn::Select": [
                                         6,
@@ -3700,7 +2589,7 @@
                   "aws:cdk:cloudformation:type": "AWS::Lambda::LayerVersion",
                   "aws:cdk:cloudformation:props": {
                     "content": {
-                      "s3Bucket": "cdk-hnb659fds-assets-160092849934-ca-central-1",
+                      "s3Bucket": "cdk-hnb659fds-assets-684904187051-ca-central-1",
                       "s3Key": "f59f4121318cb1f52308fa20490d34305bb91ed413a9ea3c763f3cfd22aced2c.zip"
                     },
                     "compatibleRuntimes": [
@@ -3765,8 +2654,8 @@
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                   "aws:cdk:cloudformation:props": {
                     "code": {
-                      "s3Bucket": "cdk-hnb659fds-assets-160092849934-ca-central-1",
-                      "s3Key": "db03a011e78d101d7e6b05c0347dc45934b90138d595641918756fa88363bc28.zip"
+                      "s3Bucket": "cdk-hnb659fds-assets-684904187051-ca-central-1",
+                      "s3Key": "d7c3fd00671545b173d93bbf04d0d6d310f95b3eda5ad551437ae33b0310c535.zip"
                     },
                     "role": {
                       "Fn::GetAtt": [
@@ -3923,6 +2812,22 @@
             "id": "Exports",
             "path": "DatabaseStack/Exports",
             "children": {
+              "Output{\"Ref\":\"SecretA720EF05\"}": {
+                "id": "Output{\"Ref\":\"SecretA720EF05\"}",
+                "path": "DatabaseStack/Exports/Output{\"Ref\":\"SecretA720EF05\"}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "2.69.0"
+                }
+              },
+              "Output{\"Fn::GetAtt\":[\"ProxyCB0DFB71\",\"Endpoint\"]}": {
+                "id": "Output{\"Fn::GetAtt\":[\"ProxyCB0DFB71\",\"Endpoint\"]}",
+                "path": "DatabaseStack/Exports/Output{\"Fn::GetAtt\":[\"ProxyCB0DFB71\",\"Endpoint\"]}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "2.69.0"
+                }
+              },
               "Output{\"Fn::GetAtt\":[\"BalanceTestpostgresqlRDSconnect4A449849\",\"Arn\"]}": {
                 "id": "Output{\"Fn::GetAtt\":[\"BalanceTestpostgresqlRDSconnect4A449849\",\"Arn\"]}",
                 "path": "DatabaseStack/Exports/Output{\"Fn::GetAtt\":[\"BalanceTestpostgresqlRDSconnect4A449849\",\"Arn\"]}",
@@ -3959,6 +2864,1190 @@
           "version": "2.69.0"
         }
       },
+      "DataWorkflowStack": {
+        "id": "DataWorkflowStack",
+        "path": "DataWorkflowStack",
+        "children": {
+          "balancetest-datastorage-bucket": {
+            "id": "balancetest-datastorage-bucket",
+            "path": "DataWorkflowStack/balancetest-datastorage-bucket",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "DataWorkflowStack/balancetest-datastorage-bucket/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
+                  "aws:cdk:cloudformation:props": {
+                    "bucketEncryption": {
+                      "serverSideEncryptionConfiguration": [
+                        {
+                          "serverSideEncryptionByDefault": {
+                            "sseAlgorithm": "AES256"
+                          }
+                        }
+                      ]
+                    },
+                    "bucketName": "balancetest-datastorage-bucket",
+                    "ownershipControls": {
+                      "rules": [
+                        {
+                          "objectOwnership": "BucketOwnerEnforced"
+                        }
+                      ]
+                    },
+                    "publicAccessBlockConfiguration": {
+                      "blockPublicAcls": true,
+                      "blockPublicPolicy": true,
+                      "ignorePublicAcls": true,
+                      "restrictPublicBuckets": true
+                    },
+                    "versioningConfiguration": {
+                      "status": "Enabled"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3.CfnBucket",
+                  "version": "2.69.0"
+                }
+              },
+              "Notifications": {
+                "id": "Notifications",
+                "path": "DataWorkflowStack/balancetest-datastorage-bucket/Notifications",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "DataWorkflowStack/balancetest-datastorage-bucket/Notifications/Resource",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.CfnResource",
+                      "version": "2.69.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "constructs.Construct",
+                  "version": "10.1.284"
+                }
+              },
+              "AllowBucketNotificationsToDataWorkflowStackBalanceTestdataworkflow5A7205FF": {
+                "id": "AllowBucketNotificationsToDataWorkflowStackBalanceTestdataworkflow5A7205FF",
+                "path": "DataWorkflowStack/balancetest-datastorage-bucket/AllowBucketNotificationsToDataWorkflowStackBalanceTestdataworkflow5A7205FF",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                  "aws:cdk:cloudformation:props": {
+                    "action": "lambda:InvokeFunction",
+                    "functionName": {
+                      "Fn::GetAtt": [
+                        "BalanceTestdataworkflow352A1EA8",
+                        "Arn"
+                      ]
+                    },
+                    "principal": "s3.amazonaws.com",
+                    "sourceAccount": "684904187051",
+                    "sourceArn": {
+                      "Fn::GetAtt": [
+                        "balancetestdatastoragebucketD25B585E",
+                        "Arn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                  "version": "2.69.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_s3.Bucket",
+              "version": "2.69.0"
+            }
+          },
+          "balancetest-accesspt": {
+            "id": "balancetest-accesspt",
+            "path": "DataWorkflowStack/balancetest-accesspt",
+            "attributes": {
+              "aws:cdk:cloudformation:type": "AWS::S3::AccessPoint",
+              "aws:cdk:cloudformation:props": {
+                "bucket": {
+                  "Ref": "balancetestdatastoragebucketD25B585E"
+                },
+                "bucketAccountId": "684904187051",
+                "name": "balancetest-accesspt",
+                "publicAccessBlockConfiguration": {
+                  "blockPublicAcls": true,
+                  "blockPublicPolicy": true,
+                  "restrictPublicBuckets": true,
+                  "ignorePublicAcls": true
+                },
+                "vpcConfiguration": {
+                  "vpcId": {
+                    "Fn::ImportValue": "VPCStack:ExportsOutputRefbalanceTestVPCFBF0FFB322759C6A"
+                  }
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_s3.CfnAccessPoint",
+              "version": "2.69.0"
+            }
+          },
+          "vpcDefaultSecurityGroup": {
+            "id": "vpcDefaultSecurityGroup",
+            "path": "DataWorkflowStack/vpcDefaultSecurityGroup",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "2.69.0"
+            }
+          },
+          "BalanceTest-S3LambdaTrigger-Logs": {
+            "id": "BalanceTest-S3LambdaTrigger-Logs",
+            "path": "DataWorkflowStack/BalanceTest-S3LambdaTrigger-Logs",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "DataWorkflowStack/BalanceTest-S3LambdaTrigger-Logs/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "logGroupName": "/aws/lambda/BalanceTest-data-workflow",
+                    "retentionInDays": 731
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_logs.CfnLogGroup",
+                  "version": "2.69.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_logs.LogGroup",
+              "version": "2.69.0"
+            }
+          },
+          "BalanceTest-S3LambdaTrigger-Role": {
+            "id": "BalanceTest-S3LambdaTrigger-Role",
+            "path": "DataWorkflowStack/BalanceTest-S3LambdaTrigger-Role",
+            "children": {
+              "ImportBalanceTest-S3LambdaTrigger-Role": {
+                "id": "ImportBalanceTest-S3LambdaTrigger-Role",
+                "path": "DataWorkflowStack/BalanceTest-S3LambdaTrigger-Role/ImportBalanceTest-S3LambdaTrigger-Role",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "2.69.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "DataWorkflowStack/BalanceTest-S3LambdaTrigger-Role/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "lambda.amazonaws.com"
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "description": "Role gives access to appropriate functions needed for file conversions, logging, calling Sagemaker functions, and calling S3 functions for Lambda.",
+                    "managedPolicyArns": [
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+                          ]
+                        ]
+                      }
+                    ],
+                    "policies": [
+                      {
+                        "policyName": "BalanceTest-s3LambdaTriggerPolicy",
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "s3:PutObject",
+                              "Effect": "Allow",
+                              "Resource": {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    {
+                                      "Fn::GetAtt": [
+                                        "balancetestdatastoragebucketD25B585E",
+                                        "Arn"
+                                      ]
+                                    },
+                                    "/parquet_data/*"
+                                  ]
+                                ]
+                              }
+                            },
+                            {
+                              "Action": "s3:ListBucket",
+                              "Effect": "Allow",
+                              "Resource": [
+                                {
+                                  "Fn::GetAtt": [
+                                    "balancetestdatastoragebucketD25B585E",
+                                    "Arn"
+                                  ]
+                                },
+                                {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      {
+                                        "Fn::GetAtt": [
+                                          "balancetestdatastoragebucketD25B585E",
+                                          "Arn"
+                                        ]
+                                      },
+                                      "/private/*"
+                                    ]
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "Action": "s3:GetObject",
+                              "Effect": "Allow",
+                              "Resource": {
+                                "Fn::Join": [
+                                  "",
+                                  [
+                                    {
+                                      "Fn::GetAtt": [
+                                        "balancetestdatastoragebucketD25B585E",
+                                        "Arn"
+                                      ]
+                                    },
+                                    "/private/*"
+                                  ]
+                                ]
+                              }
+                            },
+                            {
+                              "Action": [
+                                "logs:CreateLogGroup",
+                                "logs:CreateLogStream",
+                                "logs:PutLogEvents"
+                              ],
+                              "Effect": "Allow",
+                              "Resource": {
+                                "Fn::GetAtt": [
+                                  "BalanceTestS3LambdaTriggerLogs612C9428",
+                                  "Arn"
+                                ]
+                              }
+                            },
+                            {
+                              "Action": "secretsmanager:GetSecretValue",
+                              "Effect": "Allow",
+                              "Resource": {
+                                "Fn::ImportValue": "DatabaseStack:ExportsOutputRefSecretA720EF052D953DED"
+                              }
+                            },
+                            {
+                              "Action": [
+                                "ssm:DescribeParameters",
+                                "ssm:GetParameter",
+                                "ssm:GetParameters",
+                                "ssm:PutParameter"
+                              ],
+                              "Effect": "Allow",
+                              "Resource": "*"
+                            },
+                            {
+                              "Action": "sagemaker:InvokeEndpoint",
+                              "Effect": "Allow",
+                              "Resource": "arn:aws:sagemaker:ca-central-1:684904187051:endpoint/mme-balance-test"
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    ],
+                    "roleName": "BalanceTest-S3LambdaTrigger-Role"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                  "version": "2.69.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_iam.Role",
+              "version": "2.69.0"
+            }
+          },
+          "BalanceTest-data-workflow": {
+            "id": "BalanceTest-data-workflow",
+            "path": "DataWorkflowStack/BalanceTest-data-workflow",
+            "children": {
+              "AssetImage": {
+                "id": "AssetImage",
+                "path": "DataWorkflowStack/BalanceTest-data-workflow/AssetImage",
+                "children": {
+                  "Staging": {
+                    "id": "Staging",
+                    "path": "DataWorkflowStack/BalanceTest-data-workflow/AssetImage/Staging",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.69.0"
+                    }
+                  },
+                  "Repository": {
+                    "id": "Repository",
+                    "path": "DataWorkflowStack/BalanceTest-data-workflow/AssetImage/Repository",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_ecr.RepositoryBase",
+                      "version": "2.69.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ecr_assets.DockerImageAsset",
+                  "version": "2.69.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "DataWorkflowStack/BalanceTest-data-workflow/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "imageUri": {
+                        "Fn::Sub": "684904187051.dkr.ecr.ca-central-1.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-684904187051-ca-central-1:da95c8358ea75fb8aee72f09e0944714a09efdfb7f6a360bfe49a4bfeeb44ab6"
+                      }
+                    },
+                    "role": {
+                      "Fn::GetAtt": [
+                        "BalanceTestS3LambdaTriggerRole83B886E8",
+                        "Arn"
+                      ]
+                    },
+                    "environment": {
+                      "variables": {
+                        "endpoint_name": "mme-balance-test",
+                        "dbname": "balancetest_postgresql_instance",
+                        "host": {
+                          "Fn::ImportValue": "DatabaseStack:ExportsOutputFnGetAttProxyCB0DFB71EndpointFB28556A"
+                        },
+                        "rds_secret_name": {
+                          "Fn::Join": [
+                            "-",
+                            [
+                              {
+                                "Fn::Select": [
+                                  0,
+                                  {
+                                    "Fn::Split": [
+                                      "-",
+                                      {
+                                        "Fn::Select": [
+                                          6,
+                                          {
+                                            "Fn::Split": [
+                                              ":",
+                                              {
+                                                "Fn::ImportValue": "DatabaseStack:ExportsOutputRefSecretA720EF052D953DED"
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              },
+                              {
+                                "Fn::Select": [
+                                  1,
+                                  {
+                                    "Fn::Split": [
+                                      "-",
+                                      {
+                                        "Fn::Select": [
+                                          6,
+                                          {
+                                            "Fn::Split": [
+                                              ":",
+                                              {
+                                                "Fn::ImportValue": "DatabaseStack:ExportsOutputRefSecretA720EF052D953DED"
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          ]
+                        }
+                      }
+                    },
+                    "functionName": "BalanceTest-data-workflow",
+                    "memorySize": 512,
+                    "packageType": "Image",
+                    "timeout": 300,
+                    "vpcConfig": {
+                      "subnetIds": [
+                        {
+                          "Fn::ImportValue": "VPCStack:ExportsOutputRefbalanceTestVPCprivatesubnetSubnet1Subnet8BA87DE45B0B5EB2"
+                        },
+                        {
+                          "Fn::ImportValue": "VPCStack:ExportsOutputRefbalanceTestVPCprivatesubnetSubnet2SubnetD1E1933170382F7C"
+                        }
+                      ],
+                      "securityGroupIds": [
+                        {
+                          "Fn::ImportValue": "VPCStack:ExportsOutputFnGetAttbalanceTestVPCFBF0FFB3DefaultSecurityGroupDA29CDF5"
+                        }
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                  "version": "2.69.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda.DockerImageFunction",
+              "version": "2.69.0"
+            }
+          },
+          "BucketNotificationsHandler050a0587b7544547bf325f094a3db834": {
+            "id": "BucketNotificationsHandler050a0587b7544547bf325f094a3db834",
+            "path": "DataWorkflowStack/BucketNotificationsHandler050a0587b7544547bf325f094a3db834",
+            "children": {
+              "Role": {
+                "id": "Role",
+                "path": "DataWorkflowStack/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role",
+                "children": {
+                  "ImportRole": {
+                    "id": "ImportRole",
+                    "path": "DataWorkflowStack/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/ImportRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "2.69.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "DataWorkflowStack/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "2.69.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "DataWorkflowStack/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "DataWorkflowStack/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": "s3:PutBucketNotification",
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36",
+                            "roles": [
+                              {
+                                "Ref": "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "2.69.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "2.69.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "2.69.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "DataWorkflowStack/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Resource",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "2.69.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.1.284"
+            }
+          },
+          "BalanceTest-generateReportLambda-Logs": {
+            "id": "BalanceTest-generateReportLambda-Logs",
+            "path": "DataWorkflowStack/BalanceTest-generateReportLambda-Logs",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "DataWorkflowStack/BalanceTest-generateReportLambda-Logs/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "logGroupName": "/aws/lambda/BalanceTest-generate-report-for-download",
+                    "retentionInDays": 731
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_logs.CfnLogGroup",
+                  "version": "2.69.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_logs.LogGroup",
+              "version": "2.69.0"
+            }
+          },
+          "BalanceTest-generateReportLambda-Role": {
+            "id": "BalanceTest-generateReportLambda-Role",
+            "path": "DataWorkflowStack/BalanceTest-generateReportLambda-Role",
+            "children": {
+              "ImportBalanceTest-generateReportLambda-Role": {
+                "id": "ImportBalanceTest-generateReportLambda-Role",
+                "path": "DataWorkflowStack/BalanceTest-generateReportLambda-Role/ImportBalanceTest-generateReportLambda-Role",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "2.69.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "DataWorkflowStack/BalanceTest-generateReportLambda-Role/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "lambda.amazonaws.com"
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "description": "Role gives access to appropriate S3 functions needed for doing S3 Select for Lambda.",
+                    "managedPolicyArns": [
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":iam::aws:policy/AmazonS3FullAccess"
+                          ]
+                        ]
+                      },
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+                          ]
+                        ]
+                      }
+                    ],
+                    "policies": [
+                      {
+                        "policyName": "BalanceTest-generateReportLambdaPolicy",
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": [
+                                "logs:CreateLogGroup",
+                                "logs:CreateLogStream",
+                                "logs:PutLogEvents"
+                              ],
+                              "Effect": "Allow",
+                              "Resource": {
+                                "Fn::GetAtt": [
+                                  "BalanceTestgenerateReportLambdaLogs1B9361FA",
+                                  "Arn"
+                                ]
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    ],
+                    "roleName": "BalanceTest-generateReportLambda-Role"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                  "version": "2.69.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_iam.Role",
+              "version": "2.69.0"
+            }
+          },
+          "generateReportPythonLayer": {
+            "id": "generateReportPythonLayer",
+            "path": "DataWorkflowStack/generateReportPythonLayer",
+            "children": {
+              "Code": {
+                "id": "Code",
+                "path": "DataWorkflowStack/generateReportPythonLayer/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "DataWorkflowStack/generateReportPythonLayer/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.69.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "DataWorkflowStack/generateReportPythonLayer/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.69.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.69.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "DataWorkflowStack/generateReportPythonLayer/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::LayerVersion",
+                  "aws:cdk:cloudformation:props": {
+                    "content": {
+                      "s3Bucket": "cdk-hnb659fds-assets-684904187051-ca-central-1",
+                      "s3Key": "07c4934444be84969c7ccfeb533965193dbd02c14f340fd2429147a5bab3a32f.zip"
+                    },
+                    "compatibleRuntimes": [
+                      "python3.7"
+                    ],
+                    "description": "Contains libraries for the BalanceTest-generate-report-for-download function."
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnLayerVersion",
+                  "version": "2.69.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda.LayerVersion",
+              "version": "2.69.0"
+            }
+          },
+          "BalanceTest-generate-report-for-download": {
+            "id": "BalanceTest-generate-report-for-download",
+            "path": "DataWorkflowStack/BalanceTest-generate-report-for-download",
+            "children": {
+              "Code": {
+                "id": "Code",
+                "path": "DataWorkflowStack/BalanceTest-generate-report-for-download/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "DataWorkflowStack/BalanceTest-generate-report-for-download/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.69.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "DataWorkflowStack/BalanceTest-generate-report-for-download/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.69.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.69.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "DataWorkflowStack/BalanceTest-generate-report-for-download/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "s3Bucket": "cdk-hnb659fds-assets-684904187051-ca-central-1",
+                      "s3Key": "640c240b4dccd6e5383ed94289d2222a24e6fde1f31a2cc33f226a5766cf573c.zip"
+                    },
+                    "role": {
+                      "Fn::GetAtt": [
+                        "BalanceTestgenerateReportLambdaRole9D91E4EE",
+                        "Arn"
+                      ]
+                    },
+                    "environment": {
+                      "variables": {
+                        "S3_BUCKET_NAME": {
+                          "Ref": "balancetestdatastoragebucketD25B585E"
+                        }
+                      }
+                    },
+                    "functionName": "BalanceTest-generate-report-for-download",
+                    "handler": "generateReportForDownload.lambda_handler",
+                    "layers": [
+                      {
+                        "Ref": "generateReportPythonLayerE2A84CC2"
+                      }
+                    ],
+                    "memorySize": 512,
+                    "runtime": "python3.7",
+                    "timeout": 180,
+                    "vpcConfig": {
+                      "subnetIds": [
+                        {
+                          "Fn::ImportValue": "VPCStack:ExportsOutputRefbalanceTestVPCprivatesubnetSubnet1Subnet8BA87DE45B0B5EB2"
+                        },
+                        {
+                          "Fn::ImportValue": "VPCStack:ExportsOutputRefbalanceTestVPCprivatesubnetSubnet2SubnetD1E1933170382F7C"
+                        }
+                      ],
+                      "securityGroupIds": [
+                        {
+                          "Fn::ImportValue": "VPCStack:ExportsOutputFnGetAttbalanceTestVPCFBF0FFB3DefaultSecurityGroupDA29CDF5"
+                        }
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                  "version": "2.69.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "2.69.0"
+            }
+          },
+          "BalanceTest-deleteS3RecordLambda-Logs": {
+            "id": "BalanceTest-deleteS3RecordLambda-Logs",
+            "path": "DataWorkflowStack/BalanceTest-deleteS3RecordLambda-Logs",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "DataWorkflowStack/BalanceTest-deleteS3RecordLambda-Logs/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "logGroupName": "/aws/lambda/BalanceTest-delete-s3-record",
+                    "retentionInDays": 731
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_logs.CfnLogGroup",
+                  "version": "2.69.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_logs.LogGroup",
+              "version": "2.69.0"
+            }
+          },
+          "BalanceTest-deleteS3RecordLambda-Role": {
+            "id": "BalanceTest-deleteS3RecordLambda-Role",
+            "path": "DataWorkflowStack/BalanceTest-deleteS3RecordLambda-Role",
+            "children": {
+              "ImportBalanceTest-deleteS3RecordLambda-Role": {
+                "id": "ImportBalanceTest-deleteS3RecordLambda-Role",
+                "path": "DataWorkflowStack/BalanceTest-deleteS3RecordLambda-Role/ImportBalanceTest-deleteS3RecordLambda-Role",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "2.69.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "DataWorkflowStack/BalanceTest-deleteS3RecordLambda-Role/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "lambda.amazonaws.com"
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "description": "Role gives access to appropriate S3 functions needed for Lambda.",
+                    "managedPolicyArns": [
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+                          ]
+                        ]
+                      }
+                    ],
+                    "policies": [
+                      {
+                        "policyName": "BalanceTest-deleteS3RecordLambdaPolicy",
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": [
+                                "logs:CreateLogGroup",
+                                "logs:CreateLogStream",
+                                "logs:PutLogEvents"
+                              ],
+                              "Effect": "Allow",
+                              "Resource": {
+                                "Fn::GetAtt": [
+                                  "BalanceTestdeleteS3RecordLambdaLogsF37604F7",
+                                  "Arn"
+                                ]
+                              }
+                            },
+                            {
+                              "Action": "s3:DeleteObject",
+                              "Effect": "Allow",
+                              "Resource": [
+                                {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      {
+                                        "Fn::GetAtt": [
+                                          "balancetestdatastoragebucketD25B585E",
+                                          "Arn"
+                                        ]
+                                      },
+                                      "/parquet_data/*"
+                                    ]
+                                  ]
+                                },
+                                {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      {
+                                        "Fn::GetAtt": [
+                                          "balancetestdatastoragebucketD25B585E",
+                                          "Arn"
+                                        ]
+                                      },
+                                      "/private/*"
+                                    ]
+                                  ]
+                                }
+                              ]
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    ],
+                    "roleName": "BalanceTest-deleteS3RecordLambda-Role"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                  "version": "2.69.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_iam.Role",
+              "version": "2.69.0"
+            }
+          },
+          "BalanceTestCognitoIdentityPoolId.Parameter": {
+            "id": "BalanceTestCognitoIdentityPoolId.Parameter",
+            "path": "DataWorkflowStack/BalanceTestCognitoIdentityPoolId.Parameter",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "2.69.0"
+            }
+          },
+          "BalanceTestCognitoIdentityPoolId": {
+            "id": "BalanceTestCognitoIdentityPoolId",
+            "path": "DataWorkflowStack/BalanceTestCognitoIdentityPoolId",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.Resource",
+              "version": "2.69.0"
+            }
+          },
+          "BalanceTest-delete-s3-record": {
+            "id": "BalanceTest-delete-s3-record",
+            "path": "DataWorkflowStack/BalanceTest-delete-s3-record",
+            "children": {
+              "Code": {
+                "id": "Code",
+                "path": "DataWorkflowStack/BalanceTest-delete-s3-record/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "DataWorkflowStack/BalanceTest-delete-s3-record/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.69.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "DataWorkflowStack/BalanceTest-delete-s3-record/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.69.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.69.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "DataWorkflowStack/BalanceTest-delete-s3-record/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "s3Bucket": "cdk-hnb659fds-assets-684904187051-ca-central-1",
+                      "s3Key": "328fa161f4d106e3485dfbef5984fe7f8497e4e4985e08542f1a4c2b16b3696d.zip"
+                    },
+                    "role": {
+                      "Fn::GetAtt": [
+                        "BalanceTestdeleteS3RecordLambdaRole1BF66223",
+                        "Arn"
+                      ]
+                    },
+                    "environment": {
+                      "variables": {
+                        "S3_BUCKET_NAME": {
+                          "Ref": "balancetestdatastoragebucketD25B585E"
+                        },
+                        "IDENTITY_POOL_ID": {
+                          "Ref": "BalanceTestCognitoIdentityPoolIdParameter"
+                        },
+                        "USER_POOL_ID": {
+                          "Fn::ImportValue": "CognitoStack:ExportsOutputRefBalanceTestUserPool005122174B1ED610"
+                        },
+                        "REGION": "ca-central-1"
+                      }
+                    },
+                    "functionName": "BalanceTest-delete-s3-record",
+                    "handler": "delete-s3-record.lambda_handler",
+                    "memorySize": 512,
+                    "runtime": "python3.7",
+                    "timeout": 180,
+                    "vpcConfig": {
+                      "subnetIds": [
+                        {
+                          "Fn::ImportValue": "VPCStack:ExportsOutputRefbalanceTestVPCprivatesubnetSubnet1Subnet8BA87DE45B0B5EB2"
+                        },
+                        {
+                          "Fn::ImportValue": "VPCStack:ExportsOutputRefbalanceTestVPCprivatesubnetSubnet2SubnetD1E1933170382F7C"
+                        }
+                      ],
+                      "securityGroupIds": [
+                        {
+                          "Fn::ImportValue": "VPCStack:ExportsOutputFnGetAttbalanceTestVPCFBF0FFB3DefaultSecurityGroupDA29CDF5"
+                        }
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                  "version": "2.69.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "2.69.0"
+            }
+          },
+          "CDKMetadata": {
+            "id": "CDKMetadata",
+            "path": "DataWorkflowStack/CDKMetadata",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "DataWorkflowStack/CDKMetadata/Default",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "2.69.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.1.284"
+            }
+          },
+          "Exports": {
+            "id": "Exports",
+            "path": "DataWorkflowStack/Exports",
+            "children": {
+              "Output{\"Fn::GetAtt\":[\"balancetestdatastoragebucketD25B585E\",\"Arn\"]}": {
+                "id": "Output{\"Fn::GetAtt\":[\"balancetestdatastoragebucketD25B585E\",\"Arn\"]}",
+                "path": "DataWorkflowStack/Exports/Output{\"Fn::GetAtt\":[\"balancetestdatastoragebucketD25B585E\",\"Arn\"]}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "2.69.0"
+                }
+              },
+              "Output{\"Ref\":\"balancetestdatastoragebucketD25B585E\"}": {
+                "id": "Output{\"Ref\":\"balancetestdatastoragebucketD25B585E\"}",
+                "path": "DataWorkflowStack/Exports/Output{\"Ref\":\"balancetestdatastoragebucketD25B585E\"}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "2.69.0"
+                }
+              },
+              "Output{\"Fn::GetAtt\":[\"BalanceTestgeneratereportfordownload0C388CF5\",\"Arn\"]}": {
+                "id": "Output{\"Fn::GetAtt\":[\"BalanceTestgeneratereportfordownload0C388CF5\",\"Arn\"]}",
+                "path": "DataWorkflowStack/Exports/Output{\"Fn::GetAtt\":[\"BalanceTestgeneratereportfordownload0C388CF5\",\"Arn\"]}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "2.69.0"
+                }
+              },
+              "Output{\"Fn::GetAtt\":[\"BalanceTestdeletes3record4746C1B8\",\"Arn\"]}": {
+                "id": "Output{\"Fn::GetAtt\":[\"BalanceTestdeletes3record4746C1B8\",\"Arn\"]}",
+                "path": "DataWorkflowStack/Exports/Output{\"Fn::GetAtt\":[\"BalanceTestdeletes3record4746C1B8\",\"Arn\"]}",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "2.69.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.1.284"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "DataWorkflowStack/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "2.69.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "DataWorkflowStack/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "2.69.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "2.69.0"
+        }
+      },
       "AthenaGlueStack": {
         "id": "AthenaGlueStack",
         "path": "AthenaGlueStack",
@@ -3969,7 +4058,7 @@
             "attributes": {
               "aws:cdk:cloudformation:type": "AWS::Glue::Database",
               "aws:cdk:cloudformation:props": {
-                "catalogId": "160092849934",
+                "catalogId": "684904187051",
                 "databaseInput": {
                   "name": "balancetest-sensordata-gluedb"
                 }
@@ -4041,7 +4130,7 @@
                                   "",
                                   [
                                     {
-                                      "Fn::ImportValue": "DataWorkflowStack:ExportsOutputFnGetAttbalancetestrawrecordingsbucket6127ADBCArn6B54D663"
+                                      "Fn::ImportValue": "DataWorkflowStack:ExportsOutputFnGetAttbalancetestdatastoragebucketD25B585EArnFFCC6A0F"
                                     },
                                     "/parquet_data/patient_tests/*"
                                   ]
@@ -4088,7 +4177,7 @@
                           [
                             "s3://",
                             {
-                              "Fn::ImportValue": "DataWorkflowStack:ExportsOutputRefbalancetestrawrecordingsbucket6127ADBCD559FDBB"
+                              "Fn::ImportValue": "DataWorkflowStack:ExportsOutputRefbalancetestdatastoragebucketD25B585E3C53CCB4"
                             },
                             "/parquet_data/patient_tests/"
                           ]
@@ -4312,7 +4401,7 @@
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
                   "aws:cdk:cloudformation:props": {
                     "code": {
-                      "s3Bucket": "cdk-hnb659fds-assets-160092849934-ca-central-1",
+                      "s3Bucket": "cdk-hnb659fds-assets-684904187051-ca-central-1",
                       "s3Key": "11bcb3001ea27d32b2c5fd579dc6874c4d00656a5a6e6072af48419036f32864.zip"
                     },
                     "role": {
@@ -4324,7 +4413,7 @@
                     "environment": {
                       "variables": {
                         "S3_BUCKET_NAME": {
-                          "Fn::ImportValue": "DataWorkflowStack:ExportsOutputRefbalancetestrawrecordingsbucket6127ADBCD559FDBB"
+                          "Fn::ImportValue": "DataWorkflowStack:ExportsOutputRefbalancetestdatastoragebucketD25B585E3C53CCB4"
                         },
                         "IDENTITY_POOL_ID": {
                           "Ref": "BalanceTestCognitoIdentityPoolIdParameter"
@@ -4377,7 +4466,7 @@
                 "name": "BalanceTestAthenaDataCatalog",
                 "type": "GLUE",
                 "parameters": {
-                  "catalog-id": "160092849934"
+                  "catalog-id": "684904187051"
                 }
               }
             },
@@ -5129,7 +5218,7 @@
                     },
                     "dataSourceName": "BalanceTest_generate_report_s3_lambda",
                     "name": "redirect_s3_download_function",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-160092849934-ca-central-1/28735a8c309355275f86385cbe993eaf9a328414d4a855a213e82b2905150081.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/28735a8c309355275f86385cbe993eaf9a328414d4a855a213e82b2905150081.js",
                     "functionVersion": "2018-05-29",
                     "runtime": {
                       "name": "APPSYNC_JS",
@@ -5189,7 +5278,7 @@
                     },
                     "dataSourceName": "BalanceTest_query_s3_lambda",
                     "name": "redirect_s3_data_retrieval_function",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-160092849934-ca-central-1/28735a8c309355275f86385cbe993eaf9a328414d4a855a213e82b2905150081.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/28735a8c309355275f86385cbe993eaf9a328414d4a855a213e82b2905150081.js",
                     "functionVersion": "2018-05-29",
                     "runtime": {
                       "name": "APPSYNC_JS",
@@ -5249,7 +5338,7 @@
                     },
                     "dataSourceName": "BalanceTest_postgresql_connection_lambda",
                     "name": "redirect_postgresql_rds_function",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-160092849934-ca-central-1/28735a8c309355275f86385cbe993eaf9a328414d4a855a213e82b2905150081.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/28735a8c309355275f86385cbe993eaf9a328414d4a855a213e82b2905150081.js",
                     "functionVersion": "2018-05-29",
                     "runtime": {
                       "name": "APPSYNC_JS",
@@ -5309,7 +5398,7 @@
                     },
                     "dataSourceName": "BalanceTest_delete_event_record_lambda",
                     "name": "redirect_delete_event_function",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-160092849934-ca-central-1/28735a8c309355275f86385cbe993eaf9a328414d4a855a213e82b2905150081.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/28735a8c309355275f86385cbe993eaf9a328414d4a855a213e82b2905150081.js",
                     "functionVersion": "2018-05-29",
                     "runtime": {
                       "name": "APPSYNC_JS",
@@ -5369,7 +5458,7 @@
                     },
                     "fieldName": "deleteTestEventFromS3",
                     "typeName": "Mutation",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-160092849934-ca-central-1/03b666df465f4cb77d2e803618fcb06777820376c9fb4f2150ae7e30380f8826.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/03b666df465f4cb77d2e803618fcb06777820376c9fb4f2150ae7e30380f8826.js",
                     "kind": "PIPELINE",
                     "pipelineConfig": {
                       "functions": [
@@ -5439,7 +5528,7 @@
                     },
                     "fieldName": "downloadTestEventDetails",
                     "typeName": "Query",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-160092849934-ca-central-1/1417748595b9bc762ee0150e41fb3e7623ec03e210bfebbfb14f9ce1f4864857.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/1417748595b9bc762ee0150e41fb3e7623ec03e210bfebbfb14f9ce1f4864857.js",
                     "kind": "PIPELINE",
                     "pipelineConfig": {
                       "functions": [
@@ -5509,7 +5598,7 @@
                     },
                     "fieldName": "getMeasurementRange",
                     "typeName": "Query",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-160092849934-ca-central-1/624ca0f1fa299e76091da12d2a9117f144274595c1fae5be97c85d5b6fa93ec6.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/624ca0f1fa299e76091da12d2a9117f144274595c1fae5be97c85d5b6fa93ec6.js",
                     "kind": "PIPELINE",
                     "pipelineConfig": {
                       "functions": [
@@ -5579,7 +5668,7 @@
                     },
                     "fieldName": "getMeasurementData",
                     "typeName": "Query",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-160092849934-ca-central-1/9b943f1efb1239e650ac1e54845fd1799b1e56ef6857d9df0d792b8e78071d8b.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/9b943f1efb1239e650ac1e54845fd1799b1e56ef6857d9df0d792b8e78071d8b.js",
                     "kind": "PIPELINE",
                     "pipelineConfig": {
                       "functions": [
@@ -5649,7 +5738,7 @@
                     },
                     "fieldName": "getAllAvailableTests",
                     "typeName": "Query",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-160092849934-ca-central-1/ad5babc432fd36f7cbff972ca47437d7a3210d636591278bfee63136e83983f0.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/ad5babc432fd36f7cbff972ca47437d7a3210d636591278bfee63136e83983f0.js",
                     "kind": "PIPELINE",
                     "pipelineConfig": {
                       "functions": [
@@ -5719,7 +5808,7 @@
                     },
                     "fieldName": "getAllPatients",
                     "typeName": "Query",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-160092849934-ca-central-1/8c126736eaaafc289e736b7bdda928f70402d04bc2f5f81ad502eeed830730d3.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/8c126736eaaafc289e736b7bdda928f70402d04bc2f5f81ad502eeed830730d3.js",
                     "kind": "PIPELINE",
                     "pipelineConfig": {
                       "functions": [
@@ -5789,7 +5878,7 @@
                     },
                     "fieldName": "getCareproviderById",
                     "typeName": "Query",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-160092849934-ca-central-1/38b48e18570470d0c8df943e916d4084911780961f68cc3a10e5d1432578efde.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/38b48e18570470d0c8df943e916d4084911780961f68cc3a10e5d1432578efde.js",
                     "kind": "PIPELINE",
                     "pipelineConfig": {
                       "functions": [
@@ -5859,7 +5948,7 @@
                     },
                     "fieldName": "getPatientAssignedTests",
                     "typeName": "Query",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-160092849934-ca-central-1/e0d6e49137ce0d9ee036a4e1adeef594db12c2799715a9ff6e790c419b4a6e7b.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/e0d6e49137ce0d9ee036a4e1adeef594db12c2799715a9ff6e790c419b4a6e7b.js",
                     "kind": "PIPELINE",
                     "pipelineConfig": {
                       "functions": [
@@ -5929,7 +6018,7 @@
                     },
                     "fieldName": "getPatientById",
                     "typeName": "Query",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-160092849934-ca-central-1/d5993348c43c76e5ed9b27568adffcef1ee1079f4a8b1833ab37f312a8ea9c17.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/d5993348c43c76e5ed9b27568adffcef1ee1079f4a8b1833ab37f312a8ea9c17.js",
                     "kind": "PIPELINE",
                     "pipelineConfig": {
                       "functions": [
@@ -5999,7 +6088,7 @@
                     },
                     "fieldName": "getPatientsForCareprovider",
                     "typeName": "Query",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-160092849934-ca-central-1/db0e93ecff4017301c5368bfeeccc52f76e6cef856ea77ace5bed1f59980e0d9.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/db0e93ecff4017301c5368bfeeccc52f76e6cef856ea77ace5bed1f59980e0d9.js",
                     "kind": "PIPELINE",
                     "pipelineConfig": {
                       "functions": [
@@ -6069,7 +6158,7 @@
                     },
                     "fieldName": "getScoreStatsOverTime",
                     "typeName": "Query",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-160092849934-ca-central-1/20cdfb5eb4ae37685be4bf29a1d835e16698297a2e0232586506db0d9bde0b93.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/20cdfb5eb4ae37685be4bf29a1d835e16698297a2e0232586506db0d9bde0b93.js",
                     "kind": "PIPELINE",
                     "pipelineConfig": {
                       "functions": [
@@ -6139,7 +6228,7 @@
                     },
                     "fieldName": "getTestEventById",
                     "typeName": "Query",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-160092849934-ca-central-1/66720e2a227eb3480a17b84f5887888878abb5b3b2573e287a91a744a63e3710.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/66720e2a227eb3480a17b84f5887888878abb5b3b2573e287a91a744a63e3710.js",
                     "kind": "PIPELINE",
                     "pipelineConfig": {
                       "functions": [
@@ -6209,7 +6298,7 @@
                     },
                     "fieldName": "getTestEvents",
                     "typeName": "Query",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-160092849934-ca-central-1/140c72a9f0ace327aca51d7ed3cfc9497a88da95d0bf6bbd3ac103cd8436569a.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/140c72a9f0ace327aca51d7ed3cfc9497a88da95d0bf6bbd3ac103cd8436569a.js",
                     "kind": "PIPELINE",
                     "pipelineConfig": {
                       "functions": [
@@ -6279,7 +6368,7 @@
                     },
                     "fieldName": "addPatientToCareProvider",
                     "typeName": "Mutation",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-160092849934-ca-central-1/d6b02755e306aed1a028c368c4e667376b51bbcd4deb7cdb38570b4c73475e7b.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/d6b02755e306aed1a028c368c4e667376b51bbcd4deb7cdb38570b4c73475e7b.js",
                     "kind": "PIPELINE",
                     "pipelineConfig": {
                       "functions": [
@@ -6349,7 +6438,7 @@
                     },
                     "fieldName": "addTestType",
                     "typeName": "Mutation",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-160092849934-ca-central-1/b359c6f607cdbc9297a2bd3300ee4abf411665b12e18c0518c8d7089d19a995e.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/b359c6f607cdbc9297a2bd3300ee4abf411665b12e18c0518c8d7089d19a995e.js",
                     "kind": "PIPELINE",
                     "pipelineConfig": {
                       "functions": [
@@ -6419,7 +6508,7 @@
                     },
                     "fieldName": "assignTestToPatient",
                     "typeName": "Mutation",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-160092849934-ca-central-1/248647d3e798dbe95eb4519659b92994d9de592664911bc4f0958f0c77031581.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/248647d3e798dbe95eb4519659b92994d9de592664911bc4f0958f0c77031581.js",
                     "kind": "PIPELINE",
                     "pipelineConfig": {
                       "functions": [
@@ -6489,7 +6578,7 @@
                     },
                     "fieldName": "createCareProvider",
                     "typeName": "Mutation",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-160092849934-ca-central-1/3f3cf540e7ac47520ea65692d092f5cdb930374abacc4ae6b7e27b6dda4fe9b9.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/3f3cf540e7ac47520ea65692d092f5cdb930374abacc4ae6b7e27b6dda4fe9b9.js",
                     "kind": "PIPELINE",
                     "pipelineConfig": {
                       "functions": [
@@ -6559,7 +6648,7 @@
                     },
                     "fieldName": "createPatient",
                     "typeName": "Mutation",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-160092849934-ca-central-1/98856c90076a66b257236940ccd83e9eab6c1950fb55e29b8304467dd1e26743.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/98856c90076a66b257236940ccd83e9eab6c1950fb55e29b8304467dd1e26743.js",
                     "kind": "PIPELINE",
                     "pipelineConfig": {
                       "functions": [
@@ -6629,7 +6718,7 @@
                     },
                     "fieldName": "deleteTestEventFromDB",
                     "typeName": "Mutation",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-160092849934-ca-central-1/bae3879d903c5af2a49be8d45c40ff5d52d85748c71436192ad593f469b57ce9.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/bae3879d903c5af2a49be8d45c40ff5d52d85748c71436192ad593f469b57ce9.js",
                     "kind": "PIPELINE",
                     "pipelineConfig": {
                       "functions": [
@@ -6699,7 +6788,7 @@
                     },
                     "fieldName": "putBalanceScore",
                     "typeName": "Mutation",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-160092849934-ca-central-1/01dfa272140a8116c68ea9133f55bda580c9d371bcfb26cef0bbc66621f9f2d3.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/01dfa272140a8116c68ea9133f55bda580c9d371bcfb26cef0bbc66621f9f2d3.js",
                     "kind": "PIPELINE",
                     "pipelineConfig": {
                       "functions": [
@@ -6769,7 +6858,7 @@
                     },
                     "fieldName": "putTestResult",
                     "typeName": "Mutation",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-160092849934-ca-central-1/70b2bdf9b2544d1ab085a1f180998e015275e7d7fc0d38d25df9309f61408b2a.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/70b2bdf9b2544d1ab085a1f180998e015275e7d7fc0d38d25df9309f61408b2a.js",
                     "kind": "PIPELINE",
                     "pipelineConfig": {
                       "functions": [
@@ -6839,7 +6928,7 @@
                     },
                     "fieldName": "recordConsentDate",
                     "typeName": "Mutation",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-160092849934-ca-central-1/a4af5dad8aab229cebbdc396b587dbaa940e10e2c9e3337c0243d2e6ba99260d.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/a4af5dad8aab229cebbdc396b587dbaa940e10e2c9e3337c0243d2e6ba99260d.js",
                     "kind": "PIPELINE",
                     "pipelineConfig": {
                       "functions": [
@@ -6909,7 +6998,7 @@
                     },
                     "fieldName": "removeTestFromPatient",
                     "typeName": "Mutation",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-160092849934-ca-central-1/d3d8f6627b02d69ab0ad687517b5f687d96f332217e2e87bdd7acc6eb90c8b1f.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/d3d8f6627b02d69ab0ad687517b5f687d96f332217e2e87bdd7acc6eb90c8b1f.js",
                     "kind": "PIPELINE",
                     "pipelineConfig": {
                       "functions": [

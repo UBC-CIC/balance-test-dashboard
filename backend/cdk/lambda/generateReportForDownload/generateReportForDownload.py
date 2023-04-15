@@ -55,8 +55,8 @@ def lambda_handler(event, context):
         user_id, movement, year, month, day, test_event_id,  test_event_id2 = extract(
             template, key)
         # pdf_path = f'parquet_data/patient_tests/user_id={user_id}/movement={movement}/year={year}/month={month}/day={day}/test_event_id={test_event_id}/test_event_{test_event_id}.pdf'
-        pdf_path = f'private/ca-central-1:{user_id}/movement={movement}/year={year}/month={month}/day={day}/{test_event_id}.pdf'
-        csv_path = f'private/ca-central-1:{user_id}/movement={movement}/year={year}/month={month}/day={day}/{test_event_id}.csv'
+        pdf_path = f'private/{os.environ["AWS_REGION"]}:{user_id}/movement={movement}/year={year}/month={month}/day={day}/{test_event_id}.pdf'
+        csv_path = f'private/{os.environ["AWS_REGION"]}:{user_id}/movement={movement}/year={year}/month={month}/day={day}/{test_event_id}.csv'
 
         # convert to csv and store in s3
         raw = s3_client.get_object(Bucket=bucket, Key=key)

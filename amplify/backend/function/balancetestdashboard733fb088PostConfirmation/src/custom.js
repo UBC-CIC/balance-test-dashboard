@@ -26,7 +26,6 @@ exports.handler = async (event, context, callback) => {
         UserPoolId: event.userPoolId,
         Username: event.userName,
       };
-      console.log("Params: ", params);
     }
   } else {
     params = {
@@ -34,7 +33,6 @@ exports.handler = async (event, context, callback) => {
       UserPoolId: event.userPoolId,
       Username: event.userName,
     };
-    console.log("Params - Patient: ", params);
   }
   try {
     await cognito_isp.adminAddUserToGroup(params, (err) => {
