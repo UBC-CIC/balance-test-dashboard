@@ -34,7 +34,8 @@ export class DataWorkflowStack extends Stack {
       const s3LambdaTriggerFolderName = "data-workflow-s3-lambda-trigger-image"
       const logGroupName = "BalanceTest-S3LambdaTrigger-Logs";
       const s3LambdaTriggerRoleName = "BalanceTest-S3LambdaTrigger-Role";
-      const endpointName = "mme-balance-test";
+      // const endpointName = "balance-test-multimodel-endpoint"; // TODO: uncomment this
+      const endpointName = 'mme-balance-test';
 
       const generateReportLambdaName = "BalanceTest-generate-report-for-download";
       const generateReportLambdaFileName = "generateReportForDownload";
@@ -103,7 +104,7 @@ export class DataWorkflowStack extends Stack {
 
       // add an access point for VPC
       const sagemakerBucketAccessPoint = new s3.CfnAccessPoint(this, sagemakerBucketAccessPointName, {
-        bucket: this.sagemakerBucket.bucketName,
+        bucket: sagemakerBucket.bucketName,
         bucketAccountId: props?.env?.account,
         name: sagemakerBucketAccessPointName,
         publicAccessBlockConfiguration: {
@@ -198,7 +199,6 @@ export class DataWorkflowStack extends Stack {
         managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName("service-role/AWSLambdaVPCAccessExecutionRole")]
       });
 
-      //TODO: fix VPC security group
       // make Lambda Trigger
       const s3LambdaTrigger = new lambda.DockerImageFunction(this, s3LambdaTriggerName, {
         code: lambda.DockerImageCode.fromImageAsset("./lambda/" + s3LambdaTriggerFolderName),
@@ -212,7 +212,7 @@ export class DataWorkflowStack extends Stack {
         functionName: s3LambdaTriggerName,
         memorySize: 512,
         role: s3LambdaTriggerRole,
-        timeout: Duration.minutes(5),
+        timeout: Duration.minutes(5), //TODO: change this to 15 min
         vpc: vpcStack.vpc,
         vpcSubnets: {
             subnetType: ec2.SubnetType.PRIVATE_ISOLATED

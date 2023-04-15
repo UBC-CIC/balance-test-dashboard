@@ -72,6 +72,23 @@ export class VPCStack extends Stack {
         }
       });
 
+      // Sagemaker Endpoints for VPC
+      this.vpc.addInterfaceEndpoint("Sagemaker-API-Endpoint", {
+        service: ec2.InterfaceVpcEndpointAwsService.SAGEMAKER_API,
+        securityGroups: [securityGroup],
+        subnets: {
+          subnetType: ec2.SubnetType.PRIVATE_ISOLATED
+        }
+      });
+
+      this.vpc.addInterfaceEndpoint("Sagemaker-Runtime-Endpoint", {
+        service: ec2.InterfaceVpcEndpointAwsService.SAGEMAKER_RUNTIME,
+        securityGroups: [securityGroup],
+        subnets: {
+          subnetType: ec2.SubnetType.PRIVATE_ISOLATED
+        }
+      });
+
       // Making endpoints to access Systems Manager for VPC; mainly for accessing Parameter Store
       this.vpc.addInterfaceEndpoint("Systems-Manager-Endpoint", {
         service: ec2.InterfaceVpcEndpointAwsService.SSM,
