@@ -25,6 +25,9 @@ export class DataWorkflowStack extends Stack {
       
       const balanceTestBucketName = 'balancetest-datastorage-bucket'
       const balanceTestBucketAccessPointName = "balancetest-accesspt";
+      const sagemakerBucketName ='balancetest-sagemaker-bucket';
+      const sagemakerBucketAccessPointName = 'balancetest-sm-access';
+
       // const s3LambdaTriggerName = "BalanceTest-convert-json-to-parquet-and-csv";
       // const s3LambdaTriggerFileName = "s3-trigger-convert-json-to-parquet-and-csv";
       const s3LambdaTriggerName = "BalanceTest-data-workflow"
@@ -88,6 +91,33 @@ export class DataWorkflowStack extends Stack {
         }
       });
 
+      const sagemakerBucket = new s3.Bucket(this, sagemakerBucketName, {
+        bucketName: sagemakerBucketName,
+        removalPolicy: RemovalPolicy.RETAIN,
+        blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+        publicReadAccess: false,
+        versioned: true,
+        encryption: s3.BucketEncryption.S3_MANAGED,
+        objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_ENFORCED
+      });
+
+      // add an access point for VPC
+      const sagemakerBucketAccessPoint = new s3.CfnAccessPoint(this, sagemakerBucketAccessPointName, {
+        bucket: this.sagemakerBucket.bucketName,
+        bucketAccountId: props?.env?.account,
+        name: sagemakerBucketAccessPointName,
+        publicAccessBlockConfiguration: {
+          blockPublicAcls: true,
+          blockPublicPolicy: true,
+          restrictPublicBuckets: true,
+          ignorePublicAcls: true,
+        },
+        vpcConfiguration: {
+          vpcId: vpcStack.vpc.vpcId,
+        }
+      });
+
+
       // let balanceTestIVPC = ec2.Vpc.fromLookup(this, "BalanceTest-iVPC", {
       //   vpcId: vpcStack.vpc.vpcId
       // });
@@ -125,7 +155,7 @@ export class DataWorkflowStack extends Stack {
       //   })],
       // });
 
-      //TODO: either add permissions to making training job, new endpoint, etc, here; or make a new policy and reference via arn within lambda
+      //TODO: make new Sagemaker role to add permissions to making training job, new endpoint, etc, here; or make a new policy and reference via arn within lambda
       const s3LambdaTriggerPolicyDocument = new iam.PolicyDocument({
         statements: [new iam.PolicyStatement({
             actions: ["s3:PutObject"],

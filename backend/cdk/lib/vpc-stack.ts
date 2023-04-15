@@ -18,6 +18,7 @@ export class VPCStack extends Stack {
       const vpcName = "balanceTest-VPC";
       const rdsEndpointName = "RDS-Endpoint";
       const cloudwatchEndpointName = "CloudWatch-Logs-Endpoint";
+      const ssmEndpointName = "Systems-Manager-Endpoint";
       this.cidrStr = '11.0.0.0/16';
       this.destinationCidrStr = '13.0.0.0/16';
 
@@ -65,6 +66,31 @@ export class VPCStack extends Stack {
       // CloudWatch Logs Endpoint for VPC
       this.vpc.addInterfaceEndpoint(cloudwatchEndpointName, {
         service: ec2.InterfaceVpcEndpointAwsService.CLOUDWATCH_LOGS,
+        securityGroups: [securityGroup],
+        subnets: {
+          subnetType: ec2.SubnetType.PRIVATE_ISOLATED
+        }
+      });
+
+      // Making endpoints to access Systems Manager for VPC; mainly for accessing Parameter Store
+      this.vpc.addInterfaceEndpoint("Systems-Manager-Endpoint", {
+        service: ec2.InterfaceVpcEndpointAwsService.SSM,
+        securityGroups: [securityGroup],
+        subnets: {
+          subnetType: ec2.SubnetType.PRIVATE_ISOLATED
+        }
+      });
+
+      this.vpc.addInterfaceEndpoint("EC2-Messages-Endpoint", {
+        service: ec2.InterfaceVpcEndpointAwsService.EC2_MESSAGES,
+        securityGroups: [securityGroup],
+        subnets: {
+          subnetType: ec2.SubnetType.PRIVATE_ISOLATED
+        }
+      });
+
+      this.vpc.addInterfaceEndpoint("EC2-Endpoint", {
+        service: ec2.InterfaceVpcEndpointAwsService.EC2,
         securityGroups: [securityGroup],
         subnets: {
           subnetType: ec2.SubnetType.PRIVATE_ISOLATED

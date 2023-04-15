@@ -34,18 +34,14 @@ const vpcStack = new VPCStack(app, "VPCStack", {
     env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION }
 });
 
-const dataWorkflowStack = new DataWorkflowStack(app, 'DataWorkflowStack', vpcStack, cognitoStack, {
-    env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION }
-});
-
 const databaseStack = new DatabaseStack(app, "DatabaseStack", vpcStack, {
     env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
 });
 
-// const sagemakerStack = new SagemakerStack(app, "SagemakerStack", vpcStack, dataWorkflowStack, databaseStack, {
-//     env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
-// });
-
+const dataWorkflowStack = new DataWorkflowStack(app, 'DataWorkflowStack', vpcStack, cognitoStack, databaseStack, {
+    env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION }
+});
+    
 const athenaGlueStack = new AthenaGlueStack(app, "AthenaGlueStack", vpcStack, cognitoStack, dataWorkflowStack, {
     env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
 });
