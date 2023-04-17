@@ -1,0 +1,996 @@
+{
+ "Resources": {
+  "balancetestrawdatastoragebucket32387F9E": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "BucketEncryption": {
+     "ServerSideEncryptionConfiguration": [
+      {
+       "ServerSideEncryptionByDefault": {
+        "SSEAlgorithm": "AES256"
+       }
+      }
+     ]
+    },
+    "BucketName": "balancetest-raw-datastorage-bucket",
+    "OwnershipControls": {
+     "Rules": [
+      {
+       "ObjectOwnership": "BucketOwnerEnforced"
+      }
+     ]
+    },
+    "PublicAccessBlockConfiguration": {
+     "BlockPublicAcls": true,
+     "BlockPublicPolicy": true,
+     "IgnorePublicAcls": true,
+     "RestrictPublicBuckets": true
+    },
+    "VersioningConfiguration": {
+     "Status": "Enabled"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "DataWorkflowStack/balancetest-raw-datastorage-bucket/Resource"
+   }
+  },
+  "balancetestrawdatastoragebucketNotifications7AECFDDC": {
+   "Type": "Custom::S3BucketNotifications",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "BucketNotificationsHandler050a0587b7544547bf325f094a3db8347ECC3691",
+      "Arn"
+     ]
+    },
+    "BucketName": {
+     "Ref": "balancetestrawdatastoragebucket32387F9E"
+    },
+    "NotificationConfiguration": {
+     "LambdaFunctionConfigurations": [
+      {
+       "Events": [
+        "s3:ObjectCreated:*"
+       ],
+       "Filter": {
+        "Key": {
+         "FilterRules": [
+          {
+           "Name": "suffix",
+           "Value": ".json"
+          },
+          {
+           "Name": "prefix",
+           "Value": "private/"
+          }
+         ]
+        }
+       },
+       "LambdaFunctionArn": {
+        "Fn::GetAtt": [
+         "BalanceTestdataworkflow352A1EA8",
+         "Arn"
+        ]
+       }
+      }
+     ]
+    },
+    "Managed": true
+   },
+   "DependsOn": [
+    "balancetestrawdatastoragebucketAllowBucketNotificationsToDataWorkflowStackBalanceTestdataworkflow5A7205FFBF2677FC"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "DataWorkflowStack/balancetest-raw-datastorage-bucket/Notifications/Resource"
+   }
+  },
+  "balancetestrawdatastoragebucketAllowBucketNotificationsToDataWorkflowStackBalanceTestdataworkflow5A7205FFBF2677FC": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "BalanceTestdataworkflow352A1EA8",
+      "Arn"
+     ]
+    },
+    "Principal": "s3.amazonaws.com",
+    "SourceAccount": "684904187051",
+    "SourceArn": {
+     "Fn::GetAtt": [
+      "balancetestrawdatastoragebucket32387F9E",
+      "Arn"
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "DataWorkflowStack/balancetest-raw-datastorage-bucket/AllowBucketNotificationsToDataWorkflowStackBalanceTestdataworkflow5A7205FF"
+   }
+  },
+  "balancetestaccesspt": {
+   "Type": "AWS::S3::AccessPoint",
+   "Properties": {
+    "Bucket": {
+     "Ref": "balancetestrawdatastoragebucket32387F9E"
+    },
+    "BucketAccountId": "684904187051",
+    "Name": "balancetest-accesspt",
+    "PublicAccessBlockConfiguration": {
+     "BlockPublicAcls": true,
+     "BlockPublicPolicy": true,
+     "IgnorePublicAcls": true,
+     "RestrictPublicBuckets": true
+    },
+    "VpcConfiguration": {
+     "VpcId": {
+      "Fn::ImportValue": "VPCStack:ExportsOutputRefbalanceTestVPCFBF0FFB322759C6A"
+     }
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "DataWorkflowStack/balancetest-accesspt"
+   }
+  },
+  "balancetestsagemakerbucketDBA07684": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "BucketEncryption": {
+     "ServerSideEncryptionConfiguration": [
+      {
+       "ServerSideEncryptionByDefault": {
+        "SSEAlgorithm": "AES256"
+       }
+      }
+     ]
+    },
+    "BucketName": "balancetest-sagemaker-bucket",
+    "OwnershipControls": {
+     "Rules": [
+      {
+       "ObjectOwnership": "BucketOwnerEnforced"
+      }
+     ]
+    },
+    "PublicAccessBlockConfiguration": {
+     "BlockPublicAcls": true,
+     "BlockPublicPolicy": true,
+     "IgnorePublicAcls": true,
+     "RestrictPublicBuckets": true
+    },
+    "VersioningConfiguration": {
+     "Status": "Enabled"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "DataWorkflowStack/balancetest-sagemaker-bucket/Resource"
+   }
+  },
+  "balancetestsmaccess": {
+   "Type": "AWS::S3::AccessPoint",
+   "Properties": {
+    "Bucket": {
+     "Ref": "balancetestsagemakerbucketDBA07684"
+    },
+    "BucketAccountId": "684904187051",
+    "Name": "balancetest-sm-access",
+    "PublicAccessBlockConfiguration": {
+     "BlockPublicAcls": true,
+     "BlockPublicPolicy": true,
+     "IgnorePublicAcls": true,
+     "RestrictPublicBuckets": true
+    },
+    "VpcConfiguration": {
+     "VpcId": {
+      "Fn::ImportValue": "VPCStack:ExportsOutputRefbalanceTestVPCFBF0FFB322759C6A"
+     }
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "DataWorkflowStack/balancetest-sm-access"
+   }
+  },
+  "BalanceTestS3LambdaTriggerLogs612C9428": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": "/aws/lambda/BalanceTest-data-workflow",
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "DataWorkflowStack/BalanceTest-S3LambdaTrigger-Logs/Resource"
+   }
+  },
+  "BalanceTestS3LambdaTriggerRole83B886E8": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Description": "Role gives access to appropriate functions needed for file conversions, logging, calling Sagemaker functions, and calling S3 functions for Lambda.",
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+       ]
+      ]
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyDocument": {
+       "Statement": [
+        {
+         "Action": "s3:PutObject",
+         "Effect": "Allow",
+         "Resource": {
+          "Fn::Join": [
+           "",
+           [
+            {
+             "Fn::GetAtt": [
+              "balancetestrawdatastoragebucket32387F9E",
+              "Arn"
+             ]
+            },
+            "/parquet_data/*"
+           ]
+          ]
+         }
+        },
+        {
+         "Action": "s3:ListBucket",
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::GetAtt": [
+            "balancetestrawdatastoragebucket32387F9E",
+            "Arn"
+           ]
+          },
+          {
+           "Fn::Join": [
+            "",
+            [
+             {
+              "Fn::GetAtt": [
+               "balancetestrawdatastoragebucket32387F9E",
+               "Arn"
+              ]
+             },
+             "/private/*"
+            ]
+           ]
+          }
+         ]
+        },
+        {
+         "Action": "s3:GetObject",
+         "Effect": "Allow",
+         "Resource": {
+          "Fn::Join": [
+           "",
+           [
+            {
+             "Fn::GetAtt": [
+              "balancetestrawdatastoragebucket32387F9E",
+              "Arn"
+             ]
+            },
+            "/private/*"
+           ]
+          ]
+         }
+        },
+        {
+         "Action": [
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents"
+         ],
+         "Effect": "Allow",
+         "Resource": {
+          "Fn::GetAtt": [
+           "BalanceTestS3LambdaTriggerLogs612C9428",
+           "Arn"
+          ]
+         }
+        },
+        {
+         "Action": "secretsmanager:GetSecretValue",
+         "Effect": "Allow",
+         "Resource": {
+          "Fn::ImportValue": "DatabaseStack:ExportsOutputRefSecretA720EF052D953DED"
+         }
+        },
+        {
+         "Action": [
+          "ssm:DescribeParameters",
+          "ssm:GetParameter",
+          "ssm:GetParameters",
+          "ssm:PutParameter"
+         ],
+         "Effect": "Allow",
+         "Resource": "*"
+        },
+        {
+         "Action": "sagemaker:InvokeEndpoint",
+         "Effect": "Allow",
+         "Resource": "arn:aws:sagemaker:ca-central-1:684904187051:endpoint/mme-balance-test"
+        },
+        {
+         "Action": [
+          "s3:GetObject",
+          "s3:GetObjectTagging",
+          "s3:PutObject",
+          "s3:PutObjectTagging"
+         ],
+         "Effect": "Allow",
+         "Resource": {
+          "Fn::Join": [
+           "",
+           [
+            {
+             "Fn::GetAtt": [
+              "balancetestsagemakerbucketDBA07684",
+              "Arn"
+             ]
+            },
+            "/*"
+           ]
+          ]
+         }
+        }
+       ],
+       "Version": "2012-10-17"
+      },
+      "PolicyName": "BalanceTest-s3LambdaTriggerPolicy"
+     }
+    ],
+    "RoleName": "BalanceTest-S3LambdaTrigger-Role"
+   },
+   "Metadata": {
+    "aws:cdk:path": "DataWorkflowStack/BalanceTest-S3LambdaTrigger-Role/Resource"
+   }
+  },
+  "BalanceTestdataworkflow352A1EA8": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "ImageUri": {
+      "Fn::Sub": "684904187051.dkr.ecr.ca-central-1.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-684904187051-ca-central-1:d8bf2897bcbf61da1697a23bcdebca9d9e1f2227a87ee925412079f98954ba3d"
+     }
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "BalanceTestS3LambdaTriggerRole83B886E8",
+      "Arn"
+     ]
+    },
+    "Environment": {
+     "Variables": {
+      "endpoint_name": "mme-balance-test",
+      "dbname": "balancetest_postgresql_instance",
+      "host": {
+       "Fn::ImportValue": "DatabaseStack:ExportsOutputFnGetAttProxyCB0DFB71EndpointFB28556A"
+      },
+      "rds_secret_name": {
+       "Fn::Join": [
+        "-",
+        [
+         {
+          "Fn::Select": [
+           0,
+           {
+            "Fn::Split": [
+             "-",
+             {
+              "Fn::Select": [
+               6,
+               {
+                "Fn::Split": [
+                 ":",
+                 {
+                  "Fn::ImportValue": "DatabaseStack:ExportsOutputRefSecretA720EF052D953DED"
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         },
+         {
+          "Fn::Select": [
+           1,
+           {
+            "Fn::Split": [
+             "-",
+             {
+              "Fn::Select": [
+               6,
+               {
+                "Fn::Split": [
+                 ":",
+                 {
+                  "Fn::ImportValue": "DatabaseStack:ExportsOutputRefSecretA720EF052D953DED"
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       ]
+      }
+     }
+    },
+    "FunctionName": "BalanceTest-data-workflow",
+    "MemorySize": 512,
+    "PackageType": "Image",
+    "Timeout": 600,
+    "VpcConfig": {
+     "SecurityGroupIds": [
+      {
+       "Fn::ImportValue": "VPCStack:ExportsOutputFnGetAttbalanceTestVPCFBF0FFB3DefaultSecurityGroupDA29CDF5"
+      },
+      {
+       "Fn::ImportValue": "DatabaseStack:ExportsOutputFnGetAttvpcSecurityGroup4DDC33F7GroupIdED799254"
+      }
+     ],
+     "SubnetIds": [
+      {
+       "Fn::ImportValue": "VPCStack:ExportsOutputRefbalanceTestVPCprivatesubnetSubnet1Subnet8BA87DE45B0B5EB2"
+      },
+      {
+       "Fn::ImportValue": "VPCStack:ExportsOutputRefbalanceTestVPCprivatesubnetSubnet2SubnetD1E1933170382F7C"
+      }
+     ]
+    }
+   },
+   "DependsOn": [
+    "BalanceTestS3LambdaTriggerRole83B886E8"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "DataWorkflowStack/BalanceTest-data-workflow/Resource",
+    "aws:asset:path": "asset.d8bf2897bcbf61da1697a23bcdebca9d9e1f2227a87ee925412079f98954ba3d",
+    "aws:asset:dockerfile-path": "Dockerfile",
+    "aws:asset:property": "Code.ImageUri"
+   }
+  },
+  "BalanceTestdataworkflowEventInvokeConfig0E6016EF": {
+   "Type": "AWS::Lambda::EventInvokeConfig",
+   "Properties": {
+    "FunctionName": {
+     "Ref": "BalanceTestdataworkflow352A1EA8"
+    },
+    "Qualifier": "$LATEST",
+    "MaximumRetryAttempts": 0
+   },
+   "Metadata": {
+    "aws:cdk:path": "DataWorkflowStack/BalanceTest-data-workflow/EventInvokeConfig/Resource"
+   }
+  },
+  "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "DataWorkflowStack/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/Resource"
+   }
+  },
+  "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "s3:PutBucketNotification",
+       "Effect": "Allow",
+       "Resource": "*"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36",
+    "Roles": [
+     {
+      "Ref": "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "DataWorkflowStack/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Role/DefaultPolicy/Resource"
+   }
+  },
+  "BucketNotificationsHandler050a0587b7544547bf325f094a3db8347ECC3691": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Description": "AWS CloudFormation handler for \"Custom::S3BucketNotifications\" resources (@aws-cdk/aws-s3)",
+    "Code": {
+     "ZipFile": "import boto3  # type: ignore\nimport json\nimport logging\nimport urllib.request\n\ns3 = boto3.client(\"s3\")\n\nEVENTBRIDGE_CONFIGURATION = 'EventBridgeConfiguration'\n\nCONFIGURATION_TYPES = [\"TopicConfigurations\", \"QueueConfigurations\", \"LambdaFunctionConfigurations\"]\n\ndef handler(event: dict, context):\n  response_status = \"SUCCESS\"\n  error_message = \"\"\n  try:\n    props = event[\"ResourceProperties\"]\n    bucket = props[\"BucketName\"]\n    notification_configuration = props[\"NotificationConfiguration\"]\n    request_type = event[\"RequestType\"]\n    managed = props.get('Managed', 'true').lower() == 'true'\n    stack_id = event['StackId']\n\n    if managed:\n      config = handle_managed(request_type, notification_configuration)\n    else:\n      config = handle_unmanaged(bucket, stack_id, request_type, notification_configuration)\n\n    put_bucket_notification_configuration(bucket, config)\n  except Exception as e:\n    logging.exception(\"Failed to put bucket notification configuration\")\n    response_status = \"FAILED\"\n    error_message = f\"Error: {str(e)}. \"\n  finally:\n    submit_response(event, context, response_status, error_message)\n\ndef handle_managed(request_type, notification_configuration):\n  if request_type == 'Delete':\n    return {}\n  return notification_configuration\n\ndef handle_unmanaged(bucket, stack_id, request_type, notification_configuration):\n  external_notifications = find_external_notifications(bucket, stack_id)\n\n  if request_type == 'Delete':\n    return external_notifications\n\n  def with_id(notification):\n    notification['Id'] = f\"{stack_id}-{hash(json.dumps(notification, sort_keys=True))}\"\n    return notification\n\n  notifications = {}\n  for t in CONFIGURATION_TYPES:\n    external = external_notifications.get(t, [])\n    incoming = [with_id(n) for n in notification_configuration.get(t, [])]\n    notifications[t] = external + incoming\n\n  if EVENTBRIDGE_CONFIGURATION in notification_configuration:\n    notifications[EVENTBRIDGE_CONFIGURATION] = notification_configuration[EVENTBRIDGE_CONFIGURATION]\n  elif EVENTBRIDGE_CONFIGURATION in external_notifications:\n    notifications[EVENTBRIDGE_CONFIGURATION] = external_notifications[EVENTBRIDGE_CONFIGURATION]\n\n  return notifications\n\ndef find_external_notifications(bucket, stack_id):\n  existing_notifications = get_bucket_notification_configuration(bucket)\n  external_notifications = {}\n  for t in CONFIGURATION_TYPES:\n    external_notifications[t] = [n for n in existing_notifications.get(t, []) if not n['Id'].startswith(f\"{stack_id}-\")]\n\n  if EVENTBRIDGE_CONFIGURATION in existing_notifications:\n    external_notifications[EVENTBRIDGE_CONFIGURATION] = existing_notifications[EVENTBRIDGE_CONFIGURATION]\n\n  return external_notifications\n\ndef get_bucket_notification_configuration(bucket):\n  return s3.get_bucket_notification_configuration(Bucket=bucket)\n\ndef put_bucket_notification_configuration(bucket, notification_configuration):\n  s3.put_bucket_notification_configuration(Bucket=bucket, NotificationConfiguration=notification_configuration)\n\ndef submit_response(event: dict, context, response_status: str, error_message: str):\n  response_body = json.dumps(\n    {\n      \"Status\": response_status,\n      \"Reason\": f\"{error_message}See the details in CloudWatch Log Stream: {context.log_stream_name}\",\n      \"PhysicalResourceId\": event.get(\"PhysicalResourceId\") or event[\"LogicalResourceId\"],\n      \"StackId\": event[\"StackId\"],\n      \"RequestId\": event[\"RequestId\"],\n      \"LogicalResourceId\": event[\"LogicalResourceId\"],\n      \"NoEcho\": False,\n    }\n  ).encode(\"utf-8\")\n  headers = {\"content-type\": \"\", \"content-length\": str(len(response_body))}\n  try:\n    req = urllib.request.Request(url=event[\"ResponseURL\"], headers=headers, data=response_body, method=\"PUT\")\n    with urllib.request.urlopen(req) as response:\n      print(response.read().decode(\"utf-8\"))\n    print(\"Status code: \" + response.reason)\n  except Exception as e:\n      print(\"send(..) failed executing request.urlopen(..): \" + str(e))\n"
+    },
+    "Handler": "index.handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.9",
+    "Timeout": 300
+   },
+   "DependsOn": [
+    "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleDefaultPolicy2CF63D36",
+    "BucketNotificationsHandler050a0587b7544547bf325f094a3db834RoleB6FB88EC"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "DataWorkflowStack/BucketNotificationsHandler050a0587b7544547bf325f094a3db834/Resource"
+   }
+  },
+  "BalanceTestgenerateReportLambdaLogs1B9361FA": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": "/aws/lambda/BalanceTest-generate-report-for-download",
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "DataWorkflowStack/BalanceTest-generateReportLambda-Logs/Resource"
+   }
+  },
+  "BalanceTestgenerateReportLambdaRole9D91E4EE": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Description": "Role gives access to appropriate S3 functions needed for doing S3 Select for Lambda.",
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AmazonS3FullAccess"
+       ]
+      ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+       ]
+      ]
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyDocument": {
+       "Statement": [
+        {
+         "Action": [
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents"
+         ],
+         "Effect": "Allow",
+         "Resource": {
+          "Fn::GetAtt": [
+           "BalanceTestgenerateReportLambdaLogs1B9361FA",
+           "Arn"
+          ]
+         }
+        }
+       ],
+       "Version": "2012-10-17"
+      },
+      "PolicyName": "BalanceTest-generateReportLambdaPolicy"
+     }
+    ],
+    "RoleName": "BalanceTest-generateReportLambda-Role"
+   },
+   "Metadata": {
+    "aws:cdk:path": "DataWorkflowStack/BalanceTest-generateReportLambda-Role/Resource"
+   }
+  },
+  "generateReportPythonLayerE2A84CC2": {
+   "Type": "AWS::Lambda::LayerVersion",
+   "Properties": {
+    "Content": {
+     "S3Bucket": "cdk-hnb659fds-assets-684904187051-ca-central-1",
+     "S3Key": "07c4934444be84969c7ccfeb533965193dbd02c14f340fd2429147a5bab3a32f.zip"
+    },
+    "CompatibleRuntimes": [
+     "python3.7"
+    ],
+    "Description": "Contains libraries for the BalanceTest-generate-report-for-download function."
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "DataWorkflowStack/generateReportPythonLayer/Resource",
+    "aws:asset:path": "asset.07c4934444be84969c7ccfeb533965193dbd02c14f340fd2429147a5bab3a32f.zip",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Content"
+   }
+  },
+  "BalanceTestgeneratereportfordownload0C388CF5": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-684904187051-ca-central-1",
+     "S3Key": "4ec02bf3d6013ffb826617b4a6fc093821a6fdc923d107d62e9dad0bd2d7f58e.zip"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "BalanceTestgenerateReportLambdaRole9D91E4EE",
+      "Arn"
+     ]
+    },
+    "Environment": {
+     "Variables": {
+      "S3_BUCKET_NAME": {
+       "Ref": "balancetestrawdatastoragebucket32387F9E"
+      }
+     }
+    },
+    "FunctionName": "BalanceTest-generate-report-for-download",
+    "Handler": "generateReportForDownload.lambda_handler",
+    "Layers": [
+     {
+      "Ref": "generateReportPythonLayerE2A84CC2"
+     }
+    ],
+    "MemorySize": 512,
+    "Runtime": "python3.7",
+    "Timeout": 180,
+    "VpcConfig": {
+     "SecurityGroupIds": [
+      {
+       "Fn::ImportValue": "VPCStack:ExportsOutputFnGetAttbalanceTestVPCFBF0FFB3DefaultSecurityGroupDA29CDF5"
+      }
+     ],
+     "SubnetIds": [
+      {
+       "Fn::ImportValue": "VPCStack:ExportsOutputRefbalanceTestVPCprivatesubnetSubnet1Subnet8BA87DE45B0B5EB2"
+      },
+      {
+       "Fn::ImportValue": "VPCStack:ExportsOutputRefbalanceTestVPCprivatesubnetSubnet2SubnetD1E1933170382F7C"
+      }
+     ]
+    }
+   },
+   "DependsOn": [
+    "BalanceTestgenerateReportLambdaRole9D91E4EE"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "DataWorkflowStack/BalanceTest-generate-report-for-download/Resource",
+    "aws:asset:path": "asset.4ec02bf3d6013ffb826617b4a6fc093821a6fdc923d107d62e9dad0bd2d7f58e",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "BalanceTestdeleteS3RecordLambdaLogsF37604F7": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": "/aws/lambda/BalanceTest-delete-s3-record",
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "DataWorkflowStack/BalanceTest-deleteS3RecordLambda-Logs/Resource"
+   }
+  },
+  "BalanceTestdeleteS3RecordLambdaRole1BF66223": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Description": "Role gives access to appropriate S3 functions needed for Lambda.",
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+       ]
+      ]
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyDocument": {
+       "Statement": [
+        {
+         "Action": [
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents"
+         ],
+         "Effect": "Allow",
+         "Resource": {
+          "Fn::GetAtt": [
+           "BalanceTestdeleteS3RecordLambdaLogsF37604F7",
+           "Arn"
+          ]
+         }
+        },
+        {
+         "Action": "s3:DeleteObject",
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             {
+              "Fn::GetAtt": [
+               "balancetestrawdatastoragebucket32387F9E",
+               "Arn"
+              ]
+             },
+             "/parquet_data/*"
+            ]
+           ]
+          },
+          {
+           "Fn::Join": [
+            "",
+            [
+             {
+              "Fn::GetAtt": [
+               "balancetestrawdatastoragebucket32387F9E",
+               "Arn"
+              ]
+             },
+             "/private/*"
+            ]
+           ]
+          }
+         ]
+        }
+       ],
+       "Version": "2012-10-17"
+      },
+      "PolicyName": "BalanceTest-deleteS3RecordLambdaPolicy"
+     }
+    ],
+    "RoleName": "BalanceTest-deleteS3RecordLambda-Role"
+   },
+   "Metadata": {
+    "aws:cdk:path": "DataWorkflowStack/BalanceTest-deleteS3RecordLambda-Role/Resource"
+   }
+  },
+  "BalanceTestdeletes3record4746C1B8": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-684904187051-ca-central-1",
+     "S3Key": "328fa161f4d106e3485dfbef5984fe7f8497e4e4985e08542f1a4c2b16b3696d.zip"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "BalanceTestdeleteS3RecordLambdaRole1BF66223",
+      "Arn"
+     ]
+    },
+    "Environment": {
+     "Variables": {
+      "S3_BUCKET_NAME": {
+       "Ref": "balancetestrawdatastoragebucket32387F9E"
+      },
+      "IDENTITY_POOL_ID": {
+       "Ref": "BalanceTestCognitoIdentityPoolIdParameter"
+      },
+      "USER_POOL_ID": {
+       "Fn::ImportValue": "CognitoStack:ExportsOutputRefBalanceTestUserPool005122174B1ED610"
+      },
+      "REGION": "ca-central-1"
+     }
+    },
+    "FunctionName": "BalanceTest-delete-s3-record",
+    "Handler": "delete-s3-record.lambda_handler",
+    "MemorySize": 512,
+    "Runtime": "python3.7",
+    "Timeout": 180,
+    "VpcConfig": {
+     "SecurityGroupIds": [
+      {
+       "Fn::ImportValue": "VPCStack:ExportsOutputFnGetAttbalanceTestVPCFBF0FFB3DefaultSecurityGroupDA29CDF5"
+      }
+     ],
+     "SubnetIds": [
+      {
+       "Fn::ImportValue": "VPCStack:ExportsOutputRefbalanceTestVPCprivatesubnetSubnet1Subnet8BA87DE45B0B5EB2"
+      },
+      {
+       "Fn::ImportValue": "VPCStack:ExportsOutputRefbalanceTestVPCprivatesubnetSubnet2SubnetD1E1933170382F7C"
+      }
+     ]
+    }
+   },
+   "DependsOn": [
+    "BalanceTestdeleteS3RecordLambdaRole1BF66223"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "DataWorkflowStack/BalanceTest-delete-s3-record/Resource",
+    "aws:asset:path": "asset.328fa161f4d106e3485dfbef5984fe7f8497e4e4985e08542f1a4c2b16b3696d",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/2WQT2vDMAzFP0vvrras0LFj/2yj0EPIYNfiOmpwE1vFcjKCyXefnbTdxk56+r1nIfkJli/wOJNfPFdlPW/0EcKHl6oWER0CLyCsW1WjF5uT/VErpZA5J229mOhaMg6ikeZYSggxkqMzmlmTFVuKCbczssK31iqfWEzc9WuH1u9sRzVuyJ50ldz/cC97dJ/o+Pr+T38bFnegiiHsqXp31F7G4FUPQksDoaAGEx5rTo1WfWonNQhU7iCZ0TP8WnyVSPKgwAux9uT6dLPgxS09RoZxMjK1TqG4i9GLH1tpO16XSycNenSDsFQinPmhy5aQPUM2O7PWc9darw1CMdVvvKKzQKgBAAA="
+   },
+   "Metadata": {
+    "aws:cdk:path": "DataWorkflowStack/CDKMetadata/Default"
+   }
+  }
+ },
+ "Parameters": {
+  "BalanceTestCognitoIdentityPoolIdParameter": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "IdentityPoolId"
+  },
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Outputs": {
+  "ExportsOutputFnGetAttbalancetestrawdatastoragebucket32387F9EArn78AFEDF8": {
+   "Value": {
+    "Fn::GetAtt": [
+     "balancetestrawdatastoragebucket32387F9E",
+     "Arn"
+    ]
+   },
+   "Export": {
+    "Name": "DataWorkflowStack:ExportsOutputFnGetAttbalancetestrawdatastoragebucket32387F9EArn78AFEDF8"
+   }
+  },
+  "ExportsOutputRefbalancetestrawdatastoragebucket32387F9E58D66EFE": {
+   "Value": {
+    "Ref": "balancetestrawdatastoragebucket32387F9E"
+   },
+   "Export": {
+    "Name": "DataWorkflowStack:ExportsOutputRefbalancetestrawdatastoragebucket32387F9E58D66EFE"
+   }
+  },
+  "ExportsOutputFnGetAttBalanceTestgeneratereportfordownload0C388CF5Arn329D400D": {
+   "Value": {
+    "Fn::GetAtt": [
+     "BalanceTestgeneratereportfordownload0C388CF5",
+     "Arn"
+    ]
+   },
+   "Export": {
+    "Name": "DataWorkflowStack:ExportsOutputFnGetAttBalanceTestgeneratereportfordownload0C388CF5Arn329D400D"
+   }
+  },
+  "ExportsOutputFnGetAttBalanceTestdeletes3record4746C1B8ArnE3D18380": {
+   "Value": {
+    "Fn::GetAtt": [
+     "BalanceTestdeletes3record4746C1B8",
+     "Arn"
+    ]
+   },
+   "Export": {
+    "Name": "DataWorkflowStack:ExportsOutputFnGetAttBalanceTestdeletes3record4746C1B8ArnE3D18380"
+   }
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

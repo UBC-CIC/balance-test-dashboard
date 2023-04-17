@@ -143,16 +143,16 @@ export class DatabaseStack extends Stack {
             removalPolicy: RemovalPolicy.RETAIN,
             monitoringInterval: cdk.Duration.seconds(60),
             monitoringRole: monitoringRole,
-            // securityGroups: [this.vpcSecurityGroup]
-            securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(this, 'VPCDefaultSecurityGroup', vpcStack.vpc.vpcDefaultSecurityGroup)],
+            securityGroups: [this.vpcSecurityGroup]
+            // securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(this, 'VPCDefaultSecurityGroup', vpcStack.vpc.vpcDefaultSecurityGroup)],
         })
 
         this.proxy = new rds.DatabaseProxy(this, 'Proxy', {
             proxyTarget: rds.ProxyTarget.fromInstance(rdsInstance),
             secrets: [this.rdsCredentialSecret],
             vpc: vpcStack.vpc,
-            // securityGroups: [this.vpcSecurityGroup],
-            securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(this, 'VpcDefaultSecurityGroup', vpcStack.vpc.vpcDefaultSecurityGroup)],
+            securityGroups: [this.vpcSecurityGroup],
+            // securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(this, 'VpcDefaultSecurityGroup', vpcStack.vpc.vpcDefaultSecurityGroup)],
             requireTLS: false
         });
 

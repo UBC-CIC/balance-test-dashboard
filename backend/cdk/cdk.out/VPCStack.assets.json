@@ -1,0 +1,20 @@
+{
+  "version": "31.0.0",
+  "files": {
+    "2d9642f73ebf246c6cd334b8ead2e9604ac1b5992f18f57e911c4c08b3a75a7f": {
+      "source": {
+        "path": "VPCStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "684904187051-ca-central-1": {
+          "bucketName": "cdk-hnb659fds-assets-684904187051-ca-central-1",
+          "objectKey": "2d9642f73ebf246c6cd334b8ead2e9604ac1b5992f18f57e911c4c08b3a75a7f.json",
+          "region": "ca-central-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::684904187051:role/cdk-hnb659fds-file-publishing-role-684904187051-ca-central-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

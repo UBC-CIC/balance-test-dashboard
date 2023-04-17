@@ -28,10 +28,6 @@ export class CognitoStack extends Stack {
             memorySize: 512,
             timeout: cdk.Duration.seconds(30),
             // role: lambdaTriggerRole,
-            vpc: vpcstack.vpc,
-            vpcSubnets: {
-                subnetType: ec2.SubnetType.PRIVATE_ISOLATED
-            },
         });
 
         const addClaimsFunction = new lambda.Function(this, 'AddClaimsFunction', {

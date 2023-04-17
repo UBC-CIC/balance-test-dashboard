@@ -1,0 +1,34 @@
+{
+  "version": "31.0.0",
+  "files": {
+    "11bcb3001ea27d32b2c5fd579dc6874c4d00656a5a6e6072af48419036f32864": {
+      "source": {
+        "path": "asset.11bcb3001ea27d32b2c5fd579dc6874c4d00656a5a6e6072af48419036f32864",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "684904187051-ca-central-1": {
+          "bucketName": "cdk-hnb659fds-assets-684904187051-ca-central-1",
+          "objectKey": "11bcb3001ea27d32b2c5fd579dc6874c4d00656a5a6e6072af48419036f32864.zip",
+          "region": "ca-central-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::684904187051:role/cdk-hnb659fds-file-publishing-role-684904187051-ca-central-1"
+        }
+      }
+    },
+    "6c2231d442b5f96d1a3566b87a78bf7d4d15e5b5a203fc8f5bd3e0f01fb2e2df": {
+      "source": {
+        "path": "AthenaGlueStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "684904187051-ca-central-1": {
+          "bucketName": "cdk-hnb659fds-assets-684904187051-ca-central-1",
+          "objectKey": "6c2231d442b5f96d1a3566b87a78bf7d4d15e5b5a203fc8f5bd3e0f01fb2e2df.json",
+          "region": "ca-central-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::684904187051:role/cdk-hnb659fds-file-publishing-role-684904187051-ca-central-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
