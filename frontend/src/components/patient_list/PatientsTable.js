@@ -29,6 +29,7 @@ import {
   getPatientsForCareprovider,
   getTestEvents,
   getPatientAssignedTests,
+  getAllAvailableTests,
 } from "../../graphql/queries";
 Amplify.configure(awsconfig);
 
@@ -124,6 +125,7 @@ function DisplayRows({
   patientDataRowsArr,
   updatePatientDataRowsArr,
   loading,
+  availableTestsToAssign,
 }) {
   //need to figure out which hooks are needed to make and use
   const [numTestsAssigned, setNumTestsAssigned] = React.useState(0);
@@ -258,6 +260,7 @@ function DisplayRows({
                         user_id={row.user_id}
                         patientDataRowsArr={patientDataRowsArr}
                         updatePatientDataRowsArr={updatePatientDataRowsArr}
+                        movementTests={availableTestsToAssign}
                       />
                     )}
                   </TableCell>
@@ -277,6 +280,7 @@ function DisplaySearchResults({
   setSearchResults,
   patientDataRowsArr,
   updatePatientDataRowsArr,
+  availableTestsToAssign,
 }) {
   const [numTestsAssigned, setNumTestsAssigned] = React.useState(0);
 
@@ -372,6 +376,7 @@ function DisplaySearchResults({
                           user_id={row.user_id}
                           patientDataRowsArr={patientDataRowsArr}
                           updatePatientDataRowsArr={updatePatientDataRowsArr}
+                          movementTests={availableTestsToAssign}
                         />
                       )}
                     </TableCell>
@@ -400,6 +405,8 @@ export function PatientsTable() {
 
   const [searchResults, setSearchResults] = React.useState([]);
 
+  const [availableTestsToAssign, setAvailableTestsToAssign] = useState([]);
+
   const handleChangePage = (event, newTablePage) => {
     setTablePage(newTablePage);
   };
@@ -418,6 +425,16 @@ export function PatientsTable() {
     console.log("care provider: ", careProviderId);
 
     try {
+      let responseAvailableTests = await API.graphql({
+        query: getAllAvailableTests,
+        authToken: idtoken,
+      });
+
+      console.log("responseAvailableTests", responseAvailableTests);
+      setAvailableTestsToAssign(
+        responseAvailableTests.data.getAllAvailableTests.map((t) => t.test_type)
+      );
+
       let response = await API.graphql({
         query: getPatientsForCareprovider,
         variables: {
@@ -560,6 +577,7 @@ export function PatientsTable() {
                     setSearchResults,
                     patientDataRowsArr,
                     updatePatientDataRowsArr,
+                    availableTestsToAssign,
                   })
                 : DisplayRows({
                     tablePage,
@@ -567,6 +585,7 @@ export function PatientsTable() {
                     patientDataRowsArr,
                     updatePatientDataRowsArr,
                     loading,
+                    availableTestsToAssign,
                   })}
             </TableBody>
           </Table>
