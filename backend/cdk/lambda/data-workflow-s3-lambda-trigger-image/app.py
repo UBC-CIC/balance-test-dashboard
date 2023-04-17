@@ -60,10 +60,9 @@ def lambda_handler(event, context):
     df_json_select = df_json[['ts', 'ax', 'ay', 'az', 'gx', 'gy', 'gz', 'mx', 'my', 'mz']]
 
     path_general = "parquet_data/patient_tests" + "/user_id=" + region + ":" + str(user_id) + "/movement=" + movement_str + "/year=" + str(start_year) + "/month=" + str(start_month) + "/day=" + str(start_day) + "/test_event_id=" + str(test_event_id) + "/"
-    # TODO: uncomment if file conversion is in this lambda
     convert_json_to_parquet(df_json_select, bucket, path_general, test_event_id)
 
-    endpoint_parameter_name = os.environ["endpoint_name"] #TODO: uncomment this after testing
+    endpoint_parameter_name = os.environ["endpoint_parameter_name"] #TODO: change this to endpoint_parameter_name
     endpoint_parameter_value = ''
     endpoint_exists_bool = False
     sagemaker_bucket = os.environ["sagemaker_bucket_name"]
@@ -79,27 +78,31 @@ def lambda_handler(event, context):
         parameters = response_describe_param['Parameters']
         print("Finished getting list of parameters.")
 
-        # If endpoint name is already created, then get the value for the endpoint name
+        # If endpoint parameter is already created, then get the value for the endpoint name and compare
         if len(parameters) != 0:
             for param in parameters:
                 if (param['Name'] == endpoint_parameter_name):
                     response_get_param = ssm.get_parameter(Name=endpoint_parameter_name)
                     endpoint_parameter_value = response_get_param['Parameter']["Value"]
-                    endpoint_exists_bool = True
-                    print("Endpoint name parameter does exist in Parameter Store.")
+                    
+                    if (endpoint_parameter_value == os.environ["endpoint_name"]):
+                        endpoint_exists_bool = True
+                        print("Correct endpoint value does exist in Parameter Store.")
+                        
+                    else: 
+                        endpoint_exists_bool = False
+                        print("Endpoint value does not exist in Parameter Store. Parameter:", endpoint_parameter_value, os.environ["endpoint_name"])
+                    
                     break
-
-        # print("Endpoint Parameter Value: ", endpoint_parameter_value)
 
     except Exception as e:
         print(e)
         print("Error with getting values from Parameter Store.")
         raise e
 
-    # TODO: specify which are S3 uri and which are keys
     # Setting where the models and training job outputs should be saved
     model_location_prefix_key = f'saved_models/movement={movement_str}'
-    training_job_location_prefix = f's3://{bucket}/training_job_outputs/movement={movement_str}' # TODO: add a Sagemaker bucket; change the bucket argument
+    training_job_location_prefix_s3_uri = f's3://{sagemaker_bucket}/training_job_outputs/movement={movement_str}' # TODO: add a Sagemaker bucket; change the bucket argument
 
     # Checking if an endpoint exists, and whether to make a training job or invoke an endpoint
     if (endpoint_exists_bool == False):
@@ -108,7 +111,7 @@ def lambda_handler(event, context):
         training_folder_path = os.path.split(key)[0] + "/"
 
         if (training_bool == True):
-            make_training_job_and_endpoint(bucket, training_folder_path, model_location_prefix_key, training_job_location_prefix, user_id, endpoint_parameter_name)
+            make_training_job_and_endpoint(bucket, training_folder_path, model_location_prefix_key, training_job_location_prefix_s3_uri, user_id, endpoint_parameter_name)
 
         else:
             print("Need to send in a number of recordings with provided scores before testing with an actual model.")
@@ -118,14 +121,14 @@ def lambda_handler(event, context):
 
         training_folder_path = os.path.split(key)[0] + "/"
 
-        make_training_job_and_add_model(bucket, training_folder_path, model_location_prefix_key, training_job_location_prefix, user_id)
+        make_training_job_and_add_model(bucket, training_folder_path, model_location_prefix_key, training_job_location_prefix_s3_uri, user_id)
 
     else:
         print("Sending to Sagemaker Endpoint")
 
         try:
             # TODO: remove after testing
-            endpoint_parameter_value = os.environ['endpoint_name']
+            # endpoint_parameter_value = os.environ['endpoint_name']
             # TODO: remove the line below after testing, and uncomment the line after
             # target_model_name = 'p1' + '.tar.gz'
             # target_model_name = user_id
@@ -142,7 +145,7 @@ def lambda_handler(event, context):
             # to get the most recent TargetModel for the user
             try:
                 print("Getting a list of the user's model files in the S3 bucket.")
-                response_list_obj = s3.list_objects_v2(Bucket=bucket, StartAfter=model_location_prefix_key, Prefix=model_location_prefix_key)
+                response_list_obj = s3.list_objects_v2(Bucket=sagemaker_bucket, StartAfter=model_location_prefix_key, Prefix=model_location_prefix_key)
                 target_model_key = response_list_obj['Contents'][-1]['Key'] # gets the last key in the list
                 
                 index = target_model_key.find("/user_id=") # this is the part after the movement subfolder
@@ -157,7 +160,6 @@ def lambda_handler(event, context):
                 print("Error listing the model files in the bucket. Make sure the S3 folder exists and that there are files in there.")
                 raise e
 
-            # TODO: change the endpoint name to endpoint_parameter_value (whatever is in Parameter Store)
             # path for models is /saved_models/movement={movement}/{target_model_file_key}
             response_invoke = sagemaker_runtime.invoke_endpoint(EndpointName=endpoint_parameter_value,
                                                                 ContentType='application/json',
@@ -239,6 +241,7 @@ def convert_json_to_parquet(dataframe, bucket, output_s3_path, test_event_id):
 
 def make_training_job_and_add_model(bucket, training_folder_path, model_location_prefix_key, training_job_location_prefix_s3_uri, user_id):
     print("Check training requirement and make training job.")
+    sagemaker_bucket = os.environ['sagemaker_bucket_name'] # TODO: change relevant bucket arguments to sagemaker_bucket
 
     # list the training files in the training folder, get the data, send them to a training job, and add a model to an endpoint
     try:
@@ -248,11 +251,11 @@ def make_training_job_and_add_model(bucket, training_folder_path, model_location
 
     except Exception as e:
         print(e)
-        print('Error at path {} from bucket {}. Make sure they exist and your bucket is in the same region as this function.'.format(training_folder_path, bucket))
+        print('Error getting the number of training files at path {} from bucket {}.'.format(training_folder_path, bucket))
         raise e
 
-    # TODO: fix the conditionals to == 0 and >= 10
-    if (training_object_count % 10 != 0 and training_object_count >= 5):
+    # TODO: fix the conditionals to % 10, == 0, and >= 10
+    if (training_object_count % 5 == 0 and training_object_count >= 5):
         print("There are enough training files.")
 
         try:
@@ -292,7 +295,7 @@ def make_training_job_and_add_model(bucket, training_folder_path, model_location
         # add model to endpoint by copying the new model data tar file into the correct S3 location for the MultiDataModel
         try:
             copy_destination_key = f'{model_location_prefix_key}/user_id={user_id}/{model_file_name}'
-            copy_response = s3.copy_object(CopySource=artifact_s3_path, Bucket=artifact_bucket, Key=copy_destination_key)
+            copy_response = s3.copy_object(CopySource=artifact_s3_path, Bucket=sagemaker_bucket, Key=copy_destination_key)
             print("Copy: ", copy_response)
             
         except Exception as e:
@@ -311,6 +314,7 @@ def make_training_job_and_add_model(bucket, training_folder_path, model_location
 def make_training_job_and_endpoint(bucket, training_folder_path, model_location_prefix_key, training_job_location_prefix_s3_uri, user_id, endpoint_parameter_name):
     print("Making training job and endpoint.")
     endpointName = os.environ['endpoint_name']
+    sagemaker_bucket = os.environ['sagemaker_bucket_name']
 
     try:
         print("Getting the number of training files in the S3 training folder.")
@@ -319,11 +323,11 @@ def make_training_job_and_endpoint(bucket, training_folder_path, model_location_
 
     except Exception as e:
         print(e)
-        print('Error at path {} from bucket {}. Make sure they exist and your bucket is in the same region as this function.'.format(training_folder_path, bucket))
+        print('Error getting the number of training files at path {} from bucket {}.'.format(training_folder_path, bucket))
         raise e
     
-    # TODO: fix the conditionals to == 0 and >= 10
-    if (training_object_count % 10 != 0 and training_object_count >= 5):
+    # TODO: fix the conditionals to % 10, == 0, and >= 10
+    if (training_object_count % 5 == 0 and training_object_count >= 5):
         print("There are enough training files.")
 
         try:
@@ -363,7 +367,7 @@ def make_training_job_and_endpoint(bucket, training_folder_path, model_location_
         try:
             model_file_name = artifact_key.split("/")[-3] + ".tar.gz"
             copy_destination_key = f'{model_location_prefix_key}/user_id={user_id}/{model_file_name}'
-            copy_response = s3.copy_object(CopySource=artifact_s3_path, Bucket=artifact_bucket, Key=copy_destination_key)
+            copy_response = s3.copy_object(CopySource=artifact_s3_path, Bucket=sagemaker_bucket, Key=copy_destination_key)
             print("Copy: ", copy_response)
             
         except Exception as e:
@@ -373,7 +377,7 @@ def make_training_job_and_endpoint(bucket, training_folder_path, model_location_
         
         # make MultiDataModel and deploy to an endpoint
         try:
-            model_location_prefix = f's3://{bucket}/{model_location_prefix_key}'
+            model_location_prefix = f's3://{sagemaker_bucket}/{model_location_prefix_key}'
             session = Session()
             
             model = TensorFlowModel(model_data=tf_estimator.model_data, name=model_name, role=role, framework_version="2.3.0", sagemaker_session=session)
@@ -398,11 +402,11 @@ def make_training_job_and_endpoint(bucket, training_folder_path, model_location_
             print("Error making a model and deploying to an endpoint.")
             raise e
 
-        # TODO: test if secure string works for cdk deployment
+        # TODO: test if this works for cdk deployment
         # add the endpoint name to Parameter Store
         try:
             print("Putting endpoint name into Parameter Store.")
-            response_put_parameter = ssm.put_parameter(Name=endpoint_parameter_name, Value=endpointName, Type='SecureString', Tier="Standard") 
+            response_put_parameter = ssm.put_parameter(Name=endpoint_parameter_name, Value=endpointName, Type='String', Tier="Standard") 
             
             print("Response, Put Parameter: ", response_put_parameter)
             
@@ -423,12 +427,11 @@ training_folder_key: a string representing the training folder path within the b
 
 Returns - a TensorFlow estimator from Sagemaker
 """
-# TODO: specify which are S3 uri and which are keys
 def launch_training_job(bucket, training_folder_key, role, training_job_location_prefix_s3_uri, user_id):
 
     print("Sending data inputs for training job.")
 
-    # TODO: figure out what needs to go into code_location and output_path
+    # For the job naming, the expected name is {user_id}-{date and time stamp}; any longer may exceed character limit for base job name
     tf_estimator = TensorFlow(
         entry_point="LSTM.py",  # training script name
         source_dir='ml-training-script',  # training script source directory on your code
@@ -440,10 +443,10 @@ def launch_training_job(bucket, training_folder_key, role, training_job_location
         py_version="py37",  # python version
         code_location=training_job_location_prefix_s3_uri, #S3 location for training job output file storage
         output_path=training_job_location_prefix_s3_uri, #S3 location for training job file storage
-        base_job_name=f'{user_id}-user-training',  # Modifying the training job name
+        base_job_name=f'{user_id}',  # Modifying the training job name
     )
 
-    print("Fitting folder data into the Sagemaker Estimator.")
+    print("Fitting training folder data into the Sagemaker Estimator.")
     tf_estimator.fit(f's3://{bucket}/{training_folder_key}')
 
     print("Returning the Sagemaker Estimator.")
@@ -458,10 +461,9 @@ df: a Pandas Dataframe containing the accelerometer, gyroscope, and magnetometer
 
 Returns - a NumPy array containing the modified data from df
 """
-# TODO: see if we need to change pad_length, and add in magnetometer
 
 def preprocess_data(df):
-
+    
     pad_length = (2000-len(df['ax']))//2
     print("Pad Length: ", pad_length)
 
@@ -505,13 +507,61 @@ def preprocess_data(df):
     #         *gx_normal_stft_largest, *gx_normal_stft_smallest, *gy_normal_stft_largest, *gy_normal_stft_smallest, *gz_normal_stft_largest, *gz_normal_stft_smallest]
 
     X = np.array(data)
-    print("X shape: ", len(X))
+    print("X shape: ", X.shape)
 
     X = np.reshape(X, (1, 1, X.shape[0]))
     print("Post-processing shape: ", X.shape)
 
     return X
 
+
+# TODO: this is the actual preprocessing function to use, without padding; uncomment after finishing the test with current endpoint
+
+# def preprocess_data(df):
+    
+#     ax_stft=np.abs(stft(df['ax'],nperseg=512,fs=1)[2]**2)
+#     ay_stft=np.abs(stft(df['ay'],nperseg=512,fs=1)[2]**2)
+#     az_stft=np.abs(stft(df['az'],nperseg=512,fs=1)[2]**2)
+    
+#     ax_stft_largest=nlargest(50,ax_stft.flatten())
+#     ax_stft_smallest=nsmallest(50,ax_stft.flatten())
+#     ay_stft_largest=nlargest(50,ay_stft.flatten())
+#     ay_stft_smallest=nsmallest(50,ay_stft.flatten())
+#     az_stft_largest=nlargest(50,az_stft.flatten())
+#     az_stft_smallest=nsmallest(50,az_stft.flatten())
+    
+#     gx_stft=np.abs(stft(df['gx'],nperseg=512,fs=1)[2]**2)
+#     gy_stft=np.abs(stft(df['gy'],nperseg=512,fs=1)[2]**2)
+#     gz_stft=np.abs(stft(df['gz'],nperseg=512,fs=1)[2]**2)
+    
+#     gx_stft_largest=nlargest(50,gx_stft.flatten())
+#     gx_stft_smallest=nsmallest(50,gx_stft.flatten())
+#     gy_stft_largest=nlargest(50,gy_stft.flatten())
+#     gy_stft_smallest=nsmallest(50,gy_stft.flatten())
+#     gz_stft_largest=nlargest(50,gz_stft.flatten())
+#     gz_stft_smallest=nsmallest(50,gz_stft.flatten())
+    
+#     mx_stft=np.abs(stft(df['mx'],nperseg=512,fs=1)[2]**2)
+#     my_stft=np.abs(stft(df['my'],nperseg=512,fs=1)[2]**2)
+#     mz_stft=np.abs(stft(df['mz'],nperseg=512,fs=1)[2]**2)
+    
+#     mx_stft_largest=nlargest(50,mx_stft.flatten())
+#     mx_stft_smallest=nsmallest(50,mx_stft.flatten())
+#     my_stft_largest=nlargest(50,my_stft.flatten())
+#     my_stft_smallest=nsmallest(50,my_stft.flatten())
+#     mz_stft_largest=nlargest(50,mz_stft.flatten())
+#     mz_stft_smallest=nsmallest(50,mz_stft.flatten())
+    
+#     data = [*ax_stft_largest, *ax_stft_smallest, *ay_stft_largest, *ay_stft_smallest, *az_stft_largest, *az_stft_smallest, *gx_stft_largest, *gx_stft_smallest, *gy_stft_largest, *gy_stft_smallest, *gz_stft_largest, *gz_stft_smallest,
+#             *mx_stft_largest, *mx_stft_smallest, *my_stft_largest, *my_stft_smallest, *mz_stft_largest, *mz_stft_smallest]
+   
+#     X = np.array(data)
+#     print("X shape: ", X.shape)
+
+#     X = np.reshape(X, (1, 1, X.shape[0]))
+#     print("Post-processing shape: ", X.shape)
+
+#     return X
 
 """
 This function takes the necessary ML output data, and updates the database's specified test event with that data.

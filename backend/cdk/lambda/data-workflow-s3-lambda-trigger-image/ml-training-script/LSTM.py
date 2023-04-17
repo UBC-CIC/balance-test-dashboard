@@ -27,7 +27,7 @@ def lstm_model_fn():
 
     with mirrored_strategy.scope():
         model = models.Sequential()
-        model.add(LSTM(50, activation='relu', input_shape=(1,900)))
+        model.add(LSTM(50, activation='relu', input_shape=(None,900)))
         model.add(layers.Dense(10,activation='sigmoid'))
         model.add(layers.Dense(1,activation='sigmoid'))
         model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=args.learning_rate),loss=tf.keras.losses.MeanSquaredError())
@@ -90,28 +90,28 @@ def _load_training_data(base_dir):
     mz_stft_largest={}
     mz_stft_smallest={}
     for i in range(num_training_files):
-        pad_length = (2000-len(all_sits[i]['ax']))//2
-        ax_stft[i]=np.abs(stft(np.pad(all_sits[i]['ax'],(pad_length,),'median'),nperseg=512,fs=1)[2]**2)
-        ay_stft[i]=np.abs(stft(np.pad(all_sits[i]['ay'],(pad_length,),'median'),nperseg=512,fs=1)[2]**2)
-        az_stft[i]=np.abs(stft(np.pad(all_sits[i]['az'],(pad_length,),'median'),nperseg=512,fs=1)[2]**2)
+#         pad_length = (2000-len(all_sits[i]['ax']))//2
+        ax_stft[i]=np.abs(stft(all_sits[i]['ax'],nperseg=512,fs=1)[2]**2)
+        ay_stft[i]=np.abs(stft(all_sits[i]['ay'],nperseg=512,fs=1)[2]**2)
+        az_stft[i]=np.abs(stft(all_sits[i]['az'],nperseg=512,fs=1)[2]**2)
         ax_stft_largest[i]=nlargest(50,ax_stft[i].flatten())
         ax_stft_smallest[i]=nsmallest(50,ax_stft[i].flatten())
         ay_stft_largest[i]=nlargest(50,ay_stft[i].flatten())
         ay_stft_smallest[i]=nsmallest(50,ay_stft[i].flatten())
         az_stft_largest[i]=nlargest(50,az_stft[i].flatten())
         az_stft_smallest[i]=nsmallest(50,az_stft[i].flatten())
-        gx_stft[i]=np.abs(stft(np.pad(all_sits[i]['gx'],(pad_length,),'median'),nperseg=512,fs=1)[2]**2)
-        gy_stft[i]=np.abs(stft(np.pad(all_sits[i]['gy'],(pad_length,),'median'),nperseg=512,fs=1)[2]**2)
-        gz_stft[i]=np.abs(stft(np.pad(all_sits[i]['gz'],(pad_length,),'median'),nperseg=512,fs=1)[2]**2)
+        gx_stft[i]=np.abs(stft(all_sits[i]['gx'],nperseg=512,fs=1)[2]**2)
+        gy_stft[i]=np.abs(stft(all_sits[i]['gy'],nperseg=512,fs=1)[2]**2)
+        gz_stft[i]=np.abs(stft(all_sits[i]['gz'],nperseg=512,fs=1)[2]**2)
         gx_stft_largest[i]=nlargest(50,gx_stft[i].flatten())
         gx_stft_smallest[i]=nsmallest(50,gx_stft[i].flatten())
         gy_stft_largest[i]=nlargest(50,gy_stft[i].flatten())
         gy_stft_smallest[i]=nsmallest(50,gy_stft[i].flatten())
         gz_stft_largest[i]=nlargest(50,gz_stft[i].flatten())
         gz_stft_smallest[i]=nsmallest(50,gz_stft[i].flatten())
-        mx_stft[i]=np.abs(stft(np.pad(all_sits[i]['mx'],(pad_length,),'median'),nperseg=512,fs=1)[2]**2)
-        my_stft[i]=np.abs(stft(np.pad(all_sits[i]['my'],(pad_length,),'median'),nperseg=512,fs=1)[2]**2)
-        mz_stft[i]=np.abs(stft(np.pad(all_sits[i]['mz'],(pad_length,),'median'),nperseg=512,fs=1)[2]**2)
+        mx_stft[i]=np.abs(stft(all_sits[i]['mx'],nperseg=512,fs=1)[2]**2)
+        my_stft[i]=np.abs(stft(all_sits[i]['my'],nperseg=512,fs=1)[2]**2)
+        mz_stft[i]=np.abs(stft(all_sits[i]['mz'],nperseg=512,fs=1)[2]**2)
         mx_stft_largest[i]=nlargest(50,mx_stft[i].flatten())
         mx_stft_smallest[i]=nsmallest(50,mx_stft[i].flatten())
         my_stft_largest[i]=nlargest(50,my_stft[i].flatten())
