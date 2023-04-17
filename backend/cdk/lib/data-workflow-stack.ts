@@ -99,7 +99,8 @@ export class DataWorkflowStack extends Stack {
         publicReadAccess: false,
         versioned: true,
         encryption: s3.BucketEncryption.S3_MANAGED,
-        objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_ENFORCED
+        objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_ENFORCED,
+        serverAccessLogsPrefix: ' balance-test-access-logs/*'
       });
 
       // add an access point for VPC

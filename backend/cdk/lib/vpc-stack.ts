@@ -16,7 +16,7 @@ export class VPCStack extends Stack {
       super(scope, id, props);
       
       const vpcName = "balanceTest-VPC";
-      this.cidrStr = '11.0.0.0/16';
+      this.cidrStr = '12.0.0.0/16';
       this.destinationCidrStr = '13.0.0.0/16';
 
       const natGatewayProvider = ec2.NatProvider.gateway();
@@ -31,7 +31,8 @@ export class VPCStack extends Stack {
         subnetConfiguration: [
           {
             name: 'public-subnet',
-            subnetType: ec2.SubnetType.PUBLIC
+            subnetType: ec2.SubnetType.PUBLIC,
+            mapPublicIpOnLaunch: false
           },
           {
             name: 'private-subnet',
