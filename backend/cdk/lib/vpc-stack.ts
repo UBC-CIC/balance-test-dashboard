@@ -30,11 +30,11 @@ export class VPCStack extends Stack {
         natGateways: 1,
         subnetConfiguration: [
           {
-            name: 'public-subnet',
+            name: 'public',
             subnetType: ec2.SubnetType.PUBLIC
           },
           {
-            name: 'private-subnet',
+            name: 'private',
             subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
           },
         ],

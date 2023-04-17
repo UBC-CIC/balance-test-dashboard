@@ -186,9 +186,13 @@ export class DataWorkflowStack extends Stack {
             actions: ["sagemaker:InvokeEndpoint"],
             resources: [`arn:aws:sagemaker:${region}:${account}:endpoint/${endpointName}`]
 
+        }), new iam.PolicyStatement({
+          actions: ["s3:GetObject", "s3:PutObject", "s3:GetObjectTagging", "s3:PutObjectTagging"],
+          resources: [sagemakerBucket.bucketArn + "/*"]
+
         }),
       
-      ]
+        ]
       });
       
       const s3LambdaTriggerRole = new iam.Role(this, s3LambdaTriggerRoleName, {
@@ -210,14 +214,15 @@ export class DataWorkflowStack extends Stack {
           rds_secret_name: databaseStack.getDatabaseSecretName(),
         },
         functionName: s3LambdaTriggerName,
-        memorySize: 512,
+        memorySize: 512, //a lower size would not be able to run the whole code
         role: s3LambdaTriggerRole,
-        timeout: Duration.minutes(5), //TODO: change this to 15 min
+        timeout: Duration.minutes(10), //TODO: change this to 15 min
+        retryAttempts: 0, 
         vpc: vpcStack.vpc,
         vpcSubnets: {
             subnetType: ec2.SubnetType.PRIVATE_ISOLATED
         },
-        securityGroups: [securityGroup],
+        securityGroups: [securityGroup, databaseStack.getDatabaseSecurityGroup()],
       });
 
       // const jsonToParquetAndCsvTrigger = new lambda.Function(this, s3LambdaTriggerName, {
