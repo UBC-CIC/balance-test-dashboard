@@ -3,6 +3,7 @@ import * as appsync from "aws-cdk-lib/aws-appsync";
 import * as iam from "aws-cdk-lib/aws-iam";
 import * as lambda from "aws-cdk-lib/aws-lambda";
 import * as logs from "aws-cdk-lib/aws-logs";
+import * as ec2 from "aws-cdk-lib/aws-ec2";
 import * as ssm from "aws-cdk-lib/aws-ssm";
 import * as cognito from 'aws-cdk-lib/aws-cognito';
 import * as cdk from 'aws-cdk-lib';
@@ -16,7 +17,7 @@ import { StringAttribute } from 'aws-cdk-lib/aws-cognito';
 export class CognitoStack extends Stack {
     public readonly UserPoolId: string;
 
-    constructor(scope: App, id: string, props?: StackProps) {
+    constructor(scope: App, id: string, vpcstack: VPCStack, props?: StackProps) {
         super(scope, id, props);
 
         const assignUserGroupFunction = new lambda.Function(this, 'AssignUserGroupFunction', {

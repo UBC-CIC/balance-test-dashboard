@@ -16,25 +16,26 @@ export class VPCStack extends Stack {
       super(scope, id, props);
       
       const vpcName = "balanceTest-VPC";
-      this.cidrStr = '11.0.0.0/16';
+      this.cidrStr = '12.0.0.0/16';
       this.destinationCidrStr = '13.0.0.0/16';
 
-      const natGatewayProvider = ec2.NatProvider.gateway();
+      // const natGatewayProvider = ec2.NatProvider.gateway();
       
       // Make VPC with NAT Gateway and S3 Endpoint
       this.vpc = new ec2.Vpc(this, vpcName, {
         vpcName: vpcName,
         ipAddresses: ec2.IpAddresses.cidr(this.cidrStr),
         maxAzs: 2,
-        natGatewayProvider: natGatewayProvider,
+        // natGatewayProvider: natGatewayProvider,
         natGateways: 1,
         subnetConfiguration: [
           {
-            name: 'public',
-            subnetType: ec2.SubnetType.PUBLIC
+            name: 'public-subnet',
+            subnetType: ec2.SubnetType.PUBLIC,
+            mapPublicIpOnLaunch: false
           },
           {
-            name: 'private',
+            name: 'private-subnet',
             subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
           },
         ],
@@ -124,7 +125,7 @@ export class VPCStack extends Stack {
         new ec2.CfnRoute(this, "Route-Private-" + index, {
           destinationCidrBlock: this.destinationCidrStr,
           routeTableId,
-          natGatewayId: natGatewayProvider.configuredGateways[0].gatewayId
+          // natGatewayId: natGatewayProvider.configuredGateways[0].gatewayId
         })
       });
     }

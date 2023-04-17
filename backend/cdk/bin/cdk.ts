@@ -26,11 +26,12 @@ const app = new cdk.App();
 //   /* For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html */
 // });
 
-const cognitoStack = new CognitoStack(app, "CognitoStack", {
+
+const vpcStack = new VPCStack(app, "VPCStack", {
     env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION }
 });
 
-const vpcStack = new VPCStack(app, "VPCStack", {
+const cognitoStack = new CognitoStack(app, "CognitoStack", vpcStack, {
     env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION }
 });
 
