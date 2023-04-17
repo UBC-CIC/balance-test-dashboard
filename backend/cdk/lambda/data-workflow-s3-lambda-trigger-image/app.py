@@ -66,7 +66,7 @@ def lambda_handler(event, context):
     endpoint_parameter_name = os.environ["endpoint_name"] #TODO: uncomment this after testing
     endpoint_parameter_value = ''
     endpoint_exists_bool = False
-    # sagemaker_bucket = os.environ["sagemaker_bucket_name"]
+    sagemaker_bucket = os.environ["sagemaker_bucket_name"]
 
     # TODO: remove the below testing lines
     # endpoint_parameter_name = "/cdk-bootstrap/hnb659fds/version"
