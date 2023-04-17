@@ -1,3 +1,4 @@
+# TODO: change file name to Dockerfile for cdk
 FROM public.ecr.aws/lambda/python:3.9
 
 # To update for image issues

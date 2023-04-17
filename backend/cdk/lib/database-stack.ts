@@ -15,6 +15,7 @@ export class DatabaseStack extends Stack {
     private readonly rdsCredentialSecret: sm.Secret;
     private readonly rdsInstanceName: string;
     private readonly proxy: rds.DatabaseProxy;
+    private readonly vpcSecurityGroup: ec2.SecurityGroup;
 
     constructor(scope: App, id: string, vpcStack: VPCStack, props?: StackProps) {
         super(scope, id, props);
@@ -30,12 +31,12 @@ export class DatabaseStack extends Stack {
         const port = ec2.Port.tcp(dbPort);
 
 
-        const vpcSecurityGroup = new ec2.SecurityGroup(this, 'vpcSecurityGroup', {
+        this.vpcSecurityGroup = new ec2.SecurityGroup(this, 'vpcSecurityGroup', {
             vpc: vpcStack.vpc,
             description: 'allow traffic from this security group and rds proxy',
         })
 
-        vpcSecurityGroup.addIngressRule(
+        this.vpcSecurityGroup.addIngressRule(
             ec2.Peer.ipv4(vpcStack.cidrStr),
             port,
             'allow traffic from within vpc'
@@ -142,14 +143,16 @@ export class DatabaseStack extends Stack {
             removalPolicy: RemovalPolicy.RETAIN,
             monitoringInterval: cdk.Duration.seconds(60),
             monitoringRole: monitoringRole,
-            securityGroups: [vpcSecurityGroup]
+            // securityGroups: [this.vpcSecurityGroup]
+            securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(this, 'VPCDefaultSecurityGroup', vpcStack.vpc.vpcDefaultSecurityGroup)],
         })
 
         this.proxy = new rds.DatabaseProxy(this, 'Proxy', {
             proxyTarget: rds.ProxyTarget.fromInstance(rdsInstance),
             secrets: [this.rdsCredentialSecret],
             vpc: vpcStack.vpc,
-            securityGroups: [vpcSecurityGroup],
+            // securityGroups: [this.vpcSecurityGroup],
+            securityGroups: [ec2.SecurityGroup.fromSecurityGroupId(this, 'VpcDefaultSecurityGroup', vpcStack.vpc.vpcDefaultSecurityGroup)],
             requireTLS: false
         });
 
@@ -239,6 +242,10 @@ export class DatabaseStack extends Stack {
 
     public getDatabaseProxyEndpoint(): string {
         return this.proxy.endpoint; 
+    }
+    
+    public getDatabaseSecurityGroup(): ec2.SecurityGroup {
+        return this.vpcSecurityGroup
     }
 
 }
