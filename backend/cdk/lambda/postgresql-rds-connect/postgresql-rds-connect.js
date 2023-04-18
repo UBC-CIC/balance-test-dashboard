@@ -7,7 +7,8 @@ const AWS = require("aws-sdk");
 
 const PROXY_ENDPOINT = process.env.PGHOST;
 const sm = new AWS.SecretsManager({ region: process.env.AWS_REGION });
-const secret_name = "postgresql-credentials";
+// const secret_name = "postgresql-credentials";
+const secret_name = process.env.PG_SECRET_NAME;
 
 let pool;
 const connectDb = async () => {

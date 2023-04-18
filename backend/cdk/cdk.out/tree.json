@@ -2518,8 +2518,7 @@
                       "secretStringTemplate": "{\"username\":\"postgres\"}",
                       "generateStringKey": "password",
                       "excludeCharacters": "\"@/\\"
-                    },
-                    "name": "postgresql-credentials"
+                    }
                   }
                 },
                 "constructInfo": {
@@ -3146,7 +3145,9 @@
                             {
                               "Action": "secretsmanager:GetSecretValue",
                               "Effect": "Allow",
-                              "Resource": "arn:aws:secretsmanager:ca-central-1:684904187051:secret:postgresql-credentials-??????"
+                              "Resource": {
+                                "Ref": "SecretA720EF05"
+                              }
                             }
                           ],
                           "Version": "2012-10-17"
@@ -3270,7 +3271,7 @@
                   "aws:cdk:cloudformation:props": {
                     "code": {
                       "s3Bucket": "cdk-hnb659fds-assets-684904187051-ca-central-1",
-                      "s3Key": "d4db39f119044708a269763715a91b893661ad46ef96a210357aad461c6b0158.zip"
+                      "s3Key": "28e6b256f236b8ed7152d332d6c35b3c06cd61d1f78e4d19d44507f3cc577959.zip"
                     },
                     "role": {
                       "Fn::GetAtt": [
@@ -3287,7 +3288,8 @@
                             "Endpoint"
                           ]
                         },
-                        "PG_SECRET_NAME": {
+                        "PGPORT": "5432",
+                        "SECRET_NAME": {
                           "Fn::Join": [
                             "-",
                             [
@@ -3339,20 +3341,7 @@
                               }
                             ]
                           ]
-                        },
-                        "PGUSER": {
-                          "Fn::Join": [
-                            "",
-                            [
-                              "{{resolve:secretsmanager:",
-                              {
-                                "Ref": "SecretA720EF05"
-                              },
-                              ":SecretString:username::}}"
-                            ]
-                          ]
-                        },
-                        "PGPORT": "5432"
+                        }
                       }
                     },
                     "functionName": "BalanceTest-postgresql-RDS-connect",
@@ -3479,13 +3468,13 @@
         "id": "DataWorkflowStack",
         "path": "DataWorkflowStack",
         "children": {
-          "balancetest-datastorage-bucket": {
-            "id": "balancetest-datastorage-bucket",
-            "path": "DataWorkflowStack/balancetest-datastorage-bucket",
+          "balancetest-raw-datastorage-bucket": {
+            "id": "balancetest-raw-datastorage-bucket",
+            "path": "DataWorkflowStack/balancetest-raw-datastorage-bucket",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "DataWorkflowStack/balancetest-datastorage-bucket/Resource",
+                "path": "DataWorkflowStack/balancetest-raw-datastorage-bucket/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
                   "aws:cdk:cloudformation:props": {
@@ -3498,7 +3487,7 @@
                         }
                       ]
                     },
-                    "bucketName": "balancetest-datastorage-bucket",
+                    "bucketName": "balancetest-raw-datastorage-bucket",
                     "ownershipControls": {
                       "rules": [
                         {
@@ -3524,11 +3513,11 @@
               },
               "Notifications": {
                 "id": "Notifications",
-                "path": "DataWorkflowStack/balancetest-datastorage-bucket/Notifications",
+                "path": "DataWorkflowStack/balancetest-raw-datastorage-bucket/Notifications",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "DataWorkflowStack/balancetest-datastorage-bucket/Notifications/Resource",
+                    "path": "DataWorkflowStack/balancetest-raw-datastorage-bucket/Notifications/Resource",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnResource",
                       "version": "2.69.0"
@@ -3542,7 +3531,7 @@
               },
               "AllowBucketNotificationsToDataWorkflowStackBalanceTestdataworkflow5A7205FF": {
                 "id": "AllowBucketNotificationsToDataWorkflowStackBalanceTestdataworkflow5A7205FF",
-                "path": "DataWorkflowStack/balancetest-datastorage-bucket/AllowBucketNotificationsToDataWorkflowStackBalanceTestdataworkflow5A7205FF",
+                "path": "DataWorkflowStack/balancetest-raw-datastorage-bucket/AllowBucketNotificationsToDataWorkflowStackBalanceTestdataworkflow5A7205FF",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
                   "aws:cdk:cloudformation:props": {
@@ -3557,7 +3546,7 @@
                     "sourceAccount": "684904187051",
                     "sourceArn": {
                       "Fn::GetAtt": [
-                        "balancetestdatastoragebucketD25B585E",
+                        "balancetestrawdatastoragebucket32387F9E",
                         "Arn"
                       ]
                     }
@@ -3581,7 +3570,7 @@
               "aws:cdk:cloudformation:type": "AWS::S3::AccessPoint",
               "aws:cdk:cloudformation:props": {
                 "bucket": {
-                  "Ref": "balancetestdatastoragebucketD25B585E"
+                  "Ref": "balancetestrawdatastoragebucket32387F9E"
                 },
                 "bucketAccountId": "684904187051",
                 "name": "balancetest-accesspt",
@@ -3603,13 +3592,13 @@
               "version": "2.69.0"
             }
           },
-          "balancetest-sagemaker-bucket": {
-            "id": "balancetest-sagemaker-bucket",
-            "path": "DataWorkflowStack/balancetest-sagemaker-bucket",
+          "sagemaker-balancetest-bucket": {
+            "id": "sagemaker-balancetest-bucket",
+            "path": "DataWorkflowStack/sagemaker-balancetest-bucket",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "DataWorkflowStack/balancetest-sagemaker-bucket/Resource",
+                "path": "DataWorkflowStack/sagemaker-balancetest-bucket/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
                   "aws:cdk:cloudformation:props": {
@@ -3622,7 +3611,7 @@
                         }
                       ]
                     },
-                    "bucketName": "balancetest-sagemaker-bucket",
+                    "bucketName": "sagemaker-balancetest-bucket",
                     "ownershipControls": {
                       "rules": [
                         {
@@ -3652,17 +3641,17 @@
               "version": "2.69.0"
             }
           },
-          "balancetest-sm-access": {
-            "id": "balancetest-sm-access",
-            "path": "DataWorkflowStack/balancetest-sm-access",
+          "balancetest-sm-accesspt": {
+            "id": "balancetest-sm-accesspt",
+            "path": "DataWorkflowStack/balancetest-sm-accesspt",
             "attributes": {
               "aws:cdk:cloudformation:type": "AWS::S3::AccessPoint",
               "aws:cdk:cloudformation:props": {
                 "bucket": {
-                  "Ref": "balancetestsagemakerbucketDBA07684"
+                  "Ref": "sagemakerbalancetestbucket025AA7CC"
                 },
                 "bucketAccountId": "684904187051",
-                "name": "balancetest-sm-access",
+                "name": "balancetest-sm-accesspt",
                 "publicAccessBlockConfiguration": {
                   "blockPublicAcls": true,
                   "blockPublicPolicy": true,
@@ -3678,6 +3667,32 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_s3.CfnAccessPoint",
+              "version": "2.69.0"
+            }
+          },
+          "BalanceTest-Model-Endpoint-Param": {
+            "id": "BalanceTest-Model-Endpoint-Param",
+            "path": "DataWorkflowStack/BalanceTest-Model-Endpoint-Param",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "DataWorkflowStack/BalanceTest-Model-Endpoint-Param/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SSM::Parameter",
+                  "aws:cdk:cloudformation:props": {
+                    "type": "String",
+                    "value": "empty!",
+                    "name": "BalanceTest-Model-Endpoint-Param"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_ssm.CfnParameter",
+                  "version": "2.69.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_ssm.StringParameter",
               "version": "2.69.0"
             }
           },
@@ -3711,6 +3726,154 @@
             },
             "constructInfo": {
               "fqn": "aws-cdk-lib.aws_logs.LogGroup",
+              "version": "2.69.0"
+            }
+          },
+          "BalanceTest-SagemakerExecution-Logs": {
+            "id": "BalanceTest-SagemakerExecution-Logs",
+            "path": "DataWorkflowStack/BalanceTest-SagemakerExecution-Logs",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "DataWorkflowStack/BalanceTest-SagemakerExecution-Logs/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "logGroupName": "/aws/sagemaker/BalanceTest-SagemakerExecution-Logs",
+                    "retentionInDays": 731
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_logs.CfnLogGroup",
+                  "version": "2.69.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_logs.LogGroup",
+              "version": "2.69.0"
+            }
+          },
+          "BalanceTest-Sagemaker-Execution-Role": {
+            "id": "BalanceTest-Sagemaker-Execution-Role",
+            "path": "DataWorkflowStack/BalanceTest-Sagemaker-Execution-Role",
+            "children": {
+              "ImportBalanceTest-Sagemaker-Execution-Role": {
+                "id": "ImportBalanceTest-Sagemaker-Execution-Role",
+                "path": "DataWorkflowStack/BalanceTest-Sagemaker-Execution-Role/ImportBalanceTest-Sagemaker-Execution-Role",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "2.69.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "DataWorkflowStack/BalanceTest-Sagemaker-Execution-Role/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "sagemaker.amazonaws.com"
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "description": "Role gives access for executing Sagemaker functions.",
+                    "managedPolicyArns": [
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":iam::aws:policy/AmazonSageMakerFullAccess"
+                          ]
+                        ]
+                      }
+                    ],
+                    "policies": [
+                      {
+                        "policyName": "BalanceTest-SagemakerExecutionPolicy",
+                        "policyDocument": {
+                          "Statement": [
+                            {
+                              "Action": [
+                                "s3:GetObject",
+                                "s3:GetObjectTagging",
+                                "s3:ListBucket",
+                                "s3:PutObject",
+                                "s3:PutObjectTagging"
+                              ],
+                              "Effect": "Allow",
+                              "Resource": [
+                                {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      {
+                                        "Fn::GetAtt": [
+                                          "balancetestrawdatastoragebucket32387F9E",
+                                          "Arn"
+                                        ]
+                                      },
+                                      "/*"
+                                    ]
+                                  ]
+                                },
+                                {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      {
+                                        "Fn::GetAtt": [
+                                          "sagemakerbalancetestbucket025AA7CC",
+                                          "Arn"
+                                        ]
+                                      },
+                                      "/*"
+                                    ]
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "Action": [
+                                "logs:CreateLogGroup",
+                                "logs:CreateLogStream",
+                                "logs:PutLogEvents"
+                              ],
+                              "Effect": "Allow",
+                              "Resource": {
+                                "Fn::GetAtt": [
+                                  "BalanceTestSagemakerExecutionLogs9E5815F2",
+                                  "Arn"
+                                ]
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        }
+                      }
+                    ],
+                    "roleName": "BalanceTest-Sagemaker-Execution-Role"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                  "version": "2.69.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_iam.Role",
               "version": "2.69.0"
             }
           },
@@ -3773,7 +3936,7 @@
                                   [
                                     {
                                       "Fn::GetAtt": [
-                                        "balancetestdatastoragebucketD25B585E",
+                                        "balancetestrawdatastoragebucket32387F9E",
                                         "Arn"
                                       ]
                                     },
@@ -3788,7 +3951,13 @@
                               "Resource": [
                                 {
                                   "Fn::GetAtt": [
-                                    "balancetestdatastoragebucketD25B585E",
+                                    "balancetestrawdatastoragebucket32387F9E",
+                                    "Arn"
+                                  ]
+                                },
+                                {
+                                  "Fn::GetAtt": [
+                                    "sagemakerbalancetestbucket025AA7CC",
                                     "Arn"
                                   ]
                                 },
@@ -3798,11 +3967,25 @@
                                     [
                                       {
                                         "Fn::GetAtt": [
-                                          "balancetestdatastoragebucketD25B585E",
+                                          "balancetestrawdatastoragebucket32387F9E",
                                           "Arn"
                                         ]
                                       },
                                       "/private/*"
+                                    ]
+                                  ]
+                                },
+                                {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      {
+                                        "Fn::GetAtt": [
+                                          "sagemakerbalancetestbucket025AA7CC",
+                                          "Arn"
+                                        ]
+                                      },
+                                      "/*"
                                     ]
                                   ]
                                 }
@@ -3817,7 +4000,7 @@
                                   [
                                     {
                                       "Fn::GetAtt": [
-                                        "balancetestdatastoragebucketD25B585E",
+                                        "balancetestrawdatastoragebucket32387F9E",
                                         "Arn"
                                       ]
                                     },
@@ -3830,15 +4013,20 @@
                               "Action": [
                                 "logs:CreateLogGroup",
                                 "logs:CreateLogStream",
+                                "logs:DescribeLogStreams",
+                                "logs:GetLogEvents",
                                 "logs:PutLogEvents"
                               ],
                               "Effect": "Allow",
-                              "Resource": {
-                                "Fn::GetAtt": [
-                                  "BalanceTestS3LambdaTriggerLogs612C9428",
-                                  "Arn"
-                                ]
-                              }
+                              "Resource": [
+                                "arn:aws:logs:ca-central-1:684904187051:log-group:/aws/sagemaker/*",
+                                {
+                                  "Fn::GetAtt": [
+                                    "BalanceTestS3LambdaTriggerLogs612C9428",
+                                    "Arn"
+                                  ]
+                                }
+                              ]
                             },
                             {
                               "Action": "secretsmanager:GetSecretValue",
@@ -3849,6 +4037,14 @@
                             },
                             {
                               "Action": [
+                                "sagemaker:AddTags",
+                                "sagemaker:CreateEndpoint",
+                                "sagemaker:CreateEndpointConfig",
+                                "sagemaker:CreateModel",
+                                "sagemaker:CreateTrainingJob",
+                                "sagemaker:DescribeEndpoint",
+                                "sagemaker:DescribeEndpointConfig",
+                                "sagemaker:DescribeTrainingJob",
                                 "ssm:DescribeParameters",
                                 "ssm:GetParameter",
                                 "ssm:GetParameters",
@@ -3860,7 +4056,7 @@
                             {
                               "Action": "sagemaker:InvokeEndpoint",
                               "Effect": "Allow",
-                              "Resource": "arn:aws:sagemaker:ca-central-1:684904187051:endpoint/mme-balance-test"
+                              "Resource": "arn:aws:sagemaker:ca-central-1:684904187051:endpoint/balance-test-multimodel"
                             },
                             {
                               "Action": [
@@ -3870,18 +4066,44 @@
                                 "s3:PutObjectTagging"
                               ],
                               "Effect": "Allow",
-                              "Resource": {
-                                "Fn::Join": [
-                                  "",
-                                  [
-                                    {
-                                      "Fn::GetAtt": [
-                                        "balancetestsagemakerbucketDBA07684",
-                                        "Arn"
-                                      ]
-                                    },
-                                    "/*"
+                              "Resource": [
+                                {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      {
+                                        "Fn::GetAtt": [
+                                          "balancetestrawdatastoragebucket32387F9E",
+                                          "Arn"
+                                        ]
+                                      },
+                                      "/*"
+                                    ]
                                   ]
+                                },
+                                {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      {
+                                        "Fn::GetAtt": [
+                                          "sagemakerbalancetestbucket025AA7CC",
+                                          "Arn"
+                                        ]
+                                      },
+                                      "/*"
+                                    ]
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              "Action": "iam:PassRole",
+                              "Effect": "Allow",
+                              "Resource": {
+                                "Fn::GetAtt": [
+                                  "BalanceTestSagemakerExecutionRoleFB4D45F7",
+                                  "Arn"
                                 ]
                               }
                             }
@@ -3942,7 +4164,7 @@
                   "aws:cdk:cloudformation:props": {
                     "code": {
                       "imageUri": {
-                        "Fn::Sub": "684904187051.dkr.ecr.ca-central-1.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-684904187051-ca-central-1:d8bf2897bcbf61da1697a23bcdebca9d9e1f2227a87ee925412079f98954ba3d"
+                        "Fn::Sub": "684904187051.dkr.ecr.ca-central-1.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-684904187051-ca-central-1:51b3e0a4e1f364d033598df6b363d7c45237888bde20bd091711250878ec8923"
                       }
                     },
                     "role": {
@@ -3953,7 +4175,8 @@
                     },
                     "environment": {
                       "variables": {
-                        "endpoint_name": "mme-balance-test",
+                        "endpoint_name": "balance-test-multimodel",
+                        "endpoint_parameter_name": "BalanceTest-Model-Endpoint-Param",
                         "dbname": "balancetest_postgresql_instance",
                         "host": {
                           "Fn::ImportValue": "DatabaseStack:ExportsOutputFnGetAttProxyCB0DFB71EndpointFB28556A"
@@ -4009,6 +4232,15 @@
                                 ]
                               }
                             ]
+                          ]
+                        },
+                        "sagemaker_bucket_name": {
+                          "Ref": "sagemakerbalancetestbucket025AA7CC"
+                        },
+                        "sagemaker_execution_role": {
+                          "Fn::GetAtt": [
+                            "BalanceTestSagemakerExecutionRoleFB4D45F7",
+                            "Arn"
                           ]
                         }
                       }
@@ -4416,7 +4648,7 @@
                     "environment": {
                       "variables": {
                         "S3_BUCKET_NAME": {
-                          "Ref": "balancetestdatastoragebucketD25B585E"
+                          "Ref": "balancetestrawdatastoragebucket32387F9E"
                         }
                       }
                     },
@@ -4557,7 +4789,7 @@
                                     [
                                       {
                                         "Fn::GetAtt": [
-                                          "balancetestdatastoragebucketD25B585E",
+                                          "balancetestrawdatastoragebucket32387F9E",
                                           "Arn"
                                         ]
                                       },
@@ -4571,7 +4803,7 @@
                                     [
                                       {
                                         "Fn::GetAtt": [
-                                          "balancetestdatastoragebucketD25B585E",
+                                          "balancetestrawdatastoragebucket32387F9E",
                                           "Arn"
                                         ]
                                       },
@@ -4665,7 +4897,7 @@
                     "environment": {
                       "variables": {
                         "S3_BUCKET_NAME": {
-                          "Ref": "balancetestdatastoragebucketD25B585E"
+                          "Ref": "balancetestrawdatastoragebucket32387F9E"
                         },
                         "IDENTITY_POOL_ID": {
                           "Ref": "BalanceTestCognitoIdentityPoolIdParameter"
@@ -4731,17 +4963,17 @@
             "id": "Exports",
             "path": "DataWorkflowStack/Exports",
             "children": {
-              "Output{\"Fn::GetAtt\":[\"balancetestdatastoragebucketD25B585E\",\"Arn\"]}": {
-                "id": "Output{\"Fn::GetAtt\":[\"balancetestdatastoragebucketD25B585E\",\"Arn\"]}",
-                "path": "DataWorkflowStack/Exports/Output{\"Fn::GetAtt\":[\"balancetestdatastoragebucketD25B585E\",\"Arn\"]}",
+              "Output{\"Fn::GetAtt\":[\"balancetestrawdatastoragebucket32387F9E\",\"Arn\"]}": {
+                "id": "Output{\"Fn::GetAtt\":[\"balancetestrawdatastoragebucket32387F9E\",\"Arn\"]}",
+                "path": "DataWorkflowStack/Exports/Output{\"Fn::GetAtt\":[\"balancetestrawdatastoragebucket32387F9E\",\"Arn\"]}",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnOutput",
                   "version": "2.69.0"
                 }
               },
-              "Output{\"Ref\":\"balancetestdatastoragebucketD25B585E\"}": {
-                "id": "Output{\"Ref\":\"balancetestdatastoragebucketD25B585E\"}",
-                "path": "DataWorkflowStack/Exports/Output{\"Ref\":\"balancetestdatastoragebucketD25B585E\"}",
+              "Output{\"Ref\":\"balancetestrawdatastoragebucket32387F9E\"}": {
+                "id": "Output{\"Ref\":\"balancetestrawdatastoragebucket32387F9E\"}",
+                "path": "DataWorkflowStack/Exports/Output{\"Ref\":\"balancetestrawdatastoragebucket32387F9E\"}",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnOutput",
                   "version": "2.69.0"
@@ -4873,7 +5105,7 @@
                                   "",
                                   [
                                     {
-                                      "Fn::ImportValue": "DataWorkflowStack:ExportsOutputFnGetAttbalancetestdatastoragebucketD25B585EArnFFCC6A0F"
+                                      "Fn::ImportValue": "DataWorkflowStack:ExportsOutputFnGetAttbalancetestrawdatastoragebucket32387F9EArn78AFEDF8"
                                     },
                                     "/parquet_data/patient_tests/*"
                                   ]
@@ -4920,7 +5152,7 @@
                           [
                             "s3://",
                             {
-                              "Fn::ImportValue": "DataWorkflowStack:ExportsOutputRefbalancetestdatastoragebucketD25B585E3C53CCB4"
+                              "Fn::ImportValue": "DataWorkflowStack:ExportsOutputRefbalancetestrawdatastoragebucket32387F9E58D66EFE"
                             },
                             "/parquet_data/patient_tests/"
                           ]
@@ -5156,7 +5388,7 @@
                     "environment": {
                       "variables": {
                         "S3_BUCKET_NAME": {
-                          "Fn::ImportValue": "DataWorkflowStack:ExportsOutputRefbalancetestdatastoragebucketD25B585E3C53CCB4"
+                          "Fn::ImportValue": "DataWorkflowStack:ExportsOutputRefbalancetestrawdatastoragebucket32387F9E58D66EFE"
                         },
                         "IDENTITY_POOL_ID": {
                           "Ref": "BalanceTestCognitoIdentityPoolIdParameter"

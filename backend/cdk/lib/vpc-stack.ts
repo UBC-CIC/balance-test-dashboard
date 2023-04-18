@@ -20,14 +20,12 @@ export class VPCStack extends Stack {
       this.destinationCidrStr = '13.0.0.0/16';
 
       const natGatewayProvider = ec2.NatProvider.gateway();
-      const natGatewayProvider = ec2.NatProvider.gateway();
       
       // Make VPC with NAT Gateway and S3 Endpoint
       this.vpc = new ec2.Vpc(this, vpcName, {
         vpcName: vpcName,
         ipAddresses: ec2.IpAddresses.cidr(this.cidrStr),
         maxAzs: 2,
-        natGatewayProvider: natGatewayProvider,
         natGatewayProvider: natGatewayProvider,
         natGateways: 1,
         subnetConfiguration: [
@@ -128,7 +126,6 @@ export class VPCStack extends Stack {
           destinationCidrBlock: this.destinationCidrStr,
           routeTableId,
 
-          natGatewayId: natGatewayProvider.configuredGateways[0].gatewayId
           natGatewayId: natGatewayProvider.configuredGateways[0].gatewayId
         })
       });

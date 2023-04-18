@@ -6,7 +6,6 @@ import { DataWorkflowStack } from '../lib/data-workflow-stack';
 import { VPCStack } from '../lib/vpc-stack';
 import { DatabaseStack } from '../lib/database-stack';
 import { AthenaGlueStack } from '../lib/athena-glue-stack';
-import { SagemakerStack } from '../lib/sagemaker-stack';
 import { AppsyncStack } from '../lib/appsync-resolvers-stack';
 
 const app = new cdk.App();

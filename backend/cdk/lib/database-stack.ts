@@ -102,7 +102,6 @@ export class DatabaseStack extends Stack {
 
         // database secret
         this.rdsCredentialSecret = new sm.Secret(this, 'Secret', {
-            secretName: 'postgresql-credentials',
             generateSecretString: {
                 secretStringTemplate: JSON.stringify({ username: 'postgres' }),
                 generateStringKey: 'password',
@@ -189,7 +188,8 @@ export class DatabaseStack extends Stack {
                 actions: [
                     "secretsmanager:GetSecretValue"
                 ],
-                resources:[`arn:aws:secretsmanager:${this.region}:${this.account}:secret:postgresql-credentials-??????`]
+                resources:[this.rdsCredentialSecret.secretArn]
+                // resources:[`arn:aws:secretsmanager:${this.region}:${this.account}:secret:postgresql-credentials-??????`]
                 }),
             ],
         });
@@ -221,12 +221,12 @@ export class DatabaseStack extends Stack {
             memorySize: 512,
             role: postgresqlRDSConnectLambdaRole,
             environment: {
-                "PGDATABASE": this.rdsInstanceName,
-                "PGHOST": this.proxy.endpoint,
-                "PG_SECRET_NAME": this.rdsCredentialSecret.secretName,
-                "PGUSER": this.rdsCredentialSecret.secretValueFromJson('username').unsafeUnwrap(),
+                "PGDATABASE": this.getDatabaseName(),
+                "PGHOST": this.getDatabaseProxyEndpoint(),
+                // "PGUSER": this.rdsCredentialSecret.secretValueFromJson('username').unsafeUnwrap(),
                 // "PGPASSWORD": this.rdsCredentialSecret.secretValueFromJson('password').unsafeUnwrap(),
-                "PGPORT": String(dbPort)
+                "PGPORT": String(dbPort),
+                'PG_SECRET_NAME': this.getDatabaseSecretName()
             },
             layers: [postgresqlRDSConnectLambdaLayer],
             vpc: vpcStack.vpc,
