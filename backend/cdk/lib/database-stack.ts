@@ -16,6 +16,7 @@ export class DatabaseStack extends Stack {
     private readonly rdsInstanceName: string;
     private readonly proxy: rds.DatabaseProxy;
     private readonly vpcSecurityGroup: ec2.SecurityGroup;
+    private readonly dbPort: number;
 
     constructor(scope: App, id: string, vpcStack: VPCStack, props?: StackProps) {
         super(scope, id, props);
@@ -25,10 +26,10 @@ export class DatabaseStack extends Stack {
         const postgresqlRDSConnectLambdaFileName = "postgresql-rds-connect";
         const postgresqlRDSConnectLambdaRoleName = "BalanceTest-postgresqlRDSConnectLambda-Role";
         const postgresqlRDSConnectLambdaLogGroupName = "BalanceTest-postgresqlRDSConnect-Logs";
-        const dbPort = 5432;
+        this.dbPort = 5432;
         const rdsMonitoringRoleName = 'balancetest-rds-monitoring-role';
 
-        const port = ec2.Port.tcp(dbPort);
+        const port = ec2.Port.tcp(this.dbPort);
 
 
         this.vpcSecurityGroup = new ec2.SecurityGroup(this, 'vpcSecurityGroup', {
@@ -138,7 +139,7 @@ export class DatabaseStack extends Stack {
             },
             credentials: {
                 username: this.rdsCredentialSecret.secretValueFromJson('username').unsafeUnwrap(),
-                // password: this.rdsCredentialSecret.secretValueFromJson('password')
+                password: this.rdsCredentialSecret.secretValueFromJson('password')
             },
             removalPolicy: RemovalPolicy.RETAIN,
             monitoringInterval: cdk.Duration.seconds(60),
@@ -160,7 +161,7 @@ export class DatabaseStack extends Stack {
         this.proxy.grantConnect(dbProxyRole, 'admin'); // Grant the role connection access to the DB Proxy for database user 'admin'.
         
         //TODO: check if we need this
-        // const port = ec2.Port.tcp(dbPort);
+        // const port = ec2.Port.tcp(this.dbPort);
         // rdsInstance.connections.securityGroups.forEach((securityGroup) => {
         //     securityGroup.addIngressRule(ec2.Peer.ipv4(vpcStack.cidrStr), port, "BalanceTest-RDS-Postgres-Ingress")
         // });
@@ -225,7 +226,7 @@ export class DatabaseStack extends Stack {
                 "PGHOST": this.getDatabaseProxyEndpoint(),
                 // "PGUSER": this.rdsCredentialSecret.secretValueFromJson('username').unsafeUnwrap(),
                 // "PGPASSWORD": this.rdsCredentialSecret.secretValueFromJson('password').unsafeUnwrap(),
-                "PGPORT": String(dbPort),
+                "PGPORT": String(this.dbPort),
                 'PG_SECRET_NAME': this.getDatabaseSecretName()
             },
             layers: [postgresqlRDSConnectLambdaLayer],
@@ -258,7 +259,11 @@ export class DatabaseStack extends Stack {
     }
     
     public getDatabaseSecurityGroup(): ec2.SecurityGroup {
-        return this.vpcSecurityGroup
+        return this.vpcSecurityGroup;
+    }
+
+    public getDatabasePort(): string {
+        return String(this.dbPort);
     }
 
 }

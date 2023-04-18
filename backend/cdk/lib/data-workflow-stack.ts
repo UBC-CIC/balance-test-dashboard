@@ -22,7 +22,7 @@ export class DataWorkflowStack extends Stack {
     constructor(scope: App, id: string, vpcStack: VPCStack, cognitoStack: CognitoStack, databaseStack: DatabaseStack, props: StackProps) {
       super(scope, id, props);
       
-      const balanceTestBucketName = 'balancetest-raw-datastorage-bucket'
+      // const balanceTestBucketName = 'balancetest-raw-datastorage-bucket'
       const balanceTestBucketAccessPointName = "balancetest-accesspt";
 
       //**MUST** have "sagemaker" as the **FIRST** word of the Sagemaker bucket name for training job output purposes
@@ -216,6 +216,7 @@ export class DataWorkflowStack extends Stack {
           endpoint_parameter_name: endpointNameParameterName,
           dbname: databaseStack.getDatabaseName(),
           host: databaseStack.getDatabaseProxyEndpoint(),
+          port: databaseStack.getDatabasePort(),
           rds_secret_name: databaseStack.getDatabaseSecretName(),
           sagemaker_bucket_name: sagemakerBucket.bucketName,
           sagemaker_execution_role: s3LambdaTriggerSagemakerRole.roleArn,
@@ -223,7 +224,7 @@ export class DataWorkflowStack extends Stack {
         functionName: s3LambdaTriggerName,
         memorySize: 512, //a lower size would not be able to run the whole code
         role: s3LambdaTriggerRole,
-        timeout: Duration.minutes(10), //TODO: change this to 15 min
+        timeout: Duration.minutes(10), //increase to 15 min (maximum) if needed
         retryAttempts: 0, 
         vpc: vpcStack.vpc,
         vpcSubnets: {

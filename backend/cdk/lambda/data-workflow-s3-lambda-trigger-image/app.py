@@ -151,7 +151,6 @@ def lambda_handler(event, context):
                 
                 else:
                     print("There are no models for this users. Make sure that this user has a trained model.")
-                    return
                 
             except Exception as e:
                 print(e)
@@ -557,11 +556,13 @@ def send_data_to_rds(data, user_id, test_event_id):
     # TODO: see if we want environment variables for host
     try:
         print("Starting connection to database.")
+        
         rds_pg_connection = psycopg2.connect(
             user=secret["username"],
             password=secret["password"],
             host=os.environ["host"],
-            dbname=os.environ["dbname"]
+            dbname=os.environ["dbname"],
+            port=os.environ["port"],
         )
         print("Successfully connected to database.")
 
@@ -574,7 +575,7 @@ def send_data_to_rds(data, user_id, test_event_id):
     print("Made cursor.")
 
     try:
-        # to change from a decimal to a percentage
+        # to change from a decimal (eg. 0.20) to a percentage (eg. 20)
         score = data["predictions"][0][0] * 100
         print("Adding score to the database.")
 
