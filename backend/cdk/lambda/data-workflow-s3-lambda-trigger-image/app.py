@@ -543,6 +543,7 @@ def send_data_to_rds(data, user_id, test_event_id):
 
     secrets_manager_client = boto3.client("secretsmanager")
 
+    # get database credentials from Secrets Manager
     try:
         response = secrets_manager_client.get_secret_value(SecretId=os.environ["rds_secret_name"])["SecretString"]  # TODO: add the secret id when deploying
         secret = json.loads(response)
@@ -553,7 +554,6 @@ def send_data_to_rds(data, user_id, test_event_id):
         print("Error getting the RDS secret from Secrets Manager.")
         raise e
 
-    # TODO: see if we want environment variables for host
     try:
         print("Starting connection to database.")
         
