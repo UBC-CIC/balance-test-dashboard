@@ -79,6 +79,7 @@ function PatientPage() {
   const fetchData = async () => {
     let sesh = await Auth.currentSession();
     let idtoken = sesh.idToken.jwtToken;
+    console.log(idtoken);
     // get analytics
     // console.log("62");
     let resWeeklyAvg = await API.graphql({

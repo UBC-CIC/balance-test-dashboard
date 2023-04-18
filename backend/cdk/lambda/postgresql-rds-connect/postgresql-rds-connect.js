@@ -14,11 +14,9 @@ let pool;
 const connectDb = async () => {
   let secret;
   try {
-    console.log("sm", sm);
     let secretResponse = await sm
       .getSecretValue({ SecretId: secret_name })
       .promise();
-    console.log("secretResponse", secretResponse);
     // let dbPassword = secretResponse.SecretString;
     secret = JSON.parse(secretResponse.SecretString);
   } catch (error) {
@@ -41,7 +39,7 @@ const connectDb = async () => {
     console.log("pool connected");
     // await pool.end();
   } catch (error) {
-    console.log("err");
+    console.log("Error connecting to the database");
     console.log(error);
   }
 };
@@ -117,7 +115,7 @@ exports.handler = async (event, context) => {
     await connectDb();
     let createTablesRes = await pool.query(createTableSql);
   } catch (e) {
-    console.log("e", e);
+    // console.log("e", e);
     console.log("tables already created");
   }
   try {

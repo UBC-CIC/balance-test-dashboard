@@ -387,7 +387,7 @@ export default function TestEventsTable({
       authToken: idtoken,
     });
 
-    // console.log("restestevents", resTestEvents);
+    console.log("restestevents", resTestEvents);
     setRows(resTestEvents.data.getTestEvents);
   };
 

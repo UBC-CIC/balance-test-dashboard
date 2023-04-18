@@ -5,7 +5,7 @@ import os
 bucket = os.environ["S3_BUCKET_NAME"]
 identity_pool_id = os.environ["IDENTITY_POOL_ID"]
 user_pool_id = os.environ["USER_POOL_ID"]
-region = os.environ["REGION"]
+region = os.environ["AWS_REGION"]
 
 
 athena = boto3.client('athena')
@@ -50,6 +50,8 @@ def handler(event, context):
                       aws_session_token=aws_cred['SessionToken'])
     if ('s3key' in event['payload']):
         key = event['payload']['s3key']
+        # s3key: `parquet_data/patient_tests/user_id =${patient_id}/movement =${test_type}/year =${year}/month =${month}/day =${day}/test_event_id =${test_event_id}/test_event_${test_event_id}.parquet`,
+        key = insert_region(key, 'user_id=')
         measurement = event['payload']['measurement']
         sql = "SELECT ts, "+measurement+" FROM s3object s"
         res = s3.select_object_content(
@@ -175,3 +177,11 @@ def handler(event, context):
         #     OutputSerialization={'JSON': {}}
         # )
         # print('res3', res3)
+
+
+def insert_region(key, start):
+    index = key.find(start)
+    if (index != -1):
+        return key[:index+len(start)]+region+key[index+len(start):]
+    else:
+        return key

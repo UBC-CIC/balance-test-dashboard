@@ -101,7 +101,7 @@ export function ManageTests({
 
   React.useEffect(() => {
     console.log("103", movementTests);
-    retrieveAssignedTests(user_id, [])
+    retrieveAssignedTests(user_id, movementTests)
       .then((checkbox_obj) => {
         patientDataRowsArr[rowNum].assigned_test_num =
           Object.values(checkbox_obj).filter(Boolean).length;

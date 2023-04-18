@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Autocomplete from "@mui/material/Autocomplete";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
@@ -17,6 +17,7 @@ import {
   getAllPatients,
   getPatientAssignedTests,
   getTestEvents,
+  getAllAvailableTests,
 } from "../../graphql/queries";
 import {
   createPatient,
@@ -58,18 +59,18 @@ let searchPopOutData = [
 function createPatientInfoObj(first_name, last_name) {
   // console.log("New Patient Name: " + last_name + ', ' + first_name);
 
-  const newUserID = uuidv5(last_name + ', ' + first_name, uuidv4()); //make a uuid with a name and random uuid
+  const newUserID = uuidv5(last_name + ", " + first_name, uuidv4()); //make a uuid with a name and random uuid
 
   let newPatientObj = {};
   let movementsAssignedObj = initMovementsAssignedObj();
 
   newPatientObj = {
-      user_id: newUserID,
-      patient_name: last_name + ', ' + first_name,
-      assigned_test_num: 0,
-      last_movement_tested: '-',
-      last_test_score: '-',
-      movements_assigned: movementsAssignedObj,
+    user_id: newUserID,
+    patient_name: last_name + ", " + first_name,
+    assigned_test_num: 0,
+    last_movement_tested: "-",
+    last_test_score: "-",
+    movements_assigned: movementsAssignedObj,
   };
   return newPatientObj;
 }
@@ -123,7 +124,7 @@ async function retrievePatientInfo(patientName, userID) {
 
     // console.log("last score: ", balanceScore);
 
-    await retrieveAssignedTests(userID).then((checkbox_obj) => {
+    await retrieveAssignedTests(userID, []).then((checkbox_obj) => {
       newPatientObj = {
         patient_name: patientName,
         user_id: userID,
@@ -165,99 +166,142 @@ function SearchPatient(props) {
   const [inputName, setInputName] = React.useState("");
   const [inputInfo, setInputInfo] = React.useState({});
   const [addPatientDisabled, setAddPatientDisabled] = React.useState(true);
-  const { patientDataRowsArr, updatePatientDataRowsArr, setAddPatientModalOpen, searchPatientModalOpen, setSearchPatientModalOpen, searchData, careProviderId } = props;
-  
-  let currPatientNamesArr = patientDataRowsArr.map((patientDataRow) => (patientDataRow.patient_name));
-  let currUserIDArr = patientDataRowsArr.map((patientDataRow) => (patientDataRow.user_id));
+  const [availableTestsToAssign, setAvailableTestsToAssign] = useState([]);
+  const {
+    patientDataRowsArr,
+    updatePatientDataRowsArr,
+    setAddPatientModalOpen,
+    searchPatientModalOpen,
+    setSearchPatientModalOpen,
+    searchData,
+    careProviderId,
+  } = props;
+
+  let currPatientNamesArr = patientDataRowsArr.map(
+    (patientDataRow) => patientDataRow.patient_name
+  );
+  let currUserIDArr = patientDataRowsArr.map(
+    (patientDataRow) => patientDataRow.user_id
+  );
 
   // console.log("In SearchPatient: ", searchData);
 
   const handleCloseModal = () => {
-      setSearchPatientModalOpen(false)
-      setAddPatientModalOpen(false);
-      setAddPatientDisabled(true);
-      setInputName("");
-      setInputInfo({});
-  }
+    setSearchPatientModalOpen(false);
+    setAddPatientModalOpen(false);
+    setAddPatientDisabled(true);
+    setInputName("");
+    setInputInfo({});
+  };
 
   const handleOpenAddPatientModal = () => {
-      setInputName("");
-      setInputInfo({});
+    setInputName("");
+    setInputInfo({});
 
-      setAddPatientDisabled(true);
-      setAddPatientModalOpen(true);
-      setSearchPatientModalOpen(false);
-  }
+    setAddPatientDisabled(true);
+    setAddPatientModalOpen(true);
+    setSearchPatientModalOpen(false);
+  };
 
   const handlePatientNameInput = (event, value) => {
-      setInputName(value.patient_name);
-      setInputInfo(value);
-      setAddPatientDisabled(false);
-  }
+    setInputName(value.patient_name);
+    setInputInfo(value);
+    setAddPatientDisabled(false);
+  };
 
-  const handleAddPatientClick = () => {
-      handleCloseModal();
-      // console.log("Name: " + inputName);
-      // console.log("Input Info: " + inputInfo.patient_name + " " + inputInfo.user_id)
+  const handleAddPatientClick = async () => {
+    handleCloseModal();
+    // console.log("Name: " + inputName);
+    // console.log("Input Info: " + inputInfo.patient_name + " " + inputInfo.user_id)
+    let sesh = await Auth.currentSession();
+    let idtoken = sesh.idToken.jwtToken;
 
-      if (!(currPatientNamesArr.includes(inputName) && currUserIDArr.includes(inputInfo.user_id))) {
-          
-          retrievePatientInfo(inputInfo.patient_name, inputInfo.user_id).then((patientInfo) => {
-              
-              assignToCareprovider(careProviderId, inputInfo.user_id).then(() => {
-                  patientDataRowsArr.push(patientInfo);
-                  updatePatientDataRowsArr(patientDataRowsArr.slice());
-              })
-          });
-      }
-      
-      setAddPatientDisabled(true);
-      setInputName("");
-      setInputInfo({});
-  }
+    if (
+      !(
+        currPatientNamesArr.includes(inputName) &&
+        currUserIDArr.includes(inputInfo.user_id)
+      )
+    ) {
+      let responseAvailableTests = await API.graphql({
+        query: getAllAvailableTests,
+        authToken: idtoken,
+      });
+
+      console.log("responseAvailableTests", responseAvailableTests);
+      setAvailableTestsToAssign(
+        responseAvailableTests.data.getAllAvailableTests.map((t) => t.test_type)
+      );
+
+      retrievePatientInfo(
+        inputInfo.patient_name,
+        inputInfo.user_id,
+        availableTestsToAssign
+      ).then((patientInfo) => {
+        assignToCareprovider(careProviderId, inputInfo.user_id).then(() => {
+          patientDataRowsArr.push(patientInfo);
+          updatePatientDataRowsArr(patientDataRowsArr.slice());
+        });
+      });
+    }
+
+    setAddPatientDisabled(true);
+    setInputName("");
+    setInputInfo({});
+  };
 
   return (
-          
-      <Dialog open={searchPatientModalOpen} onClose={handleCloseModal} maxWidth='sm' fullWidth={true} transitionDuration={0}> 
-  
-          <DialogTitle>Search for Patient</DialogTitle>
-          <DialogContent>
-              <DialogContentText sx={{padding: '0 0 20px 0'}}>
-                  Search for an existing patient (format: "last_name, first_name") in the database.
-              </DialogContentText>
-                  {/* Modify the options property when there is actual retrieved data from AWS */}
-                  <Autocomplete
-                      autoSelect
-                      disableClearable
-                      noOptionsText='No Patients Listed'
-                      getOptionLabel={(option) => (option.patient_name + " (ID: " + option.user_id + ")")}
-                      options={searchData}
-                      onChange={handlePatientNameInput}
-                      ListboxProps={{style: {maxHeight: 200, overflow: 'auto' }}}
-                      renderInput={(params) => (
-                          <TextField 
-                              {...params}
-                              autoFocus
-                              id="patient_name"
-                              label="Patient Name"
-                              value={inputName}
-                              fullWidth
-                              variant="standard"
-                              InputProps={{
-                                  ...params.InputProps,
-                                  type: 'search'
-                              }}
-                          />
-                      )}
-                  />
-          </DialogContent>
-          <DialogActions>
-              <Button onClick={handleOpenAddPatientModal}>Manually Add New Patient</Button>
-              <Button onClick={handleCloseModal}>Cancel</Button>
-              <Button disabled={addPatientDisabled} onClick={handleAddPatientClick}>Add Selected Patient</Button> 
-              {/* Modify the onClick function later for Add Patient button */}
-          </DialogActions>
-      </Dialog>
+    <Dialog
+      open={searchPatientModalOpen}
+      onClose={handleCloseModal}
+      maxWidth="sm"
+      fullWidth={true}
+      transitionDuration={0}
+    >
+      <DialogTitle>Search for Patient</DialogTitle>
+      <DialogContent>
+        <DialogContentText sx={{ padding: "0 0 20px 0" }}>
+          Search for an existing patient (format: "last_name, first_name") in
+          the database.
+        </DialogContentText>
+        {/* Modify the options property when there is actual retrieved data from AWS */}
+        <Autocomplete
+          autoSelect
+          disableClearable
+          noOptionsText="No Patients Listed"
+          getOptionLabel={(option) =>
+            option.patient_name + " (ID: " + option.user_id + ")"
+          }
+          options={searchData}
+          onChange={handlePatientNameInput}
+          ListboxProps={{ style: { maxHeight: 200, overflow: "auto" } }}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              autoFocus
+              id="patient_name"
+              label="Patient Name"
+              value={inputName}
+              fullWidth
+              variant="standard"
+              InputProps={{
+                ...params.InputProps,
+                type: "search",
+              }}
+            />
+          )}
+        />
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleOpenAddPatientModal}>
+          Manually Add New Patient
+        </Button>
+        <Button onClick={handleCloseModal}>Cancel</Button>
+        <Button disabled={addPatientDisabled} onClick={handleAddPatientClick}>
+          Add Selected Patient
+        </Button>
+        {/* Modify the onClick function later for Add Patient button */}
+      </DialogActions>
+    </Dialog>
   );
 }
 
@@ -307,34 +351,32 @@ function ManualAddPatient(props) {
   const handleOpenSearchPatientModal = () => {
     setInputFirstName("");
     setInputLastName("");
-    setSearchPatientModalOpen(true); 
+    setSearchPatientModalOpen(true);
     setAddPatientModalOpen(false);
     setAddPatientDisabled(true);
   };
 
   const handlePatientFirstNameInput = (event) => {
-    let textInput = event.target.value
+    let textInput = event.target.value;
     setInputFirstName(textInput);
 
     if (textInput.trim().length > 0 && inputLastName.trim().length > 0) {
-        setAddPatientDisabled(false);
-    
+      setAddPatientDisabled(false);
     } else {
-        setAddPatientDisabled(true);
+      setAddPatientDisabled(true);
     }
-  }
+  };
 
   const handlePatientLastNameInput = (event) => {
-      let textInput = event.target.value;
-      setInputLastName(textInput);
+    let textInput = event.target.value;
+    setInputLastName(textInput);
 
-      if (textInput.trim().length > 0 && inputFirstName.trim().length > 0) {
-          setAddPatientDisabled(false);
-      
-      } else {
-          setAddPatientDisabled(true);
-      }
-  }
+    if (textInput.trim().length > 0 && inputFirstName.trim().length > 0) {
+      setAddPatientDisabled(false);
+    } else {
+      setAddPatientDisabled(true);
+    }
+  };
 
   // Modify the onClick function later for Add Patient button
   const handleAddPatientClick = () => {
@@ -366,43 +408,50 @@ function ManualAddPatient(props) {
   };
 
   return (
-            
-    <Dialog open={addPatientModalOpen} onClose={handleCloseModal} maxWidth='sm' fullWidth={true} transitionDuration={0}> 
-    
-        <DialogTitle>Add a Patient</DialogTitle>
-        <DialogContent>
-            <DialogContentText sx={{padding: '0 0 20px 0'}}>
-                Manually add a new patient with <u>both</u> first and last name.
-            </DialogContentText>
-            <TextField 
-                autoFocus
-                id="new_patient_first_name"
-                label="New Patient First Name"
-                value={inputFirstName}
-                onChange={handlePatientFirstNameInput}
-                fullWidth
-                variant="standard"
-            />
-            <TextField 
-                autoFocus
-                id="new_patient_last_name"
-                label="New Patient Last Name"
-                value={inputLastName}
-                onChange={handlePatientLastNameInput}
-                fullWidth
-                variant="standard"
-                sx={{marginTop: 1, marginBottom: 1}}
-            />
-        </DialogContent>
+    <Dialog
+      open={addPatientModalOpen}
+      onClose={handleCloseModal}
+      maxWidth="sm"
+      fullWidth={true}
+      transitionDuration={0}
+    >
+      <DialogTitle>Add a Patient</DialogTitle>
+      <DialogContent>
+        <DialogContentText sx={{ padding: "0 0 20px 0" }}>
+          Manually add a new patient with <u>both</u> first and last name.
+        </DialogContentText>
+        <TextField
+          autoFocus
+          id="new_patient_first_name"
+          label="New Patient First Name"
+          value={inputFirstName}
+          onChange={handlePatientFirstNameInput}
+          fullWidth
+          variant="standard"
+        />
+        <TextField
+          autoFocus
+          id="new_patient_last_name"
+          label="New Patient Last Name"
+          value={inputLastName}
+          onChange={handlePatientLastNameInput}
+          fullWidth
+          variant="standard"
+          sx={{ marginTop: 1, marginBottom: 1 }}
+        />
+      </DialogContent>
 
-        <DialogActions>
-            <Button onClick={handleOpenSearchPatientModal}>Search for Patient</Button>
-            <Button onClick={handleCloseModal}>Cancel</Button>
-            <Button disabled={addPatientDisabled} onClick={handleAddPatientClick}>Add New Patient</Button> 
-        </DialogActions>
+      <DialogActions>
+        <Button onClick={handleOpenSearchPatientModal}>
+          Search for Patient
+        </Button>
+        <Button onClick={handleCloseModal}>Cancel</Button>
+        <Button disabled={addPatientDisabled} onClick={handleAddPatientClick}>
+          Add New Patient
+        </Button>
+      </DialogActions>
     </Dialog>
-    
-);
+  );
 }
 
 export default function AddPatientFullModal({
@@ -426,7 +475,10 @@ export default function AddPatientFullModal({
     let sesh = await Auth.currentSession();
     let idtoken = sesh.idToken.jwtToken;
 
-    let response = await API.graphql({ query: getAllPatients, authToken: idtoken });
+    let response = await API.graphql({
+      query: getAllPatients,
+      authToken: idtoken,
+    });
 
     // console.log("getAllPatients: ", response);
     let patientSearchRow = {};
@@ -436,7 +488,10 @@ export default function AddPatientFullModal({
     for (let i = 0; i < allPatientsArr.length; i++) {
       patientSearchRow = {
         user_id: allPatientsArr[i]["patient_id"],
-        patient_name: allPatientsArr[i]["last_name"] + ", " + allPatientsArr[i]["first_name"],
+        patient_name:
+          allPatientsArr[i]["last_name"] +
+          ", " +
+          allPatientsArr[i]["first_name"],
       };
       responseData.push(patientSearchRow);
     }

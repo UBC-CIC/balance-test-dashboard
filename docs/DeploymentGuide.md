@@ -1,6 +1,5 @@
 # Deployment Guide
 
-The `backend` folder contains AWS CDK stacks and AWS Lambda function code that will manage the data stores and corresponding interactions with the webapp.
 
 | Index                                                      | Description                                               |
 |:-----------------------------------------------------------|:----------------------------------------------------------| 
@@ -11,6 +10,8 @@ The `backend` folder contains AWS CDK stacks and AWS Lambda function code that w
 
 
 ## Step 1: Install Dependencies
+The `backend` folder contains AWS CDK stacks and AWS Lambda function code that will manage the data stores and corresponding interactions with the dashboard.
+
 First, run `cd backend` to ensure you are in the backend directory, then install the core dependencies:
 ```
 npm install

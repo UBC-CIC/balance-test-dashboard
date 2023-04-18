@@ -138,7 +138,7 @@ export class DatabaseStack extends Stack {
             },
             credentials: {
                 username: this.rdsCredentialSecret.secretValueFromJson('username').unsafeUnwrap(),
-                // password: this.rdsCredentialSecret.secretValueFromJson('password')
+                password: this.rdsCredentialSecret.secretValueFromJson('password')
             },
             removalPolicy: RemovalPolicy.RETAIN,
             monitoringInterval: cdk.Duration.seconds(60),

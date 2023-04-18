@@ -519,7 +519,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::684904187051:role/cdk-hnb659fds-deploy-role-684904187051-ca-central-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::684904187051:role/cdk-hnb659fds-cfn-exec-role-684904187051-ca-central-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/75e64a87a5447c183b4feb4ebad44ed7168553101541aeadf7a62dd5133e648d.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/9871286e969e2e16d689290d227231fd670b2a27a242026ee338e9892a695510.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -564,18 +564,6 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "balancetestpostgresqlinstanceSubnetGroupD97017C6"
-          }
-        ],
-        "/DatabaseStack/balancetest_postgresql_instance/Secret/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "balancetestpostgresqlinstanceSecret806A3114"
-          }
-        ],
-        "/DatabaseStack/balancetest_postgresql_instance/Secret/Attachment/Resource": [
-          {
-            "type": "aws:cdk:logicalId",
-            "data": "balancetestpostgresqlinstanceSecretAttachment3A14B604"
           }
         ],
         "/DatabaseStack/balancetest_postgresql_instance/Resource": [
