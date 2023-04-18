@@ -17,7 +17,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::684904187051:role/cdk-hnb659fds-deploy-role-684904187051-ca-central-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::684904187051:role/cdk-hnb659fds-cfn-exec-role-684904187051-ca-central-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/2d9642f73ebf246c6cd334b8ead2e9604ac1b5992f18f57e911c4c08b3a75a7f.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/d52b5f5c20b64efa3ccc273df13f451deb9084f3a426f45d95e9629dd26f2dac.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -322,7 +322,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::684904187051:role/cdk-hnb659fds-deploy-role-684904187051-ca-central-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::684904187051:role/cdk-hnb659fds-cfn-exec-role-684904187051-ca-central-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/c828b7c0ee7d21a67335e56c3ffdbd7ff2abe7dc79a655bf1988c30850495d73.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/ecb38ac937f1a24e14cbbc77a1268c58f245ce86a635eb40c45f6d5038675f34.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -519,7 +519,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::684904187051:role/cdk-hnb659fds-deploy-role-684904187051-ca-central-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::684904187051:role/cdk-hnb659fds-cfn-exec-role-684904187051-ca-central-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/4ed446437f568c435df7421796dd825a4eef05bb4b380ebda8ca85afd1f4cde9.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/75e64a87a5447c183b4feb4ebad44ed7168553101541aeadf7a62dd5133e648d.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -705,7 +705,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::684904187051:role/cdk-hnb659fds-deploy-role-684904187051-ca-central-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::684904187051:role/cdk-hnb659fds-cfn-exec-role-684904187051-ca-central-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/64a6888dccb4a83c002309a45968496229e66b2a1fa379ab2095b8a25ebdb8a5.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/e03f8cf43dc311a13163dc3f92d10cbf696901f584ef916b9d226376d9327d02.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -748,22 +748,40 @@
             "data": "balancetestaccesspt"
           }
         ],
-        "/DataWorkflowStack/balancetest-sagemaker-bucket/Resource": [
+        "/DataWorkflowStack/sagemaker-balancetest-bucket/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "balancetestsagemakerbucketDBA07684"
+            "data": "sagemakerbalancetestbucket025AA7CC"
           }
         ],
-        "/DataWorkflowStack/balancetest-sm-access": [
+        "/DataWorkflowStack/balancetest-sm-accesspt": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "balancetestsmaccess"
+            "data": "balancetestsmaccesspt"
+          }
+        ],
+        "/DataWorkflowStack/BalanceTest-Model-Endpoint-Param/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BalanceTestModelEndpointParamCB84AF84"
           }
         ],
         "/DataWorkflowStack/BalanceTest-S3LambdaTrigger-Logs/Resource": [
           {
             "type": "aws:cdk:logicalId",
             "data": "BalanceTestS3LambdaTriggerLogs612C9428"
+          }
+        ],
+        "/DataWorkflowStack/BalanceTest-SagemakerExecution-Logs/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BalanceTestSagemakerExecutionLogs9E5815F2"
+          }
+        ],
+        "/DataWorkflowStack/BalanceTest-Sagemaker-Execution-Role/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BalanceTestSagemakerExecutionRoleFB4D45F7"
           }
         ],
         "/DataWorkflowStack/BalanceTest-S3LambdaTrigger-Role/Resource": [

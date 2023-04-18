@@ -412,8 +412,11 @@ export function PatientsTable() {
   };
 
   async function fetchData() {
+    console.log("415");
     let sesh = await Auth.currentSession();
     let idtoken = sesh.idToken.jwtToken;
+    console.log("idtoken", idtoken);
+
     let data = [];
 
     let userCreds = await Auth.currentUserCredentials();

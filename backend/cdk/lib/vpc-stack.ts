@@ -125,6 +125,7 @@ export class VPCStack extends Stack {
         new ec2.CfnRoute(this, "Route-Private-" + index, {
           destinationCidrBlock: this.destinationCidrStr,
           routeTableId,
+
           natGatewayId: natGatewayProvider.configuredGateways[0].gatewayId
         })
       });

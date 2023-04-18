@@ -1,23 +1,17 @@
 import { App, Duration, RemovalPolicy, Stack, StackProps, triggers } from 'aws-cdk-lib';
-import * as appsync from "aws-cdk-lib/aws-appsync";
 import * as iam from "aws-cdk-lib/aws-iam";
 import * as lambda from "aws-cdk-lib/aws-lambda";
 import * as logs from "aws-cdk-lib/aws-logs";
-import * as ec2 from "aws-cdk-lib/aws-ec2";
 import * as ssm from "aws-cdk-lib/aws-ssm";
 import * as cognito from 'aws-cdk-lib/aws-cognito';
 import * as cdk from 'aws-cdk-lib';
-import { VPCStack } from './vpc-stack';
 import { balanceTestBucketName, DataWorkflowStack } from './data-workflow-stack';
-import { AthenaGlueStack } from './athena-glue-stack';
-import { DatabaseStack } from './database-stack';
-import * as console from "console";
 import { StringAttribute } from 'aws-cdk-lib/aws-cognito';
 
 export class CognitoStack extends Stack {
     public readonly UserPoolId: string;
 
-    constructor(scope: App, id: string, vpcstack: VPCStack, props?: StackProps) {
+    constructor(scope: App, id: string, props?: StackProps) {
         super(scope, id, props);
 
         const assignUserGroupFunction = new lambda.Function(this, 'AssignUserGroupFunction', {

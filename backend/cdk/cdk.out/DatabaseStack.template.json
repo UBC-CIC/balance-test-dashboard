@@ -476,6 +476,13 @@
            "Arn"
           ]
          }
+        },
+        {
+         "Action": "secretsmanager:GetSecretValue",
+         "Effect": "Allow",
+         "Resource": {
+          "Ref": "SecretA720EF05"
+         }
         }
        ],
        "Version": "2012-10-17"
@@ -515,7 +522,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-684904187051-ca-central-1",
-     "S3Key": "608826557f742b7aa16c86d19081e83b1578ab49f7b530638c669e4bf6a356e0.zip"
+     "S3Key": "28e6b256f236b8ed7152d332d6c35b3c06cd61d1f78e4d19d44507f3cc577959.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -532,7 +539,8 @@
         "Endpoint"
        ]
       },
-      "PG_SECRET_NAME": {
+      "PGPORT": "5432",
+      "SECRET_NAME": {
        "Fn::Join": [
         "-",
         [
@@ -584,32 +592,7 @@
          }
         ]
        ]
-      },
-      "PGUSER": {
-       "Fn::Join": [
-        "",
-        [
-         "{{resolve:secretsmanager:",
-         {
-          "Ref": "SecretA720EF05"
-         },
-         ":SecretString:username::}}"
-        ]
-       ]
-      },
-      "PGPASSWORD": {
-       "Fn::Join": [
-        "",
-        [
-         "{{resolve:secretsmanager:",
-         {
-          "Ref": "SecretA720EF05"
-         },
-         ":SecretString:password::}}"
-        ]
-       ]
-      },
-      "PGPORT": "5432"
+      }
      }
     },
     "FunctionName": "BalanceTest-postgresql-RDS-connect",
@@ -643,7 +626,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "DatabaseStack/BalanceTest-postgresql-RDS-connect/Resource",
-    "aws:asset:path": "asset.608826557f742b7aa16c86d19081e83b1578ab49f7b530638c669e4bf6a356e0",
+    "aws:asset:path": "asset.28e6b256f236b8ed7152d332d6c35b3c06cd61d1f78e4d19d44507f3cc577959",
     "aws:asset:is-bundled": false,
     "aws:asset:property": "Code"
    }

@@ -133,7 +133,7 @@
     "aws:cdk:path": "DataWorkflowStack/balancetest-accesspt"
    }
   },
-  "balancetestsagemakerbucketDBA07684": {
+  "sagemakerbalancetestbucket025AA7CC": {
    "Type": "AWS::S3::Bucket",
    "Properties": {
     "BucketEncryption": {
@@ -145,7 +145,7 @@
       }
      ]
     },
-    "BucketName": "balancetest-sagemaker-bucket",
+    "BucketName": "sagemaker-balancetest-bucket",
     "OwnershipControls": {
      "Rules": [
       {
@@ -166,17 +166,17 @@
    "UpdateReplacePolicy": "Retain",
    "DeletionPolicy": "Retain",
    "Metadata": {
-    "aws:cdk:path": "DataWorkflowStack/balancetest-sagemaker-bucket/Resource"
+    "aws:cdk:path": "DataWorkflowStack/sagemaker-balancetest-bucket/Resource"
    }
   },
-  "balancetestsmaccess": {
+  "balancetestsmaccesspt": {
    "Type": "AWS::S3::AccessPoint",
    "Properties": {
     "Bucket": {
-     "Ref": "balancetestsagemakerbucketDBA07684"
+     "Ref": "sagemakerbalancetestbucket025AA7CC"
     },
     "BucketAccountId": "684904187051",
-    "Name": "balancetest-sm-access",
+    "Name": "balancetest-sm-accesspt",
     "PublicAccessBlockConfiguration": {
      "BlockPublicAcls": true,
      "BlockPublicPolicy": true,
@@ -190,7 +190,18 @@
     }
    },
    "Metadata": {
-    "aws:cdk:path": "DataWorkflowStack/balancetest-sm-access"
+    "aws:cdk:path": "DataWorkflowStack/balancetest-sm-accesspt"
+   }
+  },
+  "BalanceTestModelEndpointParamCB84AF84": {
+   "Type": "AWS::SSM::Parameter",
+   "Properties": {
+    "Type": "String",
+    "Value": "empty!",
+    "Name": "BalanceTest-Model-Endpoint-Param"
+   },
+   "Metadata": {
+    "aws:cdk:path": "DataWorkflowStack/BalanceTest-Model-Endpoint-Param/Resource"
    }
   },
   "BalanceTestS3LambdaTriggerLogs612C9428": {
@@ -203,6 +214,118 @@
    "DeletionPolicy": "Delete",
    "Metadata": {
     "aws:cdk:path": "DataWorkflowStack/BalanceTest-S3LambdaTrigger-Logs/Resource"
+   }
+  },
+  "BalanceTestSagemakerExecutionLogs9E5815F2": {
+   "Type": "AWS::Logs::LogGroup",
+   "Properties": {
+    "LogGroupName": "/aws/sagemaker/BalanceTest-SagemakerExecution-Logs",
+    "RetentionInDays": 731
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "DataWorkflowStack/BalanceTest-SagemakerExecution-Logs/Resource"
+   }
+  },
+  "BalanceTestSagemakerExecutionRoleFB4D45F7": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "sagemaker.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Description": "Role gives access for executing Sagemaker functions.",
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/AmazonSageMakerFullAccess"
+       ]
+      ]
+     }
+    ],
+    "Policies": [
+     {
+      "PolicyDocument": {
+       "Statement": [
+        {
+         "Action": [
+          "s3:GetObject",
+          "s3:GetObjectTagging",
+          "s3:ListBucket",
+          "s3:PutObject",
+          "s3:PutObjectTagging"
+         ],
+         "Effect": "Allow",
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             {
+              "Fn::GetAtt": [
+               "balancetestrawdatastoragebucket32387F9E",
+               "Arn"
+              ]
+             },
+             "/*"
+            ]
+           ]
+          },
+          {
+           "Fn::Join": [
+            "",
+            [
+             {
+              "Fn::GetAtt": [
+               "sagemakerbalancetestbucket025AA7CC",
+               "Arn"
+              ]
+             },
+             "/*"
+            ]
+           ]
+          }
+         ]
+        },
+        {
+         "Action": [
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents"
+         ],
+         "Effect": "Allow",
+         "Resource": {
+          "Fn::GetAtt": [
+           "BalanceTestSagemakerExecutionLogs9E5815F2",
+           "Arn"
+          ]
+         }
+        }
+       ],
+       "Version": "2012-10-17"
+      },
+      "PolicyName": "BalanceTest-SagemakerExecutionPolicy"
+     }
+    ],
+    "RoleName": "BalanceTest-Sagemaker-Execution-Role"
+   },
+   "Metadata": {
+    "aws:cdk:path": "DataWorkflowStack/BalanceTest-Sagemaker-Execution-Role/Resource"
    }
   },
   "BalanceTestS3LambdaTriggerRole83B886E8": {
@@ -268,6 +391,12 @@
            ]
           },
           {
+           "Fn::GetAtt": [
+            "sagemakerbalancetestbucket025AA7CC",
+            "Arn"
+           ]
+          },
+          {
            "Fn::Join": [
             "",
             [
@@ -278,6 +407,20 @@
               ]
              },
              "/private/*"
+            ]
+           ]
+          },
+          {
+           "Fn::Join": [
+            "",
+            [
+             {
+              "Fn::GetAtt": [
+               "sagemakerbalancetestbucket025AA7CC",
+               "Arn"
+              ]
+             },
+             "/*"
             ]
            ]
           }
@@ -305,15 +448,20 @@
          "Action": [
           "logs:CreateLogGroup",
           "logs:CreateLogStream",
+          "logs:DescribeLogStreams",
+          "logs:GetLogEvents",
           "logs:PutLogEvents"
          ],
          "Effect": "Allow",
-         "Resource": {
-          "Fn::GetAtt": [
-           "BalanceTestS3LambdaTriggerLogs612C9428",
-           "Arn"
-          ]
-         }
+         "Resource": [
+          "arn:aws:logs:ca-central-1:684904187051:log-group:/aws/sagemaker/*",
+          {
+           "Fn::GetAtt": [
+            "BalanceTestS3LambdaTriggerLogs612C9428",
+            "Arn"
+           ]
+          }
+         ]
         },
         {
          "Action": "secretsmanager:GetSecretValue",
@@ -324,6 +472,14 @@
         },
         {
          "Action": [
+          "sagemaker:AddTags",
+          "sagemaker:CreateEndpoint",
+          "sagemaker:CreateEndpointConfig",
+          "sagemaker:CreateModel",
+          "sagemaker:CreateTrainingJob",
+          "sagemaker:DescribeEndpoint",
+          "sagemaker:DescribeEndpointConfig",
+          "sagemaker:DescribeTrainingJob",
           "ssm:DescribeParameters",
           "ssm:GetParameter",
           "ssm:GetParameters",
@@ -335,7 +491,7 @@
         {
          "Action": "sagemaker:InvokeEndpoint",
          "Effect": "Allow",
-         "Resource": "arn:aws:sagemaker:ca-central-1:684904187051:endpoint/mme-balance-test"
+         "Resource": "arn:aws:sagemaker:ca-central-1:684904187051:endpoint/balance-test-multimodel"
         },
         {
          "Action": [
@@ -345,18 +501,44 @@
           "s3:PutObjectTagging"
          ],
          "Effect": "Allow",
-         "Resource": {
-          "Fn::Join": [
-           "",
-           [
-            {
-             "Fn::GetAtt": [
-              "balancetestsagemakerbucketDBA07684",
-              "Arn"
-             ]
-            },
-            "/*"
+         "Resource": [
+          {
+           "Fn::Join": [
+            "",
+            [
+             {
+              "Fn::GetAtt": [
+               "balancetestrawdatastoragebucket32387F9E",
+               "Arn"
+              ]
+             },
+             "/*"
+            ]
            ]
+          },
+          {
+           "Fn::Join": [
+            "",
+            [
+             {
+              "Fn::GetAtt": [
+               "sagemakerbalancetestbucket025AA7CC",
+               "Arn"
+              ]
+             },
+             "/*"
+            ]
+           ]
+          }
+         ]
+        },
+        {
+         "Action": "iam:PassRole",
+         "Effect": "Allow",
+         "Resource": {
+          "Fn::GetAtt": [
+           "BalanceTestSagemakerExecutionRoleFB4D45F7",
+           "Arn"
           ]
          }
         }
@@ -377,7 +559,7 @@
    "Properties": {
     "Code": {
      "ImageUri": {
-      "Fn::Sub": "684904187051.dkr.ecr.ca-central-1.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-684904187051-ca-central-1:d8bf2897bcbf61da1697a23bcdebca9d9e1f2227a87ee925412079f98954ba3d"
+      "Fn::Sub": "684904187051.dkr.ecr.ca-central-1.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-684904187051-ca-central-1:51b3e0a4e1f364d033598df6b363d7c45237888bde20bd091711250878ec8923"
      }
     },
     "Role": {
@@ -388,7 +570,8 @@
     },
     "Environment": {
      "Variables": {
-      "endpoint_name": "mme-balance-test",
+      "endpoint_name": "balance-test-multimodel",
+      "endpoint_parameter_name": "BalanceTest-Model-Endpoint-Param",
       "dbname": "balancetest_postgresql_instance",
       "host": {
        "Fn::ImportValue": "DatabaseStack:ExportsOutputFnGetAttProxyCB0DFB71EndpointFB28556A"
@@ -445,6 +628,15 @@
          }
         ]
        ]
+      },
+      "sagemaker_bucket_name": {
+       "Ref": "sagemakerbalancetestbucket025AA7CC"
+      },
+      "sagemaker_execution_role": {
+       "Fn::GetAtt": [
+        "BalanceTestSagemakerExecutionRoleFB4D45F7",
+        "Arn"
+       ]
       }
      }
     },
@@ -476,7 +668,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "DataWorkflowStack/BalanceTest-data-workflow/Resource",
-    "aws:asset:path": "asset.d8bf2897bcbf61da1697a23bcdebca9d9e1f2227a87ee925412079f98954ba3d",
+    "aws:asset:path": "asset.51b3e0a4e1f364d033598df6b363d7c45237888bde20bd091711250878ec8923",
     "aws:asset:dockerfile-path": "Dockerfile",
     "aws:asset:property": "Code.ImageUri"
    }
@@ -905,7 +1097,7 @@
   "CDKMetadata": {
    "Type": "AWS::CDK::Metadata",
    "Properties": {
-    "Analytics": "v2:deflate64:H4sIAAAAAAAA/2WQT2vDMAzFP0vvrras0LFj/2yj0EPIYNfiOmpwE1vFcjKCyXefnbTdxk56+r1nIfkJli/wOJNfPFdlPW/0EcKHl6oWER0CLyCsW1WjF5uT/VErpZA5J229mOhaMg6ikeZYSggxkqMzmlmTFVuKCbczssK31iqfWEzc9WuH1u9sRzVuyJ50ldz/cC97dJ/o+Pr+T38bFnegiiHsqXp31F7G4FUPQksDoaAGEx5rTo1WfWonNQhU7iCZ0TP8WnyVSPKgwAux9uT6dLPgxS09RoZxMjK1TqG4i9GLH1tpO16XSycNenSDsFQinPmhy5aQPUM2O7PWc9darw1CMdVvvKKzQKgBAAA="
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/2VQTW/CMAz9LdzTbAyJaUdgH0LiUHXSriikJjJtYxSnnaqq/31JgO7r5Ofn56dnP8jlk7yfqU/OdFllNR7k8O6VrkSg9gMv5LBudQVebI72G620Buac0HpxYdeKYRS1ag6lkkOQ5OAaZEay4pmCwm0bZeC1tdpHLigm/NKB9VvbUQUbskc0cfqf3Kke3Ac4vu7/6m9mo2Bu4g0OrcmVUw14cFE+NSEmGZbDjsybo/acvK54FKjCekE1RDrVnGrUfbJIaBSg3V4xg2f547ZVZOJMFnAmRk+uj28RvLipk2RMzsDUOg1iAmkWfm9C8D95LZUgT3zXzZdy/ijnsxMjZq61HhuQxaV+ARLFx8DLAQAA"
    },
    "Metadata": {
     "aws:cdk:path": "DataWorkflowStack/CDKMetadata/Default"
