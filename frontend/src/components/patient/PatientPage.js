@@ -352,7 +352,7 @@ function PatientPage() {
                   },
                 }}
               >
-                <div color="gray">No score data available</div>
+                <Typography color="#D3D3D3">No score data available</Typography>
                 {/* <Typography variant="subtitle1">No data available</Typography> */}
               </Box>
             ) : (

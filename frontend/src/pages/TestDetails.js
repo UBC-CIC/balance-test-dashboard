@@ -22,7 +22,6 @@ import MenuItem from "@mui/material/MenuItem";
 import dayjs from "dayjs";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { GRAPHQL_AUTH_MODE } from "@aws-amplify/api";
-
 const {
   Amplify,
   API,
@@ -60,14 +59,22 @@ export function TestDetails() {
       //   Authorization: `prefix-${idtoken}`,
       // },
     });
+    console.log("patientparams", {
+      query: getPatientById,
+      variables: { patient_id: patient_id },
+      authToken: idtoken,
+    });
     let resPatient = await API.graphql({
       query: getPatientById,
       variables: { patient_id: patient_id },
       authToken: idtoken,
     });
-    setPatientName(
-      `${resPatient.data.getPatientById.last_name}, ${resPatient.data.getPatientById.first_name}`
-    );
+    console.log("respatient", resPatient);
+    if (resPatient.data.getPatientById) {
+      setPatientName(
+        `${resPatient.data.getPatientById.last_name}, ${resPatient.data.getPatientById.first_name}`
+      );
+    }
     let resTest = await API.graphql({
       query: getTestEventById,
       variables: {
@@ -80,7 +87,7 @@ export function TestDetails() {
     setTestEvent(resTest.data.getTestEventById);
   };
 
-  const fetchMeasurement = async () => {
+  const fetchMeasurement = async (measurement) => {
     let sesh = await Auth.currentSession();
     let idtoken = sesh.idToken.jwtToken;
 
@@ -95,13 +102,14 @@ export function TestDetails() {
         month: dayjs(testEvent.start_time).month() + 1,
         day: dayjs(testEvent.start_time).date(),
         patient_id: patient_id,
-        measurement: measurementSelected,
+        measurement: measurement,
       },
       // authMode: GRAPHQL_AUTH_MODE.AWS_LAMBDA,
       // authToken: `1`,
 
       authToken: `${idtoken}`,
     });
+    console.log("resmeasurement", resmeasurement);
     setMeasurementData(
       resmeasurement.data.getMeasurementData.ts.map((ts, i) => ({
         ts: ts,
@@ -114,13 +122,26 @@ export function TestDetails() {
   useEffect(() => {
     fetchData();
   }, []);
-
-  useEffect(() => {
-    fetchMeasurement();
-  }, [measurementSelected]);
+  let isFirstRender = true;
+  // useEffect(() => {
+  //   // console.log("121");
+  //   // if (isFirstRender) {
+  //   //   console.log("is first render");
+  //   //   fetchData();
+  //   //   isFirstRender = false;
+  //   //   return;
+  //   // } else {
+  //   if (testEvent) {
+  //     fetchMeasurement();
+  //   }
+  //   // }
+  // }, [measurementSelected]);
 
   const handleChange = (event) => {
     setMeasurementSelected(event.target.value);
+    if (testEvent) {
+      fetchMeasurement(event.target.value);
+    }
   };
 
   const handleDownload = async (e) => {

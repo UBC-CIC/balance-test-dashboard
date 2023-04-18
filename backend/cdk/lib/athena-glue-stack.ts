@@ -129,7 +129,7 @@ export class AthenaGlueStack extends Stack {
         functionName: athenaS3QueryLambdaName,
         handler: athenaS3QueryLambdaFileName + ".handler",
         code: lambda.Code.fromAsset("./lambda/" + athenaS3QueryLambdaFileName),
-        timeout: Duration.minutes(3),
+        timeout: Duration.seconds(15),
         memorySize: 512,
         role: athenaQueryS3Role,
         environment: {

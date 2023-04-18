@@ -10,6 +10,7 @@ import pandas as pd
 
 
 bucket = os.environ["S3_BUCKET_NAME"]
+region = os.environ["AWS_REGION"]
 
 s3_client = boto3.client('s3')
 
@@ -55,11 +56,12 @@ def lambda_handler(event, context):
         user_id, movement, year, month, day, test_event_id,  test_event_id2 = extract(
             template, key)
         # pdf_path = f'parquet_data/patient_tests/user_id={user_id}/movement={movement}/year={year}/month={month}/day={day}/test_event_id={test_event_id}/test_event_{test_event_id}.pdf'
-        pdf_path = f'private/{os.environ["AWS_REGION"]}:{user_id}/movement={movement}/year={year}/month={month}/day={day}/{test_event_id}.pdf'
-        csv_path = f'private/{os.environ["AWS_REGION"]}:{user_id}/movement={movement}/year={year}/month={month}/day={day}/{test_event_id}.csv'
+        parquet_path = f'parquet_data/patient_tests/user_id={os.environ["AWS_REGION"]}:{region}:{user_id}/movement={movement}/year={year}/month={month}/day={day}/{test_event_id}.parquet'
+        pdf_path = f'private/{os.environ["AWS_REGION"]}:{region}:{user_id}/movement={movement}/year={year}/month={month}/day={day}/{test_event_id}.pdf'
+        csv_path = f'private/{os.environ["AWS_REGION"]}:{region}:{user_id}/movement={movement}/year={year}/month={month}/day={day}/{test_event_id}.csv'
 
         # convert to csv and store in s3
-        raw = s3_client.get_object(Bucket=bucket, Key=key)
+        raw = s3_client.get_object(Bucket=bucket, Key=parquet_path)
         parquet = raw['Body'].read()
         df = pd.read_parquet(parquet)
         csv = df.to_csv()
