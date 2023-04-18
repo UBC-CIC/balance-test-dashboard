@@ -20,22 +20,24 @@ export class DataWorkflowStack extends Stack {
     private readonly deleteS3RecordLambda: lambda.Function;
 
     constructor(scope: App, id: string, vpcStack: VPCStack, cognitoStack: CognitoStack, databaseStack: DatabaseStack, props: StackProps) {
-    // constructor(scope: App, id: string, props: StackProps) {
       super(scope, id, props);
       
-      // const balanceTestBucketName = 'balancetest-datastorage-bucket'
+      const balanceTestBucketName = 'balancetest-raw-datastorage-bucket'
       const balanceTestBucketAccessPointName = "balancetest-accesspt";
-      const sagemakerBucketName ='balancetest-sagemaker-bucket';
-      const sagemakerBucketAccessPointName = 'balancetest-sm-access';
 
-      // const s3LambdaTriggerName = "BalanceTest-convert-json-to-parquet-and-csv";
-      // const s3LambdaTriggerFileName = "s3-trigger-convert-json-to-parquet-and-csv";
+      //**MUST** have "sagemaker" as the **FIRST** word of the Sagemaker bucket name for training job output purposes
+      const sagemakerBucketName ='sagemaker-balancetest-bucket';
+      const sagemakerBucketAccessPointName = 'balancetest-sm-accesspt';
+
       const s3LambdaTriggerName = "BalanceTest-data-workflow"
       const s3LambdaTriggerFolderName = "data-workflow-s3-lambda-trigger-image"
-      const logGroupName = "BalanceTest-S3LambdaTrigger-Logs";
       const s3LambdaTriggerRoleName = "BalanceTest-S3LambdaTrigger-Role";
-      // const endpointName = "balance-test-multimodel-endpoint"; // TODO: uncomment this
-      const endpointName = 'mme-balance-test';
+      const s3LambdaTriggerSagemakerRoleName = "BalanceTest-Sagemaker-Execution-Role"
+
+      const logGroupName = "BalanceTest-S3LambdaTrigger-Logs";
+      const sagemakerLogGroupName = "BalanceTest-SagemakerExecution-Logs";
+      const endpointNameParameterName = "BalanceTest-Model-Endpoint-Param" 
+      const endpointName = "balance-test-multimodel";
 
       const generateReportLambdaName = "BalanceTest-generate-report-for-download";
       const generateReportLambdaFileName = "generateReportForDownload";
@@ -67,14 +69,6 @@ export class DataWorkflowStack extends Stack {
         encryption: s3.BucketEncryption.S3_MANAGED,
         objectOwnership: s3.ObjectOwnership.BUCKET_OWNER_ENFORCED
       }); 
-
-      //TODO: change to secured StringParameter
-      // const balanceTestBucketName = ssm.StringParameter.fromStringParameterAttributes(this, "BalanceTestRecordingsBucketArn", {
-      //   parameterName: "S3BucketName"
-      // }).stringValue;
-
-      // get data storage bucket using bucket ARN
-      // this.balanceTestBucket = s3.Bucket.fromBucketArn(this, "balancetestrecordings160420-dev", "arn:aws:s3:::" + balanceTestBucketName);
 
       // add an access point for VPC
       const balanceTestBucketAccessPoint = new s3.CfnAccessPoint(this, balanceTestBucketAccessPointName, {
@@ -118,45 +112,48 @@ export class DataWorkflowStack extends Stack {
         }
       });
 
-
-      // let balanceTestIVPC = ec2.Vpc.fromLookup(this, "BalanceTest-iVPC", {
-      //   vpcId: vpcStack.vpc.vpcId
-      // });
-
-      // let vpcLambdaSubnetSelection = {
-      //   subnetType: ec2.SubnetType.PRIVATE_ISOLATED
-      // };
+      //make parameter for endpoint name using empty value in Parameter Store
+      const endpointNameParameter = new ssm.StringParameter(this, endpointNameParameterName, {
+        parameterName: endpointNameParameterName,
+        stringValue: 'empty!',
+      })
 
       let securityGroup = ec2.SecurityGroup.fromSecurityGroupId(this, 'vpcDefaultSecurityGroup', vpcStack.vpc.vpcDefaultSecurityGroup);
 
       //TODO: see if we need to delete logs when destroying stacks, or retain
-      // create log group
+      // create log groups
       const logGroup = new logs.LogGroup(this, logGroupName, {
         logGroupName: `/aws/lambda/${s3LambdaTriggerName}`,
         removalPolicy: RemovalPolicy.DESTROY
       });
 
-      //create policy document and role for Lambda trigger
-      // const s3LambdaTriggerPolicyDocument = new iam.PolicyDocument({
-      //   statements: [new iam.PolicyStatement({
-      //     actions: ["s3:GetObject"],
-      //     resources: [this.balanceTestBucket.bucketArn + "/private/*"]
+      const sagemakerLogGroup = new logs.LogGroup(this, sagemakerLogGroupName, {
+        logGroupName: `/aws/sagemaker/${sagemakerLogGroupName}`,
+        removalPolicy: RemovalPolicy.DESTROY
+      });
 
-      //   }), new iam.PolicyStatement ({
-      //     actions: ["logs:CreateLogStream", "logs:CreateLogGroup", "logs:PutLogEvents"],
-      //     resources: [logGroup.logGroupArn]
-          
-      //   }), new iam.PolicyStatement({
-      //     actions: ["s3:PutObject"],
-      //     resources: [this.balanceTestBucket.bucketArn + "/parquet_data/*"]
+      //TODO: make new Sagemaker role to add permissions to making training job, new endpoint, etc, here
+      //create policy document and role for Lambda trigger and Sagemaker training job
+      const s3LambdaTriggerSagemakerPolicyDocument = new iam.PolicyDocument({
+        statements: [new iam.PolicyStatement({
+          actions: ["s3:GetObject", "s3:PutObject", "s3:ListBucket", "s3:GetObjectTagging", "s3:PutObjectTagging"],
+          resources: [this.balanceTestBucket.bucketArn + "/*", sagemakerBucket.bucketArn + "/*"]
 
-      //   }), new iam.PolicyStatement({ //won't need if sagemaker is using a different Lambda
-      //     actions: ["s3:ListBucket"],
-      //     resources: [this.balanceTestBucket.bucketArn + "/private/*", this.balanceTestBucket.bucketArn]
-      //   })],
-      // });
+        }), new iam.PolicyStatement({
+          actions: ["logs:CreateLogStream", "logs:CreateLogGroup", "logs:PutLogEvents"],
+          resources: [sagemakerLogGroup.logGroupArn]
 
-      //TODO: make new Sagemaker role to add permissions to making training job, new endpoint, etc, here; or make a new policy and reference via arn within lambda
+        })],
+      });
+
+      const s3LambdaTriggerSagemakerRole = new iam.Role(this, s3LambdaTriggerSagemakerRoleName, {
+        assumedBy: new iam.ServicePrincipal("sagemaker.amazonaws.com"),
+        roleName: s3LambdaTriggerSagemakerRoleName,
+        description: "Role gives access for executing Sagemaker functions.",
+        inlinePolicies: { ["BalanceTest-SagemakerExecutionPolicy"]: s3LambdaTriggerSagemakerPolicyDocument },
+        managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName("AmazonSageMakerFullAccess")]
+      });
+
       const s3LambdaTriggerPolicyDocument = new iam.PolicyDocument({
         statements: [new iam.PolicyStatement({
             actions: ["s3:PutObject"],
@@ -164,15 +161,15 @@ export class DataWorkflowStack extends Stack {
   
         }), new iam.PolicyStatement({ 
             actions: ["s3:ListBucket"],
-            resources: [this.balanceTestBucket.bucketArn + "/private/*", this.balanceTestBucket.bucketArn]
+            resources: [this.balanceTestBucket.bucketArn + "/private/*", this.balanceTestBucket.bucketArn, sagemakerBucket.bucketArn, sagemakerBucket.bucketArn + "/*"]
 
         }), new iam.PolicyStatement({
             actions: ["s3:GetObject"],
             resources: [this.balanceTestBucket.bucketArn + "/private/*"]
 
         }), new iam.PolicyStatement({
-            actions: ["logs:CreateLogStream", "logs:CreateLogGroup", "logs:PutLogEvents"],
-            resources: [logGroup.logGroupArn]
+            actions: ["logs:CreateLogStream", "logs:CreateLogGroup", "logs:PutLogEvents", "logs:DescribeLogStreams", "logs:GetLogEvents"],
+            resources: [logGroup.logGroupArn, `arn:aws:logs:${region}:${account}:log-group:/aws/sagemaker/*`]
 
         }), new iam.PolicyStatement({
             actions: ["secretsmanager:GetSecretValue"],
@@ -188,11 +185,18 @@ export class DataWorkflowStack extends Stack {
 
         }), new iam.PolicyStatement({
           actions: ["s3:GetObject", "s3:PutObject", "s3:GetObjectTagging", "s3:PutObjectTagging"],
-          resources: [sagemakerBucket.bucketArn + "/*"]
+          resources: [sagemakerBucket.bucketArn + "/*", this.balanceTestBucket.bucketArn + "/*"] 
 
-        }),
-      
-        ]
+        }), new iam.PolicyStatement({
+          actions: ["sagemaker:CreateTrainingJob", "sagemaker:DescribeTrainingJob", "sagemaker:CreateModel", "sagemaker:CreateEndpointConfig", 
+                    "sagemaker:CreateEndpoint", "sagemaker:DescribeEndpoint", "sagemaker:DescribeEndpointConfig", "sagemaker:AddTags"],
+          resources: ["*"]
+
+        }), new iam.PolicyStatement({
+          actions: ["iam:PassRole"],
+          resources: [s3LambdaTriggerSagemakerRole.roleArn]
+
+        })]
       });
       
       const s3LambdaTriggerRole = new iam.Role(this, s3LambdaTriggerRoleName, {
@@ -209,9 +213,12 @@ export class DataWorkflowStack extends Stack {
         allowPublicSubnet: false,
         environment: {
           endpoint_name: endpointName,
+          endpoint_parameter_name: endpointNameParameterName,
           dbname: databaseStack.getDatabaseName(),
           host: databaseStack.getDatabaseProxyEndpoint(),
           rds_secret_name: databaseStack.getDatabaseSecretName(),
+          sagemaker_bucket_name: sagemakerBucket.bucketName,
+          sagemaker_execution_role: s3LambdaTriggerSagemakerRole.roleArn,
         },
         functionName: s3LambdaTriggerName,
         memorySize: 512, //a lower size would not be able to run the whole code
@@ -225,27 +232,7 @@ export class DataWorkflowStack extends Stack {
         securityGroups: [securityGroup, databaseStack.getDatabaseSecurityGroup()],
       });
 
-      // const jsonToParquetAndCsvTrigger = new lambda.Function(this, s3LambdaTriggerName, {
-      //   runtime: lambda.Runtime.PYTHON_3_9,
-      //   functionName: s3LambdaTriggerName,
-      //   handler: s3LambdaTriggerFileName + ".lambda_handler",
-      //   code: lambda.Code.fromAsset("./lambda/" + s3LambdaTriggerFileName),
-      //   timeout: Duration.minutes(3),
-      //   memorySize: 512,
-      //   role: s3LambdaTriggerRole,
-      //   vpc: vpcStack.vpc,
-      //   vpcSubnets: {
-      //       subnetType: ec2.SubnetType.PRIVATE_ISOLATED
-      //   },
-      //   securityGroups: [securityGroup],
-      // });
-
-      // for adding Pandas library to the function
-      // jsonToParquetAndCsvTrigger.addLayers(
-      //   lambda.LayerVersion.fromLayerVersionArn(this, 'AWSSDKPandas-Python39', 'arn:aws:lambda:ca-central-1:336392948345:layer:AWSSDKPandas-Python39:4')
-      // );
-
-      // set Lambda trigger for the S3 bucket
+      // set Lambda trigger for the S3 bucket; ENSURE that the PREFIX and SUFFIX are set to private/ and .json, respectively, or to other subfolders you want
       this.balanceTestBucket.addEventNotification(
         s3.EventType.OBJECT_CREATED,
         new s3notif.LambdaDestination(s3LambdaTrigger),
@@ -315,7 +302,7 @@ export class DataWorkflowStack extends Stack {
         removalPolicy: RemovalPolicy.DESTROY
       });
 
-      //TODO: add the correct restrictive permissions for S3
+      //TODO: add the correct restrictive permissions for lambda
       // make IAM role for Lambda that deletes files from S3
       const deleteS3RecordLambdaPolicyDocument = new iam.PolicyDocument({
         statements: [new iam.PolicyStatement({
