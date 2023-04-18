@@ -69,7 +69,8 @@
      "ExcludeCharacters": "\"@/\\",
      "GenerateStringKey": "password",
      "SecretStringTemplate": "{\"username\":\"postgres\"}"
-    }
+    },
+    "Name": "postgresql-credentials"
    },
    "UpdateReplacePolicy": "Delete",
    "DeletionPolicy": "Delete",
@@ -476,6 +477,11 @@
            "Arn"
           ]
          }
+        },
+        {
+         "Action": "secretsmanager:GetSecretValue",
+         "Effect": "Allow",
+         "Resource": "arn:aws:secretsmanager:ca-central-1:684904187051:secret:postgresql-credentials-??????"
         }
        ],
        "Version": "2012-10-17"
@@ -515,7 +521,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-684904187051-ca-central-1",
-     "S3Key": "608826557f742b7aa16c86d19081e83b1578ab49f7b530638c669e4bf6a356e0.zip"
+     "S3Key": "d4db39f119044708a269763715a91b893661ad46ef96a210357aad461c6b0158.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -597,18 +603,6 @@
         ]
        ]
       },
-      "PGPASSWORD": {
-       "Fn::Join": [
-        "",
-        [
-         "{{resolve:secretsmanager:",
-         {
-          "Ref": "SecretA720EF05"
-         },
-         ":SecretString:password::}}"
-        ]
-       ]
-      },
       "PGPORT": "5432"
      }
     },
@@ -643,7 +637,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "DatabaseStack/BalanceTest-postgresql-RDS-connect/Resource",
-    "aws:asset:path": "asset.608826557f742b7aa16c86d19081e83b1578ab49f7b530638c669e4bf6a356e0",
+    "aws:asset:path": "asset.d4db39f119044708a269763715a91b893661ad46ef96a210357aad461c6b0158",
     "aws:asset:is-bundled": false,
     "aws:asset:property": "Code"
    }

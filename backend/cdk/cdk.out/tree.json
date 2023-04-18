@@ -1305,7 +1305,10 @@
                 "routeTableId": {
                   "Ref": "balanceTestVPCprivatesubnetSubnet1RouteTable1BCA205D"
                 },
-                "destinationCidrBlock": "13.0.0.0/16"
+                "destinationCidrBlock": "13.0.0.0/16",
+                "natGatewayId": {
+                  "Ref": "balanceTestVPCpublicsubnetSubnet1NATGatewayE904A269"
+                }
               }
             },
             "constructInfo": {
@@ -1322,7 +1325,10 @@
                 "routeTableId": {
                   "Ref": "balanceTestVPCprivatesubnetSubnet2RouteTable0F00F62A"
                 },
-                "destinationCidrBlock": "13.0.0.0/16"
+                "destinationCidrBlock": "13.0.0.0/16",
+                "natGatewayId": {
+                  "Ref": "balanceTestVPCpublicsubnetSubnet1NATGatewayE904A269"
+                }
               }
             },
             "constructInfo": {
@@ -2150,7 +2156,7 @@
                               ],
                               "Effect": "Allow",
                               "Resource": [
-                                "arn:aws:s3:::balancetest-raw-datastorage-bucket/private/${cognito-identity.amazonaws.com:sub}/*",
+                                "arn:aws:s3:::balancetest-datastorage-bucket/private/${cognito-identity.amazonaws.com:sub}/*",
                                 "arn:aws:s3:::ca-central-1/parquet_data/patient_tests/user_id=${cognito-identity.amazonaws.com:sub}/*"
                               ]
                             },
@@ -2166,7 +2172,7 @@
                                 }
                               },
                               "Effect": "Allow",
-                              "Resource": "arn:aws:s3:::balancetest-raw-datastorage-bucket/*"
+                              "Resource": "arn:aws:s3:::balancetest-datastorage-bucket/*"
                             },
                             {
                               "Action": [
@@ -2512,7 +2518,8 @@
                       "secretStringTemplate": "{\"username\":\"postgres\"}",
                       "generateStringKey": "password",
                       "excludeCharacters": "\"@/\\"
-                    }
+                    },
+                    "name": "postgresql-credentials"
                   }
                 },
                 "constructInfo": {
@@ -3135,6 +3142,11 @@
                                   "Arn"
                                 ]
                               }
+                            },
+                            {
+                              "Action": "secretsmanager:GetSecretValue",
+                              "Effect": "Allow",
+                              "Resource": "arn:aws:secretsmanager:ca-central-1:684904187051:secret:postgresql-credentials-??????"
                             }
                           ],
                           "Version": "2012-10-17"
@@ -3258,7 +3270,7 @@
                   "aws:cdk:cloudformation:props": {
                     "code": {
                       "s3Bucket": "cdk-hnb659fds-assets-684904187051-ca-central-1",
-                      "s3Key": "608826557f742b7aa16c86d19081e83b1578ab49f7b530638c669e4bf6a356e0.zip"
+                      "s3Key": "d4db39f119044708a269763715a91b893661ad46ef96a210357aad461c6b0158.zip"
                     },
                     "role": {
                       "Fn::GetAtt": [
@@ -3337,18 +3349,6 @@
                                 "Ref": "SecretA720EF05"
                               },
                               ":SecretString:username::}}"
-                            ]
-                          ]
-                        },
-                        "PGPASSWORD": {
-                          "Fn::Join": [
-                            "",
-                            [
-                              "{{resolve:secretsmanager:",
-                              {
-                                "Ref": "SecretA720EF05"
-                              },
-                              ":SecretString:password::}}"
                             ]
                           ]
                         },
@@ -3479,13 +3479,13 @@
         "id": "DataWorkflowStack",
         "path": "DataWorkflowStack",
         "children": {
-          "balancetest-raw-datastorage-bucket": {
-            "id": "balancetest-raw-datastorage-bucket",
-            "path": "DataWorkflowStack/balancetest-raw-datastorage-bucket",
+          "balancetest-datastorage-bucket": {
+            "id": "balancetest-datastorage-bucket",
+            "path": "DataWorkflowStack/balancetest-datastorage-bucket",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "DataWorkflowStack/balancetest-raw-datastorage-bucket/Resource",
+                "path": "DataWorkflowStack/balancetest-datastorage-bucket/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
                   "aws:cdk:cloudformation:props": {
@@ -3498,7 +3498,7 @@
                         }
                       ]
                     },
-                    "bucketName": "balancetest-raw-datastorage-bucket",
+                    "bucketName": "balancetest-datastorage-bucket",
                     "ownershipControls": {
                       "rules": [
                         {
@@ -3524,11 +3524,11 @@
               },
               "Notifications": {
                 "id": "Notifications",
-                "path": "DataWorkflowStack/balancetest-raw-datastorage-bucket/Notifications",
+                "path": "DataWorkflowStack/balancetest-datastorage-bucket/Notifications",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "DataWorkflowStack/balancetest-raw-datastorage-bucket/Notifications/Resource",
+                    "path": "DataWorkflowStack/balancetest-datastorage-bucket/Notifications/Resource",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnResource",
                       "version": "2.69.0"
@@ -3542,7 +3542,7 @@
               },
               "AllowBucketNotificationsToDataWorkflowStackBalanceTestdataworkflow5A7205FF": {
                 "id": "AllowBucketNotificationsToDataWorkflowStackBalanceTestdataworkflow5A7205FF",
-                "path": "DataWorkflowStack/balancetest-raw-datastorage-bucket/AllowBucketNotificationsToDataWorkflowStackBalanceTestdataworkflow5A7205FF",
+                "path": "DataWorkflowStack/balancetest-datastorage-bucket/AllowBucketNotificationsToDataWorkflowStackBalanceTestdataworkflow5A7205FF",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
                   "aws:cdk:cloudformation:props": {
@@ -3557,7 +3557,7 @@
                     "sourceAccount": "684904187051",
                     "sourceArn": {
                       "Fn::GetAtt": [
-                        "balancetestrawdatastoragebucket32387F9E",
+                        "balancetestdatastoragebucketD25B585E",
                         "Arn"
                       ]
                     }
@@ -3581,7 +3581,7 @@
               "aws:cdk:cloudformation:type": "AWS::S3::AccessPoint",
               "aws:cdk:cloudformation:props": {
                 "bucket": {
-                  "Ref": "balancetestrawdatastoragebucket32387F9E"
+                  "Ref": "balancetestdatastoragebucketD25B585E"
                 },
                 "bucketAccountId": "684904187051",
                 "name": "balancetest-accesspt",
@@ -3773,7 +3773,7 @@
                                   [
                                     {
                                       "Fn::GetAtt": [
-                                        "balancetestrawdatastoragebucket32387F9E",
+                                        "balancetestdatastoragebucketD25B585E",
                                         "Arn"
                                       ]
                                     },
@@ -3788,7 +3788,7 @@
                               "Resource": [
                                 {
                                   "Fn::GetAtt": [
-                                    "balancetestrawdatastoragebucket32387F9E",
+                                    "balancetestdatastoragebucketD25B585E",
                                     "Arn"
                                   ]
                                 },
@@ -3798,7 +3798,7 @@
                                     [
                                       {
                                         "Fn::GetAtt": [
-                                          "balancetestrawdatastoragebucket32387F9E",
+                                          "balancetestdatastoragebucketD25B585E",
                                           "Arn"
                                         ]
                                       },
@@ -3817,7 +3817,7 @@
                                   [
                                     {
                                       "Fn::GetAtt": [
-                                        "balancetestrawdatastoragebucket32387F9E",
+                                        "balancetestdatastoragebucketD25B585E",
                                         "Arn"
                                       ]
                                     },
@@ -4416,7 +4416,7 @@
                     "environment": {
                       "variables": {
                         "S3_BUCKET_NAME": {
-                          "Ref": "balancetestrawdatastoragebucket32387F9E"
+                          "Ref": "balancetestdatastoragebucketD25B585E"
                         }
                       }
                     },
@@ -4557,7 +4557,7 @@
                                     [
                                       {
                                         "Fn::GetAtt": [
-                                          "balancetestrawdatastoragebucket32387F9E",
+                                          "balancetestdatastoragebucketD25B585E",
                                           "Arn"
                                         ]
                                       },
@@ -4571,7 +4571,7 @@
                                     [
                                       {
                                         "Fn::GetAtt": [
-                                          "balancetestrawdatastoragebucket32387F9E",
+                                          "balancetestdatastoragebucketD25B585E",
                                           "Arn"
                                         ]
                                       },
@@ -4665,7 +4665,7 @@
                     "environment": {
                       "variables": {
                         "S3_BUCKET_NAME": {
-                          "Ref": "balancetestrawdatastoragebucket32387F9E"
+                          "Ref": "balancetestdatastoragebucketD25B585E"
                         },
                         "IDENTITY_POOL_ID": {
                           "Ref": "BalanceTestCognitoIdentityPoolIdParameter"
@@ -4731,17 +4731,17 @@
             "id": "Exports",
             "path": "DataWorkflowStack/Exports",
             "children": {
-              "Output{\"Fn::GetAtt\":[\"balancetestrawdatastoragebucket32387F9E\",\"Arn\"]}": {
-                "id": "Output{\"Fn::GetAtt\":[\"balancetestrawdatastoragebucket32387F9E\",\"Arn\"]}",
-                "path": "DataWorkflowStack/Exports/Output{\"Fn::GetAtt\":[\"balancetestrawdatastoragebucket32387F9E\",\"Arn\"]}",
+              "Output{\"Fn::GetAtt\":[\"balancetestdatastoragebucketD25B585E\",\"Arn\"]}": {
+                "id": "Output{\"Fn::GetAtt\":[\"balancetestdatastoragebucketD25B585E\",\"Arn\"]}",
+                "path": "DataWorkflowStack/Exports/Output{\"Fn::GetAtt\":[\"balancetestdatastoragebucketD25B585E\",\"Arn\"]}",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnOutput",
                   "version": "2.69.0"
                 }
               },
-              "Output{\"Ref\":\"balancetestrawdatastoragebucket32387F9E\"}": {
-                "id": "Output{\"Ref\":\"balancetestrawdatastoragebucket32387F9E\"}",
-                "path": "DataWorkflowStack/Exports/Output{\"Ref\":\"balancetestrawdatastoragebucket32387F9E\"}",
+              "Output{\"Ref\":\"balancetestdatastoragebucketD25B585E\"}": {
+                "id": "Output{\"Ref\":\"balancetestdatastoragebucketD25B585E\"}",
+                "path": "DataWorkflowStack/Exports/Output{\"Ref\":\"balancetestdatastoragebucketD25B585E\"}",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnOutput",
                   "version": "2.69.0"
@@ -4873,7 +4873,7 @@
                                   "",
                                   [
                                     {
-                                      "Fn::ImportValue": "DataWorkflowStack:ExportsOutputFnGetAttbalancetestrawdatastoragebucket32387F9EArn78AFEDF8"
+                                      "Fn::ImportValue": "DataWorkflowStack:ExportsOutputFnGetAttbalancetestdatastoragebucketD25B585EArnFFCC6A0F"
                                     },
                                     "/parquet_data/patient_tests/*"
                                   ]
@@ -4920,7 +4920,7 @@
                           [
                             "s3://",
                             {
-                              "Fn::ImportValue": "DataWorkflowStack:ExportsOutputRefbalancetestrawdatastoragebucket32387F9E58D66EFE"
+                              "Fn::ImportValue": "DataWorkflowStack:ExportsOutputRefbalancetestdatastoragebucketD25B585E3C53CCB4"
                             },
                             "/parquet_data/patient_tests/"
                           ]
@@ -5156,7 +5156,7 @@
                     "environment": {
                       "variables": {
                         "S3_BUCKET_NAME": {
-                          "Fn::ImportValue": "DataWorkflowStack:ExportsOutputRefbalancetestrawdatastoragebucket32387F9E58D66EFE"
+                          "Fn::ImportValue": "DataWorkflowStack:ExportsOutputRefbalancetestdatastoragebucketD25B585E3C53CCB4"
                         },
                         "IDENTITY_POOL_ID": {
                           "Ref": "BalanceTestCognitoIdentityPoolIdParameter"

@@ -31,7 +31,7 @@ const vpcStack = new VPCStack(app, "VPCStack", {
     env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION }
 });
 
-const cognitoStack = new CognitoStack(app, "CognitoStack", vpcStack, {
+const cognitoStack = new CognitoStack(app, "CognitoStack", {
     env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION }
 });
 

@@ -102,6 +102,7 @@ export class DatabaseStack extends Stack {
 
         // database secret
         this.rdsCredentialSecret = new sm.Secret(this, 'Secret', {
+            secretName: 'postgresql-credentials',
             generateSecretString: {
                 secretStringTemplate: JSON.stringify({ username: 'postgres' }),
                 generateStringKey: 'password',
@@ -175,10 +176,22 @@ export class DatabaseStack extends Stack {
         //TODO: change permissions to restrictive ones, and remove managed policies
         // make IAM role for Lambda that generates a report
         const postgresqlRDSConnectLambdaPolicyDocument = new iam.PolicyDocument({
-            statements: [new iam.PolicyStatement({
-            actions: ["logs:CreateLogStream", "logs:CreateLogGroup", "logs:PutLogEvents"],
-            resources: [postgresqlRDSConnectLambdaLogGroup.logGroupArn]
-            })]
+            statements: [
+                new iam.PolicyStatement({
+                actions: [
+                    "logs:CreateLogStream",
+                    "logs:CreateLogGroup",
+                    "logs:PutLogEvents",
+                ],
+                resources: [postgresqlRDSConnectLambdaLogGroup.logGroupArn],
+                }),
+                new iam.PolicyStatement({
+                actions: [
+                    "secretsmanager:GetSecretValue"
+                ],
+                resources:[`arn:aws:secretsmanager:${this.region}:${this.account}:secret:postgresql-credentials-??????`]
+                }),
+            ],
         });
         const postgresqlRDSConnectLambdaRole = new iam.Role(this, postgresqlRDSConnectLambdaRoleName, {
             assumedBy: new iam.ServicePrincipal("lambda.amazonaws.com"),
@@ -212,7 +225,7 @@ export class DatabaseStack extends Stack {
                 "PGHOST": this.proxy.endpoint,
                 "PG_SECRET_NAME": this.rdsCredentialSecret.secretName,
                 "PGUSER": this.rdsCredentialSecret.secretValueFromJson('username').unsafeUnwrap(),
-                "PGPASSWORD": this.rdsCredentialSecret.secretValueFromJson('password').unsafeUnwrap(),
+                // "PGPASSWORD": this.rdsCredentialSecret.secretValueFromJson('password').unsafeUnwrap(),
                 "PGPORT": String(dbPort)
             },
             layers: [postgresqlRDSConnectLambdaLayer],

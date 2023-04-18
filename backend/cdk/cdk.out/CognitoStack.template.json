@@ -498,7 +498,7 @@
        ],
        "Effect": "Allow",
        "Resource": [
-        "arn:aws:s3:::balancetest-raw-datastorage-bucket/private/${cognito-identity.amazonaws.com:sub}/*",
+        "arn:aws:s3:::balancetest-datastorage-bucket/private/${cognito-identity.amazonaws.com:sub}/*",
         "arn:aws:s3:::ca-central-1/parquet_data/patient_tests/user_id=${cognito-identity.amazonaws.com:sub}/*"
        ]
       },
@@ -514,7 +514,7 @@
         }
        },
        "Effect": "Allow",
-       "Resource": "arn:aws:s3:::balancetest-raw-datastorage-bucket/*"
+       "Resource": "arn:aws:s3:::balancetest-datastorage-bucket/*"
       },
       {
        "Action": [

@@ -57,7 +57,7 @@
            "",
            [
             {
-             "Fn::ImportValue": "DataWorkflowStack:ExportsOutputFnGetAttbalancetestrawdatastoragebucket32387F9EArn78AFEDF8"
+             "Fn::ImportValue": "DataWorkflowStack:ExportsOutputFnGetAttbalancetestdatastoragebucketD25B585EArnFFCC6A0F"
             },
             "/parquet_data/patient_tests/*"
            ]
@@ -94,7 +94,7 @@
          [
           "s3://",
           {
-           "Fn::ImportValue": "DataWorkflowStack:ExportsOutputRefbalancetestrawdatastoragebucket32387F9E58D66EFE"
+           "Fn::ImportValue": "DataWorkflowStack:ExportsOutputRefbalancetestdatastoragebucketD25B585E3C53CCB4"
           },
           "/parquet_data/patient_tests/"
          ]
@@ -235,7 +235,7 @@
     "Environment": {
      "Variables": {
       "S3_BUCKET_NAME": {
-       "Fn::ImportValue": "DataWorkflowStack:ExportsOutputRefbalancetestrawdatastoragebucket32387F9E58D66EFE"
+       "Fn::ImportValue": "DataWorkflowStack:ExportsOutputRefbalancetestdatastoragebucketD25B585E3C53CCB4"
       },
       "IDENTITY_POOL_ID": {
        "Ref": "BalanceTestCognitoIdentityPoolIdParameter"

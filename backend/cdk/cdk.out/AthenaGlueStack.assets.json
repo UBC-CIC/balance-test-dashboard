@@ -15,7 +15,7 @@
         }
       }
     },
-    "6c2231d442b5f96d1a3566b87a78bf7d4d15e5b5a203fc8f5bd3e0f01fb2e2df": {
+    "20d7a324c6393f140a3120fa03b095698623c8893f7cf33f40d9547a601e0d83": {
       "source": {
         "path": "AthenaGlueStack.template.json",
         "packaging": "file"
@@ -23,7 +23,7 @@
       "destinations": {
         "684904187051-ca-central-1": {
           "bucketName": "cdk-hnb659fds-assets-684904187051-ca-central-1",
-          "objectKey": "6c2231d442b5f96d1a3566b87a78bf7d4d15e5b5a203fc8f5bd3e0f01fb2e2df.json",
+          "objectKey": "20d7a324c6393f140a3120fa03b095698623c8893f7cf33f40d9547a601e0d83.json",
           "region": "ca-central-1",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::684904187051:role/cdk-hnb659fds-file-publishing-role-684904187051-ca-central-1"
         }
