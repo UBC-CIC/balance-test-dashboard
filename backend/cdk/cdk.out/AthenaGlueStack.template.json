@@ -224,7 +224,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-684904187051-ca-central-1",
-     "S3Key": "43b3f1ea87293f07d6af31223060cc995bdb34641cac25d65335eb9da039c8a7.zip"
+     "S3Key": "52061f72988ed81bf44a49873a74c77cc39ec15884f7c007d8a6cdacf64e440e.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -242,7 +242,8 @@
       },
       "USER_POOL_ID": {
        "Fn::ImportValue": "CognitoStack:ExportsOutputRefBalanceTestUserPool005122174B1ED610"
-      }
+      },
+      "GLUE_DB_NAME": "balancetest-sensordata-gluedb"
      }
     },
     "FunctionName": "BalanceTest-query-S3",
@@ -271,7 +272,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "AthenaGlueStack/BalanceTest-query-S3/Resource",
-    "aws:asset:path": "asset.43b3f1ea87293f07d6af31223060cc995bdb34641cac25d65335eb9da039c8a7",
+    "aws:asset:path": "asset.52061f72988ed81bf44a49873a74c77cc39ec15884f7c007d8a6cdacf64e440e",
     "aws:asset:is-bundled": false,
     "aws:asset:property": "Code"
    }

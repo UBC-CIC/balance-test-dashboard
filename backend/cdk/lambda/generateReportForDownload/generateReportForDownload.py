@@ -57,7 +57,7 @@ def lambda_handler(event, context):
             template, key)
         # pdf_path = f'parquet_data/patient_tests/user_id={user_id}/movement={movement}/year={year}/month={month}/day={day}/test_event_id={test_event_id}/test_event_{test_event_id}.pdf'
         parquet_path = f'parquet_data/patient_tests/user_id={region}:{user_id}/movement={movement}/year={year}/month={month}/day={day}/test_event_id={test_event_id}/test_event_{test_event_id}.parquet'
-        pdf_path = f'private/{os.environ["AWS_REGION"]}:{region}:{user_id}/movement={movement}/year={year}/month={month}/day={day}/{test_event_id}.pdf'
+        pdf_path = f'private/{region}:{user_id}/movement={movement}/year={year}/month={month}/day={day}/{test_event_id}.pdf'
         # csv_path = f'private/{os.environ["AWS_REGION"]}:{region}:{user_id}/movement={movement}/year={year}/month={month}/day={day}/{test_event_id}.csv'
 
         # convert to csv and store in s3
