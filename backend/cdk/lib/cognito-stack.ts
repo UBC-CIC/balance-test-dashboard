@@ -61,7 +61,6 @@ export class CognitoStack extends Stack {
             },
             // todo: add mutable
             customAttributes: {
-                // 'joinedOn': new DateTimeAttribute(),
                 'user_type': new StringAttribute({mutable: true}),
                 'identity_id': new StringAttribute({mutable: true}),
             },

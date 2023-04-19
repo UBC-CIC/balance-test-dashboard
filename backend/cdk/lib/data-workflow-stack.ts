@@ -11,7 +11,7 @@ import { VPCStack } from './vpc-stack';
 import { CognitoStack } from './cognito-stack';
 import { DatabaseStack } from './database-stack';
 
-export const balanceTestBucketName = 'balancetest-raw-datastorage-bucket'
+export const balanceTestBucketName = 'balancetest-datastorage-bucket'
 export class DataWorkflowStack extends Stack {
 
     // private readonly balanceTestBucket: s3.Bucket;
