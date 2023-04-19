@@ -43,7 +43,7 @@
         }
       }
     },
-    "0b47e74fa0e7680a0540d2a98dac8806563376aafb14079dfa3c52ce24b73d13": {
+    "571d8cf4a35d3058f9c0eccf79024ac1c5bb5e66078f69262a75dd8d8544ef51": {
       "source": {
         "path": "DataWorkflowStack.template.json",
         "packaging": "file"
@@ -51,7 +51,7 @@
       "destinations": {
         "684904187051-ca-central-1": {
           "bucketName": "cdk-hnb659fds-assets-684904187051-ca-central-1",
-          "objectKey": "0b47e74fa0e7680a0540d2a98dac8806563376aafb14079dfa3c52ce24b73d13.json",
+          "objectKey": "571d8cf4a35d3058f9c0eccf79024ac1c5bb5e66078f69262a75dd8d8544ef51.json",
           "region": "ca-central-1",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::684904187051:role/cdk-hnb659fds-file-publishing-role-684904187051-ca-central-1"
         }

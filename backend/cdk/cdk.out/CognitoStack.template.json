@@ -213,6 +213,16 @@
       "Mutable": true,
       "Name": "given_name",
       "Required": true
+     },
+     {
+      "AttributeDataType": "String",
+      "Mutable": true,
+      "Name": "user_type"
+     },
+     {
+      "AttributeDataType": "String",
+      "Mutable": true,
+      "Name": "identity_id"
      }
     ],
     "SmsVerificationMessage": "The verification code to your new account is {####}",
@@ -490,8 +500,8 @@
        ],
        "Effect": "Allow",
        "Resource": [
-        "arn:aws:s3:::balancetest-raw-datastorage-bucket/parquet_data/patient_tests/user_id=${cognito-identity.amazonaws.com:sub}/*",
-        "arn:aws:s3:::balancetest-raw-datastorage-bucket/private/${cognito-identity.amazonaws.com:sub}/*"
+        "arn:aws:s3:::balancetest-datastorage-bucket/parquet_data/patient_tests/user_id=${cognito-identity.amazonaws.com:sub}/*",
+        "arn:aws:s3:::balancetest-datastorage-bucket/private/${cognito-identity.amazonaws.com:sub}/*"
        ]
       },
       {
@@ -506,7 +516,7 @@
         }
        },
        "Effect": "Allow",
-       "Resource": "arn:aws:s3:::balancetest-raw-datastorage-bucket/*"
+       "Resource": "arn:aws:s3:::balancetest-datastorage-bucket/*"
       },
       {
        "Action": [

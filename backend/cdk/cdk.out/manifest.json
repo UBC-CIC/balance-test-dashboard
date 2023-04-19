@@ -322,7 +322,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::684904187051:role/cdk-hnb659fds-deploy-role-684904187051-ca-central-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::684904187051:role/cdk-hnb659fds-cfn-exec-role-684904187051-ca-central-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/debe2b1597cca6ec39f6bd9eaae1b094836de937b286e12c3d0957a10873163c.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/923f6d8757ad296480cd5070c0593ed75931f8a380131a0d01354bc7b8daf084.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -717,7 +717,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::684904187051:role/cdk-hnb659fds-deploy-role-684904187051-ca-central-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::684904187051:role/cdk-hnb659fds-cfn-exec-role-684904187051-ca-central-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/0b47e74fa0e7680a0540d2a98dac8806563376aafb14079dfa3c52ce24b73d13.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/571d8cf4a35d3058f9c0eccf79024ac1c5bb5e66078f69262a75dd8d8544ef51.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -736,22 +736,22 @@
         "DataWorkflowStack.assets"
       ],
       "metadata": {
-        "/DataWorkflowStack/balancetest-raw-datastorage-bucket/Resource": [
+        "/DataWorkflowStack/balancetest-datastorage-bucket/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "balancetestrawdatastoragebucket32387F9E"
+            "data": "balancetestdatastoragebucketD25B585E"
           }
         ],
-        "/DataWorkflowStack/balancetest-raw-datastorage-bucket/Notifications/Resource": [
+        "/DataWorkflowStack/balancetest-datastorage-bucket/Notifications/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "balancetestrawdatastoragebucketNotifications7AECFDDC"
+            "data": "balancetestdatastoragebucketNotificationsC1B244D2"
           }
         ],
-        "/DataWorkflowStack/balancetest-raw-datastorage-bucket/AllowBucketNotificationsToDataWorkflowStackBalanceTestdataworkflow5A7205FF": [
+        "/DataWorkflowStack/balancetest-datastorage-bucket/AllowBucketNotificationsToDataWorkflowStackBalanceTestdataworkflow5A7205FF": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "balancetestrawdatastoragebucketAllowBucketNotificationsToDataWorkflowStackBalanceTestdataworkflow5A7205FFBF2677FC"
+            "data": "balancetestdatastoragebucketAllowBucketNotificationsToDataWorkflowStackBalanceTestdataworkflow5A7205FFEF284212"
           }
         ],
         "/DataWorkflowStack/balancetest-accesspt": [
@@ -886,16 +886,16 @@
             "data": "CDKMetadata"
           }
         ],
-        "/DataWorkflowStack/Exports/Output{\"Fn::GetAtt\":[\"balancetestrawdatastoragebucket32387F9E\",\"Arn\"]}": [
+        "/DataWorkflowStack/Exports/Output{\"Fn::GetAtt\":[\"balancetestdatastoragebucketD25B585E\",\"Arn\"]}": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputFnGetAttbalancetestrawdatastoragebucket32387F9EArn78AFEDF8"
+            "data": "ExportsOutputFnGetAttbalancetestdatastoragebucketD25B585EArnFFCC6A0F"
           }
         ],
-        "/DataWorkflowStack/Exports/Output{\"Ref\":\"balancetestrawdatastoragebucket32387F9E\"}": [
+        "/DataWorkflowStack/Exports/Output{\"Ref\":\"balancetestdatastoragebucketD25B585E\"}": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "ExportsOutputRefbalancetestrawdatastoragebucket32387F9E58D66EFE"
+            "data": "ExportsOutputRefbalancetestdatastoragebucketD25B585E3C53CCB4"
           }
         ],
         "/DataWorkflowStack/Exports/Output{\"Fn::GetAtt\":[\"BalanceTestgeneratereportfordownload0C388CF5\",\"Arn\"]}": [
@@ -941,7 +941,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::684904187051:role/cdk-hnb659fds-deploy-role-684904187051-ca-central-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::684904187051:role/cdk-hnb659fds-cfn-exec-role-684904187051-ca-central-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/bfe8b2dd7b571613f30da2f6aed6aa5841464869d95ded50502013d25fcc6311.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/f41b1e2f82aee2b402585c8e4002fa3d85c13f0a90b19aaba520dbb49e067812.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
