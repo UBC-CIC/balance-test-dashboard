@@ -1,17 +1,17 @@
 {
   "version": "31.0.0",
   "files": {
-    "d52b5f5c20b64efa3ccc273df13f451deb9084f3a426f45d95e9629dd26f2dac": {
+    "d58eff66c46bb281488b9aecf8c83697d9685077717f08bad6cd1afe7de9623e": {
       "source": {
         "path": "VPCStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "160092849934-ca-central-1": {
-          "bucketName": "cdk-hnb659fds-assets-160092849934-ca-central-1",
-          "objectKey": "d52b5f5c20b64efa3ccc273df13f451deb9084f3a426f45d95e9629dd26f2dac.json",
+        "684904187051-ca-central-1": {
+          "bucketName": "cdk-hnb659fds-assets-684904187051-ca-central-1",
+          "objectKey": "d58eff66c46bb281488b9aecf8c83697d9685077717f08bad6cd1afe7de9623e.json",
           "region": "ca-central-1",
-          "assumeRoleArn": "arn:${AWS::Partition}:iam::160092849934:role/cdk-hnb659fds-file-publishing-role-160092849934-ca-central-1"
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::684904187051:role/cdk-hnb659fds-file-publishing-role-684904187051-ca-central-1"
         }
       }
     }

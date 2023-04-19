@@ -81,6 +81,9 @@ def handler(event, context):
 
         return {"status": 200, "body": object_returned}
     elif ('athena_query' in event['payload']):
+        query_string = event['payload']['athena_query']
+        query_string = insert_region(query_string, "user_id='")
+
         res1 = athena.start_query_execution(
             QueryString=event['payload']['athena_query'],
             # ClientRequestToken='string',
@@ -182,6 +185,6 @@ def handler(event, context):
 def insert_region(key, start):
     index = key.find(start)
     if (index != -1):
-        return key[:index+len(start)]+region+key[index+len(start):]
+        return key[:index+len(start)]+region+':'+key[index+len(start):]
     else:
         return key

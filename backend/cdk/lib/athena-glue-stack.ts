@@ -19,6 +19,7 @@ export class AthenaGlueStack extends Stack {
     // constructor(scope: App, id: string, dataWorkflowStack: DataWorkflowStack, props: StackProps) {
       super(scope, id, props);
 
+      // if change the name of this, need to change the name in the resolver too
       const glueDbName = "balancetest-sensordata-gluedb";
       const glueSensorDataCrawlerS3Arn = dataWorkflowStack.getS3BucketArn() + "/parquet_data/patient_tests/*";
       const glueSensorDataCrawlerRoleName = "BalanceTest-SensorData-GlueCrawler-Role";

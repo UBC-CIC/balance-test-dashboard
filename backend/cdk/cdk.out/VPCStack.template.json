@@ -942,7 +942,7 @@
     "RouteTableId": {
      "Ref": "balanceTestVPCprivatesubnetSubnet1RouteTable1BCA205D"
     },
-    "DestinationCidrBlock": "13.0.0.0/16",
+    "DestinationCidrBlock": "0.0.0.0/0",
     "NatGatewayId": {
      "Ref": "balanceTestVPCpublicsubnetSubnet1NATGatewayE904A269"
     }
@@ -957,7 +957,7 @@
     "RouteTableId": {
      "Ref": "balanceTestVPCprivatesubnetSubnet2RouteTable0F00F62A"
     },
-    "DestinationCidrBlock": "13.0.0.0/16",
+    "DestinationCidrBlock": "0.0.0.0/0",
     "NatGatewayId": {
      "Ref": "balanceTestVPCpublicsubnetSubnet1NATGatewayE904A269"
     }

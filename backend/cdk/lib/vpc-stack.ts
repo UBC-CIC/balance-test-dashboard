@@ -123,19 +123,20 @@ export class VPCStack extends Stack {
 
       this.vpc.isolatedSubnets.forEach(({routeTable: { routeTableId }}, index) => {
         new ec2.CfnRoute(this, "Route-Private-" + index, {
-          destinationCidrBlock: this.destinationCidrStr,
+          destinationCidrBlock: '0.0.0.0/0',
+          // destinationCidrBlock: this.destinationCidrStr,
           routeTableId,
           natGatewayId: natGatewayProvider.configuredGateways[0].gatewayId
         })
       });
 
-      this.vpc.privateSubnets.forEach(({routeTable: { routeTableId }}, index) => {
-        new ec2.CfnRoute(this, "Route-Private-" + index, {
-          destinationCidrBlock: '0.0.0.0/0',
-          routeTableId,
-          natGatewayId: natGatewayProvider.configuredGateways[0].gatewayId
-        })
-      })
+      // this.vpc.privateSubnets.forEach(({routeTable: { routeTableId }}, index) => {
+      //   new ec2.CfnRoute(this, "Route-Private-Natgateway" + index, {
+      //     destinationCidrBlock: '0.0.0.0/0',
+      //     routeTableId,
+      //     natGatewayId: natGatewayProvider.configuredGateways[0].gatewayId
+      //   })
+      // })
     }
 
 }

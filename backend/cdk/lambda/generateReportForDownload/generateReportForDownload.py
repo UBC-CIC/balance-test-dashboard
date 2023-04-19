@@ -122,8 +122,13 @@ def lambda_handler(event, context):
             # json_list.append(json.loads(r))
             # data_in_array['ts'].append(datetime.strptime(
             #     (json.loads(r)['ts']), '%Y-%m-%d %H:%M:%S.%f %z'))
-            data_in_array['ts'].append(datetime.strptime(
-                (json.loads(r)['ts']), '%Y-%m-%d %H:%M:%S.%f %z'))
+            try:
+                data_in_array['ts'].append(datetime.strptime(
+                    (json.loads(r)['ts']), '%Y-%m-%d %H:%M:%S.%f %z'))
+            except:
+                data_in_array['ts'].append(datetime.strptime(
+                    (json.loads(r)['ts']), '%Y-%m-%d %H:%M:%S.%f'))
+
             data_in_array['ax'].append(float(json.loads(r)['ax']))
             data_in_array['ay'].append(float(json.loads(r)['ay']))
             data_in_array['az'].append(float(json.loads(r)['az']))

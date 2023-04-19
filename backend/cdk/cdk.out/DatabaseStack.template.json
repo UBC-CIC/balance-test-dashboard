@@ -305,7 +305,7 @@
        "Action": "sts:AssumeRole",
        "Effect": "Allow",
        "Principal": {
-        "AWS": "arn:aws:iam::160092849934:root"
+        "AWS": "arn:aws:iam::684904187051:root"
        }
       }
      ],
@@ -328,7 +328,7 @@
         "Fn::Join": [
          "",
          [
-          "arn:aws:rds-db:ca-central-1:160092849934:dbuser:",
+          "arn:aws:rds-db:ca-central-1:684904187051:dbuser:",
           {
            "Fn::Select": [
             6,
@@ -447,7 +447,7 @@
    "Type": "AWS::Lambda::LayerVersion",
    "Properties": {
     "Content": {
-     "S3Bucket": "cdk-hnb659fds-assets-160092849934-ca-central-1",
+     "S3Bucket": "cdk-hnb659fds-assets-684904187051-ca-central-1",
      "S3Key": "f59f4121318cb1f52308fa20490d34305bb91ed413a9ea3c763f3cfd22aced2c.zip"
     },
     "CompatibleRuntimes": [
@@ -468,7 +468,7 @@
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
-     "S3Bucket": "cdk-hnb659fds-assets-160092849934-ca-central-1",
+     "S3Bucket": "cdk-hnb659fds-assets-684904187051-ca-central-1",
      "S3Key": "7438ba5a3d88a35b577535969c1691c097c3be20a7ee844ef6fc099d313d6766.zip"
     },
     "Role": {

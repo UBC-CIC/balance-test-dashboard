@@ -1,4 +1,4 @@
-import { App, Duration, RemovalPolicy, Stack, StackProps, triggers } from 'aws-cdk-lib';
+import { App, CustomResource, Duration, RemovalPolicy, Stack, StackProps, triggers } from 'aws-cdk-lib';
 import * as iam from "aws-cdk-lib/aws-iam";
 import * as lambda from "aws-cdk-lib/aws-lambda";
 import * as logs from "aws-cdk-lib/aws-logs";
@@ -266,7 +266,7 @@ export class CognitoStack extends Stack {
                 "s3:GetObject",
                 "s3:DeleteObject"
             ],
-            resources: ['arn:aws:s3:::'+this.region+'/parquet_data/patient_tests/user_id=${cognito-identity.amazonaws.com:sub}/*',
+            resources: ['arn:aws:s3:::'+balanceTestBucketName+'/parquet_data/patient_tests/user_id=${cognito-identity.amazonaws.com:sub}/*',
                     'arn:aws:s3:::'+balanceTestBucketName+'/private/${cognito-identity.amazonaws.com:sub}/*'],
         }));
         authenticatedRole.addToPolicy(new iam.PolicyStatement({
@@ -301,10 +301,44 @@ export class CognitoStack extends Stack {
                 roles: {
                     unauthenticated: unauthenticatedRole.roleArn,
                     authenticated: authenticatedRole.roleArn
+                },
+                roleMappings:{
+                    
                 }
             }
         );
 
+
+        const createParameters = {
+        "IdentityPoolId": identityPool.ref,
+        "IdentityProviderName": userPool.userPoolProviderName,
+        "PrincipalTags": {
+            "user_type": "user_type"
+        },
+        "UseDefaults": false
+        }
+
+        const setPrincipalTagAction = {
+        action: "setPrincipalTagAttributeMap",
+        service: "CognitoIdentity",
+        parameters: createParameters,
+        physicalResourceId: cdk.custom_resources.PhysicalResourceId.of(identityPool.ref)
+        }
+
+
+        const identityPoolArn = `arn:aws:cognito-identity:${this.region}:${this.account}:identitypool/${identityPool.ref}`
+
+        // Creates a Custom resource (https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.custom_resources-readme.html)
+        // This is necessary to attach Principal Tag mappings to the Identity Pool after it has been created.
+        // This uses the SDK, rather than CDK code, as attaching Principal Tags through CDK is currently not supported yet
+        new cdk.custom_resources.AwsCustomResource(this, 'CustomResourcePrincipalTags', {
+        onCreate: setPrincipalTagAction,
+        onUpdate: setPrincipalTagAction,
+        policy: cdk.custom_resources.AwsCustomResourcePolicy.fromSdkCalls({
+            resources: [identityPoolArn],
+        }),
+        })
+        
         // outputs
         new cdk.CfnOutput(this, 'UserPoolId', {
             value: userPool.userPoolId

@@ -38,7 +38,7 @@
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
-     "S3Bucket": "cdk-hnb659fds-assets-160092849934-ca-central-1",
+     "S3Bucket": "cdk-hnb659fds-assets-684904187051-ca-central-1",
      "S3Key": "dbc9e2edad58d5f51f74309a40b5c2979058f8601a86ab45fe1a5382055ba03e.zip"
     },
     "Role": {
@@ -101,7 +101,7 @@
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
-     "S3Bucket": "cdk-hnb659fds-assets-160092849934-ca-central-1",
+     "S3Bucket": "cdk-hnb659fds-assets-684904187051-ca-central-1",
      "S3Key": "8bcd26854bfcb5f7e6d0ec7044edaa77e03fb9a5b8d3144444259947d3956861.zip"
     },
     "Role": {
@@ -261,7 +261,7 @@
          "Fn::Join": [
           "",
           [
-           "arn:aws:cognito-idp:ca-central-1:160092849934:userpool/",
+           "arn:aws:cognito-idp:ca-central-1:684904187051:userpool/",
            {
             "Ref": "BalanceTestUserPool00512217"
            }
@@ -303,7 +303,7 @@
          "Fn::Join": [
           "",
           [
-           "arn:aws:cognito-idp:ca-central-1:160092849934:userpool/",
+           "arn:aws:cognito-idp:ca-central-1:684904187051:userpool/",
            {
             "Ref": "BalanceTestUserPool00512217"
            }
@@ -498,8 +498,8 @@
        ],
        "Effect": "Allow",
        "Resource": [
-        "arn:aws:s3:::balancetest-datastorage-bucket/private/${cognito-identity.amazonaws.com:sub}/*",
-        "arn:aws:s3:::ca-central-1/parquet_data/patient_tests/user_id=${cognito-identity.amazonaws.com:sub}/*"
+        "arn:aws:s3:::balancetest-raw-datastorage-bucket/parquet_data/patient_tests/user_id=${cognito-identity.amazonaws.com:sub}/*",
+        "arn:aws:s3:::balancetest-raw-datastorage-bucket/private/${cognito-identity.amazonaws.com:sub}/*"
        ]
       },
       {
@@ -514,7 +514,7 @@
         }
        },
        "Effect": "Allow",
-       "Resource": "arn:aws:s3:::balancetest-datastorage-bucket/*"
+       "Resource": "arn:aws:s3:::balancetest-raw-datastorage-bucket/*"
       },
       {
        "Action": [
@@ -545,6 +545,7 @@
     "IdentityPoolId": {
      "Ref": "BalanceTestIdentityPool"
     },
+    "RoleMappings": {},
     "Roles": {
      "unauthenticated": {
       "Fn::GetAtt": [
@@ -562,6 +563,167 @@
    },
    "Metadata": {
     "aws:cdk:path": "CognitoStack/BalanceTestIdentityPoolRoleAttachment"
+   }
+  },
+  "CustomResourcePrincipalTagsCAFCAFEC": {
+   "Type": "Custom::AWS",
+   "Properties": {
+    "ServiceToken": {
+     "Fn::GetAtt": [
+      "AWS679f53fac002430cb0da5b7982bd22872D164C4C",
+      "Arn"
+     ]
+    },
+    "Create": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"action\":\"setPrincipalTagAttributeMap\",\"service\":\"CognitoIdentity\",\"parameters\":{\"IdentityPoolId\":\"",
+       {
+        "Ref": "BalanceTestIdentityPool"
+       },
+       "\",\"IdentityProviderName\":\"",
+       {
+        "Fn::GetAtt": [
+         "BalanceTestUserPool00512217",
+         "ProviderName"
+        ]
+       },
+       "\",\"PrincipalTags\":{\"user_type\":\"user_type\"},\"UseDefaults\":false},\"physicalResourceId\":{\"id\":\"",
+       {
+        "Ref": "BalanceTestIdentityPool"
+       },
+       "\"}}"
+      ]
+     ]
+    },
+    "Update": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"action\":\"setPrincipalTagAttributeMap\",\"service\":\"CognitoIdentity\",\"parameters\":{\"IdentityPoolId\":\"",
+       {
+        "Ref": "BalanceTestIdentityPool"
+       },
+       "\",\"IdentityProviderName\":\"",
+       {
+        "Fn::GetAtt": [
+         "BalanceTestUserPool00512217",
+         "ProviderName"
+        ]
+       },
+       "\",\"PrincipalTags\":{\"user_type\":\"user_type\"},\"UseDefaults\":false},\"physicalResourceId\":{\"id\":\"",
+       {
+        "Ref": "BalanceTestIdentityPool"
+       },
+       "\"}}"
+      ]
+     ]
+    },
+    "InstallLatestAwsSdk": false
+   },
+   "DependsOn": [
+    "CustomResourcePrincipalTagsCustomResourcePolicy0A3BA6CC"
+   ],
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "CognitoStack/CustomResourcePrincipalTags/Resource/Default"
+   }
+  },
+  "CustomResourcePrincipalTagsCustomResourcePolicy0A3BA6CC": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "cognito-identity:SetPrincipalTagAttributeMap",
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          "arn:aws:cognito-identity:ca-central-1:684904187051:identitypool/",
+          {
+           "Ref": "BalanceTestIdentityPool"
+          }
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "CustomResourcePrincipalTagsCustomResourcePolicy0A3BA6CC",
+    "Roles": [
+     {
+      "Ref": "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "CognitoStack/CustomResourcePrincipalTags/CustomResourcePolicy/Resource"
+   }
+  },
+  "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "CognitoStack/AWS679f53fac002430cb0da5b7982bd2287/ServiceRole/Resource"
+   }
+  },
+  "AWS679f53fac002430cb0da5b7982bd22872D164C4C": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-684904187051-ca-central-1",
+     "S3Key": "456cb0185a2fb74f65509142da5cecc43b25a8d960f32973e0a8f1ef6753606f.zip"
+    },
+    "Role": {
+     "Fn::GetAtt": [
+      "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2",
+      "Arn"
+     ]
+    },
+    "Handler": "index.handler",
+    "Runtime": "nodejs14.x",
+    "Timeout": 120
+   },
+   "DependsOn": [
+    "AWS679f53fac002430cb0da5b7982bd2287ServiceRoleC1EA0FF2"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "CognitoStack/AWS679f53fac002430cb0da5b7982bd2287/Resource",
+    "aws:asset:path": "asset.456cb0185a2fb74f65509142da5cecc43b25a8d960f32973e0a8f1ef6753606f",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code"
    }
   },
   "CognitoUserPoolIdE8BC6937": {
@@ -609,7 +771,7 @@
   "CDKMetadata": {
    "Type": "AWS::CDK::Metadata",
    "Properties": {
-    "Analytics": "v2:deflate64:H4sIAAAAAAAA/21Qy07DMBD8lt6dhYBUxLGtBOJEFMS5cp0l3caPymuDqsj/jm0UKQdO8/CsdtYPsH2G+4384UYNU6PpBPNHkGoS2TrOWprTIGF+iVYFclYcvuyad+gNMWeVBEkDc+80loeKndOkbjVXWRL8eJTMGBh2BbKGfVQThr1kFMqNloKD+ZPRd87pMvoff/UuXtfGQRPaUJy3IRMKt2VkrUupXcjXnU02cxs25VpPduyklwYD+tp2ESmJHtlFr1DUwvlrxpwuofcYrrGuXCJJWDcgXPjuu91C+wTt5sJEjY+5gUHo//AXb/xbwHMBAAA="
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/21QTUvDQBD9Lb1vRqNQ8dgGFE+GFM9huxnTbfaj7OxaSsh/dzbaEsTT+5gZeG8eYP0M9yt5pkJ1Q2H0HsZdlGoQbLWjkXbfSRhfklNReyeqT7fkNQaribLaadcbjP42n4SWFsbGG8yrM9beaHWZL2c2CXpsJRFGgk0G1rBNasC4lYRC+d7p6GH8IAy19yaf/sdfg0+npVEZjS5m561jouPlerLUOdQmct+DZZPTkM39A3epZZAWI4Y57VVMk2iQfAoKxRyYn9XztlCJordt+B1ynTNVs3fb/yv5Jwv+nuIpcQTnO4Qj3X2VayifoFwdSesiJM5sEZof/AZFv9A1twEAAA=="
    },
    "Metadata": {
     "aws:cdk:path": "CognitoStack/CDKMetadata/Default"
