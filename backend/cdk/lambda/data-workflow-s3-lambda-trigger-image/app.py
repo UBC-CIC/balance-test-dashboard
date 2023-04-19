@@ -261,7 +261,7 @@ def make_training_job_and_add_model(bucket, training_folder_path, model_location
         raise e
 
     # TODO: fix the conditionals to % 10, == 0, and >= 10
-    if (training_object_count % 5 == 0 and training_object_count >= 5):
+    if (training_object_count % 10 == 0 and training_object_count >= 10):
         print("There are enough training files.")
 
         try:
@@ -343,7 +343,7 @@ def make_training_job_and_endpoint(bucket, training_folder_path, model_location_
         raise e
     
     # TODO: fix the conditionals to % 10, == 0, and >= 10
-    if (training_object_count % 5 == 0 and training_object_count >= 5):
+    if (training_object_count % 10 == 0 and training_object_count >= 10):
         print("There are enough training files.")
 
         try:
