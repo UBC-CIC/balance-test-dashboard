@@ -1768,14 +1768,6 @@
                         "name": "given_name",
                         "mutable": true,
                         "required": true
-                      },
-                      {
-                        "name": "user_type",
-                        "attributeDataType": "String"
-                      },
-                      {
-                        "name": "identity_id",
-                        "attributeDataType": "String"
                       }
                     ],
                     "smsVerificationMessage": "The verification code to your new account is {####}",
@@ -4288,7 +4280,7 @@
                   "aws:cdk:cloudformation:props": {
                     "code": {
                       "imageUri": {
-                        "Fn::Sub": "684904187051.dkr.ecr.ca-central-1.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-684904187051-ca-central-1:9a9555cb137efd24351b87a9ae6b9a8f5d40e7adebde3b9b945e51c4983dcc7e"
+                        "Fn::Sub": "684904187051.dkr.ecr.ca-central-1.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-684904187051-ca-central-1:e917cc495bafab84c5ed957935606038f90adfa43110e6db9d979b4de62f55e5"
                       }
                     },
                     "role": {

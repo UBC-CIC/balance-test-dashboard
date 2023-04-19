@@ -43,7 +43,7 @@
         }
       }
     },
-    "4c8beb0c176b9f61691a1ec610f79f34283bf3be31e675fa971073d083b30203": {
+    "debe2b1597cca6ec39f6bd9eaae1b094836de937b286e12c3d0957a10873163c": {
       "source": {
         "path": "CognitoStack.template.json",
         "packaging": "file"
@@ -51,7 +51,7 @@
       "destinations": {
         "684904187051-ca-central-1": {
           "bucketName": "cdk-hnb659fds-assets-684904187051-ca-central-1",
-          "objectKey": "4c8beb0c176b9f61691a1ec610f79f34283bf3be31e675fa971073d083b30203.json",
+          "objectKey": "debe2b1597cca6ec39f6bd9eaae1b094836de937b286e12c3d0957a10873163c.json",
           "region": "ca-central-1",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::684904187051:role/cdk-hnb659fds-file-publishing-role-684904187051-ca-central-1"
         }

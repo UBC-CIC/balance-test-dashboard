@@ -559,7 +559,7 @@
    "Properties": {
     "Code": {
      "ImageUri": {
-      "Fn::Sub": "684904187051.dkr.ecr.ca-central-1.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-684904187051-ca-central-1:9a9555cb137efd24351b87a9ae6b9a8f5d40e7adebde3b9b945e51c4983dcc7e"
+      "Fn::Sub": "684904187051.dkr.ecr.ca-central-1.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-684904187051-ca-central-1:e917cc495bafab84c5ed957935606038f90adfa43110e6db9d979b4de62f55e5"
      }
     },
     "Role": {
@@ -669,7 +669,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "DataWorkflowStack/BalanceTest-data-workflow/Resource",
-    "aws:asset:path": "asset.9a9555cb137efd24351b87a9ae6b9a8f5d40e7adebde3b9b945e51c4983dcc7e",
+    "aws:asset:path": "asset.e917cc495bafab84c5ed957935606038f90adfa43110e6db9d979b4de62f55e5",
     "aws:asset:dockerfile-path": "Dockerfile",
     "aws:asset:property": "Code.ImageUri"
    }

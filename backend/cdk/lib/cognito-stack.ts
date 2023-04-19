@@ -59,10 +59,11 @@ export class CognitoStack extends Stack {
                     mutable: true
                 },
             },
+            // todo: add mutable
             customAttributes: {
                 // 'joinedOn': new DateTimeAttribute(),
-                'user_type': new StringAttribute(),
-                'identity_id': new StringAttribute(),
+                'user_type': new StringAttribute({mutable: true}),
+                'identity_id': new StringAttribute({mutable: true}),
             },
             accountRecovery: cognito.AccountRecovery.EMAIL_ONLY,
             lambdaTriggers: {
@@ -338,7 +339,7 @@ export class CognitoStack extends Stack {
             resources: [identityPoolArn],
         }),
         })
-        
+
         // outputs
         new cdk.CfnOutput(this, 'UserPoolId', {
             value: userPool.userPoolId

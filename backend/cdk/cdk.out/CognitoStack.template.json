@@ -213,14 +213,6 @@
       "Mutable": true,
       "Name": "given_name",
       "Required": true
-     },
-     {
-      "AttributeDataType": "String",
-      "Name": "user_type"
-     },
-     {
-      "AttributeDataType": "String",
-      "Name": "identity_id"
      }
     ],
     "SmsVerificationMessage": "The verification code to your new account is {####}",
