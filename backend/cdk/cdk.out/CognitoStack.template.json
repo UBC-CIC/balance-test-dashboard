@@ -38,7 +38,7 @@
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
-     "S3Bucket": "cdk-hnb659fds-assets-684904187051-ca-central-1",
+     "S3Bucket": "cdk-hnb659fds-assets-160092849934-ca-central-1",
      "S3Key": "dbc9e2edad58d5f51f74309a40b5c2979058f8601a86ab45fe1a5382055ba03e.zip"
     },
     "Role": {
@@ -101,7 +101,7 @@
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
-     "S3Bucket": "cdk-hnb659fds-assets-684904187051-ca-central-1",
+     "S3Bucket": "cdk-hnb659fds-assets-160092849934-ca-central-1",
      "S3Key": "8bcd26854bfcb5f7e6d0ec7044edaa77e03fb9a5b8d3144444259947d3956861.zip"
     },
     "Role": {
@@ -261,7 +261,7 @@
          "Fn::Join": [
           "",
           [
-           "arn:aws:cognito-idp:ca-central-1:684904187051:userpool/",
+           "arn:aws:cognito-idp:ca-central-1:160092849934:userpool/",
            {
             "Ref": "BalanceTestUserPool00512217"
            }
@@ -303,7 +303,7 @@
          "Fn::Join": [
           "",
           [
-           "arn:aws:cognito-idp:ca-central-1:684904187051:userpool/",
+           "arn:aws:cognito-idp:ca-central-1:160092849934:userpool/",
            {
             "Ref": "BalanceTestUserPool00512217"
            }

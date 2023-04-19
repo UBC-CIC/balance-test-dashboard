@@ -7,11 +7,11 @@
         "packaging": "zip"
       },
       "destinations": {
-        "684904187051-ca-central-1": {
-          "bucketName": "cdk-hnb659fds-assets-684904187051-ca-central-1",
+        "160092849934-ca-central-1": {
+          "bucketName": "cdk-hnb659fds-assets-160092849934-ca-central-1",
           "objectKey": "dbc9e2edad58d5f51f74309a40b5c2979058f8601a86ab45fe1a5382055ba03e.zip",
           "region": "ca-central-1",
-          "assumeRoleArn": "arn:${AWS::Partition}:iam::684904187051:role/cdk-hnb659fds-file-publishing-role-684904187051-ca-central-1"
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::160092849934:role/cdk-hnb659fds-file-publishing-role-160092849934-ca-central-1"
         }
       }
     },
@@ -21,25 +21,25 @@
         "packaging": "zip"
       },
       "destinations": {
-        "684904187051-ca-central-1": {
-          "bucketName": "cdk-hnb659fds-assets-684904187051-ca-central-1",
+        "160092849934-ca-central-1": {
+          "bucketName": "cdk-hnb659fds-assets-160092849934-ca-central-1",
           "objectKey": "8bcd26854bfcb5f7e6d0ec7044edaa77e03fb9a5b8d3144444259947d3956861.zip",
           "region": "ca-central-1",
-          "assumeRoleArn": "arn:${AWS::Partition}:iam::684904187051:role/cdk-hnb659fds-file-publishing-role-684904187051-ca-central-1"
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::160092849934:role/cdk-hnb659fds-file-publishing-role-160092849934-ca-central-1"
         }
       }
     },
-    "ecb38ac937f1a24e14cbbc77a1268c58f245ce86a635eb40c45f6d5038675f34": {
+    "407dd99d8f8117c4f9be779b105dc6778ad8b3a05511d8f0c48f91cf51088a54": {
       "source": {
         "path": "CognitoStack.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "684904187051-ca-central-1": {
-          "bucketName": "cdk-hnb659fds-assets-684904187051-ca-central-1",
-          "objectKey": "ecb38ac937f1a24e14cbbc77a1268c58f245ce86a635eb40c45f6d5038675f34.json",
+        "160092849934-ca-central-1": {
+          "bucketName": "cdk-hnb659fds-assets-160092849934-ca-central-1",
+          "objectKey": "407dd99d8f8117c4f9be779b105dc6778ad8b3a05511d8f0c48f91cf51088a54.json",
           "region": "ca-central-1",
-          "assumeRoleArn": "arn:${AWS::Partition}:iam::684904187051:role/cdk-hnb659fds-file-publishing-role-684904187051-ca-central-1"
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::160092849934:role/cdk-hnb659fds-file-publishing-role-160092849934-ca-central-1"
         }
       }
     }

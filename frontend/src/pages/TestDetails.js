@@ -149,6 +149,7 @@ export function TestDetails() {
     let idtoken = sesh.idToken.jwtToken;
 
     setDownloading(true);
+    console.log("patientid", patient_id);
     let resdownload = await API.graphql({
       query: downloadTestEventDetails,
       variables: {
@@ -232,7 +233,10 @@ export function TestDetails() {
                   {() => {
                     if (!testEvent) {
                       return "loading";
-                    } else if (!testEvent.balance_score) {
+                    } else if (
+                      !testEvent.balance_score &&
+                      !testEvent.doctor_score
+                    ) {
                       return "Calculating...";
                     } else {
                       return testEvent.balance_score;

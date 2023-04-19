@@ -6,7 +6,7 @@ from difflib import SequenceMatcher
 from datetime import datetime
 import matplotlib.pyplot as plt
 from fpdf import FPDF
-import pandas as pd
+# import pandas as pd
 
 
 bucket = os.environ["S3_BUCKET_NAME"]
@@ -56,21 +56,22 @@ def lambda_handler(event, context):
         user_id, movement, year, month, day, test_event_id,  test_event_id2 = extract(
             template, key)
         # pdf_path = f'parquet_data/patient_tests/user_id={user_id}/movement={movement}/year={year}/month={month}/day={day}/test_event_id={test_event_id}/test_event_{test_event_id}.pdf'
-        parquet_path = f'parquet_data/patient_tests/user_id={os.environ["AWS_REGION"]}:{region}:{user_id}/movement={movement}/year={year}/month={month}/day={day}/{test_event_id}.parquet'
+        parquet_path = f'parquet_data/patient_tests/user_id={region}:{user_id}/movement={movement}/year={year}/month={month}/day={day}/test_event_id={test_event_id}/test_event_{test_event_id}.parquet'
         pdf_path = f'private/{os.environ["AWS_REGION"]}:{region}:{user_id}/movement={movement}/year={year}/month={month}/day={day}/{test_event_id}.pdf'
-        csv_path = f'private/{os.environ["AWS_REGION"]}:{region}:{user_id}/movement={movement}/year={year}/month={month}/day={day}/{test_event_id}.csv'
+        # csv_path = f'private/{os.environ["AWS_REGION"]}:{region}:{user_id}/movement={movement}/year={year}/month={month}/day={day}/{test_event_id}.csv'
 
         # convert to csv and store in s3
+        print('parquet_path', parquet_path)
         raw = s3_client.get_object(Bucket=bucket, Key=parquet_path)
         parquet = raw['Body'].read()
-        df = pd.read_parquet(parquet)
-        csv = df.to_csv()
-        s3_client.put_object(Bucket=bucket, Key=csv_path)
+        # df = pd.read_parquet(parquet)
+        # csv = df.to_csv()
+        # s3_client.put_object(Bucket=bucket, Key=csv_path)
 
         raw_url = s3_client.generate_presigned_url(ClientMethod='get_object',
                                                    Params={
                                                        'Bucket': bucket,
-                                                       'Key': csv_path,
+                                                       'Key': parquet_path,
                                                        #    'ResponseContentDisposition': 'attachment;filename=file.csv',
                                                        #    'ResponseContentType': 'text/csv'
                                                    },
@@ -95,7 +96,7 @@ def lambda_handler(event, context):
         sql = "SELECT * FROM s3object s"
         res = s3_client.select_object_content(
             Bucket=bucket,
-            Key=key,
+            Key=parquet_path,
             ExpressionType='SQL',
             Expression=sql,
             InputSerialization={'Parquet': {}},
@@ -119,6 +120,8 @@ def lambda_handler(event, context):
         for r in records_list:
             json.loads(r)
             # json_list.append(json.loads(r))
+            # data_in_array['ts'].append(datetime.strptime(
+            #     (json.loads(r)['ts']), '%Y-%m-%d %H:%M:%S.%f %z'))
             data_in_array['ts'].append(datetime.strptime(
                 (json.loads(r)['ts']), '%Y-%m-%d %H:%M:%S.%f %z'))
             data_in_array['ax'].append(float(json.loads(r)['ax']))
