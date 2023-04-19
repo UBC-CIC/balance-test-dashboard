@@ -59,10 +59,21 @@ def lambda_handler(event, context):
 
     df_json_select = df_json[['ts', 'ax', 'ay', 'az', 'gx', 'gy', 'gz', 'mx', 'my', 'mz']]
 
-    path_general = "parquet_data/patient_tests" + "/user_id=" + region + ":" + str(user_id) + "/movement=" + movement_str + "/year=" + str(start_year) + "/month=" + str(start_month) + "/day=" + str(start_day) + "/test_event_id=" + str(test_event_id) + "/"
-    convert_json_to_parquet(df_json_select, bucket, path_general, test_event_id)
+    # to organize json data by training or not training
+    if (training_bool == True):
+        path_json = "json_data/patient_tests" + "/user_id=" + region + ":" + str(user_id) + "/movement=" + movement_str + "/training/"
 
-    endpoint_parameter_name = os.environ["endpoint_parameter_name"] #TODO: change this to endpoint_parameter_name
+    else:
+        path_json = "json_data/patient_tests" + "/user_id=" + region + ":" + str(user_id) + "/movement=" + movement_str + "/year=" + str(start_year) + "/month=" + str(start_month) + "/day=" + str(start_day) + "/test_event_id=" + str(test_event_id) + "/"
+
+    path_parquet = "parquet_data/patient_tests" + "/user_id=" + region + ":" + str(user_id) + "/movement=" + movement_str + "/year=" + str(start_year) + "/month=" + str(start_month) + "/day=" + str(start_day) + "/test_event_id=" + str(test_event_id) + "/"
+    path_csv = "csv_data/patient_tests" + "/user_id=" + region + ":" + str(user_id) + "/movement=" + movement_str + "/year=" + str(start_year) + "/month=" + str(start_month) + "/day=" + str(start_day) + "/test_event_id=" + str(test_event_id) + "/"
+    
+    copy_json_to_s3(bucket + "/" + key, bucket, path_json, test_event_id) # to ensure that the json data is organized by patients, and not include care providers
+    convert_json_to_parquet(df_json_select, bucket, path_parquet, test_event_id)
+    convert_json_to_csv(df_json_select, bucket, path_csv, test_event_id)
+    
+    endpoint_parameter_name = os.environ["endpoint_parameter_name"] 
     endpoint_parameter_value = ''
     endpoint_exists_bool = False
     sagemaker_bucket = os.environ["sagemaker_bucket_name"]
@@ -99,7 +110,7 @@ def lambda_handler(event, context):
 
     # Setting where the models and training job outputs should be saved
     model_location_prefix_key = f'saved_models/movement={movement_str}'
-    training_job_location_prefix_s3_uri = f's3://{sagemaker_bucket}/training_job_outputs/movement={movement_str}' # TODO: add a Sagemaker bucket; change the bucket argument
+    training_job_location_prefix_s3_uri = f's3://{sagemaker_bucket}/training_job_outputs/movement={movement_str}' 
 
     # Checking if an endpoint exists, and whether to make a training job or invoke an endpoint
     if (endpoint_exists_bool == False):
@@ -113,7 +124,7 @@ def lambda_handler(event, context):
         else:
             print("Need to send in a number of recordings with provided scores before testing with an actual model.")
 
-    elif (training_bool == True and endpoint_exists_bool == True):  # TODO: change to True after testing
+    elif (training_bool == True and endpoint_exists_bool == True): 
         print("Endpoint exists; checking if model training requirement is satisfied.")
 
         training_folder_path = os.path.split(key)[0] + "/"
@@ -207,7 +218,7 @@ def get_object_from_s3(bucket, key):
 
 
 """
-This functions takes a Pandas Dataframe, makes parquet file from it, and puts it into the specified bucket name at the specified path string
+This function takes a Pandas Dataframe, makes parquet file from it, and puts it into the specified bucket name at the specified path string
 
 
 dataframe: a Pandas Dataframe to convert to a parquet file
@@ -224,11 +235,62 @@ def convert_json_to_parquet(dataframe, bucket, output_s3_path, test_event_id):
 
     try:
         response_put = s3.put_object(Body=df_parquet, Bucket=bucket, Key=path_parquet)
-        print("Response, Put in S3 Bucket:", response_put)
+        print("Response, Put in S3 Bucket, for parquet file:", response_put)
 
     except Exception as e:
         print(e)
-        print('In file format conversion function. Error putting object into bucket {}. Make sure the object exists and your bucket is in the same region as this function.'.format(bucket))
+        print('In JSON to parquet file format conversion function. Error putting object into bucket {}. Make sure the object exists and your bucket is in the same region as this function.'.format(bucket))
+        raise e
+
+
+"""
+This function takes a Pandas Dataframe, makes csv file from it, and puts it into the specified bucket name at the specified path string
+
+
+dataframe: a Pandas Dataframe to convert to a csv file
+bucket: the string representing the bucket name
+output_s3_path: the string representing the path to the folder for storing in the bucket
+test_event_id: the string representing the test event id
+"""
+
+def convert_json_to_csv(dataframe, bucket, output_s3_path, test_event_id):
+    df_csv = dataframe.to_csv(index=False)
+
+    filename_csv = "test_event_" + str(test_event_id) + ".csv"
+    path_csv = output_s3_path + filename_csv
+
+    try:
+        response_put = s3.put_object(Body=df_csv, Bucket=bucket, Key=path_csv)
+        print("Response, Put in S3 Bucket, for csv file:", response_put)
+
+    except Exception as e:
+        print(e)
+        print('In JSON to CSV file format conversion function. Error putting object into bucket {}. Make sure the object exists and your bucket is in the same region as this function.'.format(bucket))
+        raise e
+
+
+"""
+This function gets the path of the json file, and copies it into the specified bucket name at the specified path string
+
+
+json_s3_path: the string representing the path of the json file to copy
+bucket: the string representing the bucket name
+output_s3_path: the string representing the path to the folder for storing in the bucket
+test_event_id: the string representing the test event id
+"""
+
+def copy_json_to_s3(json_s3_path, bucket, output_s3_path, test_event_id):
+    
+    json_file_name = "test_event_" + str(test_event_id) + ".json"
+    output_s3_path = output_s3_path + json_file_name
+
+    try:
+        copy_response = s3.copy_object(CopySource=json_s3_path, Bucket=bucket, Key=output_s3_path)
+        print("Copy: ", copy_response)
+        
+    except Exception as e:
+        print(e)
+        print('Error copying object into bucket {}. Make sure the object exists and your bucket is in the same region as this function.'.format(bucket))
         raise e
 
 
@@ -247,7 +309,7 @@ user_id: a string representing the id of the user that the model is being made f
 
 def make_training_job_and_add_model(bucket, training_folder_path, model_location_prefix_key, training_job_location_prefix_s3_uri, user_id):
     print("Check training requirement and make training job.")
-    sagemaker_bucket = os.environ['sagemaker_bucket_name'] # TODO: change relevant bucket arguments to sagemaker_bucket
+    sagemaker_bucket = os.environ['sagemaker_bucket_name'] 
 
     # list the training files in the training folder, get the data, send them to a training job, and add a model to an endpoint
     try:
@@ -260,7 +322,6 @@ def make_training_job_and_add_model(bucket, training_folder_path, model_location
         print('Error getting the number of training files at path {} from bucket {}.'.format(training_folder_path, bucket))
         raise e
 
-    # TODO: fix the conditionals to % 10, == 0, and >= 10
     if (training_object_count % 10 == 0 and training_object_count >= 10):
         print("There are enough training files.")
 
@@ -342,13 +403,11 @@ def make_training_job_and_endpoint(bucket, training_folder_path, model_location_
         print('Error getting the number of training files at path {} from bucket {}.'.format(training_folder_path, bucket))
         raise e
     
-    # TODO: fix the conditionals to % 10, == 0, and >= 10
     if (training_object_count % 10 == 0 and training_object_count >= 10):
         print("There are enough training files.")
 
         try:
             print("Getting execution role for Sagemaker.")
-            # role = get_execution_role() # TODO: remove later
             role = os.environ['sagemaker_execution_role']
             print("Finished getting execution role.")
 
@@ -545,7 +604,7 @@ def send_data_to_rds(data, user_id, test_event_id):
 
     # get database credentials from Secrets Manager
     try:
-        response = secrets_manager_client.get_secret_value(SecretId=os.environ["rds_secret_name"])["SecretString"]  # TODO: add the secret id when deploying
+        response = secrets_manager_client.get_secret_value(SecretId=os.environ["rds_secret_name"])["SecretString"] 
         secret = json.loads(response)
         print("Retrieved secret for database.")
 
