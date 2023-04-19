@@ -4764,7 +4764,7 @@
                   "aws:cdk:cloudformation:props": {
                     "code": {
                       "s3Bucket": "cdk-hnb659fds-assets-684904187051-ca-central-1",
-                      "s3Key": "953dcf0ab9d737c8c8a1457c8d08360e3e770ed98bc3ed3f096757a871f9d2cf.zip"
+                      "s3Key": "1203169b1fd90910514ad10b43b2fdfa03812b9b743db3836cca3cb9800ac7f4.zip"
                     },
                     "role": {
                       "Fn::GetAtt": [
@@ -5504,7 +5504,7 @@
                   "aws:cdk:cloudformation:props": {
                     "code": {
                       "s3Bucket": "cdk-hnb659fds-assets-684904187051-ca-central-1",
-                      "s3Key": "43b3f1ea87293f07d6af31223060cc995bdb34641cac25d65335eb9da039c8a7.zip"
+                      "s3Key": "52061f72988ed81bf44a49873a74c77cc39ec15884f7c007d8a6cdacf64e440e.zip"
                     },
                     "role": {
                       "Fn::GetAtt": [
@@ -5522,7 +5522,8 @@
                         },
                         "USER_POOL_ID": {
                           "Fn::ImportValue": "CognitoStack:ExportsOutputRefBalanceTestUserPool005122174B1ED610"
-                        }
+                        },
+                        "GLUE_DB_NAME": "balancetest-sensordata-gluedb"
                       }
                     },
                     "functionName": "BalanceTest-query-S3",

@@ -137,6 +137,7 @@ export class AthenaGlueStack extends Stack {
           "S3_BUCKET_NAME": dataWorkflowStack.getS3BucketName(),
           "IDENTITY_POOL_ID": cognitoIdentityPoolId,
           "USER_POOL_ID": cognitoUserPoolId,
+          'GLUE_DB_NAME': glueDbName
         },
         vpc: vpcStack.vpc,
         vpcSubnets: {

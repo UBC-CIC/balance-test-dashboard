@@ -880,7 +880,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-684904187051-ca-central-1",
-     "S3Key": "953dcf0ab9d737c8c8a1457c8d08360e3e770ed98bc3ed3f096757a871f9d2cf.zip"
+     "S3Key": "1203169b1fd90910514ad10b43b2fdfa03812b9b743db3836cca3cb9800ac7f4.zip"
     },
     "Role": {
      "Fn::GetAtt": [
@@ -926,7 +926,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "DataWorkflowStack/BalanceTest-generate-report-for-download/Resource",
-    "aws:asset:path": "asset.953dcf0ab9d737c8c8a1457c8d08360e3e770ed98bc3ed3f096757a871f9d2cf",
+    "aws:asset:path": "asset.1203169b1fd90910514ad10b43b2fdfa03812b9b743db3836cca3cb9800ac7f4",
     "aws:asset:is-bundled": false,
     "aws:asset:property": "Code"
    }
