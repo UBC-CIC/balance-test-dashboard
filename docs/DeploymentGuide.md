@@ -69,7 +69,7 @@ The command creates the role name **amplifyconsole-balancetest-backend-role** th
 
 Ensure you are logged into your AWS account and click the Deploy To Amplify Console button to begin the website deployment.
 
-[![amplifybutton](https://oneclick.amplifyapp.com/button.svg)](https://console.aws.amazon.com/amplify/home#/deploy?repo=https://github.com/UBC-CIC/balance-test/)
+[![amplifybutton](https://oneclick.amplifyapp.com/button.svg)](https://console.aws.amazon.com/amplify/home#/deploy?repo=https://github.com/UBC-CIC/balance-test-dashboard/)
 
 The following page will appear after clicking the button. Click the connect to Github button and connect to your Github account.
 
