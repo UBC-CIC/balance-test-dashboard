@@ -533,19 +533,40 @@ export default function TestEventsTable({
                         //   : { color: "red" }
                         // !row.score ? { color: "black" } : {row.score>= 50 ? { color: "green" } : { color: "red" }}
                         () => {
-                          if (!row.balance_score) {
-                            return { color: "black" };
-                          } else if (row.balance_score >= 50) {
-                            return { color: "green" };
+                          // if (!row.balance_score) {
+                          //   return { color: "black" };
+                          // } else if (row.balance_score >= 50) {
+                          //   return { color: "green" };
+                          // } else {
+                          //   return { color: "red" };
+                          // }
+
+                          if (row.balance_score) {
+                            return row.balance_score >= 50
+                              ? { color: "green" }
+                              : { color: "red" };
+                          } else if (row.doctor_score) {
+                            return row.doctor_score >= 50
+                              ? { color: "green" }
+                              : { color: "red" };
                           } else {
-                            return { color: "red" };
+                            return { color: "black" };
                           }
                         }
                       }
                     >
-                      {!row.balance_score
+                      {(() => {
+                        if (row.balance_score) {
+                          return row.balance_score;
+                        } else if (row.doctor_score) {
+                          return row.doctor_score;
+                        } else {
+                          return "Score is not available at this time";
+                        }
+                      })()}
+                      {/* {!row.balance_score
                         ? "Calculating score ..."
-                        : row.balance_score}
+                        : row.balance_score} */}
                     </TableCell>
                     <TableCell
                       align="left"
