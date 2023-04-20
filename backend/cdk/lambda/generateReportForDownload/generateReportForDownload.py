@@ -57,21 +57,20 @@ def lambda_handler(event, context):
             template, key)
         # pdf_path = f'parquet_data/patient_tests/user_id={user_id}/movement={movement}/year={year}/month={month}/day={day}/test_event_id={test_event_id}/test_event_{test_event_id}.pdf'
         parquet_path = f'parquet_data/patient_tests/user_id={region}:{user_id}/movement={movement}/year={year}/month={month}/day={day}/test_event_id={test_event_id}/test_event_{test_event_id}.parquet'
-        pdf_path = f'private/{region}:{user_id}/{test_event_id}.pdf'
-        # csv_path = f'private/{os.environ["AWS_REGION"]}:{region}:{user_id}/movement={movement}/year={year}/month={month}/day={day}/{test_event_id}.csv'
+        pdf_path = f'pdf_eports/{region}:{user_id}/{test_event_id}.pdf'
+        csv_path = f'csv_data/patient_tests/user_id={region}:{user_id}/movement={movement}/year={year}/month={month}/day={day}/test_event_id={test_event_id}/test_event_{test_event_id}.csv'
 
-        # convert to csv and store in s3
-        print('parquet_path', parquet_path)
+        # print('parquet_path', parquet_path)
         raw = s3_client.get_object(Bucket=bucket, Key=parquet_path)
         parquet = raw['Body'].read()
         # df = pd.read_parquet(parquet)
         # csv = df.to_csv()
         # s3_client.put_object(Bucket=bucket, Key=csv_path)
 
-        raw_url = s3_client.generate_presigned_url(ClientMethod='get_object',
+        csv_url = s3_client.generate_presigned_url(ClientMethod='get_object',
                                                    Params={
                                                        'Bucket': bucket,
-                                                       'Key': parquet_path,
+                                                       'Key': csv_path,
                                                        #    'ResponseContentDisposition': 'attachment;filename=file.csv',
                                                        #    'ResponseContentType': 'text/csv'
                                                    },
@@ -88,7 +87,7 @@ def lambda_handler(event, context):
                                                        ExpiresIn=60*5
                                                        )
 
-            return {"status": 200, "body": {'pdf_url': pdf_url, 'raw_url': raw_url}}
+            return {"status": 200, "body": {'pdf_url': pdf_url, 'raw_url': csv_url}}
         except:
             print('pdf not generated before')
 
@@ -178,7 +177,7 @@ def lambda_handler(event, context):
                                                    ExpiresIn=60*5
                                                    )
 
-        return {"status": 200, "body": {'pdf_url': pdf_url, 'raw_url': raw_url}}
+        return {"status": 200, "body": {'pdf_url': pdf_url, 'raw_url': csv_url}}
 
 
 def extract(template, text):

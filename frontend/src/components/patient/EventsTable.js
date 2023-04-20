@@ -527,6 +527,7 @@ export default function TestEventsTable({
                       id={labelId}
                       scope="row"
                       padding="none"
+                      onClick={(event) => handleClick(event, row.test_event_id)}
                       sx={
                         // row.balance_score >= 50
                         //   ? { color: "green" }
@@ -550,7 +551,7 @@ export default function TestEventsTable({
                               ? { color: "green" }
                               : { color: "red" };
                           } else {
-                            return { color: "black" };
+                            return { color: "#D3D3D3" };
                           }
                         }
                       }
@@ -574,7 +575,10 @@ export default function TestEventsTable({
                     >
                       {row.test_type}
                     </TableCell>
-                    <TableCell align="left">
+                    <TableCell
+                      align="left"
+                      onClick={(event) => handleClick(event, row.test_event_id)}
+                    >
                       {!row.start_time
                         ? "Test has not been completed"
                         : dayjs(row.start_time).format("YYYY-MM-DD HH:mm")}

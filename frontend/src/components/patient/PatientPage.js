@@ -363,7 +363,7 @@ function PatientPage() {
                       ? data
                           .map((te) => ({
                             start_time: moment(te.start_time).valueOf(),
-                            balance_score: te.balance_score,
+                            score: te.balance_score || te.doctor_score,
                           }))
                           .filter(
                             (i) =>

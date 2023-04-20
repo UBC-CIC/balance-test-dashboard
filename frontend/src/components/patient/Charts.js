@@ -26,7 +26,7 @@ const awsconfig = require("../../aws-exports");
 Amplify.configure(awsconfig);
 
 export const ScoreChart = ({ data, range }) => {
-  // console.log("chartdata", data);
+  console.log("chartdata", data);
   // console.log("range", range);
   const dateFormatter = (t) => {
     return moment(t).format("MMMM Do YYYY");
@@ -79,7 +79,7 @@ export const ScoreChart = ({ data, range }) => {
 
         <Line
           type="monotone"
-          dataKey="balance_score"
+          dataKey="score"
           stroke="black"
           isAnimationActive={false}
         />

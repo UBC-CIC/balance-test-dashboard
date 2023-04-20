@@ -150,18 +150,20 @@ export function TestDetails() {
 
     setDownloading(true);
     console.log("patientid", patient_id);
+    console.log("patientname", patientName);
+    let downloadVariable = {
+      test_event_id: test_event_id,
+      test_type: "sit-to-stand",
+      year: dayjs(testEvent.start_time).year(),
+      month: dayjs(testEvent.start_time).month() + 1,
+      day: dayjs(testEvent.start_time).date(),
+      patient_id: patient_id,
+      patient_name: patientName,
+    };
+    console.log("download variable", downloadVariable);
     let resdownload = await API.graphql({
       query: downloadTestEventDetails,
-      variables: {
-        test_event_id: test_event_id,
-        test_type: "sit-to-stand",
-        year: dayjs(testEvent.start_time).year(),
-        month: dayjs(testEvent.start_time).month() + 1,
-        day: dayjs(testEvent.start_time).date(),
-        patient_id: patient_id,
-        measurement: measurementSelected,
-        patient_name: patientName,
-      },
+      variables: downloadVariable,
       authToken: idtoken,
     });
     let pdfUrl = resdownload.data.downloadTestEventDetails.pdf_url;
@@ -229,8 +231,8 @@ export function TestDetails() {
                 {/* todo: replace w var */}
                 <TableCell align="left">sit-to-stand</TableCell>
                 <TableCell align="left">
-                  {!testEvent ? "loading..." : testEvent.balance_score}
-                  {() => {
+                  {/* {!testEvent ? "loading..." : testEvent.balance_score} */}
+                  {(() => {
                     if (!testEvent) {
                       return "loading";
                     } else if (
@@ -238,10 +240,12 @@ export function TestDetails() {
                       !testEvent.doctor_score
                     ) {
                       return "Calculating...";
-                    } else {
+                    } else if (testEvent.balance_score) {
                       return testEvent.balance_score;
+                    } else {
+                      return testEvent.doctor_score;
                     }
-                  }}
+                  })()}
                 </TableCell>
                 <TableCell align="left">
                   {!testEvent

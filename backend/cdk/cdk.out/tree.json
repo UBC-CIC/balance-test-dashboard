@@ -4290,7 +4290,7 @@
                   "aws:cdk:cloudformation:props": {
                     "code": {
                       "imageUri": {
-                        "Fn::Sub": "684904187051.dkr.ecr.ca-central-1.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-684904187051-ca-central-1:e917cc495bafab84c5ed957935606038f90adfa43110e6db9d979b4de62f55e5"
+                        "Fn::Sub": "684904187051.dkr.ecr.ca-central-1.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-684904187051-ca-central-1:c051e76239bbe300035c3e414ba04e2ae6ab671b65a49792de9a763a86426860"
                       }
                     },
                     "role": {
@@ -4764,7 +4764,7 @@
                   "aws:cdk:cloudformation:props": {
                     "code": {
                       "s3Bucket": "cdk-hnb659fds-assets-684904187051-ca-central-1",
-                      "s3Key": "1203169b1fd90910514ad10b43b2fdfa03812b9b743db3836cca3cb9800ac7f4.zip"
+                      "s3Key": "cee3f5fdefb3fa9acd22e1f6adfe8162dc20b35dc329b8b5550a1ba84e851f62.zip"
                     },
                     "role": {
                       "Fn::GetAtt": [
