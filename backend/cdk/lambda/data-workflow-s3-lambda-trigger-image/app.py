@@ -186,7 +186,7 @@ def lambda_handler(event, context):
 
         # send the score from invoking endpoint to RDS
         send_data_to_rds(data, user_id, test_event_id)
-            
+        
 
 """
 This function gets a file from the S3 bucket based on the key, and returns a dictionary with the data.
@@ -427,7 +427,7 @@ def make_training_job_and_endpoint(bucket, training_folder_path, model_location_
             artifact_bucket = artifact_s3_path.split("/")[0] # first list item is bucket name
             print("Artifact S3 Bucket Location: ", artifact_bucket)
             
-            artifact_key = artifact_s3_path.replace(artifact_bucket + "/", '') # remove bucket name from artifact_s3_uri to get the key
+            artifact_key = artifact_s3_path.replace(artifact_bucket + "/", '') # remove bucket name from artifact_s3_path to get the key
             print("Artifact S3 key: ", artifact_key)
             
             model_name = artifact_key.split("/")[-3]
@@ -467,6 +467,7 @@ def make_training_job_and_endpoint(bucket, training_folder_path, model_location_
 
             print("\nNew endpoint has been made.\n")
 
+            # ensure that the input data for invoke endpoint is JSON data
             predictor.serializer = JSONSerializer()
             predictor.deserializer = JSONDeserializer()
 
@@ -520,9 +521,11 @@ def launch_training_job(bucket, training_folder_key, role, training_job_location
         instance_type="ml.g4dn.8xlarge",  # training instance
         framework_version="2.3.0", # tensorflow version; 2.4 currently has a bug when model is deployed
         py_version="py37",  # python version
-        code_location=training_job_location_prefix_s3_uri, #S3 location for training job output file storage
-        output_path=training_job_location_prefix_s3_uri, #S3 location for training job file storage
+        code_location=training_job_location_prefix_s3_uri, # S3 location for training job output file storage
+        output_path=training_job_location_prefix_s3_uri, # S3 location for training job file storage
         base_job_name=f'{user_id}',  # Modifying the training job name
+        # subnets=[os.environ["private-subnet-1"], os.environ["private-subnet-2"]],
+        # security_group_ids=[os.environ["security-group"]],
     )
 
     print("Fitting training folder data into the Sagemaker Estimator.")
@@ -541,52 +544,103 @@ df: a Pandas Dataframe containing the accelerometer, gyroscope, and magnetometer
 
 Returns - a NumPy array containing the modified data from df
 """
-
 def preprocess_data(df):
-    
-    ax_stft=np.abs(stft(df['ax'],nperseg=512,fs=1)[2]**2)
-    ay_stft=np.abs(stft(df['ay'],nperseg=512,fs=1)[2]**2)
-    az_stft=np.abs(stft(df['az'],nperseg=512,fs=1)[2]**2)
-    
-    ax_stft_largest=nlargest(50,ax_stft.flatten())
-    ax_stft_smallest=nsmallest(50,ax_stft.flatten())
-    ay_stft_largest=nlargest(50,ay_stft.flatten())
-    ay_stft_smallest=nsmallest(50,ay_stft.flatten())
-    az_stft_largest=nlargest(50,az_stft.flatten())
-    az_stft_smallest=nsmallest(50,az_stft.flatten())
-    
-    gx_stft=np.abs(stft(df['gx'],nperseg=512,fs=1)[2]**2)
-    gy_stft=np.abs(stft(df['gy'],nperseg=512,fs=1)[2]**2)
-    gz_stft=np.abs(stft(df['gz'],nperseg=512,fs=1)[2]**2)
-    
-    gx_stft_largest=nlargest(50,gx_stft.flatten())
-    gx_stft_smallest=nsmallest(50,gx_stft.flatten())
-    gy_stft_largest=nlargest(50,gy_stft.flatten())
-    gy_stft_smallest=nsmallest(50,gy_stft.flatten())
-    gz_stft_largest=nlargest(50,gz_stft.flatten())
-    gz_stft_smallest=nsmallest(50,gz_stft.flatten())
-    
-    mx_stft=np.abs(stft(df['mx'],nperseg=512,fs=1)[2]**2)
-    my_stft=np.abs(stft(df['my'],nperseg=512,fs=1)[2]**2)
-    mz_stft=np.abs(stft(df['mz'],nperseg=512,fs=1)[2]**2)
-    
-    mx_stft_largest=nlargest(50,mx_stft.flatten())
-    mx_stft_smallest=nsmallest(50,mx_stft.flatten())
-    my_stft_largest=nlargest(50,my_stft.flatten())
-    my_stft_smallest=nsmallest(50,my_stft.flatten())
-    mz_stft_largest=nlargest(50,mz_stft.flatten())
-    mz_stft_smallest=nsmallest(50,mz_stft.flatten())
-    
-    data = [*ax_stft_largest, *ax_stft_smallest, *ay_stft_largest, *ay_stft_smallest, *az_stft_largest, *az_stft_smallest, *gx_stft_largest, *gx_stft_smallest, *gy_stft_largest, *gy_stft_smallest, *gz_stft_largest, *gz_stft_smallest,
-            *mx_stft_largest, *mx_stft_smallest, *my_stft_largest, *my_stft_smallest, *mz_stft_largest, *mz_stft_smallest]
-   
+
+    pad_length = (2000-len(df['ax']))//2
+    print("Pad Length: ", pad_length)
+
+    ax_normal_stft = np.abs(stft(np.pad(df['ax'], (pad_length,), 'median'), scaling='psd', nperseg=512, fs=1)[2]**2)
+    ay_normal_stft = np.abs(stft(np.pad(df['ay'], (pad_length,), 'median'), scaling='psd', nperseg=512, fs=1)[2]**2)
+    az_normal_stft = np.abs(stft(np.pad(df['az'], (pad_length,), 'median'), scaling='psd', nperseg=512, fs=1)[2]**2)
+
+    ax_normal_stft_largest = nlargest(50, ax_normal_stft.flatten())
+    ax_normal_stft_smallest = nsmallest(50, ax_normal_stft.flatten())
+    ay_normal_stft_largest = nlargest(50, ay_normal_stft.flatten())
+    ay_normal_stft_smallest = nsmallest(50, ay_normal_stft.flatten())
+    az_normal_stft_largest = nlargest(50, az_normal_stft.flatten())
+    az_normal_stft_smallest = nsmallest(50, az_normal_stft.flatten())
+
+    gx_normal_stft = np.abs(stft(np.pad(df['gx'], (pad_length,), 'median'), scaling='psd', nperseg=512, fs=1)[2]**2)
+    gy_normal_stft = np.abs(stft(np.pad(df['gy'], (pad_length,), 'median'), scaling='psd', nperseg=512, fs=1)[2]**2)
+    gz_normal_stft = np.abs(stft(np.pad(df['gz'], (pad_length,), 'median'), scaling='psd', nperseg=512, fs=1)[2]**2)
+
+    gx_normal_stft_largest = nlargest(50, gx_normal_stft.flatten())
+    gx_normal_stft_smallest = nsmallest(50, gx_normal_stft.flatten())
+    gy_normal_stft_largest = nlargest(50, gy_normal_stft.flatten())
+    gy_normal_stft_smallest = nsmallest(50, gy_normal_stft.flatten())
+    gz_normal_stft_largest = nlargest(50, gz_normal_stft.flatten())
+    gz_normal_stft_smallest = nsmallest(50, gz_normal_stft.flatten())
+
+    mx_normal_stft=np.abs(stft(np.pad(df['mx'],(pad_length,),'median'), scaling='psd',nperseg=512,fs=1)[2]**2)
+    my_normal_stft=np.abs(stft(np.pad(df['my'],(pad_length,),'median'), scaling='psd',nperseg=512,fs=1)[2]**2)
+    mz_normal_stft=np.abs(stft(np.pad(df['mz'],(pad_length,),'median'), scaling='psd',nperseg=512,fs=1)[2]**2)
+
+    mx_normal_stft_largest=nlargest(50,mx_normal_stft.flatten())
+    mx_normal_stft_smallest=nsmallest(50,mx_normal_stft.flatten())
+    my_normal_stft_largest=nlargest(50,my_normal_stft.flatten())
+    my_normal_stft_smallest=nsmallest(50,my_normal_stft.flatten())
+    mz_normal_stft_largest=nlargest(50,mz_normal_stft.flatten())
+    mz_normal_stft_smallest=nsmallest(50,mz_normal_stft.flatten())
+
+    data = [*ax_normal_stft_largest,*ax_normal_stft_smallest,*ay_normal_stft_largest,*ay_normal_stft_smallest,*az_normal_stft_largest,*az_normal_stft_smallest,*gx_normal_stft_largest,*gx_normal_stft_smallest,*gy_normal_stft_largest,*gy_normal_stft_smallest,*gz_normal_stft_largest,*gz_normal_stft_smallest,
+            *mx_normal_stft_largest,*mx_normal_stft_smallest,*my_normal_stft_largest,*my_normal_stft_smallest,*mz_normal_stft_largest,*mz_normal_stft_smallest]
+
     X = np.array(data)
-    print("X shape: ", X.shape)
+    print("X shape: ", len(X))
 
     X = np.reshape(X, (1, 1, X.shape[0]))
     print("Post-processing shape: ", X.shape)
 
     return X
+
+
+# TODO: uncomment and remove the above function when fixed
+
+# def preprocess_data(df):
+    
+#     ax_stft=np.abs(stft(df['ax'],nperseg=512,fs=1)[2]**2)
+#     ay_stft=np.abs(stft(df['ay'],nperseg=512,fs=1)[2]**2)
+#     az_stft=np.abs(stft(df['az'],nperseg=512,fs=1)[2]**2)
+    
+#     ax_stft_largest=nlargest(50,ax_stft.flatten())
+#     ax_stft_smallest=nsmallest(50,ax_stft.flatten())
+#     ay_stft_largest=nlargest(50,ay_stft.flatten())
+#     ay_stft_smallest=nsmallest(50,ay_stft.flatten())
+#     az_stft_largest=nlargest(50,az_stft.flatten())
+#     az_stft_smallest=nsmallest(50,az_stft.flatten())
+    
+#     gx_stft=np.abs(stft(df['gx'],nperseg=512,fs=1)[2]**2)
+#     gy_stft=np.abs(stft(df['gy'],nperseg=512,fs=1)[2]**2)
+#     gz_stft=np.abs(stft(df['gz'],nperseg=512,fs=1)[2]**2)
+    
+#     gx_stft_largest=nlargest(50,gx_stft.flatten())
+#     gx_stft_smallest=nsmallest(50,gx_stft.flatten())
+#     gy_stft_largest=nlargest(50,gy_stft.flatten())
+#     gy_stft_smallest=nsmallest(50,gy_stft.flatten())
+#     gz_stft_largest=nlargest(50,gz_stft.flatten())
+#     gz_stft_smallest=nsmallest(50,gz_stft.flatten())
+    
+#     mx_stft=np.abs(stft(df['mx'],nperseg=512,fs=1)[2]**2)
+#     my_stft=np.abs(stft(df['my'],nperseg=512,fs=1)[2]**2)
+#     mz_stft=np.abs(stft(df['mz'],nperseg=512,fs=1)[2]**2)
+    
+#     mx_stft_largest=nlargest(50,mx_stft.flatten())
+#     mx_stft_smallest=nsmallest(50,mx_stft.flatten())
+#     my_stft_largest=nlargest(50,my_stft.flatten())
+#     my_stft_smallest=nsmallest(50,my_stft.flatten())
+#     mz_stft_largest=nlargest(50,mz_stft.flatten())
+#     mz_stft_smallest=nsmallest(50,mz_stft.flatten())
+    
+#     data = [*ax_stft_largest, *ax_stft_smallest, *ay_stft_largest, *ay_stft_smallest, *az_stft_largest, *az_stft_smallest, *gx_stft_largest, *gx_stft_smallest, *gy_stft_largest, *gy_stft_smallest, *gz_stft_largest, *gz_stft_smallest,
+#             *mx_stft_largest, *mx_stft_smallest, *my_stft_largest, *my_stft_smallest, *mz_stft_largest, *mz_stft_smallest]
+   
+#     X = np.array(data)
+#     print("X shape: ", X.shape)
+
+#     X = np.reshape(X, (1, 1, X.shape[0]))
+#     print("Post-processing shape: ", X.shape)
+
+#     return X
 
 
 """
