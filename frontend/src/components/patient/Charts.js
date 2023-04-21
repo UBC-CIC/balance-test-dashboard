@@ -28,7 +28,7 @@ const awsconfig = require("../../aws-exports");
 Amplify.configure(awsconfig);
 
 export const ScoreChart = ({ data, range }) => {
-  console.log("chartdata", data);
+  // console.log("chartdata", data);
   // console.log("range", range);
   const dateFormatter = (t) => {
     return moment(t).format("MMMM Do YYYY");
@@ -125,65 +125,6 @@ export const SensorChart = ({ data, y }) => {
   );
 };
 
-// export const RangeChart = () => {
-//   let sales = true;
-//   return (
-//     <Bar
-//       barSize={54}
-//       animationBegin={400}
-//       animationDuration={400}
-//       dataKey={!sales ? "sales" : "volume"}
-//       fill={sales ? "url(#linearGradient-1)" : "url(#linearGradient-2)"}
-//       shape={<RoundBar />}
-//     ></Bar>
-//   );
-// };
-
-// const RoundBar = (props) => {
-//   const moveTo = (x, y, { ry = 0, rx = 0 }) => `M${x + rx}, ${y + ry}`;
-//   const lineTo = (x, y, { ry = 0, rx = 0 }) => `L${x + rx}, ${y + ry}`;
-//   const quadraticCurveTo = (x, y, { ry = 0, rx = 0 }) =>
-//     `Q${x}, ${y} ${x + rx} ${y + ry}`;
-
-//   const drawRoundEdgesRectangle = (
-//     points,
-//     radius,
-//     { radiusTop = true, radiusBottom = false }
-//   ) => `${moveTo(points[0].x, points[0].y, { rx: radiusTop ? radius : 0 })}
-//   ${quadraticCurveTo(points[0].x, points[0].y, { ry: radiusTop ? radius : 0 })}
-//   ${lineTo(points[1].x, points[1].y, { ry: radiusBottom ? -radius : 0 })}
-//   ${quadraticCurveTo(points[1].x, points[1].y, {
-//     rx: radiusBottom ? radius : 0,
-//   })}
-//   ${lineTo(points[2].x, points[2].y, { rx: radiusBottom ? -radius : 0 })}
-//   ${quadraticCurveTo(points[2].x, points[2].y, {
-//     ry: radiusBottom ? -radius : 0,
-//   })}
-//   ${lineTo(points[3].x, points[3].y, { ry: radiusTop ? radius : 0 })}
-//   ${quadraticCurveTo(points[3].x, points[3].y, { rx: radiusTop ? -radius : 0 })}
-//   Z`;
-
-//   const { fill, x, y, width, height, rem, volume } = props;
-//   const color = rem ? "url(#linearGradient-rem)" : fill;
-//   const radius = 3;
-//   const haveRadiusBottom =
-//     Array.isArray(volume) && volume[1] - volume[0] !== 0 && volume[0] !== 0;
-//   const haveRadiusTop =
-//     (Array.isArray(volume) && volume[1] - volume[0] !== 0) ||
-//     (!Array.isArray(volume) && volume !== 0);
-//   const points = [
-//     { x, y },
-//     { x, y: y + height },
-//     { x: x + width, y: y + height },
-//     { x: x + width, y },
-//   ];
-//   const d = drawRoundEdgesRectangle(points, radius, {
-//     radiusBottom: haveRadiusBottom,
-//     radiusTop: haveRadiusTop,
-//   });
-//   return <path d={d} stroke="none" fill={color} />;
-// };
-
 export const RangeChart = ({ patientId, measurement, fromDate, toDate }) => {
   let options = {
     chart: {
@@ -217,22 +158,6 @@ export const RangeChart = ({ patientId, measurement, fromDate, toDate }) => {
         columnWidth: "10%",
       },
     },
-    // annotations: {
-    //   yaxis: [
-    //     {
-    //       y: 0.2,
-    //       borderColor: "gray",
-    //       label: {
-    //         borderColor: "gray",
-    //         style: {
-    //           color: "#fff",
-    //           background: "gray",
-    //         },
-    //         text: "median: 0.2",
-    //       },
-    //     },
-    //   ],
-    // },
   };
 
   const [data, setData] = useState([]);
@@ -240,7 +165,6 @@ export const RangeChart = ({ patientId, measurement, fromDate, toDate }) => {
   const fetchData = async () => {
     let sesh = await Auth.currentSession();
     let idtoken = sesh.idToken.jwtToken;
-    // console.log("measurement", measurement);
     let res = await API.graphql({
       query: getMeasurementRange,
       variables: {
@@ -251,18 +175,9 @@ export const RangeChart = ({ patientId, measurement, fromDate, toDate }) => {
     });
 
     let rangeChartData = convert(res.data.getMeasurementRange);
-    // console.log("rangechartdata", rangeChartData);
     setData(rangeChartData);
   };
 
-  // let data = [
-  //   {
-  //     data: [
-  //       { x: "11/20/2022, 10:01:13 PM", y: [-0.3484, 3.9108] },
-  //       { x: "11/21/2022, 10:01:13 PM", y: [-1.7786, -0.1167] },
-  //     ],
-  //   },
-  // ];
   const convert = (data) => {
     const keys = Object.keys(data);
 
@@ -272,9 +187,10 @@ export const RangeChart = ({ patientId, measurement, fromDate, toDate }) => {
         item[k] = data[k][i];
       });
       item["y"] = [item["min"], item["max"]];
-      // todo
       item["x"] = dayjs(
-        `${item["year"]}-0${item["month"]}-${item["day"]}`
+        `${item["year"]}-` +
+          (item["month"] < 10 ? `0${item["month"]}` : `${item["month"]}`) +
+          (item["day"] < 10 ? `0${item["day"]}` : `${item["day"]}`)
       ).format("YYYY MMM D");
       // .format("DD/MM/YYYY");
       return item;
@@ -323,8 +239,6 @@ export const RangeChart = ({ patientId, measurement, fromDate, toDate }) => {
 };
 
 function NALabel({ x, y, stroke, value, width }) {
-  // console.log("x", x);
-  // console.log("value", value);
   if (value) {
     // No label if there is a value. Let the cell handle it.
     return null;

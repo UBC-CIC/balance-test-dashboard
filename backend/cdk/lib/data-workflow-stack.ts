@@ -14,7 +14,6 @@ import { DatabaseStack } from './database-stack';
 export const balanceTestBucketName = 'balancetest-datastorage-bucket'
 export class DataWorkflowStack extends Stack {
 
-    // private readonly balanceTestBucket: s3.Bucket;
     private readonly balanceTestBucket: s3.IBucket;
     private readonly generateReportLambda: lambda.Function;
     private readonly deleteS3RecordLambda: lambda.Function;
@@ -22,7 +21,6 @@ export class DataWorkflowStack extends Stack {
     constructor(scope: App, id: string, vpcStack: VPCStack, cognitoStack: CognitoStack, databaseStack: DatabaseStack, props: StackProps) {
       super(scope, id, props);
       
-      // const balanceTestBucketName = 'balancetest-raw-datastorage-bucket'
       const balanceTestBucketAccessPointName = "balancetest-accesspt";
 
       //**MUST** have "sagemaker" as the **FIRST** word of the Sagemaker bucket name for training job output purposes
@@ -49,7 +47,7 @@ export class DataWorkflowStack extends Stack {
       const deleteS3RecordLambdaRoleName = "BalanceTest-deleteS3RecordLambda-Role";
       const deleteS3RecordLambdaLogGroupName = "BalanceTest-deleteS3RecordLambda-Logs";
 
-      let region = 'ca-central-1';
+      let region;
       if (props["env"] && props["env"]["region"]) {
         region = props["env"]["region"]
       }
@@ -266,7 +264,6 @@ export class DataWorkflowStack extends Stack {
         managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName("AmazonS3FullAccess"), iam.ManagedPolicy.fromAwsManagedPolicyName("service-role/AWSLambdaVPCAccessExecutionRole")]
       });
 
-      //TODO: test if layer works
       const generateReportRuntime = lambda.Runtime.PYTHON_3_7;
       const generateReportLambdaLayer = new lambda.LayerVersion(this, "generateReportPythonLayer", {
         removalPolicy: RemovalPolicy.DESTROY,
@@ -328,14 +325,10 @@ export class DataWorkflowStack extends Stack {
         managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName("service-role/AWSLambdaVPCAccessExecutionRole")]
       });
 
-      //TODO: change to secured StringParameter
       const cognitoIdentityPoolId = ssm.StringParameter.fromStringParameterAttributes(this, "BalanceTestCognitoIdentityPoolId", {
         parameterName: "IdentityPoolId"
       }).stringValue;
 
-      // const cognitoUserPoolId = ssm.StringParameter.fromStringParameterAttributes(this, "BalanceTestCognitoUserPoolId", {
-      //   parameterName: "UserPoolId"
-      // }).stringValue;
       const cognitoUserPoolId = cognitoStack.UserPoolId;
 
       // make Lambda to delete a test event record from S3

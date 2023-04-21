@@ -59,7 +59,6 @@ export function TestDetails() {
   const fetchData = async () => {
     let sesh = await Auth.currentSession();
     let idtoken = sesh.idToken.jwtToken;
-    console.log("idtoken", idtoken);
     let reslambdaauth = await API.graphql({
       query: getTestEventById,
       variables: { test_event_id: test_event_id, patient_id: patient_id },
@@ -119,7 +118,6 @@ export function TestDetails() {
 
       authToken: `${idtoken}`,
     });
-    console.log("resmeasurement", resmeasurement);
     setMeasurementData(
       resmeasurement.data.getMeasurementData.ts.map((ts, i) => ({
         ts: dayjs.tz(ts.slice(0, -7), browserTimezone).format("hh:mm:ss"),
@@ -127,7 +125,6 @@ export function TestDetails() {
         val: resmeasurement.data.getMeasurementData.val[i],
       }))
     );
-    console.log("measurementdata", measurementData);
 
     // }
   };
@@ -221,7 +218,9 @@ export function TestDetails() {
         </Button>
       </Grid>
       {downloadError ? (
-        <Alert severity="error">This is an error alert — check it out!</Alert>
+        <Alert severity="error">
+          Encountered error when downloading the report
+        </Alert>
       ) : (
         <div></div>
       )}

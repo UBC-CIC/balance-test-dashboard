@@ -168,7 +168,6 @@ export class AppsyncStack extends Stack {
         let postgresqlRDSQueryResolverNameList = ['getAllAvailableTests', 'getAllPatients', "getCareproviderById", 'getPatientAssignedTests', 'getPatientById', 'getPatientsForCareprovider', 'getScoreStatsOverTime', 'getTestEventById', 'getTestEvents'];
         let postgresqlRDSMutationResolverNameList = ['addPatientToCareProvider', 'addTestType', 'assignTestToPatient', 'createCareProvider', 'createPatient', 'deleteTestEventFromDB', 'putBalanceScore', 'putTestResult', 'recordConsentDate', 'removeTestFromPatient'];
 
-        //TODO: double check overall Appsync flow & configuration and if the resolvers work on console
         for (let i = 0; i < deleteEventResolverNameList.length; i++) {
             let deleteEventResolver = new appsync.Resolver(this, deleteEventResolverNameList[i], {
                 api: api,

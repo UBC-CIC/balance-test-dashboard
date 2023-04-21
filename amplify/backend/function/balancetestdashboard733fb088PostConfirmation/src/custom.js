@@ -1,17 +1,11 @@
 /**
  * @type {import('@types/aws-lambda').APIGatewayProxyHandler}
  */
-// exports.handler = async (event, context) => {
-//   // insert code to be executed by your lambda trigger
-//   return event;
-// };
-
 exports.handler = async (event, context, callback) => {
-  console.log("Event: ", event);
-  console.log("Context: ", context);
+  // console.log("Event: ", event);
+  // console.log("Context: ", context);
 
   const AWS = require("aws-sdk");
-  // const cognito_isp = require("@aws-sdk/cognito-identity-provider");
 
   const cognito_isp = new AWS.CognitoIdentityServiceProvider({
     apiVersion: "2016-04-18",

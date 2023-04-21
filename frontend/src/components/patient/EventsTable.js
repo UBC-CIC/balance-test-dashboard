@@ -53,7 +53,6 @@ const timezone = require("dayjs/plugin/timezone");
 dayjs.extend(utc);
 dayjs.extend(timezone);
 const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-// console.log("timezone", browserTimezone);
 
 function createData(name, calories, fat, carbs, protein) {
   return {
@@ -210,7 +209,6 @@ function EnhancedTableToolbar(props) {
   const [deleteFailed, setDeleteFailed] = React.useState(false);
 
   const handleOpenDeleteDialog = () => {
-    // console.log("199");
     setOpen(true);
   };
 
@@ -246,8 +244,6 @@ function EnhancedTableToolbar(props) {
           },
           authToken: idtoken,
         });
-        // console.log("deleteFromS3Response", deleteFromS3Response);
-        // console.log("patientid", patientId);
         let deleteFromDbResponse = await API.graphql({
           query: deleteTestEventFromDB,
           variables: {
@@ -256,7 +252,6 @@ function EnhancedTableToolbar(props) {
           },
           authToken: idtoken,
         });
-        // console.log("deleteFromDbResponse", deleteFromDbResponse);
       }
       setDeleting(false);
       setOpen(false);
@@ -269,19 +264,7 @@ function EnhancedTableToolbar(props) {
 
   return (
     <div>
-      <Toolbar
-      // sx={{
-      //   pl: { sm: 2 },
-      //   pr: { xs: 1, sm: 1 },
-      //   ...(numSelected > 0 && {
-      //     bgcolor: (theme) =>
-      //       alpha(
-      //         theme.palette.primary.main,
-      //         theme.palette.action.activatedOpacity
-      //       ),
-      //   }),
-      // }}
-      >
+      <Toolbar>
         <Typography
           sx={{ flex: "1 1 100%" }}
           variant="h6"
@@ -403,25 +386,7 @@ export default function TestEventsTable({
       authToken: idtoken,
     });
 
-    console.log("restestevents", resTestEvents);
-    setRows(
-      resTestEvents.data.getTestEvents
-      // .map((e) => ({
-      //   test_event_id: e.test_event_id,
-      //   patient_id: e.patient_id,
-      //   test_type: e.test_type,
-      //   balance_score: e.balance_score,
-      //   doctor_score: e.doctor_score,
-      //   notes: e.notes,
-      //   // start_time: dayjs(e.start_time).tz(browserTimezone),
-      //   // start_time: dayjs(e.start_time).tz(
-      //   //   Intl.DateTimeFormat().resolvedOptions().timeZone
-      //   // ),
-      //   start_time: e.start_time,
-      //   end_time: e.end_time,
-      // }))
-    );
-    console.log("rows", rows);
+    setRows(resTestEvents.data.getTestEvents);
   };
 
   React.useEffect(() => {
@@ -441,30 +406,13 @@ export default function TestEventsTable({
       return;
     }
     setSelected([]);
-    // console.log("selected", selected);
   };
 
   const handleClick = (event, test_event_id) => {
     navigate(`/testDetails/${patient_id}/${test_event_id}`);
-    // const selectedIndex = selected.indexOf(name);
-    // let newSelected = [];
-    // if (selectedIndex === -1) {
-    //   newSelected = newSelected.concat(selected, name);
-    // } else if (selectedIndex === 0) {
-    //   newSelected = newSelected.concat(selected.slice(1));
-    // } else if (selectedIndex === selected.length - 1) {
-    //   newSelected = newSelected.concat(selected.slice(0, -1));
-    // } else if (selectedIndex > 0) {
-    //   newSelected = newSelected.concat(
-    //     selected.slice(0, selectedIndex),
-    //     selected.slice(selectedIndex + 1)
-    //   );
-    // }
-    // setSelected(newSelected);
   };
 
   const handleCheck = (event, test_event_id) => {
-    // console.log("in handlechecked");
     const selectedIndex = selected.indexOf(test_event_id);
     let newSelected = [];
     if (selectedIndex === -1) {
