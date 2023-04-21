@@ -19,6 +19,16 @@ Before you deploy, you must have the following installed on your device:
 - [AWS CDK](https://docs.aws.amazon.com/cdk/latest/guide/cli.html)
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 
+
+If you do not currently have a configured AWS Account, configure an account with the following instructions:
+
+- Configure the AWS CLI tool for your AWS Account in the region of choice, using a user with programmatic access and the "AdministratorAccess" policy (moving forward, we will assume you have [configured a profile](https://awscli.amazonaws.com/v2/documentation/api/latest/reference/configure/index.html) called `balance-test`):
+  > `aws configure --profile balance-test`
+
+If you already have a configured AWS account, you may use your own configured account to deploy. Please note that if you decide to use your own account to deploy, be sure to change our command line commands to use your profile whenever there is a ```--profile``` command.
+```
+--profile YOUR_AWS_PROFILE_HERE
+```
 **Once you have downloaded Docker Desktop, launch it and set up the application. Once the application is set up, leave it running.**
 
 # Step 1: Cloning the Repository

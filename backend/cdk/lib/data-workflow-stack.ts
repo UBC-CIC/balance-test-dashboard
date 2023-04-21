@@ -344,7 +344,7 @@ export class DataWorkflowStack extends Stack {
           "S3_BUCKET_NAME": this.balanceTestBucket.bucketName,
           "IDENTITY_POOL_ID": cognitoIdentityPoolId,
           "USER_POOL_ID": cognitoUserPoolId,
-          "REGION": region,
+          "REGION": this.region,
         },
         vpc: vpcStack.vpc,
         vpcSubnets: {
