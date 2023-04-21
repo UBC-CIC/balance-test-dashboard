@@ -1517,7 +1517,7 @@
                   "aws:cdk:cloudformation:props": {
                     "code": {
                       "s3Bucket": "cdk-hnb659fds-assets-684904187051-ca-central-1",
-                      "s3Key": "dbc9e2edad58d5f51f74309a40b5c2979058f8601a86ab45fe1a5382055ba03e.zip"
+                      "s3Key": "b062e162f313f7c1520517127c75890cc4194d9e8f4e3bca3b1a109d14b86127.zip"
                     },
                     "role": {
                       "Fn::GetAtt": [
@@ -1638,7 +1638,7 @@
                   "aws:cdk:cloudformation:props": {
                     "code": {
                       "s3Bucket": "cdk-hnb659fds-assets-684904187051-ca-central-1",
-                      "s3Key": "8bcd26854bfcb5f7e6d0ec7044edaa77e03fb9a5b8d3144444259947d3956861.zip"
+                      "s3Key": "b52ebffd376ccb00fba0ec7204ba164a04c7af1fe797654aa461a8fb120d18a6.zip"
                     },
                     "role": {
                       "Fn::GetAtt": [
@@ -1768,6 +1768,16 @@
                         "name": "given_name",
                         "mutable": true,
                         "required": true
+                      },
+                      {
+                        "name": "user_type",
+                        "attributeDataType": "String",
+                        "mutable": true
+                      },
+                      {
+                        "name": "identity_id",
+                        "attributeDataType": "String",
+                        "mutable": true
                       }
                     ],
                     "smsVerificationMessage": "The verification code to your new account is {####}",
@@ -2148,8 +2158,8 @@
                               ],
                               "Effect": "Allow",
                               "Resource": [
-                                "arn:aws:s3:::balancetest-raw-datastorage-bucket/parquet_data/patient_tests/user_id=${cognito-identity.amazonaws.com:sub}/*",
-                                "arn:aws:s3:::balancetest-raw-datastorage-bucket/private/${cognito-identity.amazonaws.com:sub}/*"
+                                "arn:aws:s3:::balancetest-datastorage-bucket/parquet_data/patient_tests/user_id=${cognito-identity.amazonaws.com:sub}/*",
+                                "arn:aws:s3:::balancetest-datastorage-bucket/private/${cognito-identity.amazonaws.com:sub}/*"
                               ]
                             },
                             {
@@ -2164,7 +2174,7 @@
                                 }
                               },
                               "Effect": "Allow",
-                              "Resource": "arn:aws:s3:::balancetest-raw-datastorage-bucket/*"
+                              "Resource": "arn:aws:s3:::balancetest-datastorage-bucket/*"
                             },
                             {
                               "Action": [
@@ -3584,13 +3594,13 @@
         "id": "DataWorkflowStack",
         "path": "DataWorkflowStack",
         "children": {
-          "balancetest-raw-datastorage-bucket": {
-            "id": "balancetest-raw-datastorage-bucket",
-            "path": "DataWorkflowStack/balancetest-raw-datastorage-bucket",
+          "balancetest-datastorage-bucket": {
+            "id": "balancetest-datastorage-bucket",
+            "path": "DataWorkflowStack/balancetest-datastorage-bucket",
             "children": {
               "Resource": {
                 "id": "Resource",
-                "path": "DataWorkflowStack/balancetest-raw-datastorage-bucket/Resource",
+                "path": "DataWorkflowStack/balancetest-datastorage-bucket/Resource",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::S3::Bucket",
                   "aws:cdk:cloudformation:props": {
@@ -3603,7 +3613,7 @@
                         }
                       ]
                     },
-                    "bucketName": "balancetest-raw-datastorage-bucket",
+                    "bucketName": "balancetest-datastorage-bucket",
                     "ownershipControls": {
                       "rules": [
                         {
@@ -3629,11 +3639,11 @@
               },
               "Notifications": {
                 "id": "Notifications",
-                "path": "DataWorkflowStack/balancetest-raw-datastorage-bucket/Notifications",
+                "path": "DataWorkflowStack/balancetest-datastorage-bucket/Notifications",
                 "children": {
                   "Resource": {
                     "id": "Resource",
-                    "path": "DataWorkflowStack/balancetest-raw-datastorage-bucket/Notifications/Resource",
+                    "path": "DataWorkflowStack/balancetest-datastorage-bucket/Notifications/Resource",
                     "constructInfo": {
                       "fqn": "aws-cdk-lib.CfnResource",
                       "version": "2.69.0"
@@ -3647,7 +3657,7 @@
               },
               "AllowBucketNotificationsToDataWorkflowStackBalanceTestdataworkflow5A7205FF": {
                 "id": "AllowBucketNotificationsToDataWorkflowStackBalanceTestdataworkflow5A7205FF",
-                "path": "DataWorkflowStack/balancetest-raw-datastorage-bucket/AllowBucketNotificationsToDataWorkflowStackBalanceTestdataworkflow5A7205FF",
+                "path": "DataWorkflowStack/balancetest-datastorage-bucket/AllowBucketNotificationsToDataWorkflowStackBalanceTestdataworkflow5A7205FF",
                 "attributes": {
                   "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
                   "aws:cdk:cloudformation:props": {
@@ -3662,7 +3672,7 @@
                     "sourceAccount": "684904187051",
                     "sourceArn": {
                       "Fn::GetAtt": [
-                        "balancetestrawdatastoragebucket32387F9E",
+                        "balancetestdatastoragebucketD25B585E",
                         "Arn"
                       ]
                     }
@@ -3686,7 +3696,7 @@
               "aws:cdk:cloudformation:type": "AWS::S3::AccessPoint",
               "aws:cdk:cloudformation:props": {
                 "bucket": {
-                  "Ref": "balancetestrawdatastoragebucket32387F9E"
+                  "Ref": "balancetestdatastoragebucketD25B585E"
                 },
                 "bucketAccountId": "684904187051",
                 "name": "balancetest-accesspt",
@@ -3936,7 +3946,7 @@
                                     [
                                       {
                                         "Fn::GetAtt": [
-                                          "balancetestrawdatastoragebucket32387F9E",
+                                          "balancetestdatastoragebucketD25B585E",
                                           "Arn"
                                         ]
                                       },
@@ -4052,7 +4062,7 @@
                                   [
                                     {
                                       "Fn::GetAtt": [
-                                        "balancetestrawdatastoragebucket32387F9E",
+                                        "balancetestdatastoragebucketD25B585E",
                                         "Arn"
                                       ]
                                     },
@@ -4067,7 +4077,7 @@
                               "Resource": [
                                 {
                                   "Fn::GetAtt": [
-                                    "balancetestrawdatastoragebucket32387F9E",
+                                    "balancetestdatastoragebucketD25B585E",
                                     "Arn"
                                   ]
                                 },
@@ -4083,7 +4093,7 @@
                                     [
                                       {
                                         "Fn::GetAtt": [
-                                          "balancetestrawdatastoragebucket32387F9E",
+                                          "balancetestdatastoragebucketD25B585E",
                                           "Arn"
                                         ]
                                       },
@@ -4116,7 +4126,7 @@
                                   [
                                     {
                                       "Fn::GetAtt": [
-                                        "balancetestrawdatastoragebucket32387F9E",
+                                        "balancetestdatastoragebucketD25B585E",
                                         "Arn"
                                       ]
                                     },
@@ -4189,7 +4199,7 @@
                                     [
                                       {
                                         "Fn::GetAtt": [
-                                          "balancetestrawdatastoragebucket32387F9E",
+                                          "balancetestdatastoragebucketD25B585E",
                                           "Arn"
                                         ]
                                       },
@@ -4280,7 +4290,7 @@
                   "aws:cdk:cloudformation:props": {
                     "code": {
                       "imageUri": {
-                        "Fn::Sub": "684904187051.dkr.ecr.ca-central-1.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-684904187051-ca-central-1:e917cc495bafab84c5ed957935606038f90adfa43110e6db9d979b4de62f55e5"
+                        "Fn::Sub": "684904187051.dkr.ecr.ca-central-1.${AWS::URLSuffix}/cdk-hnb659fds-container-assets-684904187051-ca-central-1:c051e76239bbe300035c3e414ba04e2ae6ab671b65a49792de9a763a86426860"
                       }
                     },
                     "role": {
@@ -4754,7 +4764,7 @@
                   "aws:cdk:cloudformation:props": {
                     "code": {
                       "s3Bucket": "cdk-hnb659fds-assets-684904187051-ca-central-1",
-                      "s3Key": "953dcf0ab9d737c8c8a1457c8d08360e3e770ed98bc3ed3f096757a871f9d2cf.zip"
+                      "s3Key": "f719e1bfe8baa9958901ecdd042dff34f5e40647114e57560b2de59cda22312f.zip"
                     },
                     "role": {
                       "Fn::GetAtt": [
@@ -4765,7 +4775,7 @@
                     "environment": {
                       "variables": {
                         "S3_BUCKET_NAME": {
-                          "Ref": "balancetestrawdatastoragebucket32387F9E"
+                          "Ref": "balancetestdatastoragebucketD25B585E"
                         }
                       }
                     },
@@ -4906,7 +4916,7 @@
                                     [
                                       {
                                         "Fn::GetAtt": [
-                                          "balancetestrawdatastoragebucket32387F9E",
+                                          "balancetestdatastoragebucketD25B585E",
                                           "Arn"
                                         ]
                                       },
@@ -4920,7 +4930,7 @@
                                     [
                                       {
                                         "Fn::GetAtt": [
-                                          "balancetestrawdatastoragebucket32387F9E",
+                                          "balancetestdatastoragebucketD25B585E",
                                           "Arn"
                                         ]
                                       },
@@ -5003,7 +5013,7 @@
                   "aws:cdk:cloudformation:props": {
                     "code": {
                       "s3Bucket": "cdk-hnb659fds-assets-684904187051-ca-central-1",
-                      "s3Key": "328fa161f4d106e3485dfbef5984fe7f8497e4e4985e08542f1a4c2b16b3696d.zip"
+                      "s3Key": "da623cba33a9a629b3f1363ce00f81de21f63f6323de1fe1f44d1922149316a0.zip"
                     },
                     "role": {
                       "Fn::GetAtt": [
@@ -5014,7 +5024,7 @@
                     "environment": {
                       "variables": {
                         "S3_BUCKET_NAME": {
-                          "Ref": "balancetestrawdatastoragebucket32387F9E"
+                          "Ref": "balancetestdatastoragebucketD25B585E"
                         },
                         "IDENTITY_POOL_ID": {
                           "Ref": "BalanceTestCognitoIdentityPoolIdParameter"
@@ -5080,17 +5090,17 @@
             "id": "Exports",
             "path": "DataWorkflowStack/Exports",
             "children": {
-              "Output{\"Fn::GetAtt\":[\"balancetestrawdatastoragebucket32387F9E\",\"Arn\"]}": {
-                "id": "Output{\"Fn::GetAtt\":[\"balancetestrawdatastoragebucket32387F9E\",\"Arn\"]}",
-                "path": "DataWorkflowStack/Exports/Output{\"Fn::GetAtt\":[\"balancetestrawdatastoragebucket32387F9E\",\"Arn\"]}",
+              "Output{\"Fn::GetAtt\":[\"balancetestdatastoragebucketD25B585E\",\"Arn\"]}": {
+                "id": "Output{\"Fn::GetAtt\":[\"balancetestdatastoragebucketD25B585E\",\"Arn\"]}",
+                "path": "DataWorkflowStack/Exports/Output{\"Fn::GetAtt\":[\"balancetestdatastoragebucketD25B585E\",\"Arn\"]}",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnOutput",
                   "version": "2.69.0"
                 }
               },
-              "Output{\"Ref\":\"balancetestrawdatastoragebucket32387F9E\"}": {
-                "id": "Output{\"Ref\":\"balancetestrawdatastoragebucket32387F9E\"}",
-                "path": "DataWorkflowStack/Exports/Output{\"Ref\":\"balancetestrawdatastoragebucket32387F9E\"}",
+              "Output{\"Ref\":\"balancetestdatastoragebucketD25B585E\"}": {
+                "id": "Output{\"Ref\":\"balancetestdatastoragebucketD25B585E\"}",
+                "path": "DataWorkflowStack/Exports/Output{\"Ref\":\"balancetestdatastoragebucketD25B585E\"}",
                 "constructInfo": {
                   "fqn": "aws-cdk-lib.CfnOutput",
                   "version": "2.69.0"
@@ -5222,7 +5232,7 @@
                                   "",
                                   [
                                     {
-                                      "Fn::ImportValue": "DataWorkflowStack:ExportsOutputFnGetAttbalancetestrawdatastoragebucket32387F9EArn78AFEDF8"
+                                      "Fn::ImportValue": "DataWorkflowStack:ExportsOutputFnGetAttbalancetestdatastoragebucketD25B585EArnFFCC6A0F"
                                     },
                                     "/parquet_data/patient_tests/*"
                                   ]
@@ -5269,7 +5279,7 @@
                           [
                             "s3://",
                             {
-                              "Fn::ImportValue": "DataWorkflowStack:ExportsOutputRefbalancetestrawdatastoragebucket32387F9E58D66EFE"
+                              "Fn::ImportValue": "DataWorkflowStack:ExportsOutputRefbalancetestdatastoragebucketD25B585E3C53CCB4"
                             },
                             "/parquet_data/patient_tests/"
                           ]
@@ -5494,7 +5504,7 @@
                   "aws:cdk:cloudformation:props": {
                     "code": {
                       "s3Bucket": "cdk-hnb659fds-assets-684904187051-ca-central-1",
-                      "s3Key": "43b3f1ea87293f07d6af31223060cc995bdb34641cac25d65335eb9da039c8a7.zip"
+                      "s3Key": "52061f72988ed81bf44a49873a74c77cc39ec15884f7c007d8a6cdacf64e440e.zip"
                     },
                     "role": {
                       "Fn::GetAtt": [
@@ -5505,14 +5515,15 @@
                     "environment": {
                       "variables": {
                         "S3_BUCKET_NAME": {
-                          "Fn::ImportValue": "DataWorkflowStack:ExportsOutputRefbalancetestrawdatastoragebucket32387F9E58D66EFE"
+                          "Fn::ImportValue": "DataWorkflowStack:ExportsOutputRefbalancetestdatastoragebucketD25B585E3C53CCB4"
                         },
                         "IDENTITY_POOL_ID": {
                           "Ref": "BalanceTestCognitoIdentityPoolIdParameter"
                         },
                         "USER_POOL_ID": {
                           "Fn::ImportValue": "CognitoStack:ExportsOutputRefBalanceTestUserPool005122174B1ED610"
-                        }
+                        },
+                        "GLUE_DB_NAME": "balancetest-sensordata-gluedb"
                       }
                     },
                     "functionName": "BalanceTest-query-S3",
@@ -6309,7 +6320,7 @@
                     },
                     "dataSourceName": "BalanceTest_generate_report_s3_lambda",
                     "name": "redirect_s3_download_function",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/28735a8c309355275f86385cbe993eaf9a328414d4a855a213e82b2905150081.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/ae44648268099b94cff9176750182e1823ba7fbf16a1da0e77ba3193c54fcee5.js",
                     "functionVersion": "2018-05-29",
                     "runtime": {
                       "name": "APPSYNC_JS",
@@ -6369,7 +6380,7 @@
                     },
                     "dataSourceName": "BalanceTest_query_s3_lambda",
                     "name": "redirect_s3_data_retrieval_function",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/28735a8c309355275f86385cbe993eaf9a328414d4a855a213e82b2905150081.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/ae44648268099b94cff9176750182e1823ba7fbf16a1da0e77ba3193c54fcee5.js",
                     "functionVersion": "2018-05-29",
                     "runtime": {
                       "name": "APPSYNC_JS",
@@ -6429,7 +6440,7 @@
                     },
                     "dataSourceName": "BalanceTest_postgresql_connection_lambda",
                     "name": "redirect_postgresql_rds_function",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/28735a8c309355275f86385cbe993eaf9a328414d4a855a213e82b2905150081.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/ae44648268099b94cff9176750182e1823ba7fbf16a1da0e77ba3193c54fcee5.js",
                     "functionVersion": "2018-05-29",
                     "runtime": {
                       "name": "APPSYNC_JS",
@@ -6489,7 +6500,7 @@
                     },
                     "dataSourceName": "BalanceTest_delete_event_record_lambda",
                     "name": "redirect_delete_event_function",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/28735a8c309355275f86385cbe993eaf9a328414d4a855a213e82b2905150081.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/ae44648268099b94cff9176750182e1823ba7fbf16a1da0e77ba3193c54fcee5.js",
                     "functionVersion": "2018-05-29",
                     "runtime": {
                       "name": "APPSYNC_JS",
@@ -6549,7 +6560,7 @@
                     },
                     "fieldName": "deleteTestEventFromS3",
                     "typeName": "Mutation",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/540d7c20764e3b563d1cbdfc15e6427b6dbb0da26e2aaa8c9c058fe8c30c5a60.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/49a89f702c19b0427b0df2b34c544aaeb5ad640583d422730b6c04e669c27b71.js",
                     "kind": "PIPELINE",
                     "pipelineConfig": {
                       "functions": [
@@ -6619,7 +6630,7 @@
                     },
                     "fieldName": "downloadTestEventDetails",
                     "typeName": "Query",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/1417748595b9bc762ee0150e41fb3e7623ec03e210bfebbfb14f9ce1f4864857.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/0dd9ad774eaab2e22c73706ae31a7386c293e4205df3166014968bc836d2c14f.js",
                     "kind": "PIPELINE",
                     "pipelineConfig": {
                       "functions": [
@@ -6689,7 +6700,7 @@
                     },
                     "fieldName": "getMeasurementRange",
                     "typeName": "Query",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/25b88f7f56c25fcf219e7467be4ab115cae62fd219776a6b339dfeca63637048.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/06805d5e739a34e4b85b5bb4fa246bf9c24baa92f49ccabe168a9470e1d0351d.js",
                     "kind": "PIPELINE",
                     "pipelineConfig": {
                       "functions": [
@@ -6759,7 +6770,7 @@
                     },
                     "fieldName": "getMeasurementData",
                     "typeName": "Query",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/9b943f1efb1239e650ac1e54845fd1799b1e56ef6857d9df0d792b8e78071d8b.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/4be658bca06c3cb71775fa983726e67ce3ba44fd2c94d6173d2a981e5d90ecbe.js",
                     "kind": "PIPELINE",
                     "pipelineConfig": {
                       "functions": [
@@ -6829,7 +6840,7 @@
                     },
                     "fieldName": "getAllAvailableTests",
                     "typeName": "Query",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/ad5babc432fd36f7cbff972ca47437d7a3210d636591278bfee63136e83983f0.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/d45ee35384eb7c281d32909e30b7026934cc04725fd8b45844fcd1561c1022ab.js",
                     "kind": "PIPELINE",
                     "pipelineConfig": {
                       "functions": [
@@ -6899,7 +6910,7 @@
                     },
                     "fieldName": "getAllPatients",
                     "typeName": "Query",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/8c126736eaaafc289e736b7bdda928f70402d04bc2f5f81ad502eeed830730d3.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/23e53257f0b552262e94e3110b7e5e6201bee7c3f384c75d50f6b82f99620756.js",
                     "kind": "PIPELINE",
                     "pipelineConfig": {
                       "functions": [
@@ -6969,7 +6980,7 @@
                     },
                     "fieldName": "getCareproviderById",
                     "typeName": "Query",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/38b48e18570470d0c8df943e916d4084911780961f68cc3a10e5d1432578efde.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/ea0c43c2e19e69b4c38b124f79f34b17b67193b0a40b1e83b725e8d298a8c450.js",
                     "kind": "PIPELINE",
                     "pipelineConfig": {
                       "functions": [
@@ -7039,7 +7050,7 @@
                     },
                     "fieldName": "getPatientAssignedTests",
                     "typeName": "Query",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/e0d6e49137ce0d9ee036a4e1adeef594db12c2799715a9ff6e790c419b4a6e7b.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/f5f9f91cb12603d2164e8008f82e1961f55d92bb374892648196a3119e8e2f3d.js",
                     "kind": "PIPELINE",
                     "pipelineConfig": {
                       "functions": [
@@ -7109,7 +7120,7 @@
                     },
                     "fieldName": "getPatientById",
                     "typeName": "Query",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/d5993348c43c76e5ed9b27568adffcef1ee1079f4a8b1833ab37f312a8ea9c17.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/673423de76ef6d895d57431964e4c87d840997e87bee3a0da417f9532f75e94b.js",
                     "kind": "PIPELINE",
                     "pipelineConfig": {
                       "functions": [
@@ -7179,7 +7190,7 @@
                     },
                     "fieldName": "getPatientsForCareprovider",
                     "typeName": "Query",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/db0e93ecff4017301c5368bfeeccc52f76e6cef856ea77ace5bed1f59980e0d9.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/dbc403c2b5bd221debf516590ff10110a29acd613fef1c27d3fd2f496907d900.js",
                     "kind": "PIPELINE",
                     "pipelineConfig": {
                       "functions": [
@@ -7249,7 +7260,7 @@
                     },
                     "fieldName": "getScoreStatsOverTime",
                     "typeName": "Query",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/20cdfb5eb4ae37685be4bf29a1d835e16698297a2e0232586506db0d9bde0b93.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/e793b849404cc34911854ab9659077dd6f6d30f277dbf444b763a4d2093837f4.js",
                     "kind": "PIPELINE",
                     "pipelineConfig": {
                       "functions": [
@@ -7319,7 +7330,7 @@
                     },
                     "fieldName": "getTestEventById",
                     "typeName": "Query",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/66720e2a227eb3480a17b84f5887888878abb5b3b2573e287a91a744a63e3710.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/da2f72e4252537f5e1d22b7a64debcd77c4a7d32ca3a06dd1c3fe54a6428aaea.js",
                     "kind": "PIPELINE",
                     "pipelineConfig": {
                       "functions": [
@@ -7389,7 +7400,7 @@
                     },
                     "fieldName": "getTestEvents",
                     "typeName": "Query",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/140c72a9f0ace327aca51d7ed3cfc9497a88da95d0bf6bbd3ac103cd8436569a.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/82f8fd447522d89ab588bb916aff672224e5fb31d91816eb1db5b07282619922.js",
                     "kind": "PIPELINE",
                     "pipelineConfig": {
                       "functions": [
@@ -7459,7 +7470,7 @@
                     },
                     "fieldName": "addPatientToCareProvider",
                     "typeName": "Mutation",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/d6b02755e306aed1a028c368c4e667376b51bbcd4deb7cdb38570b4c73475e7b.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/0d50f0122d8d0d34cb4e2fbbf9725a4eac3ccc7155c3b73d0903d1388f8665ff.js",
                     "kind": "PIPELINE",
                     "pipelineConfig": {
                       "functions": [
@@ -7529,7 +7540,7 @@
                     },
                     "fieldName": "addTestType",
                     "typeName": "Mutation",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/b359c6f607cdbc9297a2bd3300ee4abf411665b12e18c0518c8d7089d19a995e.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/19b3a80555c2fd3ac9629b6fd143cb5e9650957e4e241101b371fbf10c17359a.js",
                     "kind": "PIPELINE",
                     "pipelineConfig": {
                       "functions": [
@@ -7599,7 +7610,7 @@
                     },
                     "fieldName": "assignTestToPatient",
                     "typeName": "Mutation",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/248647d3e798dbe95eb4519659b92994d9de592664911bc4f0958f0c77031581.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/d94b4765d1d67f25bc69151b53f8a014aee4293a1e9995764b081c469a77f19f.js",
                     "kind": "PIPELINE",
                     "pipelineConfig": {
                       "functions": [
@@ -7669,7 +7680,7 @@
                     },
                     "fieldName": "createCareProvider",
                     "typeName": "Mutation",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/3f3cf540e7ac47520ea65692d092f5cdb930374abacc4ae6b7e27b6dda4fe9b9.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/e12e44d90e5b321e1606dc5a013cf33bbb6fad97676ece11355d266968383386.js",
                     "kind": "PIPELINE",
                     "pipelineConfig": {
                       "functions": [
@@ -7739,7 +7750,7 @@
                     },
                     "fieldName": "createPatient",
                     "typeName": "Mutation",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/98856c90076a66b257236940ccd83e9eab6c1950fb55e29b8304467dd1e26743.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/ab86f1b56c8bceabcc455d4198094ebc0a80e19b19f43145591d1a8430f2d00d.js",
                     "kind": "PIPELINE",
                     "pipelineConfig": {
                       "functions": [
@@ -7809,7 +7820,7 @@
                     },
                     "fieldName": "deleteTestEventFromDB",
                     "typeName": "Mutation",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/bae3879d903c5af2a49be8d45c40ff5d52d85748c71436192ad593f469b57ce9.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/4100b702f0affecf45cabfcf30bb70f5f4383ded51a7241f0c94846fdeab2284.js",
                     "kind": "PIPELINE",
                     "pipelineConfig": {
                       "functions": [
@@ -7879,7 +7890,7 @@
                     },
                     "fieldName": "putBalanceScore",
                     "typeName": "Mutation",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/01dfa272140a8116c68ea9133f55bda580c9d371bcfb26cef0bbc66621f9f2d3.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/254ed60f49bd51e34f8a2c979ab8a00666527e822f19b162050869ef9f2dad5e.js",
                     "kind": "PIPELINE",
                     "pipelineConfig": {
                       "functions": [
@@ -7949,7 +7960,7 @@
                     },
                     "fieldName": "putTestResult",
                     "typeName": "Mutation",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/70b2bdf9b2544d1ab085a1f180998e015275e7d7fc0d38d25df9309f61408b2a.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/9b92e66061f52fe01fd442ba83bf4514fdb3a347dd922e388f3b8114bf5e4693.js",
                     "kind": "PIPELINE",
                     "pipelineConfig": {
                       "functions": [
@@ -8019,7 +8030,7 @@
                     },
                     "fieldName": "recordConsentDate",
                     "typeName": "Mutation",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/a4af5dad8aab229cebbdc396b587dbaa940e10e2c9e3337c0243d2e6ba99260d.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/b927ca91e37d64cf7dcbcb2d4f4561eeb454ac29fe97d3ff7846e5ac71978dd5.js",
                     "kind": "PIPELINE",
                     "pipelineConfig": {
                       "functions": [
@@ -8089,7 +8100,7 @@
                     },
                     "fieldName": "removeTestFromPatient",
                     "typeName": "Mutation",
-                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/d3d8f6627b02d69ab0ad687517b5f687d96f332217e2e87bdd7acc6eb90c8b1f.js",
+                    "codeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/5bb602cb683a995160dcbc7de326e350ffc16a1d9be47563afeb4dbde368dc42.js",
                     "kind": "PIPELINE",
                     "pipelineConfig": {
                       "functions": [

@@ -16,7 +16,6 @@ export class AthenaGlueStack extends Stack {
     private readonly athenaS3QueryLambda: lambda.Function;
 
     constructor(scope: App, id: string, vpcStack: VPCStack, cognitoStack: CognitoStack, dataWorkflowStack: DataWorkflowStack, props: StackProps) {
-    // constructor(scope: App, id: string, dataWorkflowStack: DataWorkflowStack, props: StackProps) {
       super(scope, id, props);
 
       // if change the name of this, need to change the name in the resolver too
@@ -79,7 +78,6 @@ export class AthenaGlueStack extends Stack {
           deleteBehavior: "DEPRECATE_IN_DATABASE"
         },
         schedule:{scheduleExpression:'cron(0 0 * * ? *)'},
-        //TODO: deploy and test to see if table prefix is needed to help organize tables
       });
       
       // adding some naming
@@ -113,14 +111,10 @@ export class AthenaGlueStack extends Stack {
                           iam.ManagedPolicy.fromAwsManagedPolicyName("service-role/AWSLambdaVPCAccessExecutionRole")]
       });
 
-      //TODO: change to secured StringParameter
       const cognitoIdentityPoolId = ssm.StringParameter.fromStringParameterAttributes(this, "BalanceTestCognitoIdentityPoolId", {
         parameterName: "IdentityPoolId"
       }).stringValue;
 
-      // const cognitoUserPoolId = ssm.StringParameter.fromStringParameterAttributes(this, "BalanceTestCognitoUserPoolId", {
-      //   parameterName: "UserPoolId"
-      // }).stringValue;
       const cognitoUserPoolId = cognitoStack.UserPoolId;
 
       //TODO: add other needed environment variables
@@ -137,6 +131,7 @@ export class AthenaGlueStack extends Stack {
           "S3_BUCKET_NAME": dataWorkflowStack.getS3BucketName(),
           "IDENTITY_POOL_ID": cognitoIdentityPoolId,
           "USER_POOL_ID": cognitoUserPoolId,
+          'GLUE_DB_NAME': glueDbName
         },
         vpc: vpcStack.vpc,
         vpcSubnets: {
@@ -146,7 +141,6 @@ export class AthenaGlueStack extends Stack {
     
       });    
 
-      //TODO: check athena configuration and other related parts; see if we actually need this by deploying
       const athenaDataCatalog = new athena.CfnDataCatalog(this, athenaDataCatalogName, {
         name: athenaDataCatalogName,
         type: "GLUE",

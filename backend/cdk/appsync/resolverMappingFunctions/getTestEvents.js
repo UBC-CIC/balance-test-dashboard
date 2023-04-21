@@ -12,16 +12,13 @@ import { util } from "@aws-appsync/utils";
  * @param ctx - Contextual information for your resolver invocation
  */
 export function request(ctx) {
-  console.log("request ctx", ctx);
+  // console.log("fn response ctx", ctx);
   const {
     arguments: { patient_id, test_type, from_time, to_time, sort, count },
   } = ctx;
   let testTypeSql = !test_type ? "" : `t.test_type='${test_type}'` + " and";
   let fromTimeSql = !from_time ? "" : `t.start_time>='${from_time}'` + " and";
   let toTimeSql = !to_time ? "" : `t.start_time<='${to_time}'` + " and";
-  // let ifCompletedSql = !if_completed
-  //   ? ""
-  //   : `t.if_completed=${if_completed}` + " and";
   let sortSql = !sort ? "" : `order by t.start_time ${sort}`;
   let countSql = !count ? "" : `limit ${count}`;
   return {
@@ -49,7 +46,7 @@ export function request(ctx) {
  * @param ctx - Contextual information for your resolver invocation.
  */
 export function response(ctx) {
-  console.log("response ctx", ctx);
+  // console.log("response ctx", ctx);
   let res = ctx.prev.result.body;
   return res;
 }

@@ -14,7 +14,6 @@ cognito_identity = boto3.client('cognito-identity')
 def lambda_handler(event, context):
     # print('event')
     # print(event)
-    # todo: remove hard-coded val
     id_token = event['payload']['authorization']
     logins = {
         f'cognito-idp.{region}.amazonaws.com/{user_pool_id}': id_token
@@ -37,24 +36,36 @@ def lambda_handler(event, context):
     s3 = boto3.client('s3', aws_access_key_id=aws_cred['AccessKeyId'],
                       aws_secret_access_key=aws_cred['SecretKey'],
                       aws_session_token=aws_cred['SessionToken'])
-    if ('pathToJson' in event['payload']):
-        jsonToDelete = event['payload']['pathToJson']
+    if ('pathToPrivate' in event['payload']):
+        privateJsonToDelete = event['payload']['pathToPrivate']
         parquetToDelete = event['payload']['pathToParquet']
+        pdfToDelete = event['payload']['pathToPdf']
+        csvToDelete = event['payload']['pathToCsv']
 
         # print('jsonToDelete', jsonToDelete)
         # print('parquetToDelete', parquetToDelete)
 
         try:
-            deleteJsonResponse = s3.delete_object(
+            deletePrivateJsonResponse = s3.delete_object(
                 Bucket=bucket,
-                Key=jsonToDelete
+                Key=privateJsonToDelete
             )
-            # print('deleteJsonResponse', deleteJsonResponse)
+            print('deletePrivateJsonResponse', deletePrivateJsonResponse)
             deleteParquetResponse = s3.delete_object(
                 Bucket=bucket,
                 Key=parquetToDelete
             )
-            # print('deleteParquetResponse', deleteParquetResponse)
+            print('deleteParquetResponse', deleteParquetResponse)
+            deletePdfResponse = s3.delete_object(
+                Bucket=bucket,
+                Key=pdfToDelete
+            )
+            print('deletePdfResponse', deletePdfResponse)
+            deleteCsvResponse = s3.delete_object(
+                Bucket=bucket,
+                Key=csvToDelete
+            )
+            print('deleteCsvResponse', deleteCsvResponse)
             return {'status': 200, 'body': 'delete success'}
 
         except Exception as e:

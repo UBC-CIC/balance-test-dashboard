@@ -1,8 +1,6 @@
-// import { Authenticator } from "@aws-amplify/ui-react";
 import ResponsiveAppBar from "./components/nav/Navbar";
 import PatientPage from "./components/patient/PatientPage";
 import EventsTable from "./components/patient/EventsTable";
-// import "@aws-amplify/ui-react/styles.css";
 import "./App.css";
 import ScoreChart, { RangeChart } from "./components/patient/Charts";
 import Execute from "./components/mockData/populateDBScript";
@@ -13,7 +11,6 @@ import Box from "@mui/material/Box";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { TestDetails } from "./pages/TestDetails";
 import { Auth, Hub } from "aws-amplify";
-// import "@aws-amplify/ui-react/styles.css";
 import AuthenticationPage from "./pages/Authentication";
 import { PatientsTable } from "./components/patient_list/PatientsTable";
 import {
@@ -43,11 +40,9 @@ function App() {
     Hub.listen("auth", (listenerData) => {
       switch (listenerData.payload.event) {
         case "signOut":
-          // console.log("signOut")
           setLoginState(false);
           break;
         case "signIn":
-          // console.log("signIn")
           setLoginState(true);
           break;
         default:

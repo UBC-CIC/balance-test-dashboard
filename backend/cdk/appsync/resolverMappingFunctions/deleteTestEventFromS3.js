@@ -12,7 +12,7 @@ import { util } from "@aws-appsync/utils";
  * @param ctx - Contextual information for your resolver invocation
  */
 export function request(ctx) {
-  console.log("request ctx", ctx);
+  // console.log("fn response ctx", ctx);
   const {
     arguments: { test_event_id, patient_id, year, month, day, test_type },
     request: {
@@ -21,8 +21,10 @@ export function request(ctx) {
   } = ctx;
   return {
     payload: {
-      pathToJson: `private/${patient_id}/movement=${test_type}/year=${year}/month=${month}/day=${day}/test_event_id=${test_event_id}.json`,
-      pathToParquet: `parquet_data/patient_tests/user_id=${patient_id}/movement=${test_type}/year=${year}/month=${month}/day=${day}/test_event_id=${test_event_id}`,
+      pathToPrivate: `private/${patient_id}/movement=${test_type}/year=${year}/month=${month}/day=${day}/test_event_id=${test_event_id}.json`,
+      pathToParquet: `parquet_data/patient_tests/user_id=${patient_id}/movement=${test_type}/year=${year}/month=${month}/day=${day}/test_event_id=${test_event_id}/test_event_${test_event_id}.parquet`,
+      pathToCsv: `csv_data/patient_tests/user_id=${patient_id}/movement=${test_type}/year=${year}/month=${month}/day=${day}/test_event_id=${test_event_id}/test_event_${test_event_id}.csv`,
+      pathToPdf: `pdf_reports/user_id=${patient_id}/test_event_${test_event_id}.pdf`,
       authorization: authorization,
     },
   };
@@ -42,7 +44,7 @@ export function request(ctx) {
  * @param ctx - Contextual information for your resolver invocation.
  */
 export function response(ctx) {
-  console.log("response ctx", ctx);
+  // console.log("response ctx", ctx);
   let res = ctx.prev.result.body;
   return res;
 }

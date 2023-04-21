@@ -134,7 +134,7 @@ function DisplayRows({
 
   let navigate = useNavigate();
 
-  console.log("Display All Patients.");
+  // console.log("Display All Patients.");
 
   if (patientDataRowsArr.length === 0) {
     return (
@@ -170,7 +170,7 @@ function DisplayRows({
                       <Button
                         onClick={() => {
                           // navigate("/patient");
-                          console.log("row", row);
+                          // console.log("row", row);
                           navigate(`/patient/${row.user_id}`);
                         }}
                       >
@@ -412,10 +412,9 @@ export function PatientsTable() {
   };
 
   async function fetchData() {
-    console.log("415");
     let sesh = await Auth.currentSession();
     let idtoken = sesh.idToken.jwtToken;
-    console.log("idtoken", idtoken);
+    // console.log("idtoken", idtoken);
 
     let data = [];
 
@@ -425,7 +424,7 @@ export function PatientsTable() {
     identity_id = identity_id.split(":")[1]; //get id without the region
 
     setCareProviderId(identity_id);
-    console.log("care provider: ", careProviderId);
+    // console.log("care provider: ", careProviderId);
 
     try {
       let responseAvailableTests = await API.graphql({
@@ -433,7 +432,7 @@ export function PatientsTable() {
         authToken: idtoken,
       });
 
-      console.log("responseAvailableTests", responseAvailableTests);
+      // console.log("responseAvailableTests", responseAvailableTests);
       setAvailableTestsToAssign(
         responseAvailableTests.data.getAllAvailableTests.map((t) => t.test_type)
       );
@@ -447,7 +446,7 @@ export function PatientsTable() {
       });
 
       let patientsInfo = response.data.getPatientsForCareprovider;
-      console.log("patientsInfo", patientsInfo);
+      // console.log("patientsInfo", patientsInfo);
 
       for (let p = 0; p < patientsInfo.length; p++) {
         let res1 = await API.graphql({

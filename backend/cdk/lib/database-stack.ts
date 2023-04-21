@@ -117,8 +117,7 @@ export class DatabaseStack extends Stack {
             managedPolicies: [iam.ManagedPolicy.fromManagedPolicyArn(this, 'rds-monitoring-role', 'arn:aws:iam::aws:policy/service-role/AmazonRDSEnhancedMonitoringRole')]
         })
 
-        //TODO: double this configuration
-        // make single-AZ RDS instance 
+        // make multi-AZ RDS instance 
         const rdsInstance = new rds.DatabaseInstance(this, this.rdsInstanceName, {
             engine: rds.DatabaseInstanceEngine.POSTGRES,
             databaseName: this.rdsInstanceName,
@@ -202,7 +201,6 @@ export class DatabaseStack extends Stack {
             managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName("AmazonEC2FullAccess")]
         });
         
-        //TODO: test the layer, and figure out what is needed to connect to the lambda (appsync resolver)
         const postgresqlRDSConnectLambdaRuntime = lambda.Runtime.NODEJS_14_X;
         const postgresqlRDSConnectLambdaLayer = new lambda.LayerVersion(this, "postgresqlRDSConnectLayer", {
             code: lambda.Code.fromAsset('layers/postgresqlRDSConnectNodePackages.zip'),
@@ -224,8 +222,6 @@ export class DatabaseStack extends Stack {
             environment: {
                 "PGDATABASE": this.getDatabaseName(),
                 "PGHOST": this.getDatabaseProxyEndpoint(),
-                // "PGUSER": this.rdsCredentialSecret.secretValueFromJson('username').unsafeUnwrap(),
-                // "PGPASSWORD": this.rdsCredentialSecret.secretValueFromJson('password').unsafeUnwrap(),
                 "PGPORT": String(this.dbPort),
                 'PG_SECRET_NAME': this.getDatabaseSecretName()
             },

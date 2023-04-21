@@ -13,7 +13,7 @@ import { util } from "@aws-appsync/utils";
  * @returns - A data source request object.
  */
 export function request(ctx) {
-  console.log("fn request ctx", ctx);
+  // console.log("fn request ctx", ctx);
   return {
     operation: "Invoke",
     payload: ctx.prev.result,
@@ -27,6 +27,6 @@ export function request(ctx) {
  * @returns - A result that is passed to the next function, or the response handler of the pipeline resolver.
  */
 export function response(ctx) {
-  console.log("fn response ctx", ctx);
+  // console.log("fn response ctx", ctx);
   return ctx.result;
 }

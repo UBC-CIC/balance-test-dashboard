@@ -85,10 +85,10 @@ def handler(event, context):
         query_string = insert_region(query_string, "user_id='")
 
         res1 = athena.start_query_execution(
-            QueryString=event['payload']['athena_query'],
+            QueryString=query_string,
             # ClientRequestToken='string',
             QueryExecutionContext={
-                'Database': 'sensor_data',
+                'Database': os.environ['GLUE_DB_NAME'],
                 # 'Catalog': 'string'
             },
             ResultConfiguration={

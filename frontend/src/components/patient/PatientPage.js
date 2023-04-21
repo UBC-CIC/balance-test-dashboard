@@ -9,15 +9,16 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import TextField from "@mui/material/TextField";
 import * as React from "react";
 import dayjs from "dayjs";
-import moment from "moment";
+// import moment from "moment";
+import moment from "moment-timezone";
+import Typography from "@mui/material/Typography";
 import { DataGrid } from "@mui/x-data-grid";
-import { Box } from "@mui/material";
+import Box from "@mui/material/Box";
 import { RangeChart, ScoreChart } from "./Charts";
 import Grid from "@mui/material/Grid";
 import TestEventsTable from "./EventsTable";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
-import Typography from "@mui/material/Typography";
 import {
   // exportComponentAsJPEG,
   exportComponentAsPDF,
@@ -47,17 +48,7 @@ const {
   putTestResult,
 } = require("../../graphql/mutations");
 Amplify.configure(awsconfig);
-// Amplify.configure({
-//   API: {
-//     // aws_appsync_graphqlEndpoint:
-//     //   "https://xxxxxxxxxxxxxxxxxxxxxxxxxx.appsync-api.us-east-1.amazonaws.com/graphql",
-//     // aws_appsync_region: "us-east-1",
-//     // aws_appsync_authenticationType: "NONE",
-//     graphql_headers: async () => ({
-//       Authorization: (await Auth.currentSession()).getIdToken().getJwtToken(),
-//     }),
-//   },
-// });
+const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
 function PatientPage() {
   // { patient_id, patient_name }
@@ -65,8 +56,10 @@ function PatientPage() {
   const [patientName, setPatientName] = React.useState("");
   const [movementTestSelected, setMovementTestSelected] =
     React.useState("sit-to-stand");
-  const [fromDate, setFromDate] = React.useState(dayjs().subtract(1, "month"));
-  const [toDate, setToDate] = React.useState(dayjs());
+  const [fromDate, setFromDate] = React.useState(
+    dayjs().add(1, "day").subtract(1, "month")
+  );
+  const [toDate, setToDate] = React.useState(dayjs().add(1, "day"));
   const [measurementSelected, setMeasurementSelected] = React.useState(null);
   const [weeklyAvg, setWeeklyAvg] = React.useState(null);
   const [changeFromLastWeek, setChangeFromLastWeek] = React.useState(null);
@@ -79,9 +72,7 @@ function PatientPage() {
   const fetchData = async () => {
     let sesh = await Auth.currentSession();
     let idtoken = sesh.idToken.jwtToken;
-    console.log(idtoken);
     // get analytics
-    // console.log("62");
     let resWeeklyAvg = await API.graphql({
       query: getScoreStatsOverTime,
       variables: {
@@ -102,12 +93,12 @@ function PatientPage() {
       },
       authToken: idtoken,
     });
-    console.log("monthly avg input", {
-      patient_id: patient_id,
-      from_time: dayjs().subtract(1, "month").format("YYYY-MM-DD hh:mm:ss"),
-      to_time: dayjs().format("YYYY-MM-DD hh:mm:ss"),
-      stat: "avg",
-    });
+    // console.log("monthly avg input", {
+    //   patient_id: patient_id,
+    //   from_time: dayjs().subtract(1, "month").format("YYYY-MM-DD hh:mm:ss"),
+    //   to_time: dayjs().format("YYYY-MM-DD hh:mm:ss"),
+    //   stat: "avg",
+    // });
     let resMonthlyAvg = await API.graphql({
       query: getScoreStatsOverTime,
       variables: {
@@ -145,7 +136,6 @@ function PatientPage() {
             resLastWeekAvg.data.getScoreStatsOverTime
     );
 
-    // console.log("79");
     // setWeeklyAvg(Math.round(resWeeklyAvg.data.getScoreStatsOverTime));
     // setMonthlyAvg(Math.round(resMonthlyAvg.data.getScoreStatsOverTime));
 
@@ -362,19 +352,22 @@ function PatientPage() {
                     movementTestSelected == "sit-to-stand"
                       ? data
                           .map((te) => ({
-                            start_time: moment(te.start_time).valueOf(),
-                            balance_score: te.balance_score,
+                            start_time: moment(te.start_time)
+                              .tz(browserTimezone)
+                              .valueOf(),
+                            score: te.balance_score || te.doctor_score,
                           }))
                           .filter(
                             (i) =>
                               dayjs(i.start_time).isAfter(fromDate) &&
                               dayjs(i.start_time).isBefore(toDate)
                           )
-                      : scoreDataMapping[movementTestSelected].filter(
-                          (i) =>
-                            dayjs(i.date).isAfter(fromDate) &&
-                            dayjs(i.date).isBefore(toDate)
-                        )
+                      : []
+                    // scoreDataMapping[movementTestSelected].filter(
+                    //     (i) =>
+                    //       dayjs(i.date).isAfter(fromDate) &&
+                    //       dayjs(i.date).isBefore(toDate)
+                    //   )
                   }
                   range={[
                     moment(dayjs(fromDate).format()).valueOf(),

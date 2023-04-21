@@ -5,7 +5,6 @@ import * as ec2 from 'aws-cdk-lib/aws-ec2'
 import { NatProvider } from 'aws-cdk-lib/aws-ec2';
 import * as cdk from 'aws-cdk-lib';
 
-//TODO: double check configuration
 export class VPCStack extends Stack {
 
     public readonly vpc: ec2.Vpc;

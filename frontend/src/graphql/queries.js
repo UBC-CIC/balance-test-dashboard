@@ -159,6 +159,7 @@ export const downloadTestEventDetails = /* GraphQL */ `
   query DownloadTestEventDetails(
     $test_event_id: String!
     $patient_id: String!
+    $patient_name: String!
     $year: Int!
     $month: Int!
     $day: Int!
@@ -167,6 +168,7 @@ export const downloadTestEventDetails = /* GraphQL */ `
     downloadTestEventDetails(
       test_event_id: $test_event_id
       patient_id: $patient_id
+      patient_name: $patient_name
       year: $year
       month: $month
       day: $day

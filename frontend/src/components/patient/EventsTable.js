@@ -48,6 +48,12 @@ const awsconfig = require("../../aws-exports");
 const { getTestEvents, getTestEventById } = require("../../graphql/queries");
 Amplify.configure(awsconfig);
 
+const utc = require("dayjs/plugin/utc");
+const timezone = require("dayjs/plugin/timezone");
+dayjs.extend(utc);
+dayjs.extend(timezone);
+const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
 function createData(name, calories, fat, carbs, protein) {
   return {
     name,
@@ -200,9 +206,9 @@ function EnhancedTableToolbar(props) {
   const { numSelected, eventsSelected, patientId, refresh } = props;
   const [open, setOpen] = React.useState(false);
   const [deleting, setDeleting] = React.useState(false);
+  const [deleteFailed, setDeleteFailed] = React.useState(false);
 
   const handleOpenDeleteDialog = () => {
-    // console.log("199");
     setOpen(true);
   };
 
@@ -212,63 +218,53 @@ function EnhancedTableToolbar(props) {
 
   const handleDeleteTestEvents = async () => {
     setDeleting(true);
-    let sesh = await Auth.currentSession();
-    let idtoken = sesh.idToken.jwtToken;
+    try {
+      let sesh = await Auth.currentSession();
+      let idtoken = sesh.idToken.jwtToken;
 
-    for (let i = 0; i < eventsSelected.length; i++) {
-      let testEventResponse = await API.graphql({
-        query: getTestEventById,
-        variables: {
-          test_event_id: eventsSelected[i],
-          patient_id: patientId,
-        },
-        authToken: idtoken,
-      });
-      let eventDetails = testEventResponse.data.getTestEventById;
-      let deleteFromS3Response = await API.graphql({
-        query: deleteTestEventFromS3,
-        variables: {
-          test_event_id: eventsSelected[i],
-          patient_id: patientId,
-          year: dayjs(eventDetails.start_time).year(),
-          month: dayjs(eventDetails.start_time).month() + 1,
-          day: dayjs(eventDetails.start_time).date(),
-          test_type: eventDetails.test_type,
-        },
-        authToken: idtoken,
-      });
-      // console.log("deleteFromS3Response", deleteFromS3Response);
-      // console.log("patientid", patientId);
-      let deleteFromDbResponse = await API.graphql({
-        query: deleteTestEventFromDB,
-        variables: {
-          test_event_id: eventsSelected[i],
-          patient_id: patientId,
-        },
-        authToken: idtoken,
-      });
-      // console.log("deleteFromDbResponse", deleteFromDbResponse);
+      for (let i = 0; i < eventsSelected.length; i++) {
+        let testEventResponse = await API.graphql({
+          query: getTestEventById,
+          variables: {
+            test_event_id: eventsSelected[i],
+            patient_id: patientId,
+          },
+          authToken: idtoken,
+        });
+        let eventDetails = testEventResponse.data.getTestEventById;
+        let deleteFromS3Response = await API.graphql({
+          query: deleteTestEventFromS3,
+          variables: {
+            test_event_id: eventsSelected[i],
+            patient_id: patientId,
+            year: dayjs(eventDetails.start_time).year(),
+            month: dayjs(eventDetails.start_time).month() + 1,
+            day: dayjs(eventDetails.start_time).date(),
+            test_type: eventDetails.test_type,
+          },
+          authToken: idtoken,
+        });
+        let deleteFromDbResponse = await API.graphql({
+          query: deleteTestEventFromDB,
+          variables: {
+            test_event_id: eventsSelected[i],
+            patient_id: patientId,
+          },
+          authToken: idtoken,
+        });
+      }
       setDeleting(false);
       setOpen(false);
       refresh();
+    } catch (e) {
+      setDeleteFailed(true);
+      setOpen(false);
     }
   };
 
   return (
     <div>
-      <Toolbar
-      // sx={{
-      //   pl: { sm: 2 },
-      //   pr: { xs: 1, sm: 1 },
-      //   ...(numSelected > 0 && {
-      //     bgcolor: (theme) =>
-      //       alpha(
-      //         theme.palette.primary.main,
-      //         theme.palette.action.activatedOpacity
-      //       ),
-      //   }),
-      // }}
-      >
+      <Toolbar>
         <Typography
           sx={{ flex: "1 1 100%" }}
           variant="h6"
@@ -297,6 +293,9 @@ function EnhancedTableToolbar(props) {
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
             Once the test events have been deleted, they can't be recovered.
+            {deleteFailed
+              ? "Sorry, could not delete one of more of the test events selected :("
+              : ""}
           </DialogContentText>
         </DialogContent>
         <DialogActions>
@@ -387,7 +386,6 @@ export default function TestEventsTable({
       authToken: idtoken,
     });
 
-    console.log("restestevents", resTestEvents);
     setRows(resTestEvents.data.getTestEvents);
   };
 
@@ -408,30 +406,13 @@ export default function TestEventsTable({
       return;
     }
     setSelected([]);
-    // console.log("selected", selected);
   };
 
   const handleClick = (event, test_event_id) => {
     navigate(`/testDetails/${patient_id}/${test_event_id}`);
-    // const selectedIndex = selected.indexOf(name);
-    // let newSelected = [];
-    // if (selectedIndex === -1) {
-    //   newSelected = newSelected.concat(selected, name);
-    // } else if (selectedIndex === 0) {
-    //   newSelected = newSelected.concat(selected.slice(1));
-    // } else if (selectedIndex === selected.length - 1) {
-    //   newSelected = newSelected.concat(selected.slice(0, -1));
-    // } else if (selectedIndex > 0) {
-    //   newSelected = newSelected.concat(
-    //     selected.slice(0, selectedIndex),
-    //     selected.slice(selectedIndex + 1)
-    //   );
-    // }
-    // setSelected(newSelected);
   };
 
   const handleCheck = (event, test_event_id) => {
-    // console.log("in handlechecked");
     const selectedIndex = selected.indexOf(test_event_id);
     let newSelected = [];
     if (selectedIndex === -1) {
@@ -527,25 +508,47 @@ export default function TestEventsTable({
                       id={labelId}
                       scope="row"
                       padding="none"
+                      onClick={(event) => handleClick(event, row.test_event_id)}
                       sx={
                         // row.balance_score >= 50
                         //   ? { color: "green" }
                         //   : { color: "red" }
                         // !row.score ? { color: "black" } : {row.score>= 50 ? { color: "green" } : { color: "red" }}
                         () => {
-                          if (!row.balance_score) {
-                            return { color: "black" };
-                          } else if (row.balance_score >= 50) {
-                            return { color: "green" };
+                          // if (!row.balance_score) {
+                          //   return { color: "black" };
+                          // } else if (row.balance_score >= 50) {
+                          //   return { color: "green" };
+                          // } else {
+                          //   return { color: "red" };
+                          // }
+
+                          if (row.balance_score) {
+                            return row.balance_score >= 50
+                              ? { color: "green" }
+                              : { color: "red" };
+                          } else if (row.doctor_score) {
+                            return row.doctor_score >= 50
+                              ? { color: "green" }
+                              : { color: "red" };
                           } else {
-                            return { color: "red" };
+                            return { color: "#D3D3D3" };
                           }
                         }
                       }
                     >
-                      {!row.balance_score
+                      {(() => {
+                        if (row.balance_score) {
+                          return row.balance_score;
+                        } else if (row.doctor_score) {
+                          return row.doctor_score;
+                        } else {
+                          return "Score is not available at this time";
+                        }
+                      })()}
+                      {/* {!row.balance_score
                         ? "Calculating score ..."
-                        : row.balance_score}
+                        : row.balance_score} */}
                     </TableCell>
                     <TableCell
                       align="left"
@@ -553,10 +556,15 @@ export default function TestEventsTable({
                     >
                       {row.test_type}
                     </TableCell>
-                    <TableCell align="left">
+                    <TableCell
+                      align="left"
+                      onClick={(event) => handleClick(event, row.test_event_id)}
+                    >
                       {!row.start_time
                         ? "Test has not been completed"
-                        : dayjs(row.start_time).format("YYYY-MM-DD HH:mm")}
+                        : dayjs
+                            .tz(row.start_time, browserTimezone)
+                            .format("YYYY-MM-DD HH:mm")}
                     </TableCell>
                     <TableCell align="left">{row.notes}</TableCell>
                   </TableRow>
