@@ -1,5 +1,7 @@
 import React, { PureComponent, useEffect, useState } from "react";
 import ApexCharts from "apexcharts";
+import { Box } from "@mui/material";
+import Typography from "@mui/material/Typography";
 import {
   LineChart,
   Line,
@@ -286,7 +288,7 @@ export const RangeChart = ({ patientId, measurement, fromDate, toDate }) => {
     fetchData();
   }, [measurement]);
 
-  return (
+  return data ? (
     <div id="chart">
       <Chart
         options={options}
@@ -297,6 +299,26 @@ export const RangeChart = ({ patientId, measurement, fromDate, toDate }) => {
         height={300}
       />{" "}
     </div>
+  ) : (
+    <Box
+      sx={{
+        display: "flex",
+        flexWrap: "wrap",
+        justifyContent: "center",
+        alignContent: "center",
+        "& > :not(style)": {
+          m: 1,
+          width: 128,
+          height: 128,
+        },
+      }}
+    >
+      <Typography color="#D3D3D3">
+        No measurement range data available. This data is updated once a day, so
+        please check back tomorrow
+      </Typography>
+      {/* <Typography variant="subtitle1">No data available</Typography> */}
+    </Box>
   );
 };
 

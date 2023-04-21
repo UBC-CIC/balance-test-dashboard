@@ -423,7 +423,7 @@
     },
     "DataSourceName": "BalanceTest_generate_report_s3_lambda",
     "Name": "redirect_s3_download_function",
-    "CodeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/28735a8c309355275f86385cbe993eaf9a328414d4a855a213e82b2905150081.js",
+    "CodeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/ae44648268099b94cff9176750182e1823ba7fbf16a1da0e77ba3193c54fcee5.js",
     "FunctionVersion": "2018-05-29",
     "Runtime": {
      "Name": "APPSYNC_JS",
@@ -445,7 +445,7 @@
     },
     "DataSourceName": "BalanceTest_query_s3_lambda",
     "Name": "redirect_s3_data_retrieval_function",
-    "CodeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/28735a8c309355275f86385cbe993eaf9a328414d4a855a213e82b2905150081.js",
+    "CodeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/ae44648268099b94cff9176750182e1823ba7fbf16a1da0e77ba3193c54fcee5.js",
     "FunctionVersion": "2018-05-29",
     "Runtime": {
      "Name": "APPSYNC_JS",
@@ -467,7 +467,7 @@
     },
     "DataSourceName": "BalanceTest_postgresql_connection_lambda",
     "Name": "redirect_postgresql_rds_function",
-    "CodeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/28735a8c309355275f86385cbe993eaf9a328414d4a855a213e82b2905150081.js",
+    "CodeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/ae44648268099b94cff9176750182e1823ba7fbf16a1da0e77ba3193c54fcee5.js",
     "FunctionVersion": "2018-05-29",
     "Runtime": {
      "Name": "APPSYNC_JS",
@@ -489,7 +489,7 @@
     },
     "DataSourceName": "BalanceTest_delete_event_record_lambda",
     "Name": "redirect_delete_event_function",
-    "CodeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/28735a8c309355275f86385cbe993eaf9a328414d4a855a213e82b2905150081.js",
+    "CodeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/ae44648268099b94cff9176750182e1823ba7fbf16a1da0e77ba3193c54fcee5.js",
     "FunctionVersion": "2018-05-29",
     "Runtime": {
      "Name": "APPSYNC_JS",
@@ -511,7 +511,7 @@
     },
     "FieldName": "deleteTestEventFromS3",
     "TypeName": "Mutation",
-    "CodeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/540d7c20764e3b563d1cbdfc15e6427b6dbb0da26e2aaa8c9c058fe8c30c5a60.js",
+    "CodeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/49a89f702c19b0427b0df2b34c544aaeb5ad640583d422730b6c04e669c27b71.js",
     "Kind": "PIPELINE",
     "PipelineConfig": {
      "Functions": [
@@ -540,7 +540,7 @@
     },
     "FieldName": "downloadTestEventDetails",
     "TypeName": "Query",
-    "CodeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/1417748595b9bc762ee0150e41fb3e7623ec03e210bfebbfb14f9ce1f4864857.js",
+    "CodeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/0dd9ad774eaab2e22c73706ae31a7386c293e4205df3166014968bc836d2c14f.js",
     "Kind": "PIPELINE",
     "PipelineConfig": {
      "Functions": [
@@ -569,7 +569,7 @@
     },
     "FieldName": "getMeasurementRange",
     "TypeName": "Query",
-    "CodeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/25b88f7f56c25fcf219e7467be4ab115cae62fd219776a6b339dfeca63637048.js",
+    "CodeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/06805d5e739a34e4b85b5bb4fa246bf9c24baa92f49ccabe168a9470e1d0351d.js",
     "Kind": "PIPELINE",
     "PipelineConfig": {
      "Functions": [
@@ -598,7 +598,7 @@
     },
     "FieldName": "getMeasurementData",
     "TypeName": "Query",
-    "CodeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/9b943f1efb1239e650ac1e54845fd1799b1e56ef6857d9df0d792b8e78071d8b.js",
+    "CodeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/4be658bca06c3cb71775fa983726e67ce3ba44fd2c94d6173d2a981e5d90ecbe.js",
     "Kind": "PIPELINE",
     "PipelineConfig": {
      "Functions": [
@@ -627,7 +627,7 @@
     },
     "FieldName": "getAllAvailableTests",
     "TypeName": "Query",
-    "CodeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/ad5babc432fd36f7cbff972ca47437d7a3210d636591278bfee63136e83983f0.js",
+    "CodeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/d45ee35384eb7c281d32909e30b7026934cc04725fd8b45844fcd1561c1022ab.js",
     "Kind": "PIPELINE",
     "PipelineConfig": {
      "Functions": [
@@ -656,7 +656,7 @@
     },
     "FieldName": "getAllPatients",
     "TypeName": "Query",
-    "CodeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/8c126736eaaafc289e736b7bdda928f70402d04bc2f5f81ad502eeed830730d3.js",
+    "CodeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/23e53257f0b552262e94e3110b7e5e6201bee7c3f384c75d50f6b82f99620756.js",
     "Kind": "PIPELINE",
     "PipelineConfig": {
      "Functions": [
@@ -685,7 +685,7 @@
     },
     "FieldName": "getCareproviderById",
     "TypeName": "Query",
-    "CodeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/38b48e18570470d0c8df943e916d4084911780961f68cc3a10e5d1432578efde.js",
+    "CodeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/ea0c43c2e19e69b4c38b124f79f34b17b67193b0a40b1e83b725e8d298a8c450.js",
     "Kind": "PIPELINE",
     "PipelineConfig": {
      "Functions": [
@@ -714,7 +714,7 @@
     },
     "FieldName": "getPatientAssignedTests",
     "TypeName": "Query",
-    "CodeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/e0d6e49137ce0d9ee036a4e1adeef594db12c2799715a9ff6e790c419b4a6e7b.js",
+    "CodeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/f5f9f91cb12603d2164e8008f82e1961f55d92bb374892648196a3119e8e2f3d.js",
     "Kind": "PIPELINE",
     "PipelineConfig": {
      "Functions": [
@@ -743,7 +743,7 @@
     },
     "FieldName": "getPatientById",
     "TypeName": "Query",
-    "CodeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/d5993348c43c76e5ed9b27568adffcef1ee1079f4a8b1833ab37f312a8ea9c17.js",
+    "CodeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/673423de76ef6d895d57431964e4c87d840997e87bee3a0da417f9532f75e94b.js",
     "Kind": "PIPELINE",
     "PipelineConfig": {
      "Functions": [
@@ -772,7 +772,7 @@
     },
     "FieldName": "getPatientsForCareprovider",
     "TypeName": "Query",
-    "CodeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/db0e93ecff4017301c5368bfeeccc52f76e6cef856ea77ace5bed1f59980e0d9.js",
+    "CodeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/dbc403c2b5bd221debf516590ff10110a29acd613fef1c27d3fd2f496907d900.js",
     "Kind": "PIPELINE",
     "PipelineConfig": {
      "Functions": [
@@ -801,7 +801,7 @@
     },
     "FieldName": "getScoreStatsOverTime",
     "TypeName": "Query",
-    "CodeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/20cdfb5eb4ae37685be4bf29a1d835e16698297a2e0232586506db0d9bde0b93.js",
+    "CodeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/e793b849404cc34911854ab9659077dd6f6d30f277dbf444b763a4d2093837f4.js",
     "Kind": "PIPELINE",
     "PipelineConfig": {
      "Functions": [
@@ -830,7 +830,7 @@
     },
     "FieldName": "getTestEventById",
     "TypeName": "Query",
-    "CodeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/66720e2a227eb3480a17b84f5887888878abb5b3b2573e287a91a744a63e3710.js",
+    "CodeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/da2f72e4252537f5e1d22b7a64debcd77c4a7d32ca3a06dd1c3fe54a6428aaea.js",
     "Kind": "PIPELINE",
     "PipelineConfig": {
      "Functions": [
@@ -859,7 +859,7 @@
     },
     "FieldName": "getTestEvents",
     "TypeName": "Query",
-    "CodeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/140c72a9f0ace327aca51d7ed3cfc9497a88da95d0bf6bbd3ac103cd8436569a.js",
+    "CodeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/82f8fd447522d89ab588bb916aff672224e5fb31d91816eb1db5b07282619922.js",
     "Kind": "PIPELINE",
     "PipelineConfig": {
      "Functions": [
@@ -888,7 +888,7 @@
     },
     "FieldName": "addPatientToCareProvider",
     "TypeName": "Mutation",
-    "CodeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/d6b02755e306aed1a028c368c4e667376b51bbcd4deb7cdb38570b4c73475e7b.js",
+    "CodeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/0d50f0122d8d0d34cb4e2fbbf9725a4eac3ccc7155c3b73d0903d1388f8665ff.js",
     "Kind": "PIPELINE",
     "PipelineConfig": {
      "Functions": [
@@ -917,7 +917,7 @@
     },
     "FieldName": "addTestType",
     "TypeName": "Mutation",
-    "CodeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/b359c6f607cdbc9297a2bd3300ee4abf411665b12e18c0518c8d7089d19a995e.js",
+    "CodeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/19b3a80555c2fd3ac9629b6fd143cb5e9650957e4e241101b371fbf10c17359a.js",
     "Kind": "PIPELINE",
     "PipelineConfig": {
      "Functions": [
@@ -946,7 +946,7 @@
     },
     "FieldName": "assignTestToPatient",
     "TypeName": "Mutation",
-    "CodeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/248647d3e798dbe95eb4519659b92994d9de592664911bc4f0958f0c77031581.js",
+    "CodeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/d94b4765d1d67f25bc69151b53f8a014aee4293a1e9995764b081c469a77f19f.js",
     "Kind": "PIPELINE",
     "PipelineConfig": {
      "Functions": [
@@ -975,7 +975,7 @@
     },
     "FieldName": "createCareProvider",
     "TypeName": "Mutation",
-    "CodeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/3f3cf540e7ac47520ea65692d092f5cdb930374abacc4ae6b7e27b6dda4fe9b9.js",
+    "CodeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/e12e44d90e5b321e1606dc5a013cf33bbb6fad97676ece11355d266968383386.js",
     "Kind": "PIPELINE",
     "PipelineConfig": {
      "Functions": [
@@ -1004,7 +1004,7 @@
     },
     "FieldName": "createPatient",
     "TypeName": "Mutation",
-    "CodeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/98856c90076a66b257236940ccd83e9eab6c1950fb55e29b8304467dd1e26743.js",
+    "CodeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/ab86f1b56c8bceabcc455d4198094ebc0a80e19b19f43145591d1a8430f2d00d.js",
     "Kind": "PIPELINE",
     "PipelineConfig": {
      "Functions": [
@@ -1033,7 +1033,7 @@
     },
     "FieldName": "deleteTestEventFromDB",
     "TypeName": "Mutation",
-    "CodeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/bae3879d903c5af2a49be8d45c40ff5d52d85748c71436192ad593f469b57ce9.js",
+    "CodeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/4100b702f0affecf45cabfcf30bb70f5f4383ded51a7241f0c94846fdeab2284.js",
     "Kind": "PIPELINE",
     "PipelineConfig": {
      "Functions": [
@@ -1062,7 +1062,7 @@
     },
     "FieldName": "putBalanceScore",
     "TypeName": "Mutation",
-    "CodeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/01dfa272140a8116c68ea9133f55bda580c9d371bcfb26cef0bbc66621f9f2d3.js",
+    "CodeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/254ed60f49bd51e34f8a2c979ab8a00666527e822f19b162050869ef9f2dad5e.js",
     "Kind": "PIPELINE",
     "PipelineConfig": {
      "Functions": [
@@ -1091,7 +1091,7 @@
     },
     "FieldName": "putTestResult",
     "TypeName": "Mutation",
-    "CodeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/70b2bdf9b2544d1ab085a1f180998e015275e7d7fc0d38d25df9309f61408b2a.js",
+    "CodeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/9b92e66061f52fe01fd442ba83bf4514fdb3a347dd922e388f3b8114bf5e4693.js",
     "Kind": "PIPELINE",
     "PipelineConfig": {
      "Functions": [
@@ -1120,7 +1120,7 @@
     },
     "FieldName": "recordConsentDate",
     "TypeName": "Mutation",
-    "CodeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/a4af5dad8aab229cebbdc396b587dbaa940e10e2c9e3337c0243d2e6ba99260d.js",
+    "CodeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/b927ca91e37d64cf7dcbcb2d4f4561eeb454ac29fe97d3ff7846e5ac71978dd5.js",
     "Kind": "PIPELINE",
     "PipelineConfig": {
      "Functions": [
@@ -1149,7 +1149,7 @@
     },
     "FieldName": "removeTestFromPatient",
     "TypeName": "Mutation",
-    "CodeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/d3d8f6627b02d69ab0ad687517b5f687d96f332217e2e87bdd7acc6eb90c8b1f.js",
+    "CodeS3Location": "s3://cdk-hnb659fds-assets-684904187051-ca-central-1/5bb602cb683a995160dcbc7de326e350ffc16a1d9be47563afeb4dbde368dc42.js",
     "Kind": "PIPELINE",
     "PipelineConfig": {
      "Functions": [

@@ -12,7 +12,7 @@ import { util } from "@aws-appsync/utils";
  * @param ctx - Contextual information for your resolver invocation
  */
 export function request(ctx) {
-  console.log("request ctx", ctx);
+  // console.log("fn response ctx", ctx);
   const {
     arguments: { patient_id, test_type },
   } = ctx;
@@ -38,7 +38,7 @@ export function request(ctx) {
  * @param ctx - Contextual information for your resolver invocation.
  */
 export function response(ctx) {
-  console.log("response ctx", ctx);
+  // console.log("response ctx", ctx);
   let res = ctx.prev.result.body;
   return res;
 }

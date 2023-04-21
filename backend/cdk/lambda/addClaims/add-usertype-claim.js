@@ -1,6 +1,6 @@
 exports.handler = (event, context, callback) => {
-  console.log("event", event);
-  console.log("context", context);
+  // console.log("event", event);
+  // console.log("context", context);
   event.response = {
     claimsOverrideDetails: {
       claimsToAddOrOverride: {

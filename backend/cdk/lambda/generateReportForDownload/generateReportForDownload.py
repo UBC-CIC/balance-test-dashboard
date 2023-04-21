@@ -57,7 +57,8 @@ def lambda_handler(event, context):
             template, key)
         # pdf_path = f'parquet_data/patient_tests/user_id={user_id}/movement={movement}/year={year}/month={month}/day={day}/test_event_id={test_event_id}/test_event_{test_event_id}.pdf'
         parquet_path = f'parquet_data/patient_tests/user_id={region}:{user_id}/movement={movement}/year={year}/month={month}/day={day}/test_event_id={test_event_id}/test_event_{test_event_id}.parquet'
-        pdf_path = f'pdf_eports/{region}:{user_id}/{test_event_id}.pdf'
+        pdf_path = f'pdf_reports/user_id={region}:{user_id}/test_event_{test_event_id}.pdf'
+
         csv_path = f'csv_data/patient_tests/user_id={region}:{user_id}/movement={movement}/year={year}/month={month}/day={day}/test_event_id={test_event_id}/test_event_{test_event_id}.csv'
 
         # print('parquet_path', parquet_path)

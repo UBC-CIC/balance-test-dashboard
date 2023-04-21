@@ -1,5 +1,6 @@
+const AWS = require("aws-sdk");
 exports.handler = async (event, context, callback) => {
-  const AWS = require("aws-sdk");
+  // const AWS = require("aws-sdk");
   // const cognito_isp = require("@aws-sdk/cognito-identity-provider");
 
   const cognito_isp = new AWS.CognitoIdentityServiceProvider({
@@ -8,8 +9,8 @@ exports.handler = async (event, context, callback) => {
 
   let params = {};
 
-  console.log("Event: ", event);
-  console.log("Context: ", context);
+  // console.log("Event: ", event);
+  // console.log("Context: ", context);
 
   if (event.request.userAttributes["custom:user_type"]) {
     if (event.request.userAttributes["custom:user_type"] == "careProvider") {

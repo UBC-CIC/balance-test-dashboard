@@ -19,6 +19,8 @@ import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
+import Alert from "@mui/material/Alert";
+
 import dayjs from "dayjs";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { GRAPHQL_AUTH_MODE } from "@aws-amplify/api";
@@ -38,6 +40,12 @@ const {
 } = require("../graphql/queries");
 Amplify.configure(awsconfig);
 
+const utc = require("dayjs/plugin/utc");
+const timezone = require("dayjs/plugin/timezone");
+dayjs.extend(utc);
+dayjs.extend(timezone);
+const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
 export function TestDetails() {
   const { patient_id, test_event_id } = useParams();
   const [patientName, setPatientName] = useState("");
@@ -45,11 +53,13 @@ export function TestDetails() {
   const [measurementData, setMeasurementData] = useState([]);
   const [testEvent, setTestEvent] = useState(null);
   const [downloading, setDownloading] = useState(false);
+  const [downloadError, setDownloadError] = useState(false);
   let navigate = useNavigate();
 
   const fetchData = async () => {
     let sesh = await Auth.currentSession();
     let idtoken = sesh.idToken.jwtToken;
+    console.log("idtoken", idtoken);
     let reslambdaauth = await API.graphql({
       query: getTestEventById,
       variables: { test_event_id: test_event_id, patient_id: patient_id },
@@ -59,17 +69,17 @@ export function TestDetails() {
       //   Authorization: `prefix-${idtoken}`,
       // },
     });
-    console.log("patientparams", {
-      query: getPatientById,
-      variables: { patient_id: patient_id },
-      authToken: idtoken,
-    });
+    // console.log("patientparams", {
+    //   query: getPatientById,
+    //   variables: { patient_id: patient_id },
+    //   authToken: idtoken,
+    // });
     let resPatient = await API.graphql({
       query: getPatientById,
       variables: { patient_id: patient_id },
       authToken: idtoken,
     });
-    console.log("respatient", resPatient);
+    // console.log("respatient", resPatient);
     if (resPatient.data.getPatientById) {
       setPatientName(
         `${resPatient.data.getPatientById.last_name}, ${resPatient.data.getPatientById.first_name}`
@@ -112,10 +122,13 @@ export function TestDetails() {
     console.log("resmeasurement", resmeasurement);
     setMeasurementData(
       resmeasurement.data.getMeasurementData.ts.map((ts, i) => ({
-        ts: ts,
+        ts: dayjs.tz(ts.slice(0, -7), browserTimezone).format("hh:mm:ss"),
+        // ts: dayjs(ts).format("hh:mm:ss"),
         val: resmeasurement.data.getMeasurementData.val[i],
       }))
     );
+    console.log("measurementdata", measurementData);
+
     // }
   };
 
@@ -149,36 +162,50 @@ export function TestDetails() {
     let idtoken = sesh.idToken.jwtToken;
 
     setDownloading(true);
-    console.log("patientid", patient_id);
-    console.log("patientname", patientName);
-    let downloadVariable = {
-      test_event_id: test_event_id,
-      test_type: "sit-to-stand",
-      year: dayjs(testEvent.start_time).year(),
-      month: dayjs(testEvent.start_time).month() + 1,
-      day: dayjs(testEvent.start_time).date(),
-      patient_id: patient_id,
-      patient_name: patientName,
-    };
-    console.log("download variable", downloadVariable);
-    let resdownload = await API.graphql({
-      query: downloadTestEventDetails,
-      variables: downloadVariable,
-      authToken: idtoken,
-    });
-    let pdfUrl = resdownload.data.downloadTestEventDetails.pdf_url;
-    // window.open(pdfUrl);
-    let rawUrl = resdownload.data.downloadTestEventDetails.raw_url;
-    // window.open(rawUrl);
+    // console.log("patientid", patient_id);
+    // console.log("patientname", patientName);
+    // let downloadVariable = {
+    //   test_event_id: test_event_id,
+    //   test_type: "sit-to-stand",
+    //   year: dayjs(testEvent.start_time).year(),
+    //   month: dayjs(testEvent.start_time).month() + 1,
+    //   day: dayjs(testEvent.start_time).date(),
+    //   patient_id: patient_id,
+    //   patient_name: patientName,
+    // };
+    // console.log("download variable", downloadVariable);
+    try {
+      let resdownload = await API.graphql({
+        query: downloadTestEventDetails,
+        // variables: downloadVariable,
+        variables: {
+          test_event_id: test_event_id,
+          test_type: "sit-to-stand",
+          year: dayjs(testEvent.start_time).year(),
+          month: dayjs(testEvent.start_time).month() + 1,
+          day: dayjs(testEvent.start_time).date(),
+          patient_id: patient_id,
+          patient_name: patientName,
+        },
+        authToken: idtoken,
+      });
+      let pdfUrl = resdownload.data.downloadTestEventDetails.pdf_url;
+      // window.open(pdfUrl);
+      let rawUrl = resdownload.data.downloadTestEventDetails.raw_url;
+      // window.open(rawUrl);
 
-    let downloadLink = document.createElement("a");
-    downloadLink.download = rawUrl;
-    downloadLink.href = rawUrl;
-    downloadLink.click();
-    await new Promise((resolve) => setTimeout(resolve, 300));
-    downloadLink.download = pdfUrl;
-    downloadLink.href = pdfUrl;
-    downloadLink.click();
+      let downloadLink = document.createElement("a");
+      downloadLink.download = rawUrl;
+      downloadLink.href = rawUrl;
+      downloadLink.click();
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      downloadLink.download = pdfUrl;
+      downloadLink.href = pdfUrl;
+      downloadLink.click();
+      setDownloading(false);
+    } catch (e) {
+      setDownloadError(true);
+    }
     setDownloading(false);
   };
 
@@ -193,6 +220,12 @@ export function TestDetails() {
           Back
         </Button>
       </Grid>
+      {downloadError ? (
+        <Alert severity="error">This is an error alert — check it out!</Alert>
+      ) : (
+        <div></div>
+      )}
+
       <Grid item container direction="row" justifyContent="space-between">
         <Typography variant="h5" gutterBottom inline>
           Test Event Details: {patientName} ({patient_id})
@@ -250,7 +283,9 @@ export function TestDetails() {
                 <TableCell align="left">
                   {!testEvent
                     ? "loading..."
-                    : dayjs(testEvent.start_time).format("YYYY-MM-DD hh:mm")}
+                    : dayjs
+                        .tz(testEvent.start_time, browserTimezone)
+                        .format("YYYY-MM-DD HH:mm")}
                 </TableCell>
                 <TableCell align="left">
                   {!testEvent

@@ -48,6 +48,13 @@ const awsconfig = require("../../aws-exports");
 const { getTestEvents, getTestEventById } = require("../../graphql/queries");
 Amplify.configure(awsconfig);
 
+const utc = require("dayjs/plugin/utc");
+const timezone = require("dayjs/plugin/timezone");
+dayjs.extend(utc);
+dayjs.extend(timezone);
+const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+// console.log("timezone", browserTimezone);
+
 function createData(name, calories, fat, carbs, protein) {
   return {
     name,
@@ -200,6 +207,7 @@ function EnhancedTableToolbar(props) {
   const { numSelected, eventsSelected, patientId, refresh } = props;
   const [open, setOpen] = React.useState(false);
   const [deleting, setDeleting] = React.useState(false);
+  const [deleteFailed, setDeleteFailed] = React.useState(false);
 
   const handleOpenDeleteDialog = () => {
     // console.log("199");
@@ -212,45 +220,50 @@ function EnhancedTableToolbar(props) {
 
   const handleDeleteTestEvents = async () => {
     setDeleting(true);
-    let sesh = await Auth.currentSession();
-    let idtoken = sesh.idToken.jwtToken;
+    try {
+      let sesh = await Auth.currentSession();
+      let idtoken = sesh.idToken.jwtToken;
 
-    for (let i = 0; i < eventsSelected.length; i++) {
-      let testEventResponse = await API.graphql({
-        query: getTestEventById,
-        variables: {
-          test_event_id: eventsSelected[i],
-          patient_id: patientId,
-        },
-        authToken: idtoken,
-      });
-      let eventDetails = testEventResponse.data.getTestEventById;
-      let deleteFromS3Response = await API.graphql({
-        query: deleteTestEventFromS3,
-        variables: {
-          test_event_id: eventsSelected[i],
-          patient_id: patientId,
-          year: dayjs(eventDetails.start_time).year(),
-          month: dayjs(eventDetails.start_time).month() + 1,
-          day: dayjs(eventDetails.start_time).date(),
-          test_type: eventDetails.test_type,
-        },
-        authToken: idtoken,
-      });
-      // console.log("deleteFromS3Response", deleteFromS3Response);
-      // console.log("patientid", patientId);
-      let deleteFromDbResponse = await API.graphql({
-        query: deleteTestEventFromDB,
-        variables: {
-          test_event_id: eventsSelected[i],
-          patient_id: patientId,
-        },
-        authToken: idtoken,
-      });
-      // console.log("deleteFromDbResponse", deleteFromDbResponse);
+      for (let i = 0; i < eventsSelected.length; i++) {
+        let testEventResponse = await API.graphql({
+          query: getTestEventById,
+          variables: {
+            test_event_id: eventsSelected[i],
+            patient_id: patientId,
+          },
+          authToken: idtoken,
+        });
+        let eventDetails = testEventResponse.data.getTestEventById;
+        let deleteFromS3Response = await API.graphql({
+          query: deleteTestEventFromS3,
+          variables: {
+            test_event_id: eventsSelected[i],
+            patient_id: patientId,
+            year: dayjs(eventDetails.start_time).year(),
+            month: dayjs(eventDetails.start_time).month() + 1,
+            day: dayjs(eventDetails.start_time).date(),
+            test_type: eventDetails.test_type,
+          },
+          authToken: idtoken,
+        });
+        // console.log("deleteFromS3Response", deleteFromS3Response);
+        // console.log("patientid", patientId);
+        let deleteFromDbResponse = await API.graphql({
+          query: deleteTestEventFromDB,
+          variables: {
+            test_event_id: eventsSelected[i],
+            patient_id: patientId,
+          },
+          authToken: idtoken,
+        });
+        // console.log("deleteFromDbResponse", deleteFromDbResponse);
+      }
       setDeleting(false);
       setOpen(false);
       refresh();
+    } catch (e) {
+      setDeleteFailed(true);
+      setOpen(false);
     }
   };
 
@@ -297,6 +310,9 @@ function EnhancedTableToolbar(props) {
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
             Once the test events have been deleted, they can't be recovered.
+            {deleteFailed
+              ? "Sorry, could not delete one of more of the test events selected :("
+              : ""}
           </DialogContentText>
         </DialogContent>
         <DialogActions>
@@ -388,7 +404,24 @@ export default function TestEventsTable({
     });
 
     console.log("restestevents", resTestEvents);
-    setRows(resTestEvents.data.getTestEvents);
+    setRows(
+      resTestEvents.data.getTestEvents
+      // .map((e) => ({
+      //   test_event_id: e.test_event_id,
+      //   patient_id: e.patient_id,
+      //   test_type: e.test_type,
+      //   balance_score: e.balance_score,
+      //   doctor_score: e.doctor_score,
+      //   notes: e.notes,
+      //   // start_time: dayjs(e.start_time).tz(browserTimezone),
+      //   // start_time: dayjs(e.start_time).tz(
+      //   //   Intl.DateTimeFormat().resolvedOptions().timeZone
+      //   // ),
+      //   start_time: e.start_time,
+      //   end_time: e.end_time,
+      // }))
+    );
+    console.log("rows", rows);
   };
 
   React.useEffect(() => {
@@ -581,7 +614,9 @@ export default function TestEventsTable({
                     >
                       {!row.start_time
                         ? "Test has not been completed"
-                        : dayjs(row.start_time).format("YYYY-MM-DD HH:mm")}
+                        : dayjs
+                            .tz(row.start_time, browserTimezone)
+                            .format("YYYY-MM-DD HH:mm")}
                     </TableCell>
                     <TableCell align="left">{row.notes}</TableCell>
                   </TableRow>

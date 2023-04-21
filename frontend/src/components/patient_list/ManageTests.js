@@ -61,7 +61,7 @@ export async function retrieveAssignedTests(user_id, movementTests) {
 
     let checkboxInitStateObj = {};
 
-    console.log("movementtests", movementTests);
+    // console.log("movementtests", movementTests);
     for (const movement of movementTests) {
       if (testsArr.includes(movement)) {
         checkboxInitStateObj[movement] = true;
@@ -100,7 +100,6 @@ export function ManageTests({
     React.useState(checkboxInitStateObj);
 
   React.useEffect(() => {
-    console.log("103", movementTests);
     retrieveAssignedTests(user_id, movementTests)
       .then((checkbox_obj) => {
         patientDataRowsArr[rowNum].assigned_test_num =
