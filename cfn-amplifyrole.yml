@@ -19,18 +19,21 @@ Resources:
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/AdministratorAccess-Amplify
         # - arn:aws:iam::aws:policy/AmazonSSMReadOnlyAccess
+        - arn:aws:iam::aws:policy/IAMReadOnlyAccess
       Policies:
-        - PolicyName: commit2act-extended-policy
+        - PolicyName: communicationmanager-extended-policy
           PolicyDocument: # JSON policy document
             Version: '2012-10-17'
             Statement:
               - Effect: Allow
                 Action:
-                  - ssm:*
-                  - ssm:AddTagsToResource
-                  - iam:ListPolicies
-                  - iam:CreatePolicies
-                  - iam:ReadPolicies
-                  - iam:ListRoles
-                  - iam:AttachRolePolicy
+                - "ssm:*"
+                - "ssm:AddTagsToResource"
+                - "ssm:PutParameter"
+                - "ssm:GetParametersByPath"
+                - "ssm:GetParameters"
+                - "ssm:GetParameter"
+                - "iam:CreatePolicy"
+                - "iam:CreatePolicyVersion"
+                - "iam:AttachRolePolicy"
                 Resource: '*'
