@@ -97,7 +97,7 @@ Set-ExecutionPolicy RemoteSigned
 TODO: verify the time for these 5 stacks
 
 Deploy the CDK stacks individually, you **must** deploy in the **following order**. The deployment will take about 50-60 minutes.
-When `Do you wish to deploy these changes (y/n)?`, type `y` and enter.
+When prompted `Do you wish to deploy these changes (y/n)?`, type `y` and enter.
 
 ```
 cdk deploy VPCStack --profile balance-test
