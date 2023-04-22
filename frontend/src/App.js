@@ -3,7 +3,6 @@ import PatientPage from "./components/patient/PatientPage";
 import EventsTable from "./components/patient/EventsTable";
 import "./App.css";
 import ScoreChart, { RangeChart } from "./components/patient/Charts";
-import Execute from "./components/mockData/populateDBScript";
 import { Container } from "@mui/system";
 import Patient from "./pages/patient";
 import Navbar from "./components/nav/Navbar";
@@ -84,7 +83,6 @@ function App() {
                   element={<TestDetails />}
                   exact
                 />
-                <Route path="executeApi" element={<Execute />} />
 
                 {/* Using path="*"" means "match anything", so this route
                     acts like a catch-all for URLs that we don't have explicit
