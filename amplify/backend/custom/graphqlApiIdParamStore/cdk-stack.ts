@@ -2,7 +2,10 @@ import * as cdk from '@aws-cdk/core';
 import * as AmplifyHelpers from '@aws-amplify/cli-extensibility-helper';
 import * as ssm from '@aws-cdk/aws-ssm';
 import { AmplifyDependentResourcesAttributes } from '../../types/amplify-dependent-resources-ref';
-
+//import * as iam from '@aws-cdk/aws-iam';
+//import * as sns from '@aws-cdk/aws-sns';
+//import * as subs from '@aws-cdk/aws-sns-subscriptions';
+//import * as sqs from '@aws-cdk/aws-sqs';
 
 export class cdkStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps, amplifyResourceProps?: AmplifyHelpers.AmplifyResourceProps) {
