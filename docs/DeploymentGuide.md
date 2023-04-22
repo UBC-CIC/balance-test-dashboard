@@ -14,6 +14,7 @@
 Before you deploy, you must have the following installed on your device:
 
 - [GitHub Account](https://github.com/)
+- [Git](https://git-scm.com/)
 - [AWS Account](https://aws.amazon.com/account/)
 - [AWS CLI](https://aws.amazon.com/cli/)
 - [AWS CDK](https://docs.aws.amazon.com/cdk/latest/guide/cli.html)
@@ -27,18 +28,14 @@ First, clone the GitHub repository onto your machine. To do this:
 
 1. Create a folder on your computer to contain the project code.
 
-2. For an Apple computer, open Terminal. If on a Windows machine, open Command Prompt or Windows Terminal. Enter into the folder you made using the command `cd path/to/folder`. To find the path to a folder on a Mac, right click on the folder and press `Get Info`, then select the whole text found under `Where:` and copy with ⌘C. On Windows (not WSL), enter into the folder on File Explorer and click on the path box (located to the left of the search bar), then copy the whole text that shows up.
+2. To find the path to a folder on a Mac, right click on the folder and press `Get Info`, then select the whole text found under `Where:` and copy with ⌘C. On Windows (not WSL), enter into the folder on File Explorer and click on the path box (located to the left of the search bar), then copy the whole text that shows up.
 
-3. Clone the GitHub repository by entering the following:
+3. For an Apple computer, open Terminal. If on a Windows machine, open Command Prompt or Windows Terminal. Enter the path of the folder you made using the command `cd path/to/folder`, where `path/to/folder` is the text you just copied.
+
+4. Clone the GitHub repository by entering the following:
 
 ```bash
 git clone https://github.com/UBC-CIC/balance-test-dashboard.git
-```
-
-Before deploying the stacks, from your project root directory, to ensure you are in the **backend** directory, run the below command in your terminal:
-
-```
-cd backend/cdk
 ```
 
 # Step 2: Install Dependencies
@@ -71,6 +68,12 @@ cd ../..
 
 **Make sure Docker Desktop is open and finished with the setup process.**
 
+Before deploying the stacks, from your project root directory, to ensure you are in the **backend** directory, run the below command in your terminal:
+
+```
+cd backend/cdk
+```
+
 In the `backend/cdk` directory, initialize the CDK stacks in the terminal (required only if you have not deployed the stacks before). The below lines assume your account profile is named `balance-test` and you want to deploy to that account.
 
 ```
@@ -86,7 +89,7 @@ Set-ExecutionPolicy RemoteSigned
 
 TODO: verify the time for these 5 stacks
 
-Deploy the CDK stacks individually, you **must** deploy in the **following order**. The deployment will take about 50-60 minutes.
+Deploy the CDK stacks individually. To prevent errors, you **must** deploy in the **following order**. The deployment will take about 50-60 minutes.
 
 ```
 cdk deploy VPCStack --profile balance-test
