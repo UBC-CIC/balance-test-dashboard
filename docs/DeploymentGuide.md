@@ -50,7 +50,6 @@ git clone https://github.com/UBC-CIC/balance-test-dashboard.git
 
 # Step 2: Install Dependencies
 
-<!-- **TODO: may not need this step** -->
 
 The `backend` folder contains AWS CDK stacks and AWS Lambda function code that will manage the data stores and corresponding interactions with the dashboard.
 
@@ -65,14 +64,14 @@ rm package-lock.json
 npm install
 ```
 
-TODO: verify this
+<!-- TODO: verify this
 Install dependencies required by the AWS Lambda functions. Note that this generates a separate `node_modules` directory in the `src` folder. This is done because everything under the `src` folder will be uploaded to AWS Lambda and we want to exclude the packages (e.g. `aws-sdk`) that already comes with AWS Lambda:
 
 ```
 cd cdk/lambda
 npm install
 cd ../..
-```
+``` -->
 
 # Step 3: CDK Deployment Part 1
 
@@ -97,8 +96,6 @@ If the cdk synth command gives you an error, run your console as administrator a
 Set-ExecutionPolicy RemoteSigned
 ```
 
-TODO: verify the time for these 5 stacks
-
 Deploy the CDK stacks individually. To prevent errors, you **must** deploy in the **following order**. The deployment will take about 50-60 minutes.
 Deploy the CDK stacks individually, you **must** deploy in the **following order**. The deployment will take about 50-60 minutes.
 When prompted `Do you wish to deploy these changes (y/n)?`, type `y` and enter.
@@ -113,6 +110,7 @@ cdk deploy CognitoStack --profile balance-test
 After successfully deploying this stack, take a note of the output:
 ![alt text](/docs/images/cognito_output.PNG)
 
+Then proceed with deploying the rest of the stacks by running:
 
 ```
 cdk deploy DatabaseStack --profile balance-test
@@ -155,7 +153,7 @@ After connecting your Github account this window should appear.
 
 ![alt text](/docs/images/amplify_settings.PNG)
 
-Select the **amplifyconsole-balancetest-backend-role** we made previously for the deployment role. Expand the "Environment variables" section and edit the environment variables to the following settings, replace the values starting with `//` with the output that you saved from previous:
+Select the **amplifyconsole-balancetest-backend-role** we made previously for the deployment role. Expand the "Environment variables" section and edit the environment variables to the following settings, replace the values starting with `//` with the output that you saved from previous. Make sure to replace the `us-east-2` with your region.
 
 ```
 _LIVE_UPDATES: [{"name":"Amplify CLI","pkg":"@aws-amplify/cli","type":"npm","version":"10.7.2"}]
@@ -174,7 +172,7 @@ AMPLIFY_IDENTITYPOOL_ID: // / CognitoStack.IdentityPoolId
 
 Then, click the orange button "save and deploy". The deployment will take a few minutes. Wait until the status of Verify is green.
 
-<!-- ![alt text](/docs/images/deployment_guide/amplify_3.PNG) -->
+![alt text](/docs/images/amplify_success.PNG)
 
 Next click on Rewrites and redirects from the sidebar and click edit.
 
@@ -187,7 +185,7 @@ Refer to [AWS's Page on Single Page Apps](https://docs.aws.amazon.com/amplify/la
 
 It should look like this after you have added the above require condition.
 
-<!-- ![alt text](/docs/images/deployment_guide/amplify_4.PNG) -->
+![alt text](/docs/images/amplify_rewrites.PNG)
 
 Your webapp is now partially deployed, but before it's accessible, we need to finish the rest of the CDK deployment.
 
@@ -201,8 +199,10 @@ If you are in the project root directory, make sure you are back in the `backend
 cd backend/cdk
 ```
 
-Then, assuming you have the above cdk stacks deployed, deploy this stack (it takes about 10 minutes):
+Then, assuming you have the above cdk stacks deployed, deploy this stack (it takes about 5 minutes):
 
 ```
 cdk deploy AppsyncStack --profile balance-test
 ```
+Your entire app is now deployed! Click on the generated Amplify link to open the webapp.
+![alt text](/docs/images/amplify_link.PNG)
