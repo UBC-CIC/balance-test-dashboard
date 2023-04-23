@@ -1,35 +1,14 @@
 version: 1
-# env:
-#   variables:
-    # AMPLIFY_STORAGE_REGION: 
-    # AMPLIFY_STORAGE_BUCKET_NAME: 'balancetest-raw-recordings-bucket'
-    # AMPLIFY_USERPOOL_ID: ${aws ssm get-parameter --name CognitoUserPoolId --query Parameter.Value --output text}
-    # AMPLIFY_WEBCLIENT_ID: ${aws ssm get-parameter --name UserPoolClientId --query Parameter.Value --output text}
-    # AMPLIFY_IDENTITYPOOL_ID: ${aws ssm get-parameter --name IdentityPoolId --query Parameter.Value --output text}
-    # AMPLIFY_NATIVECLIENT_ID: ${aws ssm get-parameter --name UserPoolClientId --query Parameter.Value --output text}
-    # AMPLIFY_USERPOOL_ID: $(aws ssm get-parameter --name CognitoUserPoolId --query Parameter.Value --output text || echo "")
-    # AMPLIFY_WEBCLIENT_ID: $(aws ssm get-parameter --name UserPoolClientId --query Parameter.Value --output text || echo "")
-    # AMPLIFY_IDENTITYPOOL_ID: $(aws ssm get-parameter --name IdentityPoolId --query Parameter.Value --output text || echo "")
-    # AMPLIFY_NATIVECLIENT_ID: $(aws ssm get-parameter --name UserPoolClientId --query Parameter.Value --output text || echo "")
 backend:
   phases:
-    # preBuild:
-    #   commands:
-    #     - echo $(aws ssm get-parameter --name CognitoUserPoolId --query Parameter.Value --output text)
-    #     - AMPLIFY_USERPOOL_ID=$(aws ssm get-parameter --name CognitoUserPoolId --query Parameter.Value --output text || echo "err")
-    #     - AMPLIFY_WEBCLIENT_ID=$(aws ssm get-parameter --name UserPoolClientId --query Parameter.Value --output text || echo "err")
-    #     - AMPLIFY_IDENTITYPOOL_ID=$(aws ssm get-parameter --name IdentityPoolId --query Parameter.Value --output text || echo "err")
-    #     - AMPLIFY_NATIVECLIENT_ID=$(aws ssm get-parameter --name UserPoolClientId --query Parameter.Value --output text || echo "err")
     preBuild:
       commands:
+      # IT FINALLY WORKS!!!
+      # script that edits the region of the imported auth resource
         - node ./amplifyAuthScript.js  
     build:
       commands:
         - '# Execute Amplify CLI with the helper script'
-        # - AMPLIFY_USERPOOL_ID=$(aws ssm get-parameter --name CognitoUserPoolId --query Parameter.Value --output text || echo "")
-        # - AMPLIFY_WEBCLIENT_ID=$(aws ssm get-parameter --name UserPoolClientId --query Parameter.Value --output text || echo "")
-        # - AMPLIFY_IDENTITYPOOL_ID=$(aws ssm get-parameter --name IdentityPoolId --query Parameter.Value --output text || echo "")
-        # - AMPLIFY_NATIVECLIENT_ID=$(aws ssm get-parameter --name UserPoolClientId --query Parameter.Value --output text || echo "")
         - amplifyPush --simple
 frontend:
   phases:
