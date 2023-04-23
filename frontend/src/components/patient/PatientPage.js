@@ -119,8 +119,12 @@ function PatientPage() {
       },
       authToken: idtoken,
     });
-    setMonthlyAvg(parseFloat(resMonthlyAvg.data.getScoreStatsOverTime));
-    setWeeklyAvg(parseFloat(resWeeklyAvg.data.getScoreStatsOverTime));
+    setMonthlyAvg(
+      Number(parseFloat(resMonthlyAvg.data.getScoreStatsOverTime).toFixed())
+    );
+    setWeeklyAvg(
+      Number(parseFloat(resWeeklyAvg.data.getScoreStatsOverTime)).toFixed()
+    );
     setChangeFromLastMonth(
       resLastMonthAvg.data.getScoreStatsOverTime == null
         ? null

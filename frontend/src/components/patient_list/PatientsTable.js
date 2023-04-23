@@ -502,15 +502,6 @@ export function PatientsTable() {
             movements_assigned: checkbox_obj,
           });
         });
-
-        // data.push({
-        //   patient_name: patientsInfo[p].name,
-        //   user_id: patientsInfo[p].patient_id,
-        //   assigned_test_num: res1.data.getPatientAssignedTests.length,
-        //   last_movement_tested: lastMovementAssigned,
-        //   last_test_score: lastScore,
-        //   movements_assigned: {}
-        // });
       }
       updatePatientDataRowsArr(data);
     } catch (err) {
