@@ -16,7 +16,6 @@ from sagemaker.deserializers import JSONDeserializer
 from sagemaker.tensorflow import TensorFlow
 from sagemaker.tensorflow.serving import TensorFlowModel
 from sagemaker.multidatamodel import MultiDataModel
-from sagemaker import get_execution_role
 from sagemaker import Session
 from scipy.signal import stft
 
@@ -28,22 +27,15 @@ sagemaker_runtime = boto3.client('sagemaker-runtime')
 
 def lambda_handler(event, context):
     
-    # config = Config(
-    #     read_timeout=70,
-    #     retries={
-    #         'max_attempts': 1
-    #     }
-    # )
-    # sagemaker_runtime = boto3.client('sagemaker-runtime')#, config=config)
-
+    # get bucket and key from event
     bucket = event['Records'][0]['s3']['bucket']['name']
     key = urllib.parse.unquote_plus(event['Records'][0]['s3']['object']['key'], encoding='utf-8')
 
-    # Get file from S3 bucket
+    # Get file from S3 bucket and turn into a json string
     response_get_body_dict = get_object_from_s3(bucket, key)
     response_get_body_str = json.dumps(response_get_body_dict)
 
-    # make Dataframe from json data and make folder path
+    # make Dataframe from json data, get needed values, and make folder path
     df_json = pd.read_json(response_get_body_str)
     region = event['Records'][0]['awsRegion']
     user_id = response_get_body_dict['user_id']
@@ -57,6 +49,7 @@ def lambda_handler(event, context):
     test_event_id = response_get_body_dict['testID']
     training_bool = response_get_body_dict['training']
 
+    # getting timestamps and IMU data only
     df_json_select = df_json[['ts', 'ax', 'ay', 'az', 'gx', 'gy', 'gz', 'mx', 'my', 'mz']]
 
     # to organize json data by training or not training
@@ -66,60 +59,55 @@ def lambda_handler(event, context):
     else:
         path_json = "json_data/patient_tests" + "/user_id=" + region + ":" + str(user_id) + "/movement=" + movement_str + "/year=" + str(start_year) + "/month=" + str(start_month) + "/day=" + str(start_day) + "/test_event_id=" + str(test_event_id) + "/"
 
+    # if path_parquet is modified, there is a path in another service that needs to be modified for range graphs
     path_parquet = "parquet_data/patient_tests" + "/user_id=" + region + ":" + str(user_id) + "/movement=" + movement_str + "/year=" + str(start_year) + "/month=" + str(start_month) + "/day=" + str(start_day) + "/test_event_id=" + str(test_event_id) + "/"
     path_csv = "csv_data/patient_tests" + "/user_id=" + region + ":" + str(user_id) + "/movement=" + movement_str + "/year=" + str(start_year) + "/month=" + str(start_month) + "/day=" + str(start_day) + "/test_event_id=" + str(test_event_id) + "/"
     
+    # send json to the new organized folder in S3; convert to parquet/csv and send to another folder
     copy_json_to_s3(bucket + "/" + key, bucket, path_json, test_event_id) # to ensure that the json data is organized by patients, and not include care providers
     convert_json_to_parquet(df_json_select, bucket, path_parquet, test_event_id)
     convert_json_to_csv(df_json_select, bucket, path_csv, test_event_id)
     
-    endpoint_parameter_name = os.environ["endpoint_parameter_name"] 
-    endpoint_parameter_value = ''
     endpoint_exists_bool = False
     sagemaker_bucket = os.environ["sagemaker_bucket_name"]
 
+    # get a list of existing Sagemaker endpoints and check if the specified one exists
     try:
-        # Get list of parameters from Parameter Store to compare
-        print("Getting list of parameters.")
-        response_describe_param = ssm.describe_parameters()
-        print("Got response, describe parameters")
-        parameters = response_describe_param['Parameters']
-        print("Finished getting list of parameters.")
+        response_list_endpoints = sagemaker.list_endpoints(NameContains=os.environ['endpoint_name'])
+        endpointsList = response_list_endpoints["Endpoints"]
+        print("Finished getting a list of Sagemaker endpoints.")
 
-        # If endpoint parameter is already created, then get the value for the endpoint name and compare
-        if len(parameters) != 0:
-            for param in parameters:
-                if (param['Name'] == endpoint_parameter_name):
-                    response_get_param = ssm.get_parameter(Name=endpoint_parameter_name)
-                    endpoint_parameter_value = response_get_param['Parameter']["Value"]
-                    
-                    if (endpoint_parameter_value == os.environ["endpoint_name"]):
-                        endpoint_exists_bool = True
-                        print("Correct endpoint value does exist in Parameter Store.")
-                        
-                    else: 
-                        endpoint_exists_bool = False
-                        print("Endpoint value does not exist in Parameter Store.")
-                    
+        if (len(endpointsList) > 0):
+            for endpointDetails in endpointsList:
+                if (endpointDetails['EndpointName'] == os.environ["endpoint_name"]):
+                    endpoint_exists_bool = True
+                    print("Correct Sagemaker endpoint does exist.")
+
                     break
+        else:
+            endpoint_exists_bool = False
+            print("No Sagemaker endpoint of specified name exists.")
 
+        
     except Exception as e:
         print(e)
-        print("Error with getting values from Parameter Store.")
+        print("Error with getting list of Sagemaker endpoints.")
         raise e
+    
 
-    # Setting where the models and training job outputs should be saved
+    # Setting where the models and training job outputs should be saved in the Sagemaker S3 bucket
     model_location_prefix_key = f'saved_models/movement={movement_str}'
     training_job_location_prefix_s3_uri = f's3://{sagemaker_bucket}/training_job_outputs/movement={movement_str}' 
 
     # Checking if an endpoint exists, and whether to make a training job or invoke an endpoint
     if (endpoint_exists_bool == False):
-        print("Make new endpoint by starting a training job.")
+        print("Make a new endpoint.")
 
+        # example result: {user_id}/movement={movement_type}/training/
         training_folder_path = os.path.split(key)[0] + "/"
 
         if (training_bool == True):
-            make_training_job_and_endpoint(bucket, training_folder_path, model_location_prefix_key, training_job_location_prefix_s3_uri, user_id, endpoint_parameter_name)
+            make_training_job_and_endpoint(bucket, training_folder_path, model_location_prefix_key, training_job_location_prefix_s3_uri, user_id)
 
         else:
             print("Need to send in a number of recordings with provided scores before testing with an actual model.")
@@ -135,17 +123,17 @@ def lambda_handler(event, context):
         print("Sending to Sagemaker Endpoint")
 
         try:
-            # make S3 search the subfolder starting from the proper user_id
+            # set the key in S3 to search the model's tar.gz file from, starting from the proper user_id
             model_location_prefix_key = f'{model_location_prefix_key}/user_id={user_id}'
 
-            # preprocess the data from the JSON file
+            # preprocess the input data from the JSON file
             preprocessedArr = preprocess_data(df_json_select)
             invokeEndpointInput = {"instances": preprocessedArr}
 
             serializer = JSONSerializer()
             invokeEndpointInput = serializer.serialize(invokeEndpointInput)
 
-            # to get the most recent TargetModel for the user
+            # to get the most recent TargetModel file for the user
             try:
                 print("Getting a list of the user's model files in the S3 bucket.")
                 response_list_obj = s3.list_objects_v2(Bucket=sagemaker_bucket, StartAfter=model_location_prefix_key, Prefix=model_location_prefix_key)
@@ -157,7 +145,6 @@ def lambda_handler(event, context):
                     index = target_model_key.find("/user_id=") # this is the part after the movement subfolder
                     target_model_file_key = target_model_key[index::] # expected result is /user_id={user_id}/{tar_gz_file_name}
                     
-                    print("Target model file key: ", target_model_file_key)
                     print("Got the most recent target model file. Invoking endpoint.")
                 
                 else:
@@ -168,13 +155,13 @@ def lambda_handler(event, context):
                 print("Error listing the model files in the bucket. Make sure the S3 folder exists and that there are files in there.")
                 raise e
 
-            # path for models is /saved_models/movement={movement}/{target_model_file_key}
-            response_invoke = sagemaker_runtime.invoke_endpoint(EndpointName=endpoint_parameter_value,
+            # path for models in Sagemaker bucket is /saved_models/movement={movement}/{target_model_file_key}
+            response_invoke = sagemaker_runtime.invoke_endpoint(EndpointName=os.environ['endpoint_name'],
                                                                 ContentType='application/json',
                                                                 TargetModel=target_model_file_key,
                                                                 Body=invokeEndpointInput)  # need the endpoint name and target model tar
 
-            print("Response, Invoke Endpoint: ", response_invoke)
+            print("Finished invoking endpoint.")
 
             data_body = response_invoke['Body'].read()
             data = json.loads(data_body)
@@ -206,8 +193,6 @@ def get_object_from_s3(bucket, key):
 
         response_get_body = response_get['Body'].read()
         response_get_body_dict = json.loads(response_get_body)
-        # response_get_body_str = json.dumps(response_get_body_dict)
-        # print(response_get_body_str)
 
         return response_get_body_dict
 
@@ -327,7 +312,6 @@ def make_training_job_and_add_model(bucket, training_folder_path, model_location
 
         try:
             print("Getting execution role for Sagemaker.")
-            # role = get_execution_role()
             role = os.environ['sagemaker_execution_role']
             print("Finished getting execution role.")
 
@@ -385,10 +369,9 @@ model_location_prefix_key: a string that represents the S3 key prefix to the sub
 
 training_job_location_prefix_s3_uri: a string that represents the S3 URI prefix for where the training job should be outputting its files to in the Sagemaker bucket
 user_id: a string representing the id of the user that the model is being made for
-endpoint_parameter_name: a string represent the name of the parameter that would be written in Parameter Store when storing the endpoint name
 """
 
-def make_training_job_and_endpoint(bucket, training_folder_path, model_location_prefix_key, training_job_location_prefix_s3_uri, user_id, endpoint_parameter_name):
+def make_training_job_and_endpoint(bucket, training_folder_path, model_location_prefix_key, training_job_location_prefix_s3_uri, user_id):
     print("Making training job and endpoint.")
     endpointName = os.environ['endpoint_name']
     sagemaker_bucket = os.environ['sagemaker_bucket_name']
@@ -450,19 +433,37 @@ def make_training_job_and_endpoint(bucket, training_folder_path, model_location_
             print("Error with copying the file to S3 to add a model.")
             raise e
         
+        # get VPC values to put into the model
+        try:
+            response_get_param_security_group = ssm.get_parameter(Name=os.environ['security_group_parameter_name'])
+            security_group_parameter_value = response_get_param_security_group['Parameter']["Value"]
+            
+            response_get_param_private_subnet_1 = ssm.get_parameter(Name=os.environ['private_subnet_1_parameter_name'])
+            private_subnet_1_parameter_value = response_get_param_private_subnet_1['Parameter']["Value"]
+            
+            response_get_param_private_subnet_2 = ssm.get_parameter(Name=os.environ['private_subnet_2_parameter_name'])
+            private_subnet_2_parameter_value = response_get_param_private_subnet_2['Parameter']["Value"]
+            print("Finished getting VPC parameter values.")
+                        
+        except Exception as e:
+            print(e)
+            print("Error getting the parameters for VPC from Parameter Store for training job. Make sure these parameters exist.")
+            raise e
+        
         # make MultiDataModel and deploy to an endpoint
         try:
             model_location_prefix = f's3://{sagemaker_bucket}/{model_location_prefix_key}'
             session = Session(default_bucket=sagemaker_bucket)
             
-            model = TensorFlowModel(model_data=tf_estimator.model_data, name=model_name, role=role, framework_version="2.3.0", sagemaker_session=session)
+            model = TensorFlowModel(model_data=tf_estimator.model_data, name=model_name, role=role, framework_version="2.3.0", sagemaker_session=session, 
+                                    vpc_config={'SecurityGroupIds': [security_group_parameter_value], 'Subnets': [private_subnet_1_parameter_value, private_subnet_2_parameter_value]})
             multiModel = MultiDataModel(name=endpointName, model_data_prefix=model_location_prefix, model=model, sagemaker_session=session)
 
             print("\nMade multi-model. Making a new endpoint.\n")
 
             # deploy endpoint
             predictor = multiModel.deploy(
-                initial_instance_count=1, instance_type="ml.m4.xlarge", endpoint_name=endpointName
+                initial_instance_count=1, instance_type="ml.t2.large", endpoint_name=endpointName
             )
 
             print("\nNew endpoint has been made.\n")
@@ -476,18 +477,6 @@ def make_training_job_and_endpoint(bucket, training_folder_path, model_location_
         except Exception as e:
             print(e)
             print("Error making a model and deploying to an endpoint.")
-            raise e
-
-        # add the endpoint name to Parameter Store
-        try:
-            print("Putting endpoint name into Parameter Store.")
-            response_put_parameter = ssm.put_parameter(Name=endpoint_parameter_name, Value=endpointName, Overwrite=True, Type='String', Tier="Standard") 
-            
-            print("Response, Put Parameter: ", response_put_parameter)
-            
-        except Exception as e:
-            print(e)
-            print("Error with adding the endpoint name to Parameter Store.")
             raise e
         
     else:
@@ -510,7 +499,24 @@ Returns - a TensorFlow estimator from Sagemaker
 def launch_training_job(bucket, training_folder_key, role, training_job_location_prefix_s3_uri, user_id):
 
     print("Sending data inputs for training job.")
-
+    
+    # get VPC values from Parameter Store to put in the training job
+    try:
+        response_get_param_security_group = ssm.get_parameter(Name=os.environ['security_group_parameter_name'])
+        security_group_parameter_value = response_get_param_security_group['Parameter']["Value"]
+        
+        response_get_param_private_subnet_1 = ssm.get_parameter(Name=os.environ['private_subnet_1_parameter_name'])
+        private_subnet_1_parameter_value = response_get_param_private_subnet_1['Parameter']["Value"]
+        
+        response_get_param_private_subnet_2 = ssm.get_parameter(Name=os.environ['private_subnet_2_parameter_name'])
+        private_subnet_2_parameter_value = response_get_param_private_subnet_2['Parameter']["Value"]
+        print("Finished getting VPC parameter values.")
+                    
+    except Exception as e:
+        print(e)
+        print("Error getting the parameters for VPC from Parameter Store for training job. Make sure these parameters exist.")
+        raise e
+    
     # For the job naming, the expected name is {user_id}-{date and time stamp}; any longer may exceed character limit for base job name
     tf_estimator = TensorFlow(
         entry_point="LSTM.py",  # training script name
@@ -519,13 +525,13 @@ def launch_training_job(bucket, training_folder_key, role, training_job_location
         role=role,
         instance_count=1,
         instance_type="ml.g4dn.8xlarge",  # training instance
-        framework_version="2.3.0", # tensorflow version; 2.4 currently has a bug when model is deployed
+        framework_version="2.3.0", # tensorflow version
         py_version="py37",  # python version
         code_location=training_job_location_prefix_s3_uri, # S3 location for training job output file storage
         output_path=training_job_location_prefix_s3_uri, # S3 location for training job file storage
         base_job_name=f'{user_id}',  # Modifying the training job name
-        # subnets=[os.environ["private-subnet-1"], os.environ["private-subnet-2"]],
-        # security_group_ids=[os.environ["security-group"]],
+        subnets=[private_subnet_1_parameter_value, private_subnet_2_parameter_value], # VPC subnet IDs
+        security_group_ids=[security_group_parameter_value], # VPC security group ID
     )
 
     print("Fitting training folder data into the Sagemaker Estimator.")
@@ -546,45 +552,87 @@ Returns - a NumPy array containing the modified data from df
 """
 def preprocess_data(df):
 
-    pad_length = (2000-len(df['ax']))//2
-    print("Pad Length: ", pad_length)
+    nperseg = 512
+    
+    # this conditional checks if padding is needed for the input data by comparing with the segment length
+    if (len(df['ax']) < nperseg):
+    
+        pad_length = (nperseg-len(df['ax']))//2 + 1
+        print("Pad Length: ", pad_length)
 
-    ax_normal_stft = np.abs(stft(np.pad(df['ax'], (pad_length,), 'median'), scaling='psd', nperseg=512, fs=1)[2]**2)
-    ay_normal_stft = np.abs(stft(np.pad(df['ay'], (pad_length,), 'median'), scaling='psd', nperseg=512, fs=1)[2]**2)
-    az_normal_stft = np.abs(stft(np.pad(df['az'], (pad_length,), 'median'), scaling='psd', nperseg=512, fs=1)[2]**2)
+        ax_normal_stft = np.abs(stft(np.pad(df['ax'], (pad_length,), 'median'), scaling='psd', nperseg=nperseg, fs=1)[2]**2)
+        ay_normal_stft = np.abs(stft(np.pad(df['ay'], (pad_length,), 'median'), scaling='psd', nperseg=nperseg, fs=1)[2]**2)
+        az_normal_stft = np.abs(stft(np.pad(df['az'], (pad_length,), 'median'), scaling='psd', nperseg=nperseg, fs=1)[2]**2)
 
-    ax_normal_stft_largest = nlargest(50, ax_normal_stft.flatten())
-    ax_normal_stft_smallest = nsmallest(50, ax_normal_stft.flatten())
-    ay_normal_stft_largest = nlargest(50, ay_normal_stft.flatten())
-    ay_normal_stft_smallest = nsmallest(50, ay_normal_stft.flatten())
-    az_normal_stft_largest = nlargest(50, az_normal_stft.flatten())
-    az_normal_stft_smallest = nsmallest(50, az_normal_stft.flatten())
+        ax_normal_stft_largest = nlargest(50, ax_normal_stft.flatten())
+        ax_normal_stft_smallest = nsmallest(50, ax_normal_stft.flatten())
+        ay_normal_stft_largest = nlargest(50, ay_normal_stft.flatten())
+        ay_normal_stft_smallest = nsmallest(50, ay_normal_stft.flatten())
+        az_normal_stft_largest = nlargest(50, az_normal_stft.flatten())
+        az_normal_stft_smallest = nsmallest(50, az_normal_stft.flatten())
 
-    gx_normal_stft = np.abs(stft(np.pad(df['gx'], (pad_length,), 'median'), scaling='psd', nperseg=512, fs=1)[2]**2)
-    gy_normal_stft = np.abs(stft(np.pad(df['gy'], (pad_length,), 'median'), scaling='psd', nperseg=512, fs=1)[2]**2)
-    gz_normal_stft = np.abs(stft(np.pad(df['gz'], (pad_length,), 'median'), scaling='psd', nperseg=512, fs=1)[2]**2)
+        gx_normal_stft = np.abs(stft(np.pad(df['gx'], (pad_length,), 'median'), scaling='psd', nperseg=nperseg, fs=1)[2]**2)
+        gy_normal_stft = np.abs(stft(np.pad(df['gy'], (pad_length,), 'median'), scaling='psd', nperseg=nperseg, fs=1)[2]**2)
+        gz_normal_stft = np.abs(stft(np.pad(df['gz'], (pad_length,), 'median'), scaling='psd', nperseg=nperseg, fs=1)[2]**2)
 
-    gx_normal_stft_largest = nlargest(50, gx_normal_stft.flatten())
-    gx_normal_stft_smallest = nsmallest(50, gx_normal_stft.flatten())
-    gy_normal_stft_largest = nlargest(50, gy_normal_stft.flatten())
-    gy_normal_stft_smallest = nsmallest(50, gy_normal_stft.flatten())
-    gz_normal_stft_largest = nlargest(50, gz_normal_stft.flatten())
-    gz_normal_stft_smallest = nsmallest(50, gz_normal_stft.flatten())
+        gx_normal_stft_largest = nlargest(50, gx_normal_stft.flatten())
+        gx_normal_stft_smallest = nsmallest(50, gx_normal_stft.flatten())
+        gy_normal_stft_largest = nlargest(50, gy_normal_stft.flatten())
+        gy_normal_stft_smallest = nsmallest(50, gy_normal_stft.flatten())
+        gz_normal_stft_largest = nlargest(50, gz_normal_stft.flatten())
+        gz_normal_stft_smallest = nsmallest(50, gz_normal_stft.flatten())
 
-    mx_normal_stft=np.abs(stft(np.pad(df['mx'],(pad_length,),'median'), scaling='psd',nperseg=512,fs=1)[2]**2)
-    my_normal_stft=np.abs(stft(np.pad(df['my'],(pad_length,),'median'), scaling='psd',nperseg=512,fs=1)[2]**2)
-    mz_normal_stft=np.abs(stft(np.pad(df['mz'],(pad_length,),'median'), scaling='psd',nperseg=512,fs=1)[2]**2)
+        mx_normal_stft=np.abs(stft(np.pad(df['mx'],(pad_length,),'median'), scaling='psd',nperseg=nperseg,fs=1)[2]**2)
+        my_normal_stft=np.abs(stft(np.pad(df['my'],(pad_length,),'median'), scaling='psd',nperseg=nperseg,fs=1)[2]**2)
+        mz_normal_stft=np.abs(stft(np.pad(df['mz'],(pad_length,),'median'), scaling='psd',nperseg=nperseg,fs=1)[2]**2)
 
-    mx_normal_stft_largest=nlargest(50,mx_normal_stft.flatten())
-    mx_normal_stft_smallest=nsmallest(50,mx_normal_stft.flatten())
-    my_normal_stft_largest=nlargest(50,my_normal_stft.flatten())
-    my_normal_stft_smallest=nsmallest(50,my_normal_stft.flatten())
-    mz_normal_stft_largest=nlargest(50,mz_normal_stft.flatten())
-    mz_normal_stft_smallest=nsmallest(50,mz_normal_stft.flatten())
-
-    data = [*ax_normal_stft_largest,*ax_normal_stft_smallest,*ay_normal_stft_largest,*ay_normal_stft_smallest,*az_normal_stft_largest,*az_normal_stft_smallest,*gx_normal_stft_largest,*gx_normal_stft_smallest,*gy_normal_stft_largest,*gy_normal_stft_smallest,*gz_normal_stft_largest,*gz_normal_stft_smallest,
-            *mx_normal_stft_largest,*mx_normal_stft_smallest,*my_normal_stft_largest,*my_normal_stft_smallest,*mz_normal_stft_largest,*mz_normal_stft_smallest]
-
+        mx_normal_stft_largest=nlargest(50,mx_normal_stft.flatten())
+        mx_normal_stft_smallest=nsmallest(50,mx_normal_stft.flatten())
+        my_normal_stft_largest=nlargest(50,my_normal_stft.flatten())
+        my_normal_stft_smallest=nsmallest(50,my_normal_stft.flatten())
+        mz_normal_stft_largest=nlargest(50,mz_normal_stft.flatten())
+        mz_normal_stft_smallest=nsmallest(50,mz_normal_stft.flatten())
+        
+        data = [*ax_normal_stft_largest,*ax_normal_stft_smallest,*ay_normal_stft_largest,*ay_normal_stft_smallest,*az_normal_stft_largest,*az_normal_stft_smallest,*gx_normal_stft_largest,*gx_normal_stft_smallest,*gy_normal_stft_largest,*gy_normal_stft_smallest,*gz_normal_stft_largest,*gz_normal_stft_smallest,
+                *mx_normal_stft_largest,*mx_normal_stft_smallest,*my_normal_stft_largest,*my_normal_stft_smallest,*mz_normal_stft_largest,*mz_normal_stft_smallest]
+    
+    else:
+        ax_stft=np.abs(stft(df['ax'],nperseg=nperseg,fs=1)[2]**2)
+        ay_stft=np.abs(stft(df['ay'],nperseg=nperseg,fs=1)[2]**2)
+        az_stft=np.abs(stft(df['az'],nperseg=nperseg,fs=1)[2]**2)
+        
+        ax_stft_largest=nlargest(50,ax_stft.flatten())
+        ax_stft_smallest=nsmallest(50,ax_stft.flatten())
+        ay_stft_largest=nlargest(50,ay_stft.flatten())
+        ay_stft_smallest=nsmallest(50,ay_stft.flatten())
+        az_stft_largest=nlargest(50,az_stft.flatten())
+        az_stft_smallest=nsmallest(50,az_stft.flatten())
+        
+        gx_stft=np.abs(stft(df['gx'],nperseg=512,fs=1)[2]**2)
+        gy_stft=np.abs(stft(df['gy'],nperseg=512,fs=1)[2]**2)
+        gz_stft=np.abs(stft(df['gz'],nperseg=512,fs=1)[2]**2)
+        
+        gx_stft_largest=nlargest(50,gx_stft.flatten())
+        gx_stft_smallest=nsmallest(50,gx_stft.flatten())
+        gy_stft_largest=nlargest(50,gy_stft.flatten())
+        gy_stft_smallest=nsmallest(50,gy_stft.flatten())
+        gz_stft_largest=nlargest(50,gz_stft.flatten())
+        gz_stft_smallest=nsmallest(50,gz_stft.flatten())
+        
+        mx_stft=np.abs(stft(df['mx'],nperseg=512,fs=1)[2]**2)
+        my_stft=np.abs(stft(df['my'],nperseg=512,fs=1)[2]**2)
+        mz_stft=np.abs(stft(df['mz'],nperseg=512,fs=1)[2]**2)
+        
+        mx_stft_largest=nlargest(50,mx_stft.flatten())
+        mx_stft_smallest=nsmallest(50,mx_stft.flatten())
+        my_stft_largest=nlargest(50,my_stft.flatten())
+        my_stft_smallest=nsmallest(50,my_stft.flatten())
+        mz_stft_largest=nlargest(50,mz_stft.flatten())
+        mz_stft_smallest=nsmallest(50,mz_stft.flatten())
+        
+        data = [*ax_stft_largest, *ax_stft_smallest, *ay_stft_largest, *ay_stft_smallest, *az_stft_largest, *az_stft_smallest, *gx_stft_largest, *gx_stft_smallest, *gy_stft_largest, *gy_stft_smallest, *gz_stft_largest, *gz_stft_smallest,
+                *mx_stft_largest, *mx_stft_smallest, *my_stft_largest, *my_stft_smallest, *mz_stft_largest, *mz_stft_smallest]
+   
     X = np.array(data)
     print("X shape: ", len(X))
 
@@ -592,55 +640,6 @@ def preprocess_data(df):
     print("Post-processing shape: ", X.shape)
 
     return X
-
-
-# TODO: uncomment and remove the above function when fixed
-
-# def preprocess_data(df):
-    
-#     ax_stft=np.abs(stft(df['ax'],nperseg=512,fs=1)[2]**2)
-#     ay_stft=np.abs(stft(df['ay'],nperseg=512,fs=1)[2]**2)
-#     az_stft=np.abs(stft(df['az'],nperseg=512,fs=1)[2]**2)
-    
-#     ax_stft_largest=nlargest(50,ax_stft.flatten())
-#     ax_stft_smallest=nsmallest(50,ax_stft.flatten())
-#     ay_stft_largest=nlargest(50,ay_stft.flatten())
-#     ay_stft_smallest=nsmallest(50,ay_stft.flatten())
-#     az_stft_largest=nlargest(50,az_stft.flatten())
-#     az_stft_smallest=nsmallest(50,az_stft.flatten())
-    
-#     gx_stft=np.abs(stft(df['gx'],nperseg=512,fs=1)[2]**2)
-#     gy_stft=np.abs(stft(df['gy'],nperseg=512,fs=1)[2]**2)
-#     gz_stft=np.abs(stft(df['gz'],nperseg=512,fs=1)[2]**2)
-    
-#     gx_stft_largest=nlargest(50,gx_stft.flatten())
-#     gx_stft_smallest=nsmallest(50,gx_stft.flatten())
-#     gy_stft_largest=nlargest(50,gy_stft.flatten())
-#     gy_stft_smallest=nsmallest(50,gy_stft.flatten())
-#     gz_stft_largest=nlargest(50,gz_stft.flatten())
-#     gz_stft_smallest=nsmallest(50,gz_stft.flatten())
-    
-#     mx_stft=np.abs(stft(df['mx'],nperseg=512,fs=1)[2]**2)
-#     my_stft=np.abs(stft(df['my'],nperseg=512,fs=1)[2]**2)
-#     mz_stft=np.abs(stft(df['mz'],nperseg=512,fs=1)[2]**2)
-    
-#     mx_stft_largest=nlargest(50,mx_stft.flatten())
-#     mx_stft_smallest=nsmallest(50,mx_stft.flatten())
-#     my_stft_largest=nlargest(50,my_stft.flatten())
-#     my_stft_smallest=nsmallest(50,my_stft.flatten())
-#     mz_stft_largest=nlargest(50,mz_stft.flatten())
-#     mz_stft_smallest=nsmallest(50,mz_stft.flatten())
-    
-#     data = [*ax_stft_largest, *ax_stft_smallest, *ay_stft_largest, *ay_stft_smallest, *az_stft_largest, *az_stft_smallest, *gx_stft_largest, *gx_stft_smallest, *gy_stft_largest, *gy_stft_smallest, *gz_stft_largest, *gz_stft_smallest,
-#             *mx_stft_largest, *mx_stft_smallest, *my_stft_largest, *my_stft_smallest, *mz_stft_largest, *mz_stft_smallest]
-   
-#     X = np.array(data)
-#     print("X shape: ", X.shape)
-
-#     X = np.reshape(X, (1, 1, X.shape[0]))
-#     print("Post-processing shape: ", X.shape)
-
-#     return X
 
 
 """
@@ -688,7 +687,7 @@ def send_data_to_rds(data, user_id, test_event_id):
     print("Made cursor.")
 
     try:
-        # to change from a decimal (eg. 0.20) to a percentage (eg. 20)
+        # the score is currently from 0 to 1, this is to change from a decimal (eg. 0.20) to a percentage (eg. 20)
         score = data["predictions"][0][0] * 100
         print("Adding score to the database.")
 
@@ -697,12 +696,6 @@ def send_data_to_rds(data, user_id, test_event_id):
 
         rds_pg_connection.commit()
         print("Updated data for the test event in the database.")
-
-        # TODO: remove after testing
-        # query = 'SELECT * FROM "TestEvent" WHERE test_event_id = %s AND patient_id = %s'
-        # cursor.execute(query, vars=(test_event_id, user_id))
-        # for record in cursor:
-        #     print("Cursor record:", record)
             
     except Exception as e:
         print(e)
