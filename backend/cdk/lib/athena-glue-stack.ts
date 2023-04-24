@@ -6,7 +6,7 @@ import * as lambda from "aws-cdk-lib/aws-lambda";
 import * as logs from "aws-cdk-lib/aws-logs";
 import * as ssm from "aws-cdk-lib/aws-ssm";
 import * as ec2 from "aws-cdk-lib/aws-ec2";
-import { DataWorkflowStack } from './data-workflow-stack';
+import { balanceTestBucketName, DataWorkflowStack } from './data-workflow-stack';
 import { VPCStack } from "./vpc-stack";
 import * as cdk from 'aws-cdk-lib';
 import { CognitoStack } from './cognito-stack';
@@ -100,14 +100,22 @@ export class AthenaGlueStack extends Stack {
         statements: [new iam.PolicyStatement({
           actions: ["logs:CreateLogStream", "logs:CreateLogGroup", "logs:PutLogEvents"],
           resources: [logGroup.logGroupArn]
-        })]
+        }),
+        new iam.PolicyStatement({
+            actions: [
+                "s3:PutObject",
+                "s3:GetObject",
+                "s3:DeleteObject"
+            ],
+            resources: ['arn:aws:s3:::'+balanceTestBucketName+'/*'],
+          })]
       });
       let athenaQueryS3Role = new iam.Role(this, athenaQueryS3RoleName, {
         assumedBy: new iam.ServicePrincipal("lambda.amazonaws.com"),
         roleName: athenaQueryS3RoleName,
         description: "Role gives access to appropriate S3 functions needed for querying from bucket for Lambda.",
         inlinePolicies: { ["BalanceTest-athenaQueryS3Policy"]: athenaQueryS3PolicyDocument },
-        managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName("AmazonS3FullAccess"), iam.ManagedPolicy.fromAwsManagedPolicyName("AmazonAthenaFullAccess"),
+        managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName("AmazonAthenaFullAccess"),
                           iam.ManagedPolicy.fromAwsManagedPolicyName("service-role/AWSLambdaVPCAccessExecutionRole")]
       });
 

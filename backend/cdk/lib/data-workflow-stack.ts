@@ -254,14 +254,22 @@ export class DataWorkflowStack extends Stack {
         statements: [new iam.PolicyStatement({
           actions: ["logs:CreateLogStream", "logs:CreateLogGroup", "logs:PutLogEvents"],
           resources: [generateReportLambdaLogGroup.logGroupArn]
-        })]
+        }),
+        new iam.PolicyStatement({
+              actions: [
+                  "s3:PutObject",
+                  "s3:GetObject",
+                  "s3:DeleteObject"
+              ],
+              resources: ['arn:aws:s3:::'+balanceTestBucketName+'/*'],
+            })]
       });
       const generateReportLambdaRole = new iam.Role(this, generateReportLambdaRoleName, {
         assumedBy: new iam.ServicePrincipal("lambda.amazonaws.com"),
         roleName: generateReportLambdaRoleName,
         description: "Role gives access to appropriate S3 functions needed for doing S3 Select for Lambda.",
         inlinePolicies: { ["BalanceTest-generateReportLambdaPolicy"]: generateReportLambdaPolicyDocument },
-        managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName("AmazonS3FullAccess"), iam.ManagedPolicy.fromAwsManagedPolicyName("service-role/AWSLambdaVPCAccessExecutionRole")]
+        managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName("service-role/AWSLambdaVPCAccessExecutionRole")]
       });
 
       const generateReportRuntime = lambda.Runtime.PYTHON_3_7;
