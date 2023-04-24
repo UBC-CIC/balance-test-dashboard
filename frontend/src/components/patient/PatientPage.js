@@ -83,6 +83,7 @@ function PatientPage() {
       },
       authToken: idtoken,
     });
+    // console.log(resWeeklyAvg);
     let resLastWeekAvg = await API.graphql({
       query: getScoreStatsOverTime,
       variables: {

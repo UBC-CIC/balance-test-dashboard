@@ -163,19 +163,23 @@ export const RangeChart = ({ patientId, measurement, fromDate, toDate }) => {
   const [data, setData] = useState([]);
 
   const fetchData = async () => {
-    let sesh = await Auth.currentSession();
-    let idtoken = sesh.idToken.jwtToken;
-    let res = await API.graphql({
-      query: getMeasurementRange,
-      variables: {
-        patient_id: patientId,
-        measurement: measurement,
-      },
-      authToken: idtoken,
-    });
+    try {
+      let sesh = await Auth.currentSession();
+      let idtoken = sesh.idToken.jwtToken;
+      let res = await API.graphql({
+        query: getMeasurementRange,
+        variables: {
+          patient_id: patientId,
+          measurement: measurement,
+        },
+        authToken: idtoken,
+      });
 
-    let rangeChartData = convert(res.data.getMeasurementRange);
-    setData(rangeChartData);
+      let rangeChartData = convert(res.data.getMeasurementRange);
+      setData(rangeChartData);
+    } catch (e) {
+      setData(null);
+    }
   };
 
   const convert = (data) => {
@@ -224,7 +228,7 @@ export const RangeChart = ({ patientId, measurement, fromDate, toDate }) => {
         alignContent: "center",
         "& > :not(style)": {
           m: 1,
-          width: 128,
+          width: 200,
           height: 128,
         },
       }}
