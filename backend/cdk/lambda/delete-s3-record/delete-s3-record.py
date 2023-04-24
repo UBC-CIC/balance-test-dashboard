@@ -14,7 +14,6 @@ cognito_identity = boto3.client('cognito-identity')
 def lambda_handler(event, context):
     # print('event')
     # print(event)
-    # todo: remove hard-coded val
     id_token = event['payload']['authorization']
     logins = {
         f'cognito-idp.{region}.amazonaws.com/{user_pool_id}': id_token

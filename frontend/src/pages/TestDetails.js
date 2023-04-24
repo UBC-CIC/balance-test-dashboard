@@ -59,21 +59,11 @@ export function TestDetails() {
   const fetchData = async () => {
     let sesh = await Auth.currentSession();
     let idtoken = sesh.idToken.jwtToken;
-    console.log("idtoken", idtoken);
     let reslambdaauth = await API.graphql({
       query: getTestEventById,
       variables: { test_event_id: test_event_id, patient_id: patient_id },
-      // authMode: GRAPHQL_AUTH_MODE.AWS_LAMBDA,
       authToken: `${idtoken}`,
-      // headers: {
-      //   Authorization: `prefix-${idtoken}`,
-      // },
     });
-    // console.log("patientparams", {
-    //   query: getPatientById,
-    //   variables: { patient_id: patient_id },
-    //   authToken: idtoken,
-    // });
     let resPatient = await API.graphql({
       query: getPatientById,
       variables: { patient_id: patient_id },
@@ -114,12 +104,9 @@ export function TestDetails() {
         patient_id: patient_id,
         measurement: measurement,
       },
-      // authMode: GRAPHQL_AUTH_MODE.AWS_LAMBDA,
-      // authToken: `1`,
 
       authToken: `${idtoken}`,
     });
-    console.log("resmeasurement", resmeasurement);
     setMeasurementData(
       resmeasurement.data.getMeasurementData.ts.map((ts, i) => ({
         ts: dayjs.tz(ts.slice(0, -7), browserTimezone).format("hh:mm:ss"),
@@ -127,7 +114,6 @@ export function TestDetails() {
         val: resmeasurement.data.getMeasurementData.val[i],
       }))
     );
-    console.log("measurementdata", measurementData);
 
     // }
   };
@@ -135,20 +121,6 @@ export function TestDetails() {
   useEffect(() => {
     fetchData();
   }, []);
-  let isFirstRender = true;
-  // useEffect(() => {
-  //   // console.log("121");
-  //   // if (isFirstRender) {
-  //   //   console.log("is first render");
-  //   //   fetchData();
-  //   //   isFirstRender = false;
-  //   //   return;
-  //   // } else {
-  //   if (testEvent) {
-  //     fetchMeasurement();
-  //   }
-  //   // }
-  // }, [measurementSelected]);
 
   const handleChange = (event) => {
     setMeasurementSelected(event.target.value);
@@ -162,22 +134,9 @@ export function TestDetails() {
     let idtoken = sesh.idToken.jwtToken;
 
     setDownloading(true);
-    // console.log("patientid", patient_id);
-    // console.log("patientname", patientName);
-    // let downloadVariable = {
-    //   test_event_id: test_event_id,
-    //   test_type: "sit-to-stand",
-    //   year: dayjs(testEvent.start_time).year(),
-    //   month: dayjs(testEvent.start_time).month() + 1,
-    //   day: dayjs(testEvent.start_time).date(),
-    //   patient_id: patient_id,
-    //   patient_name: patientName,
-    // };
-    // console.log("download variable", downloadVariable);
     try {
       let resdownload = await API.graphql({
         query: downloadTestEventDetails,
-        // variables: downloadVariable,
         variables: {
           test_event_id: test_event_id,
           test_type: "sit-to-stand",
@@ -221,7 +180,9 @@ export function TestDetails() {
         </Button>
       </Grid>
       {downloadError ? (
-        <Alert severity="error">This is an error alert — check it out!</Alert>
+        <Alert severity="error">
+          Encountered error when downloading the report
+        </Alert>
       ) : (
         <div></div>
       )}
@@ -243,10 +204,7 @@ export function TestDetails() {
       </Grid>
       <Grid item container justifyContent="center">
         <Grid item>
-          <Table
-            //    sx={{ maxWidth: "100%" }}
-            aria-label="simple table"
-          >
+          <Table aria-label="simple table">
             <TableHead>
               <TableRow>
                 <TableCell align="left">Movement</TableCell>
@@ -258,7 +216,6 @@ export function TestDetails() {
             </TableHead>
             <TableBody>
               <TableRow
-                //   key={row.name}
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
               >
                 {/* todo: replace w var */}
@@ -302,13 +259,7 @@ export function TestDetails() {
           </Table>
         </Grid>
       </Grid>
-      <Grid
-        item
-        // container
-        // spacing={5}
-        // direction="column"
-        // justifyContent="center"
-      >
+      <Grid item>
         <FormControl variant="standard" sx={{ m: 1, minWidth: 350 }}>
           <InputLabel id="demo-simple-select-standard-label">
             Select a Measurement to View Raw Data

@@ -227,7 +227,6 @@ function SearchPatient(props) {
         authToken: idtoken,
       });
 
-      console.log("responseAvailableTests", responseAvailableTests);
       setAvailableTestsToAssign(
         responseAvailableTests.data.getAllAvailableTests.map((t) => t.test_type)
       );

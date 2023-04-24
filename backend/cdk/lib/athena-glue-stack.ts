@@ -6,7 +6,7 @@ import * as lambda from "aws-cdk-lib/aws-lambda";
 import * as logs from "aws-cdk-lib/aws-logs";
 import * as ssm from "aws-cdk-lib/aws-ssm";
 import * as ec2 from "aws-cdk-lib/aws-ec2";
-import { DataWorkflowStack } from './data-workflow-stack';
+import { balanceTestBucketName, DataWorkflowStack } from './data-workflow-stack';
 import { VPCStack } from "./vpc-stack";
 import * as cdk from 'aws-cdk-lib';
 import { CognitoStack } from './cognito-stack';
@@ -16,7 +16,6 @@ export class AthenaGlueStack extends Stack {
     private readonly athenaS3QueryLambda: lambda.Function;
 
     constructor(scope: App, id: string, vpcStack: VPCStack, cognitoStack: CognitoStack, dataWorkflowStack: DataWorkflowStack, props: StackProps) {
-    // constructor(scope: App, id: string, dataWorkflowStack: DataWorkflowStack, props: StackProps) {
       super(scope, id, props);
 
       // if change the name of this, need to change the name in the resolver too
@@ -79,7 +78,6 @@ export class AthenaGlueStack extends Stack {
           deleteBehavior: "DEPRECATE_IN_DATABASE"
         },
         schedule:{scheduleExpression:'cron(0 0 * * ? *)'},
-        //TODO: deploy and test to see if table prefix is needed to help organize tables
       });
       
       // adding some naming
@@ -102,25 +100,29 @@ export class AthenaGlueStack extends Stack {
         statements: [new iam.PolicyStatement({
           actions: ["logs:CreateLogStream", "logs:CreateLogGroup", "logs:PutLogEvents"],
           resources: [logGroup.logGroupArn]
-        })]
+        }),
+        new iam.PolicyStatement({
+            actions: [
+                "s3:PutObject",
+                "s3:GetObject",
+                "s3:DeleteObject"
+            ],
+            resources: ['arn:aws:s3:::'+balanceTestBucketName+'/*'],
+          })]
       });
       let athenaQueryS3Role = new iam.Role(this, athenaQueryS3RoleName, {
         assumedBy: new iam.ServicePrincipal("lambda.amazonaws.com"),
         roleName: athenaQueryS3RoleName,
         description: "Role gives access to appropriate S3 functions needed for querying from bucket for Lambda.",
         inlinePolicies: { ["BalanceTest-athenaQueryS3Policy"]: athenaQueryS3PolicyDocument },
-        managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName("AmazonS3FullAccess"), iam.ManagedPolicy.fromAwsManagedPolicyName("AmazonAthenaFullAccess"),
+        managedPolicies: [iam.ManagedPolicy.fromAwsManagedPolicyName("AmazonAthenaFullAccess"),
                           iam.ManagedPolicy.fromAwsManagedPolicyName("service-role/AWSLambdaVPCAccessExecutionRole")]
       });
 
-      //TODO: change to secured StringParameter
       const cognitoIdentityPoolId = ssm.StringParameter.fromStringParameterAttributes(this, "BalanceTestCognitoIdentityPoolId", {
         parameterName: "IdentityPoolId"
       }).stringValue;
 
-      // const cognitoUserPoolId = ssm.StringParameter.fromStringParameterAttributes(this, "BalanceTestCognitoUserPoolId", {
-      //   parameterName: "UserPoolId"
-      // }).stringValue;
       const cognitoUserPoolId = cognitoStack.UserPoolId;
 
       //TODO: add other needed environment variables
@@ -147,7 +149,6 @@ export class AthenaGlueStack extends Stack {
     
       });    
 
-      //TODO: check athena configuration and other related parts; see if we actually need this by deploying
       const athenaDataCatalog = new athena.CfnDataCatalog(this, athenaDataCatalogName, {
         name: athenaDataCatalogName,
         type: "GLUE",

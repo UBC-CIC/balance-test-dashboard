@@ -49,7 +49,6 @@ export class CognitoStack extends Stack {
                 email: true
             },
             standardAttributes: {
-                // TODO: Add fullname in the future
                 familyName:{
                     required: true,
                     mutable: true
@@ -59,14 +58,12 @@ export class CognitoStack extends Stack {
                     mutable: true
                 },
             },
-            // todo: add mutable
             customAttributes: {
                 'user_type': new StringAttribute({mutable: true}),
                 'identity_id': new StringAttribute({mutable: true}),
             },
             accountRecovery: cognito.AccountRecovery.EMAIL_ONLY,
             lambdaTriggers: {
-                // postConfirmation: createPatientsDetailFunction,
                 postConfirmation: assignUserGroupFunction,
                 preTokenGeneration: addClaimsFunction
             }
@@ -138,8 +135,6 @@ export class CognitoStack extends Stack {
                         "logs:CreateLogStream",
                         "logs:CreateLogGroup",
                         "logs:PutLogEvents",
-                        // Cognito
-                        // "cognito-idp:AdminAddUserToGroup",
                     ],
                     resources: [
                         `arn:aws:cognito-idp:${this.region}:${this.account}:userpool/${this.UserPoolId}`,
@@ -182,16 +177,6 @@ export class CognitoStack extends Stack {
                 "updated_at",
                 "zoneinfo"
             ],
-            // writeAttributes:[
-            //     "custom:identity_id",
-            //     "email",
-            //     "email_verified",
-            //     "family_name",
-            //     "given_name",
-            //     "name",
-            //     "updated_at",
-            //     "zoneinfo"
-            // ]
         });
 
         // Identity Pool
@@ -258,7 +243,6 @@ export class CognitoStack extends Stack {
                 })
             )
         }
-        // authenticatedRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('AWSAppSyncInvokeFullAccess'))
         authenticatedRole.addToPolicy(new iam.PolicyStatement({
             effect: iam.Effect.ALLOW,
             actions: [
@@ -351,14 +335,6 @@ export class CognitoStack extends Stack {
         new cdk.CfnOutput(this, 'IdentityPoolId', {
             value: identityPool.ref
         });
-
-        // new cdk.CfnOutput(this, "AuthenticatedRole", {
-        //     value: authenticatedRole.roleArn,
-        // });
-
-        // new cdk.CfnOutput(this, "UnauthenticatedRole", {
-        //     value: unauthenticatedRole.roleArn,
-        // });
 
         new ssm.StringParameter(this, 'CognitoUserPoolId', {
             description: 'Cognito User Pool Id',

@@ -72,9 +72,7 @@ function PatientPage() {
   const fetchData = async () => {
     let sesh = await Auth.currentSession();
     let idtoken = sesh.idToken.jwtToken;
-    console.log(idtoken);
     // get analytics
-    // console.log("62");
     let resWeeklyAvg = await API.graphql({
       query: getScoreStatsOverTime,
       variables: {
@@ -95,12 +93,12 @@ function PatientPage() {
       },
       authToken: idtoken,
     });
-    console.log("monthly avg input", {
-      patient_id: patient_id,
-      from_time: dayjs().subtract(1, "month").format("YYYY-MM-DD hh:mm:ss"),
-      to_time: dayjs().format("YYYY-MM-DD hh:mm:ss"),
-      stat: "avg",
-    });
+    // console.log("monthly avg input", {
+    //   patient_id: patient_id,
+    //   from_time: dayjs().subtract(1, "month").format("YYYY-MM-DD hh:mm:ss"),
+    //   to_time: dayjs().format("YYYY-MM-DD hh:mm:ss"),
+    //   stat: "avg",
+    // });
     let resMonthlyAvg = await API.graphql({
       query: getScoreStatsOverTime,
       variables: {
@@ -121,8 +119,12 @@ function PatientPage() {
       },
       authToken: idtoken,
     });
-    setMonthlyAvg(parseFloat(resMonthlyAvg.data.getScoreStatsOverTime));
-    setWeeklyAvg(parseFloat(resWeeklyAvg.data.getScoreStatsOverTime));
+    setMonthlyAvg(
+      Number(parseFloat(resMonthlyAvg.data.getScoreStatsOverTime).toFixed())
+    );
+    setWeeklyAvg(
+      Number(parseFloat(resWeeklyAvg.data.getScoreStatsOverTime)).toFixed()
+    );
     setChangeFromLastMonth(
       resLastMonthAvg.data.getScoreStatsOverTime == null
         ? null
@@ -138,7 +140,6 @@ function PatientPage() {
             resLastWeekAvg.data.getScoreStatsOverTime
     );
 
-    // console.log("79");
     // setWeeklyAvg(Math.round(resWeeklyAvg.data.getScoreStatsOverTime));
     // setMonthlyAvg(Math.round(resMonthlyAvg.data.getScoreStatsOverTime));
 

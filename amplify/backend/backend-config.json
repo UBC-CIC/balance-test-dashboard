@@ -44,16 +44,6 @@
     }
   },
   "function": {
-    "balancetestdashboard733fb088PostConfirmation": {
-      "build": true,
-      "providerPlugin": "awscloudformation",
-      "service": "Lambda"
-    },
-    "balancetestdashboard733fb088PreTokenGeneration": {
-      "build": true,
-      "providerPlugin": "awscloudformation",
-      "service": "Lambda"
-    },
     "graphQlLambdaAuthorizera86a1dbf": {
       "build": true,
       "providerPlugin": "awscloudformation",
@@ -146,38 +136,6 @@
         {
           "category": "auth",
           "resourceName": "balancetestdashboardf52840bc"
-        }
-      ]
-    },
-    "AMPLIFY_function_balancetestdashboard733fb088PostConfirmation_deploymentBucketName": {
-      "usedBy": [
-        {
-          "category": "function",
-          "resourceName": "balancetestdashboard733fb088PostConfirmation"
-        }
-      ]
-    },
-    "AMPLIFY_function_balancetestdashboard733fb088PostConfirmation_s3Key": {
-      "usedBy": [
-        {
-          "category": "function",
-          "resourceName": "balancetestdashboard733fb088PostConfirmation"
-        }
-      ]
-    },
-    "AMPLIFY_function_balancetestdashboard733fb088PreTokenGeneration_deploymentBucketName": {
-      "usedBy": [
-        {
-          "category": "function",
-          "resourceName": "balancetestdashboard733fb088PreTokenGeneration"
-        }
-      ]
-    },
-    "AMPLIFY_function_balancetestdashboard733fb088PreTokenGeneration_s3Key": {
-      "usedBy": [
-        {
-          "category": "function",
-          "resourceName": "balancetestdashboard733fb088PreTokenGeneration"
         }
       ]
     },

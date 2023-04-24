@@ -1,13 +1,8 @@
-//TODO: add layer for pg
-
-// import pg from "pg";
 const pg = require("pg");
 const AWS = require("aws-sdk");
-// import AWS from 'aws-sdk'
 
 const PROXY_ENDPOINT = process.env.PGHOST;
 const sm = new AWS.SecretsManager({ region: process.env.AWS_REGION });
-// const secret_name = "postgresql-credentials";
 const secret_name = process.env.PG_SECRET_NAME;
 
 let pool;
@@ -17,7 +12,6 @@ const connectDb = async () => {
     let secretResponse = await sm
       .getSecretValue({ SecretId: secret_name })
       .promise();
-    // let dbPassword = secretResponse.SecretString;
     secret = JSON.parse(secretResponse.SecretString);
   } catch (error) {
     // For a list of exceptions thrown, see
@@ -27,17 +21,14 @@ const connectDb = async () => {
 
   try {
     pool = new pg.Pool({
-      // user: process.env.PGUSER,
       user: secret.username,
       host: PROXY_ENDPOINT,
       database: process.env.PGDATABASE,
-      // password: process.env.PGPASSWORD,
       password: secret.password,
       port: process.env.PGPORT,
     });
     await pool.connect();
     console.log("pool connected");
-    // await pool.end();
   } catch (error) {
     console.log("Error connecting to the database");
     console.log(error);
