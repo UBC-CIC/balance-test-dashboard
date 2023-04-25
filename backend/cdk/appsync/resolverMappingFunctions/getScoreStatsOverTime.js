@@ -25,8 +25,7 @@ export function request(ctx) {
   return {
     payload: {
       sql: `select ${inputToSql[stat]} as stat from "TestEvent" where patient_id='${patient_id}' ${movementSelectionSql} and start_time>='${from_time}' 
-       and balance_score is not null`,
-      // and start_time<='${to_time}'
+      and start_time<='${to_time}' and balance_score is not null`,
     },
   };
 }
