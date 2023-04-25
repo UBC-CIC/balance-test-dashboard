@@ -40,8 +40,11 @@ export default function AnalyticsCard({ title, value, change }) {
         <Typography component="div" variant="subtitle1">
           {title}
         </Typography>
-        <Typography variant="h6" color={!value ? "#D3D3D3" : "black"}>
-          {!value ? "No score data available" : value}
+        <Typography
+          variant="h6"
+          color={!value || isNaN(value) ? "#D3D3D3" : "black"}
+        >
+          {!value || isNaN(value) ? "No score data available" : value}
         </Typography>
       </CardContent>
       {!change ? (
