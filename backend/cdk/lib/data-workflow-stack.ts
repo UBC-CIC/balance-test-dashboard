@@ -14,13 +14,17 @@ import { DatabaseStack } from './database-stack';
 export const balanceTestBucketName = 'balancetest-datastorage-bucket'
 export class DataWorkflowStack extends Stack {
 
-    private readonly balanceTestBucket: s3.IBucket;
+    private readonly balanceTestBucket: s3.Bucket;
     private readonly generateReportLambda: lambda.Function;
     private readonly deleteS3RecordLambda: lambda.Function;
+    private readonly endpointName: string;
+    private readonly s3LambdaTriggerSagemakerRole: iam.Role;
+    private readonly savedModelsS3Key: string;
 
     constructor(scope: App, id: string, vpcStack: VPCStack, cognitoStack: CognitoStack, databaseStack: DatabaseStack, props: StackProps) {
       super(scope, id, props);
       
+      // const balanceTestBucketName = 'balancetest-datastorage-bucket'
       const balanceTestBucketAccessPointName = "balancetest-accesspt";
 
       //**MUST** have "sagemaker" as the **FIRST** word of the Sagemaker bucket name for training job output purposes
@@ -34,8 +38,13 @@ export class DataWorkflowStack extends Stack {
 
       const logGroupName = "BalanceTest-S3LambdaTrigger-Logs";
       const sagemakerLogGroupName = "BalanceTest-SagemakerExecution-Logs";
-      const endpointNameParameterName = "BalanceTest-Model-Endpoint-Param" 
-      const endpointName = "balance-test-multimodel";
+      const endpointNameParameterName = "BalanceTest-Model-Endpoint-Param"; 
+      this.endpointName = "balance-test-multimodel";
+      this.savedModelsS3Key = "saved_models";
+
+      const securityGroupParameterName = "BalanceTest-VPC-DefaultSecurityGroupID";
+      const privateSubnet1ParameterName = "BalanceTest-VPC-PrivateSubnet1ID";
+      const privateSubnet2ParameterName = "BalanceTest-VPC-PrivateSubnet2ID";
 
       const generateReportLambdaName = "BalanceTest-generate-report-for-download";
       const generateReportLambdaFileName = "generateReportForDownload";
@@ -110,15 +119,29 @@ export class DataWorkflowStack extends Stack {
         }
       });
 
-      //make parameter for endpoint name using empty value in Parameter Store
-      const endpointNameParameter = new ssm.StringParameter(this, endpointNameParameterName, {
-        parameterName: endpointNameParameterName,
-        stringValue: 'empty!',
-      })
-
       let securityGroup = ec2.SecurityGroup.fromSecurityGroupId(this, 'vpcDefaultSecurityGroup', vpcStack.vpc.vpcDefaultSecurityGroup);
 
-      //TODO: see if we need to delete logs when destroying stacks, or retain
+      //make parameters for private subnets and default security group to be used for VPC configuration
+      const securityGroupParameter = new ssm.StringParameter(this, securityGroupParameterName, {
+        parameterName: securityGroupParameterName,
+        stringValue: securityGroup.securityGroupId,
+      });
+
+      const privateSubnet1Parameter = new ssm.StringParameter(this, privateSubnet1ParameterName, {
+        parameterName: privateSubnet1ParameterName,
+        stringValue: vpcStack.vpc.isolatedSubnets[0].subnetId,
+      });
+
+      const privateSubnet2Parameter = new ssm.StringParameter(this, privateSubnet2ParameterName, {
+        parameterName: privateSubnet2ParameterName,
+        stringValue: vpcStack.vpc.isolatedSubnets[1].subnetId,
+      });
+
+      // endpointNameParameter.applyRemovalPolicy(RemovalPolicy.DESTROY);
+      securityGroupParameter.applyRemovalPolicy(RemovalPolicy.DESTROY);
+      privateSubnet1Parameter.applyRemovalPolicy(RemovalPolicy.DESTROY);
+      privateSubnet2Parameter.applyRemovalPolicy(RemovalPolicy.DESTROY);
+      
       // create log groups
       const logGroup = new logs.LogGroup(this, logGroupName, {
         logGroupName: `/aws/lambda/${s3LambdaTriggerName}`,
@@ -130,7 +153,6 @@ export class DataWorkflowStack extends Stack {
         removalPolicy: RemovalPolicy.DESTROY
       });
 
-      //TODO: make new Sagemaker role to add permissions to making training job, new endpoint, etc, here
       //create policy document and role for Lambda trigger and Sagemaker training job
       const s3LambdaTriggerSagemakerPolicyDocument = new iam.PolicyDocument({
         statements: [new iam.PolicyStatement({
@@ -144,7 +166,7 @@ export class DataWorkflowStack extends Stack {
         })],
       });
 
-      const s3LambdaTriggerSagemakerRole = new iam.Role(this, s3LambdaTriggerSagemakerRoleName, {
+      this.s3LambdaTriggerSagemakerRole = new iam.Role(this, s3LambdaTriggerSagemakerRoleName, {
         assumedBy: new iam.ServicePrincipal("sagemaker.amazonaws.com"),
         roleName: s3LambdaTriggerSagemakerRoleName,
         description: "Role gives access for executing Sagemaker functions.",
@@ -179,7 +201,7 @@ export class DataWorkflowStack extends Stack {
 
         }), new iam.PolicyStatement({
             actions: ["sagemaker:InvokeEndpoint"],
-            resources: [`arn:aws:sagemaker:${region}:${account}:endpoint/${endpointName}`]
+            resources: [`arn:aws:sagemaker:${region}:${account}:endpoint/${this.endpointName}`]
 
         }), new iam.PolicyStatement({
           actions: ["s3:GetObject", "s3:PutObject", "s3:GetObjectTagging", "s3:PutObjectTagging"],
@@ -187,12 +209,12 @@ export class DataWorkflowStack extends Stack {
 
         }), new iam.PolicyStatement({
           actions: ["sagemaker:CreateTrainingJob", "sagemaker:DescribeTrainingJob", "sagemaker:CreateModel", "sagemaker:CreateEndpointConfig", 
-                    "sagemaker:CreateEndpoint", "sagemaker:DescribeEndpoint", "sagemaker:DescribeEndpointConfig", "sagemaker:AddTags"],
+                    "sagemaker:CreateEndpoint", "sagemaker:DescribeEndpoint", "sagemaker:DescribeEndpointConfig", "sagemaker:AddTags", "sagemaker:ListEndpoints"],
           resources: ["*"]
 
         }), new iam.PolicyStatement({
           actions: ["iam:PassRole"],
-          resources: [s3LambdaTriggerSagemakerRole.roleArn]
+          resources: [this.s3LambdaTriggerSagemakerRole.roleArn]
 
         })]
       });
@@ -210,14 +232,17 @@ export class DataWorkflowStack extends Stack {
         code: lambda.DockerImageCode.fromImageAsset("./lambda/" + s3LambdaTriggerFolderName),
         allowPublicSubnet: false,
         environment: {
-          endpoint_name: endpointName,
-          endpoint_parameter_name: endpointNameParameterName,
+          endpoint_name: this.endpointName,
           dbname: databaseStack.getDatabaseName(),
           host: databaseStack.getDatabaseProxyEndpoint(),
           port: databaseStack.getDatabasePort(),
           rds_secret_name: databaseStack.getDatabaseSecretName(),
           sagemaker_bucket_name: sagemakerBucket.bucketName,
-          sagemaker_execution_role: s3LambdaTriggerSagemakerRole.roleArn,
+          sagemaker_execution_role: this.s3LambdaTriggerSagemakerRole.roleArn,
+          security_group_parameter_name: securityGroupParameterName,
+          private_subnet_1_parameter_name: privateSubnet1ParameterName,
+          private_subnet_2_parameter_name: privateSubnet2ParameterName,
+          saved_models_s3_key: this.savedModelsS3Key
         },
         functionName: s3LambdaTriggerName,
         memorySize: 512, //a lower size would not be able to run the whole code
@@ -241,7 +266,6 @@ export class DataWorkflowStack extends Stack {
         }
       );
       
-      //TODO: see if we need to delete logs when destroying stacks, or retain
       // make log group for Lambda that generates a report
       const generateReportLambdaLogGroup = new logs.LogGroup(this, generateReportLambdaLogGroupName, {
         logGroupName: `/aws/lambda/${generateReportLambdaName}`,
@@ -301,14 +325,12 @@ export class DataWorkflowStack extends Stack {
     
       });
 
-      //TODO: see if we need to delete logs when destroying stacks, or retain
       // make log group for Lambda that deletes files from S3
       const deleteS3RecordLambdaLogGroup = new logs.LogGroup(this, deleteS3RecordLambdaLogGroupName, {
         logGroupName: `/aws/lambda/${deleteS3RecordLambdaName}`,
         removalPolicy: RemovalPolicy.DESTROY
       });
 
-      //TODO: add the correct restrictive permissions for lambda
       // make IAM role for Lambda that deletes files from S3
       const deleteS3RecordLambdaPolicyDocument = new iam.PolicyDocument({
         statements: [new iam.PolicyStatement({
@@ -317,11 +339,7 @@ export class DataWorkflowStack extends Stack {
 
         }), new iam.PolicyStatement({
           actions: ["s3:DeleteObject"],
-          resources: [this.balanceTestBucket.bucketArn + "/private/*"]
-
-        }), new iam.PolicyStatement({
-          actions: ["s3:DeleteObject"],
-          resources: [this.balanceTestBucket.bucketArn + "/parquet_data/*"]
+          resources: [this.balanceTestBucket.bucketArn + "/*"]
 
         })]
       });
