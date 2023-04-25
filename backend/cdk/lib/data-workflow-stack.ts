@@ -272,7 +272,6 @@ export class DataWorkflowStack extends Stack {
         removalPolicy: RemovalPolicy.DESTROY
       });
 
-      //TODO: add the correct restrictive permissions for S3, and remove the S3 managed policy
       // make IAM role for Lambda that generates a report
       const generateReportLambdaPolicyDocument = new iam.PolicyDocument({
         statements: [new iam.PolicyStatement({
