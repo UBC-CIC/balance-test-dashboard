@@ -6,7 +6,7 @@
 
 ## Description
 
-The Architecture diagram gives an insight into two different event flows: 1) Amplify and API Flow Portion, and 2) Data Input Flow form the Mobile App. For 1), Steps starting with A indicate request flow initiated from the dashboard, while steps starting with B indicate request flow initiated from the mobile app.
+The Architecture diagram gives an insight into two different event flows: 1) Amplify and API Flow Portion, and 2) Data Input Flow form the Mobile App. For 1), Steps starting with A indicate request flow initiated from the dashboard, while steps starting with B indicate request flow initiated from the mobile app. For 2), this flow applies to the mobile app only.
 
 ### Amplify and API Flow Portion (A1-A17, B1-B17)
 1. Care Providers sign in with their email using the web portal.
