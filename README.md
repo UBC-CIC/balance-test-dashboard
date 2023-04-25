@@ -23,70 +23,44 @@ To deploy this solution, please follow the steps laid out in the [Deployment Gui
 
 # User Guide
 
-For instructions on how to navigate the web app interface, refer to the [Web App User Guide](docs/UserGuide.md).
+For instructions on how to navigate the Dashboard interface, refer to the [Dashboard User Guide](docs/UserGuide.md).
 
 # Files And Directories
 
-<!-- ```text
+```text
 .
 ├── amplify
 ├── backend/
 ├── node_modules
-├── public
 ├── frontend
 │   ├── src/
-│   │   ├── actions
-│   |   ├── assets/images
+│   |   ├── pages
 │   │   ├── components/
-│   │   │   ├── AdminDashboard/
-│   │   │   ├── authentication/
-│   │   │   ├── Rankings/
-│   │   │   ├── ResearcherProfile/
-│   │   │   ├── SearchResearchers/
-│   │   │   │   ├── AdvancedSearch/
-|   │   │   │   └── Search/
-|   │   │   ├── Metrics/
-|   │   │   ├── LoadingWheel.js
-|   │   │   └── NavigationBar.js
+│   │   │   ├── nav/
+│   │   │   ├── patient/
+│   │   │   ├── patient_list/
 |   │   ├── graphql/
-|   │   ├── reducers/
-|   │   ├── views/
-|   │   ├── .gitignore
-|   │   ├── App.css
-|   │   ├── App.js
-|   │   ├── App.test.js
-|   │   ├── aws-exports.js
-|   │   ├── index.css
-|   │   ├── index.js
-|   │   ├── reportWebVitals.js
-|   │   ├── setupTests.js
-|   │   └── themes.js
 ├── .gitignore
 ├── .graphqlconfig.yml
 ├── package-lock.json
 ├── package.json
 └── README.md
-``` -->
+```
 
 1. **`/backend`**: Contains all the backend code for the site
 2. **`/docs`**: Contains all relevant documentation files
-3. **`/src`**: Contains all the source code for the website.
+3. **`/src`**: Contains all the frontend source code for the dashboard.
    1. **`/components`**: Reusable React components.
       - Components are organized into folders, with the folder names being the page name/functionality that the components within are used for
-      - Components that are not in any subfolders are used on multiple different pages, or for overall app functionality. Below is a description of these components:
-        - LoadingWheel.js: Used in pages where you need to indicate loading
-        - NavigationBar.js: Used in everypage to help users navigate between pages
+      - Components that are not in any subfolders are used on multiple different pages, or for overall app functionality. 
    2. **`/graphql`**: Contains files for mutations, queries and the schema
-   3. **`/reducers`**: Reducers for Login and Signup authentication states
-   4. **`/views`**: Files for app routing
-   5. **`/themes.js`**: Global styling for fonts. Note that most components have their own module-scoped styling.
 
 # Changelog
 N/A
 
 # Credits
 
-This application was architected and developed by <> with guidance from the UBC CIC technical and project management teams.
+This application was architected and developed by Minting Fu, Rohit Murali, and Marvin Wu with guidance from the UBC CIC technical and project management teams.
 
 # License
 
