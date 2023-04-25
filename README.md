@@ -14,7 +14,7 @@
 
 The following architecture diagram illustrates the various AWS components utliized to deliver the solution. For an in-depth explanation of the frontend and backend stacks, refer to the [Architecture Deep Dive](docs/ArchitectureDeepDive.md).
 
-<!-- ![Alt text](./docs/images/VPRI_Architechture_Phase_II.drawio.png?raw=true "Architecture") -->
+![Alt text](docs/images/architecture_diagram.png)
 
 # Deployment Guide
 
@@ -81,6 +81,7 @@ For instructions on how to navigate the web app interface, refer to the [Web App
    5. **`/themes.js`**: Global styling for fonts. Note that most components have their own module-scoped styling.
 
 # Changelog
+
 N/A
 
 # Credits
