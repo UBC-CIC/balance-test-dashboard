@@ -14,8 +14,7 @@
 
 The following architecture diagram illustrates the various AWS components utliized to deliver the solution. For an in-depth explanation of the frontend and backend stacks, refer to the [Architecture Deep Dive](docs/ArchitectureDeepDive.md).
 
-<!-- ![Alt text](./docs/images/VPRI_Architechture_Phase_II.drawio.png?raw=true "Architecture") -->
-![Alt text](./docs/images/architecture_diagram.svg)
+![Alt text](docs/images/architecture_diagram.png)
 
 # Deployment Guide
 
@@ -56,6 +55,7 @@ For instructions on how to navigate the Dashboard interface, refer to the [Dashb
    2. **`/graphql`**: Contains files for mutations, queries and the schema
 
 # Changelog
+
 N/A
 
 # Credits
