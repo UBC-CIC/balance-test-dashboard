@@ -66,41 +66,6 @@ const headerColumns = [
   },
 ];
 
-//change the patient_id values to string type
-const testRows = [
-  {
-    user_id: uuidv4(),
-    first_name: "John",
-    last_name: "Doe",
-    assigned_test_num: 1,
-    last_movement_tested: "Sit-to-Stand",
-    last_test_score: 65,
-  },
-  {
-    user_id: uuidv4(),
-    first_name: "Jane",
-    last_name: "Doe",
-    assigned_test_num: 1,
-    last_movement_tested: "Sit-to-Stand",
-    last_test_score: 45,
-  },
-  {
-    user_id: uuidv4(),
-    first_name: "Robbie",
-    last_name: "Mac",
-    assigned_test_num: 1,
-    last_movement_tested: "Sit-to-Stand",
-    last_test_score: 56,
-  },
-  {
-    user_id: uuidv4(),
-    first_name: "Amanda",
-    last_name: "Spence",
-    assigned_test_num: 1,
-    last_movement_tested: "Sit-to-Stand",
-    last_test_score: 23,
-  },
-];
 
 function FixedHeaderRow() {
   return (
@@ -127,10 +92,7 @@ function DisplayRows({
   loading,
   availableTestsToAssign,
 }) {
-  //need to figure out which hooks are needed to make and use
   const [numTestsAssigned, setNumTestsAssigned] = React.useState(0);
-  // const [lastMovementTested, setLastMovementTested] = React.useState("-");
-  // const [lastTestScore, setLastTestScore] = React.useState("-");
 
   let navigate = useNavigate();
 
@@ -180,7 +142,7 @@ function DisplayRows({
                   </TableCell>
                 );
               } else if (column.id === "patient_name") {
-                let manualCreateBool = false; //change when the database stuff has this boolean
+                let manualCreateBool = false; 
                 if (manualCreateBool == true) {
                   return (
                     <TableCell
@@ -392,9 +354,7 @@ function DisplaySearchResults({
 
 export function PatientsTable() {
   let data = [];
-  // let data = testRows;
 
-  // careProviderId = 1;
   const [careProviderId, setCareProviderId] = React.useState("");
 
   const [patientDataRowsArr, updatePatientDataRowsArr] = React.useState(data);

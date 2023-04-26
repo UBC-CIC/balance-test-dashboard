@@ -57,6 +57,10 @@ export class CognitoStack extends Stack {
                     required: true,
                     mutable: true
                 },
+                email:{
+                    required: true,
+                    mutable: true
+                }
             },
             customAttributes: {
                 'user_type': new StringAttribute({mutable: true}),

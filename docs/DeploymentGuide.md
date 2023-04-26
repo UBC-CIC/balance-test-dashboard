@@ -97,7 +97,6 @@ If the cdk synth command gives you an error, run your console as administrator a
 Set-ExecutionPolicy RemoteSigned
 ```
 
-Deploy the CDK stacks individually. To prevent errors, you **must** deploy in the **following order**. The deployment will take about 50-60 minutes.
 Deploy the CDK stacks individually, you **must** deploy in the **following order**. The deployment will take about 50-60 minutes.
 When prompted `Do you wish to deploy these changes (y/n)?`, type `y` and enter.
 
