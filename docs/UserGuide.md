@@ -7,7 +7,7 @@
 | Index                                                                                        | Description                                               |
 |:---------------------------------------------------------------------------------------------|:----------------------------------------------------------| 
 | [Sign In](#Sign-In)          | Sign in to a care provider account              |
-| [Dashboard Home](#Dashboard-Home)                                                            | How to see all patients overview                            |
+| [Home](Home)                                                            | How to see all patients overview                            |
 | [Patient Details](#Patient-Details)                                                                    | See details for a patient                                         |
 | [Test Event Details](#Test-Event-Details)  | See details for a test event                        |
 | [Add User to CareProvider Group](#Add-User-to-CareProvider-Group)  | Grant user permission to the dashboard                        |
@@ -15,22 +15,19 @@
 
 ## Sign In Or Create An Account
 
+First, either sign in or create an account.
+![alt text](./images/user_guide/signin.PNG)
+
 You can create an account using your email address. Enter your preferred password, confirm password, then enter your first and last name.
 ![alt text](./images/user_guide/signup.PNG)
 
-
-After deploying both the frontend and backend stacks, you will see this login page after clicking the generated Amplify link. 
-![alt text](./images/user_guide/signin.PNG)
-
-
-After filling out the information, click on the "Sign In" button. 
-
-Note: right after you create an account or if you created an account not too long ago, you may see the error below. In this case, ask your admin to give you permissions by following the #Test-Event-Details section
+Note: right after you create an account or if you created an account not too long ago, you may see the error below. In this case, ask your admin to give you permissions by following the [Add User to CareProvider Group](#Add-User-to-CareProvider-Group) section
+![alt text](./images/user_guide/access_denied.PNG)
 
 
-HOME
+## HOME
 
-The home page only displays the list of patients assigned to you. 
+The home page displays the list of patients assigned to you. 
 ![alt text](./images/user_guide/home.PNG)
 
 
@@ -49,19 +46,12 @@ To add patients, click on the ‘Add Patient’ button. This will open a pop-up 
 Clicking on the ‘Manually Add New Patient’ will open a pop up that requires you to fill out their first and last name. To add the patient, click on ‘Add New Patient’.
 ![alt text](./images/user_guide/add_manual_patient.PNG)
 
-To add patients that are registered in the database, type their name on the Patient Name search box. Clicking on the ‘arrow’ symbol will also open a drop down menu with the patients’ names and IDs. 
+To add patients that are registered in the database, type their name on the Patient Name search box. Clicking on the ‘arrow’ symbol will also open a drop down menu with the patients’ names and IDs. Click on the patient you want to add, and click ‘Add Selected Patient’.
 ![alt text](./images/user_guide/search_patients.PNG)
-Click on the patient you want to add, and click ‘Add Selected Patient’.
-![alt text](./images/user_guide/add_manual_patient.PNG)
 
 
-To assign a test to the patient, click on the ‘Manage’ button.
-<!-- ![alt text](./images/user_guide/) -->
-
-
-
-To select the movement you want to assign, click the checkbox next to the movement name and click ‘Save’.
-[assign test 02]
+To assign a test to the patient, click on the ‘Manage’ button, then select the movement you want to assign, click the checkbox next to the movement name and click ‘Save’.
+![alt text](./images/user_guide/assign_test.PNG)
 
 
 ## Patient Details
@@ -78,41 +68,38 @@ If you scroll down, you can view the patient's measurement range over time. Clic
 
 
 The IMU data range graph displays the raw IMU data that was sent from the mobile app. It displays the range between the maximum and minimum values for each sensor component and each axis, such as accelerometer x-axis values, accelerometer y-axis values, and accelerometer z-axis values.
-![alt text](./images/user_guide/score_and_range_graphs.PNG)
 
 The y-axis of the IMU range graph represents the values for each sensor component:
 accelerometer displays acceleration, gyroscope displays angular velocity, magnetometer displays magnetic field values. The x-axis of the range graph represents the date and time of the recordings
-![alt text](./images/user_guide/range_graph.PNG)
 
 
 To download the IMU range graph, click on the ‘hamburger’ button on the right hand side. You can choose to download the graph as a single SVG, PNG, or CSV file.
-[range graph download]
-
-
-
-
-
+![alt text](./images/user_guide/range_graph_download.PNG)
 
 
 The patient data page also shows the patient’s past test events, including their balance score, the type of movement, date when it was completed, and any notes saved. 
 ![alt text](./images/user_guide/events_table.PNG)
 
-To 
 
 To delete a past test event, click on the checkbox beside the test you would like to delete and click on the ‘Delete’ button.
-[delete test 01]
+![alt text](./images/user_guide/delete_testevent.PNG)
 
 
 
 Clicking on the ‘Delete’ button will open a pop-up to confirm your choice.
-[delete test 02]
+![alt text](./images/user_guide/confirm_delete.PNG)
 
 ## Test Details
 
 To view a test event in the test event table. Click the test in the table and it will take you to the following page. It shows you the name of the patient, the test type, balance score, timestamp, and any notes left by the doctor or patient:
 ![alt text](./images/user_guide/test_event_details.PNG)
 
-If you wish to save this information, click download. It will download the raw recordings as a csv, and the full details as a pdf file:
+Click on the "Select a measurement to view raw data" to select a measurement to view graph for from the drop-down:
+![alt text](./images/user_guide/measurement_select.PNG)
+![alt text](./images/user_guide/9_measurements.PNG)
+
+
+If you wish to save the test details information, click download. It will download the raw recordings as a csv, and the full details as a pdf file:
 ![alt text](./images/user_guide/browser_download.PNG)
 
 Below show the content of the files downloaded:
