@@ -7,18 +7,25 @@
 | Index                                                                                        | Description                                               |
 |:---------------------------------------------------------------------------------------------|:----------------------------------------------------------| 
 | [Sign In](#Sign-In)          | Sign in to a care provider account              |
-| [Dashboard Home](#Dashboard-Home)                                                            | How the main dashboard works                              |
-| [Patient Details](#Patient-Details)                                                                    | Adding any events                                         |
-| [Test Event Details](#add-patients-assign-caregivers-assign-sensors-and-download-data)  | Setting up patients for monitoring                        |
+| [Dashboard Home](#Dashboard-Home)                                                            | How to see all patients overview                            |
+| [Patient Details](#Patient-Details)                                                                    | See details for a patient                                         |
+| [Test Event Details](#Test-Event-Details)  | See details for a test event                        |
+| [Add User to CareProvider Group](#Add-User-to-CareProvider-Group)  | Grant user permission to the dashboard                        |
 
 
-## Sign In
+## Sign In Or Create An Account
+
+You can create an account using your email address. Enter your preferred password, confirm password, then enter your first and last name.
+![alt text](./images/user_guide/signup.PNG)
+
 
 After deploying both the frontend and backend stacks, you will see this login page after clicking the generated Amplify link. 
 ![alt text](./images/user_guide/signin.PNG)
 
 
-After filling out the information, click on the "Sign In" button
+After filling out the information, click on the "Sign In" button. 
+
+Note: right after you create an account or if you created an account not too long ago, you may see the error below. In this case, ask your admin to give you permissions by following the #Test-Event-Details section
 
 
 HOME
@@ -100,8 +107,17 @@ To delete a past test event, click on the checkbox beside the test you would lik
 Clicking on the ‘Delete’ button will open a pop-up to confirm your choice.
 [delete test 02]
 
+## Test Details
 
+To view a test event in the test event table. Click the test in the table and it will take you to the following page. It shows you the name of the patient, the test type, balance score, timestamp, and any notes left by the doctor or patient:
+![alt text](./images/user_guide/test_event_details.PNG)
 
+If you wish to save this information, click download. It will download the raw recordings as a csv, and the full details as a pdf file:
+![alt text](./images/user_guide/browser_download.PNG)
 
+Below show the content of the files downloaded:
+pdf:
+![alt text](./images/user_guide/download_pdf.PNG)
 
-
+csv:
+![alt text](./images/user_guide/download_csv.PNG)

@@ -82,6 +82,7 @@ Before deploying the stacks, from your project root directory, to ensure you are
 
 ```
 cd backend/cdk
+npm install
 ```
 
 In the `backend/cdk` directory, initialize the CDK stacks in the terminal (required only if you have not deployed the stacks before). The below lines assume your account profile is named `balance-test` and you want to deploy to that account.

@@ -170,7 +170,7 @@ export class CognitoStack extends Stack {
             ],
             readAttributes:[
                 "custom:identity_id",
-                'custom:dashboard_signup',
+                'custom:if_dashboard_signup',
                 'custom:user_type',
                 "email",
                 "email_verified",
