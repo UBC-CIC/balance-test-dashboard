@@ -276,6 +276,7 @@ function PatientPage() {
             onClick={() => {
               navigate("/patientTable");
             }}
+            sx={{marginTop: 3}}
           >
             Back
           </Button>
