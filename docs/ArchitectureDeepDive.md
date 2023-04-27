@@ -36,13 +36,13 @@ For 1), steps starting with A indicate request flow initiated from the dashboard
 
 8. If the request is accepted, Appsync calls a Lambda resolver.
 
-9. The resolver queries/mutates a PostgreSQL database.
+9. The resolver queries/mutates a PostgreSQL database, where some user data is stored.
 
 10. The database responses with the query result.
 
 11. The Lambda function sends the response to Appsync.
 
-12. If the request is for S3, Appsync calls a Lambda resolver that deals with S3.
+12. If the request is for S3, Appsync calls a Lambda resolver that deals with S3, where the IMU recording files and data reports are stored.
 
 13. Depending on the request, the Lambda function might call Athena.
 
