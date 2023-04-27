@@ -24,27 +24,6 @@ import {
 } from "../../graphql/mutations";
 Amplify.configure(awsconfig);
 
-async function getMovementTests() {
-  let movement_tests = [];
-
-  let sesh = await Auth.currentSession();
-  let idtoken = sesh.idToken.jwtToken;
-
-  try {
-    let responseAvailableTests = await API.graphql({
-      query: getAllAvailableTests,
-      authToken: idtoken,
-    });
-
-    // console.log("responseAvailableTests", responseAvailableTests);
-    
-    movement_tests = responseAvailableTests.data.getAllAvailableTests.map((t) => t.test_type);
-    return movement_tests;
-  
-  } catch (err) {
-    console.log(err);
-  }
-}
 
 function createPatientInfoObj(first_name, last_name, movement_tests) {
 
