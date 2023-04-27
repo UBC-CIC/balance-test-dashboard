@@ -5,7 +5,6 @@ import "./App.css";
 import ScoreChart, { RangeChart } from "./components/patient/Charts";
 // import Execute from "./components/mockData/populateDBScript";
 import { Container } from "@mui/system";
-import Patient from "./pages/patient";
 import Navbar from "./components/nav/Navbar";
 import Box from "@mui/material/Box";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
