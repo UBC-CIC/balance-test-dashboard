@@ -379,7 +379,6 @@ function ManualAddPatient(props) {
       query: getAllAvailableTests,
       authToken: idtoken,
     });
-    console.log("ResponseAvailableTests: ", responseAvailableTests);
 
     setAvailableTestsToAssign(
       responseAvailableTests.data.getAllAvailableTests.map((t) => t.test_type)
