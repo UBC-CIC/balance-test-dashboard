@@ -6,34 +6,31 @@ exports.handler = async (event, context, callback) => {
 
   let params = {};
 
-  // console.log("Event: ", event);
-  // console.log("Context: ", context);
-
-  if (event.request.userAttributes["custom:user_type"]) {
-    if (event.request.userAttributes["custom:user_type"] == "careProvider") {
-      params = {
-        GroupName: "careProvider",
-        UserPoolId: event.userPoolId,
-        Username: event.userName,
-      };
+  if (event.request.userAttributes["custom:if_dashboard_signup"]) {
+    // if user signed up through dashbaord
+    if (event.request.userAttributes["custom:if_dashboard_signup"] == "true") {
+      // do nothing
+      callback(null, event);
     }
-  } else {
+  }
+  // if user signed up through the app
+  else {
     params = {
       GroupName: "patient",
       UserPoolId: event.userPoolId,
       Username: event.userName,
     };
-  }
-  try {
-    await cognito_isp.adminAddUserToGroup(params, (err) => {
-      if (err) {
-        console.log(err);
-        callback(err);
-      }
-    });
-    callback(null, event);
-  } catch (err) {
-    console.log(err);
-    callback(err);
+    try {
+      await cognito_isp.adminAddUserToGroup(params, (err) => {
+        if (err) {
+          console.log(err);
+          callback(err);
+        }
+      });
+      callback(null, event);
+    } catch (err) {
+      console.log(err);
+      callback(err);
+    }
   }
 };
