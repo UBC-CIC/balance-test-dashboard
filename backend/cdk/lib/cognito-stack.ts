@@ -62,9 +62,6 @@ export class CognitoStack extends Stack {
                 'user_type': new StringAttribute({mutable: true}),
                 'identity_id': new StringAttribute({mutable: true}),
                 'if_dashboard_signup': new StringAttribute({mutable:true}),
-                // todo: comment these out >:|
-                'dashboard_signup': new BooleanAttribute({mutable:true}),
-                'if_dashbaord_signup': new StringAttribute({mutable:true})
             },
             accountRecovery: cognito.AccountRecovery.EMAIL_ONLY,
             lambdaTriggers: {
