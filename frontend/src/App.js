@@ -64,7 +64,7 @@ function App() {
       })
       .catch((err) => {
         setLoginState(false);
-        console.log(err);
+        // console.log(err);
       });
   }, [loginState]);
 

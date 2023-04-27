@@ -18,6 +18,7 @@ import Snackbar from "@mui/material/Snackbar";
 import { createCareProvider } from "../graphql/mutations";
 
 import "./authentication.css";
+import { Typography } from "@mui/material";
 Amplify.configure(awsconfig);
 
 export default function AuthenticationPage() {
@@ -31,12 +32,15 @@ export default function AuthenticationPage() {
   //to override certain authentication functions
   const authServices = {
     async handleSignUp(formData) {
+      console.log("in handlesignup");
       let { username, password, attributes } = formData;
 
       username = username.toLowerCase(); //username field is email in this case
       attributes.email = attributes.email.toLowerCase();
-      attributes["custom:user_type"] = "careProvider";
+      // attributes["custom:user_type"] = "careProvider";
+      attributes["custom:if_dashboard_signup"] = "true";
       attributes["custom:identity_id"] = "null";
+      console.log("attributes", attributes);
 
       return Auth.signUp({
         username,
@@ -46,6 +50,27 @@ export default function AuthenticationPage() {
           enabled: true,
         },
       });
+    },
+  };
+
+  const authComponentsOverride = {
+    VerifyUser: {
+      Header() {
+        return (
+          <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+            Verify Your Email
+          </Typography>
+        );
+      },
+    },
+    ConfirmVerifyUser: {
+      Header() {
+        return (
+          <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+            Enter Your Verfication Code
+          </Typography>
+        );
+      },
     },
   };
 
@@ -74,7 +99,11 @@ export default function AuthenticationPage() {
 
   return (
     <Box>
-      <Authenticator services={authServices}>
+      <Authenticator
+        services={authServices}
+        components={authComponentsOverride}
+        // hideSignUp
+      >
         {({ signOut, user }) => {
           let userGroupArr =
             user["signInUserSession"]["accessToken"]["payload"][
@@ -100,7 +129,7 @@ export default function AuthenticationPage() {
         autoHideDuration={5000}
         anchorOrigin={{ horizontal: "center", vertical: "bottom" }}
         onClose={handleDeniedClose}
-        message="No Permissions to Access."
+        message="No Permissions to Access. Please Contact the admin to assign you the right role, and then come back and sign in again"
       />
     </Box>
   );
