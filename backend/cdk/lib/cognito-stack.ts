@@ -6,7 +6,7 @@ import * as ssm from "aws-cdk-lib/aws-ssm";
 import * as cognito from 'aws-cdk-lib/aws-cognito';
 import * as cdk from 'aws-cdk-lib';
 import { balanceTestBucketName, DataWorkflowStack } from './data-workflow-stack';
-import { StringAttribute } from 'aws-cdk-lib/aws-cognito';
+import { BooleanAttribute, StringAttribute } from 'aws-cdk-lib/aws-cognito';
 
 export class CognitoStack extends Stack {
     public readonly UserPoolId: string;
@@ -61,6 +61,7 @@ export class CognitoStack extends Stack {
             customAttributes: {
                 'user_type': new StringAttribute({mutable: true}),
                 'identity_id': new StringAttribute({mutable: true}),
+                'if_dashboard_signup': new StringAttribute({mutable:true}),
             },
             accountRecovery: cognito.AccountRecovery.EMAIL_ONLY,
             lambdaTriggers: {
@@ -169,6 +170,8 @@ export class CognitoStack extends Stack {
             ],
             readAttributes:[
                 "custom:identity_id",
+                'custom:dashboard_signup',
+                'custom:user_type',
                 "email",
                 "email_verified",
                 "family_name",
@@ -177,7 +180,13 @@ export class CognitoStack extends Stack {
                 "updated_at",
                 "zoneinfo"
             ],
+            // writeAttributes:[
+                // "custom:identity_id",
+                // 'custom:dashboard_signup',
+                // 'custom:user_type',
+            // ],
         });
+
 
         // Identity Pool
         const identityPool = new cognito.CfnIdentityPool(this, 'BalanceTestIdentityPool', {

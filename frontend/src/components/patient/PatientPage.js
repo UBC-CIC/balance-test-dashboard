@@ -35,7 +35,6 @@ import {
 import { useNavigate, useParams } from "react-router";
 import {
   getPatientById,
-  getScoreMetricsOverTime,
   getScoreStatsOverTime,
   getTestEvents,
 } from "../../graphql/queries";
@@ -77,8 +76,11 @@ function PatientPage() {
       query: getScoreStatsOverTime,
       variables: {
         patient_id: patient_id,
-        from_time: dayjs().subtract(7, "day").format("YYYY-MM-DD hh:mm:ss"),
-        to_time: dayjs().format("YYYY-MM-DD hh:mm:ss"),
+        from_time: dayjs()
+          .subtract(7, "day")
+          .tz(browserTimezone)
+          .format("YYYY-MM-DD hh:mm:ss"),
+        to_time: dayjs().tz(browserTimezone).format("YYYY-MM-DD hh:mm:ss"),
         stat: "avg",
       },
       authToken: idtoken,
@@ -88,8 +90,14 @@ function PatientPage() {
       query: getScoreStatsOverTime,
       variables: {
         patient_id: patient_id,
-        from_time: dayjs().subtract(14, "day").format("YYYY-MM-DD hh:mm:ss"),
-        to_time: dayjs().subtract(7, "day").format("YYYY-MM-DD hh:mm:ss"),
+        from_time: dayjs()
+          .subtract(14, "day")
+          .tz(browserTimezone)
+          .format("YYYY-MM-DD hh:mm:ss"),
+        to_time: dayjs()
+          .subtract(7, "day")
+          .tz(browserTimezone)
+          .format("YYYY-MM-DD hh:mm:ss"),
         stat: "avg",
       },
       authToken: idtoken,
@@ -105,8 +113,11 @@ function PatientPage() {
       query: getScoreStatsOverTime,
       variables: {
         patient_id: patient_id,
-        from_time: dayjs().subtract(1, "month").format("YYYY-MM-DD hh:mm:ss"),
-        to_time: dayjs().format("YYYY-MM-DD hh:mm:ss"),
+        from_time: dayjs()
+          .subtract(1, "month")
+          .tz(browserTimezone)
+          .format("YYYY-MM-DD hh:mm:ss"),
+        to_time: dayjs().tz(browserTimezone).format("YYYY-MM-DD hh:mm:ss"),
         stat: "avg",
       },
       authToken: idtoken,
@@ -116,8 +127,14 @@ function PatientPage() {
       query: getScoreStatsOverTime,
       variables: {
         patient_id: patient_id,
-        from_time: dayjs().subtract(2, "month").format("YYYY-MM-DD hh:mm:ss"),
-        to_time: dayjs().subtract(1, "month").format("YYYY-MM-DD hh:mm:ss"),
+        from_time: dayjs()
+          .subtract(2, "month")
+          .tz(browserTimezone)
+          .format("YYYY-MM-DD hh:mm:ss"),
+        to_time: dayjs()
+          .subtract(1, "month")
+          .tz(browserTimezone)
+          .format("YYYY-MM-DD hh:mm:ss"),
         stat: "avg",
       },
       authToken: idtoken,

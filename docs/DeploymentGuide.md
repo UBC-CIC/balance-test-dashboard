@@ -8,6 +8,7 @@
 | [CDK Deployment Part 1](#step-3-cdk-deployment-part-1)                   | How to deploy the backend cdk stacks part 1 |
 | [Amplify Deployment](#step-4-amplify-deployment)                         | How to deploy the amplify website           |
 | [CDK Deployment Part 2 - AppSync](#step-5-cdk-deployment-part-2-appsync) | How to deploy the backend cdk stacks part 2 |
+| [Clean-Up Resources](#clean-up-resources)                                | A guide on deleting resources               |
 
 # Requirements
 
@@ -20,16 +21,17 @@ Before you deploy, you must have the following installed on your device:
 - [AWS CDK](https://docs.aws.amazon.com/cdk/latest/guide/cli.html)
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 
-
 If you do not currently have a configured AWS Account, configure an account with the following instructions:
 
 - Configure the AWS CLI tool for your AWS Account in the region of choice, using a user with programmatic access and the "AdministratorAccess" policy (moving forward, we will assume you have [configured a profile](https://awscli.amazonaws.com/v2/documentation/api/latest/reference/configure/index.html) called `balance-test`):
   > `aws configure --profile balance-test`
 
-If you already have a configured AWS account, you may use your own configured account to deploy. Please note that if you decide to use your own account to deploy, be sure to change our command line commands to use your profile whenever there is a ```--profile``` command.
+If you already have a configured AWS account, you may use your own configured account to deploy. Please note that if you decide to use your own account to deploy, be sure to change our command line commands to use your profile whenever there is a `--profile` command.
+
 ```
 --profile YOUR_AWS_PROFILE_HERE
 ```
+
 **Once you have downloaded Docker Desktop, launch it and set up the application. Once the application is set up, leave it running.**
 
 # Step 1: Cloning the Repository
@@ -49,7 +51,6 @@ git clone https://github.com/UBC-CIC/balance-test-dashboard.git
 ```
 
 # Step 2: Install Dependencies
-
 
 The `backend` folder contains AWS CDK stacks and AWS Lambda function code that will manage the data stores and corresponding interactions with the dashboard.
 
@@ -107,6 +108,7 @@ cdk deploy VPCStack --profile balance-test
 ```
 cdk deploy CognitoStack --profile balance-test
 ```
+
 After successfully deploying this stack, take a note of the output:
 ![alt text](/docs/images/cognito_output.PNG)
 
@@ -123,7 +125,6 @@ cdk deploy DataWorkflowStack --profile balance-test
 ```
 cdk deploy AthenaGlueStack --profile balance-test
 ```
-
 
 # Step 4: Amplify Deployment
 
@@ -149,7 +150,7 @@ The following page will appear after clicking the button. Click the connect to G
 
 ![alt text](/docs/images/amplify_home.PNG)
 
-After connecting your Github account this window should appear. 
+After connecting your Github account this window should appear.
 
 ![alt text](/docs/images/amplify_settings.PNG)
 
@@ -165,10 +166,9 @@ AMPLIFY_NATIVECLIENT_ID: // CognitoStack.UserPoolClientId
 AMPLIFY_IDENTITYPOOL_ID: // / CognitoStack.IdentityPoolId
 
 ```
+
 ![alt text](/docs/images/cognito_output.PNG)
 ![alt text](/docs/images/amplify_env.PNG)
-
-
 
 Then, click the orange button "save and deploy". The deployment will take a few minutes. Wait until the status of Verify is green.
 
@@ -191,7 +191,7 @@ Your webapp is now partially deployed, but before it's accessible, we need to fi
 
 <!-- ![alt text](/docs/images/deployment_guide/amplify_5.png) -->
 
-# Step 5: CDK Deployment Part 2 - AppSync
+# Step 5: CDK Deployment Part 2, AppSync
 
 If you are in the project root directory, make sure you are back in the `backend/cdk` directory in the terminal, so run:
 
@@ -204,5 +204,10 @@ Then, assuming you have the above cdk stacks deployed, deploy this stack (it tak
 ```
 cdk deploy AppsyncStack --profile balance-test
 ```
+
 Your entire app is now deployed! Click on the generated Amplify link to open the webapp.
 ![alt text](/docs/images/amplify_link.PNG)
+
+# Clean-Up Resources
+
+When you do not want to use this project anymore and want to delete its resources, you can follow this guide on how to clean up the resources: [Clean-Up Guide](CleanUpGuide.md)
