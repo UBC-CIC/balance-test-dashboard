@@ -114,13 +114,14 @@ export default function AuthenticationPage() {
 
           if (!userGroupArr) {
             console.log("backend authentication error");
+            setShowAccessDenied(true);
             Auth.signOut();
           } else if (userGroupArr.includes("careProvider")) {
             navigate("/patientTable");
             makeCareProvider(email);
           } else {
-            Auth.signOut();
             setShowAccessDenied(true);
+            Auth.signOut();
           }
         }}
       </Authenticator>
