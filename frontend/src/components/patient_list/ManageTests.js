@@ -24,10 +24,6 @@ import {
 import { touchRippleClasses } from "@mui/material";
 Amplify.configure(awsconfig);
 
-// const movement_tests = ["sit-to-stand", "movement 2", "movement 3"]; // modify the movement names if needed
-
-// const movement_tests = [];
-
 export function initMovementsAssignedObj(movement_tests) {
   let checkboxInitStateObj = {};
   for (let i in movement_tests) {

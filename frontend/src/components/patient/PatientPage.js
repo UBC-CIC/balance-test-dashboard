@@ -85,7 +85,7 @@ function PatientPage() {
       },
       authToken: idtoken,
     });
-    console.log(resWeeklyAvg);
+    // console.log(resWeeklyAvg);
     let resLastWeekAvg = await API.graphql({
       query: getScoreStatsOverTime,
       variables: {
@@ -102,13 +102,13 @@ function PatientPage() {
       },
       authToken: idtoken,
     });
-    console.log(resLastWeekAvg);
-    console.log("monthly avg input", {
-      patient_id: patient_id,
-      from_time: dayjs().subtract(1, "month").format("YYYY-MM-DD hh:mm:ss"),
-      to_time: dayjs().format("YYYY-MM-DD hh:mm:ss"),
-      stat: "avg",
-    });
+    // console.log(resLastWeekAvg);
+    // console.log("monthly avg input", {
+    //   patient_id: patient_id,
+    //   from_time: dayjs().subtract(1, "month").format("YYYY-MM-DD hh:mm:ss"),
+    //   to_time: dayjs().format("YYYY-MM-DD hh:mm:ss"),
+    //   stat: "avg",
+    // });
     let resMonthlyAvg = await API.graphql({
       query: getScoreStatsOverTime,
       variables: {
@@ -122,7 +122,7 @@ function PatientPage() {
       },
       authToken: idtoken,
     });
-    console.log(resMonthlyAvg);
+    // console.log(resMonthlyAvg);
     let resLastMonthAvg = await API.graphql({
       query: getScoreStatsOverTime,
       variables: {
@@ -139,7 +139,7 @@ function PatientPage() {
       },
       authToken: idtoken,
     });
-    console.log(resLastMonthAvg);
+    // console.log(resLastMonthAvg);
     setMonthlyAvg(
       Number(parseFloat(resMonthlyAvg.data.getScoreStatsOverTime).toFixed())
     );
@@ -295,9 +295,6 @@ function PatientPage() {
           justifyContent="space-evenly"
           alignItems="flex-start"
         >
-          {/* todo: replace w real data */}
-          {/* <AnalyticsCard title="7-day average" value={weeklyAvg} />
-          <AnalyticsCard title="monthly average" value={monthlyAvg} /> */}
           <AnalyticsCard
             title="7-day average"
             value={weeklyAvg}

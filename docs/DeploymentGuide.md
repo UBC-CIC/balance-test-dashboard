@@ -80,13 +80,14 @@ cd ../..
 
 **Make sure Docker Desktop is open and finished with the setup process.**
 
-Before deploying the stacks, from your project root directory, to ensure you are in the **cdk** folder of the backend section, run the below command in your terminal:
+Before deploying the stacks, from your project root directory, to ensure you are in the **balance-test-dashboard** directory and in the **cdk** folder, run the below command in your terminal:
 
 ```
-cd backend/cdk
+cd balance-test-dashboard/backend/cdk
+npm install
 ```
 
-In the `backend/cdk` directory, initialize the CDK stacks in the terminal (required only if you have not deployed the stacks before). The below lines assume your account profile is named `balance-test` and you want to deploy to that account.
+In the `balance-test-dashboard/backend/cdk` directory, initialize the CDK stacks in the terminal (required only if you have not deployed the stacks before). The below lines assume your account profile is named `balance-test` and you want to deploy to that account.
 
 ```
 cdk synth --profile balance-test
@@ -134,7 +135,7 @@ cdk deploy AthenaGlueStack --profile balance-test
 
 # Step 4: Amplify Deployment
 
-If you're in the `backend/cdk` directory, go back to the project root directory.
+If you're in the `balance-test-dashboard/backend/cdk` directory, go back to the `balance-test-dashboard` directory.
 
 ```
 cd ../..
@@ -160,7 +161,7 @@ After connecting your Github account this window should appear.
 
 ![alt text](/docs/images/amplify_settings.PNG)
 
-Select the **amplifyconsole-balancetest-backend-role** we made previously for the deployment role. Expand the "Environment variables" section and edit the environment variables to the following settings, replace the values starting with `//` with the output that you saved from previous. Make sure to replace the `us-east-2` with your region.
+Select the **amplifyconsole-balancetest-backend-role** we made previously for the deployment role. Expand the "Environment variables" section and edit the environment variables to the following settings, replace the values starting with `//` with the output that you saved from previous. Make sure to replace the `us-east-1` with your region.
 
 ```
 _LIVE_UPDATES: [{"name":"Amplify CLI","pkg":"@aws-amplify/cli","type":"npm","version":"10.7.2"}]
@@ -199,7 +200,7 @@ Your webapp is now partially deployed, but before it's accessible, we need to fi
 
 # Step 5: CDK Deployment Part 2, AppSync
 
-If you are in the project root directory, make sure you are back in the `backend/cdk` directory in the terminal, so run:
+If you are in the `balance-test-dashboard` directory, make sure you are back in the `backend/cdk` directory in the terminal, so run:
 
 ```
 cd backend/cdk

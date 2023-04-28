@@ -12,17 +12,19 @@
 The Architecture diagram gives an insight into two different event flows:
 
 1. Amplify and API Flow Portion
-2. Data Input Flow form the Mobile App.
+2. Data Input Flow from the Mobile App.
 
-For 1), Steps starting with A indicate request flow initiated from the dashboard, while steps starting with B indicate request flow initiated from the mobile app. For 2), this flow applies to the mobile app only.
+For 1), steps starting with A indicate request flow initiated from the dashboard, while steps starting with B indicate request flow initiated from the mobile app. For 2), this flow applies to the mobile app only.
 
 ### **Amplify and API Flow Portion (A1-A17, B1-B17)**
 
 1. Care Providers sign in with their email using the web portal.
 
+   - A Care Provider role is given by an administrator who can access AWS Cognito on the AWS console after the user signs up on the dashboard. The administrator does this by assigning the new user to the “careProvider” user group.
+
 2. Cognito triggers a Lambda function.
 
-3. The Lambda function assigns the user to the careProvider user group in Cognito.
+3. The Lambda function checks which user group to add the new user to in Cognito.
 
 4. Amplify calls the Appsync API.
 
@@ -34,13 +36,13 @@ For 1), Steps starting with A indicate request flow initiated from the dashboard
 
 8. If the request is accepted, Appsync calls a Lambda resolver.
 
-9. The resolver queries/mutates a PostgreSQL database.
+9. The resolver queries/mutates a PostgreSQL database, where some user data is stored.
 
 10. The database responses with the query result.
 
 11. The Lambda function sends the response to Appsync.
 
-12. If the request is for S3, Appsync calls a Lambda resolver that deals with S3.
+12. If the request is for S3, Appsync calls a Lambda resolver that deals with S3, where the IMU recording files and data reports are stored.
 
 13. Depending on the request, the Lambda function might call Athena.
 
@@ -79,3 +81,7 @@ For 1), Steps starting with A indicate request flow initiated from the dashboard
 24. When a training job is made or when a model is added to the endpoint, those corresponding files will be saved in another S3 bucket.
 
 25. The score that was output from invoking an endpoint will be saved in the RDS database using SQL query executions, based on the test event ID that was specified in the recording.
+
+## Database Schema
+
+![alt text](/docs/images/db_diagram.png)

@@ -131,8 +131,6 @@ function DisplayRows({
                     {column.id === "see_patient_data" && (
                       <Button
                         onClick={() => {
-                          // navigate("/patient");
-                          // console.log("row", row);
                           navigate(`/patient/${row.user_id}`);
                         }}
                       >
@@ -247,7 +245,7 @@ function DisplaySearchResults({
   const [numTestsAssigned, setNumTestsAssigned] = React.useState(0);
 
   let navigate = useNavigate();
-  console.log("Display Search Results.");
+  // console.log("Display Search Results.");
 
   if (searchResults.length === 0) {
     return (
@@ -279,7 +277,6 @@ function DisplaySearchResults({
                       <Button
                         onClick={() => {
                           navigate(`/patient/${row.user_id}`);
-                          // navigate(`/patient`);
                         }}
                       >
                         See Patient Data
@@ -444,6 +441,8 @@ export function PatientsTable() {
             ? "-"
             : res2.data.getTestEvents.length == 0
             ? "-"
+            : res2.data.getTestEvents[0].doctor_score != null
+            ? res2.data.getTestEvents[0].doctor_score
             : res2.data.getTestEvents[0].balance_score == null
             ? "-"
             : res2.data.getTestEvents[0].balance_score;
