@@ -155,7 +155,7 @@ After connecting your Github account this window should appear.
 
 ![alt text](/docs/images/amplify_settings.PNG)
 
-Select the **amplifyconsole-balancetest-backend-role** we made previously for the deployment role. Expand the "Environment variables" section and edit the environment variables to the following settings, replace the values starting with `//` with the output that you saved from previous. Make sure to replace the `us-east-2` with your region.
+Select the **amplifyconsole-balancetest-backend-role** we made previously for the deployment role. Expand the "Environment variables" section and edit the environment variables to the following settings, replace the values starting with `//` with the output that you saved from previous. Make sure to replace the `us-east-1` with your region.
 
 ```
 _LIVE_UPDATES: [{"name":"Amplify CLI","pkg":"@aws-amplify/cli","type":"npm","version":"10.7.2"}]
