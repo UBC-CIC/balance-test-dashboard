@@ -524,7 +524,7 @@ def launch_training_job(bucket, training_folder_key, role, training_job_location
         model_dir=f'/opt/ml/model',
         role=role,
         instance_count=1,
-        instance_type="ml.g4dn.8xlarge",  # training instance
+        instance_type="ml.m5.4xlarge",  # training instance
         framework_version="2.3.0", # tensorflow version
         py_version="py37",  # python version
         code_location=training_job_location_prefix_s3_uri, # S3 location for training job output file storage

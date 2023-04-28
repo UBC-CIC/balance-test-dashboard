@@ -140,7 +140,7 @@ function DisplayRows({
                   </TableCell>
                 );
               } else if (column.id === "patient_name") {
-                let manualCreateBool = false; //change when the database stuff has this boolean
+                let manualCreateBool = false; 
                 if (manualCreateBool == true) {
                   return (
                     <TableCell

@@ -3,7 +3,7 @@
 | Index                                   | Description                          |
 | :-------------------------------------- | :----------------------------------- |
 | [Architecture Flow](#architecture-flow) | Discusses how the architecture works |
-| [Database Schema]()                     | Discusses the database schema        |
+| [Database Schema](#database-schema)     | Discusses the database schema        |
 
 ![alt text](/docs/images/architecture_diagram.png)
 

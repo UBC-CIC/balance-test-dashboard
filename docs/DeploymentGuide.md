@@ -40,6 +40,8 @@ First, clone the GitHub repository onto your machine. To do this:
 
 1. Create a folder on your computer to contain the project code.
 
+<!-- TODO: fix this: after you clone, the git project is within another folder that's generated -->
+
 2. To find the path to a folder on a Mac, right click on the folder and press `Get Info`, then select the whole text found under `Where:` and copy with ⌘C. On Windows (not WSL), enter into the folder on File Explorer and click on the path box (located to the left of the search bar), then copy the whole text that shows up.
 
 3. For an Apple computer, open Terminal. If on a Windows machine, open Command Prompt or Windows Terminal. Enter the path of the folder you made using the command `cd path/to/folder`, where `path/to/folder` is the text you just copied.
@@ -78,18 +80,17 @@ cd ../..
 
 **Make sure Docker Desktop is open and finished with the setup process.**
 
-Before deploying the stacks, from your project root directory, to ensure you are in the **balance-test-dashboard** directory, run the below command in your terminal:
+Before deploying the stacks, from your project root directory, to ensure you are in the **balance-test-dashboard** directory and in the **cdk** folder, run the below command in your terminal:
 
 ```
-cd backend/cdk
+cd balance-test-dashboard/backend/cdk
 npm install
 ```
 
-In the `backend/cdk` directory, initialize the CDK stacks in the terminal (required only if you have not deployed the stacks before). The below lines assume your account profile is named `balance-test` and you want to deploy to that account.
+In the `balance-test-dashboard/backend/cdk` directory, initialize the CDK stacks in the terminal (required only if you have not deployed the stacks before). The below lines assume your account profile is named `balance-test` and you want to deploy to that account.
 
 ```
 cdk synth --profile balance-test
-cdk bootstrap aws://YOUR_AWS_ACCOUNT_ID/YOUR_AWS_REGION --profile balance-test
 ```
 
 If the cdk synth command gives you an error, run your console as administrator and execute the following command:
@@ -98,7 +99,12 @@ If the cdk synth command gives you an error, run your console as administrator a
 Set-ExecutionPolicy RemoteSigned
 ```
 
-Deploy the CDK stacks individually. To prevent errors, you **must** deploy in the **following order**. The deployment will take about 50-60 minutes.
+After doing `cdk synth`, enter the following:
+
+```
+cdk bootstrap aws://YOUR_AWS_ACCOUNT_ID/YOUR_AWS_REGION --profile balance-test
+```
+
 Deploy the CDK stacks individually, you **must** deploy in the **following order**. The deployment will take about 50-60 minutes.
 When prompted `Do you wish to deploy these changes (y/n)?`, type `y` and enter.
 
@@ -129,7 +135,7 @@ cdk deploy AthenaGlueStack --profile balance-test
 
 # Step 4: Amplify Deployment
 
-If you're in the `backend/cdk` directory, go back to the project root directory.
+If you're in the `balance-test-dashboard/backend/cdk` directory, go back to the `balance-test-dashboard` directory.
 
 ```
 cd ../..
@@ -194,7 +200,7 @@ Your webapp is now partially deployed, but before it's accessible, we need to fi
 
 # Step 5: CDK Deployment Part 2, AppSync
 
-If you are in the project root directory, make sure you are back in the `backend/cdk` directory in the terminal, so run:
+If you are in the `balance-test-dashboard` directory, make sure you are back in the `backend/cdk` directory in the terminal, so run:
 
 ```
 cd backend/cdk
