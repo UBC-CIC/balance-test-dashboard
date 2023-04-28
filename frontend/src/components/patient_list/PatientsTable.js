@@ -66,41 +66,6 @@ const headerColumns = [
   },
 ];
 
-//change the patient_id values to string type
-const testRows = [
-  {
-    user_id: uuidv4(),
-    first_name: "John",
-    last_name: "Doe",
-    assigned_test_num: 1,
-    last_movement_tested: "Sit-to-Stand",
-    last_test_score: 65,
-  },
-  {
-    user_id: uuidv4(),
-    first_name: "Jane",
-    last_name: "Doe",
-    assigned_test_num: 1,
-    last_movement_tested: "Sit-to-Stand",
-    last_test_score: 45,
-  },
-  {
-    user_id: uuidv4(),
-    first_name: "Robbie",
-    last_name: "Mac",
-    assigned_test_num: 1,
-    last_movement_tested: "Sit-to-Stand",
-    last_test_score: 56,
-  },
-  {
-    user_id: uuidv4(),
-    first_name: "Amanda",
-    last_name: "Spence",
-    assigned_test_num: 1,
-    last_movement_tested: "Sit-to-Stand",
-    last_test_score: 23,
-  },
-];
 
 function FixedHeaderRow() {
   return (
@@ -127,10 +92,7 @@ function DisplayRows({
   loading,
   availableTestsToAssign,
 }) {
-  //need to figure out which hooks are needed to make and use
   const [numTestsAssigned, setNumTestsAssigned] = React.useState(0);
-  // const [lastMovementTested, setLastMovementTested] = React.useState("-");
-  // const [lastTestScore, setLastTestScore] = React.useState("-");
 
   let navigate = useNavigate();
 
@@ -169,8 +131,6 @@ function DisplayRows({
                     {column.id === "see_patient_data" && (
                       <Button
                         onClick={() => {
-                          // navigate("/patient");
-                          // console.log("row", row);
                           navigate(`/patient/${row.user_id}`);
                         }}
                       >
@@ -285,7 +245,7 @@ function DisplaySearchResults({
   const [numTestsAssigned, setNumTestsAssigned] = React.useState(0);
 
   let navigate = useNavigate();
-  console.log("Display Search Results.");
+  // console.log("Display Search Results.");
 
   if (searchResults.length === 0) {
     return (
@@ -317,7 +277,6 @@ function DisplaySearchResults({
                       <Button
                         onClick={() => {
                           navigate(`/patient/${row.user_id}`);
-                          // navigate(`/patient`);
                         }}
                       >
                         See Patient Data
@@ -392,9 +351,7 @@ function DisplaySearchResults({
 
 export function PatientsTable() {
   let data = [];
-  // let data = testRows;
 
-  // careProviderId = 1;
   const [careProviderId, setCareProviderId] = React.useState("");
 
   const [patientDataRowsArr, updatePatientDataRowsArr] = React.useState(data);
@@ -484,6 +441,8 @@ export function PatientsTable() {
             ? "-"
             : res2.data.getTestEvents.length == 0
             ? "-"
+            : res2.data.getTestEvents[0].doctor_score != null
+            ? res2.data.getTestEvents[0].doctor_score
             : res2.data.getTestEvents[0].balance_score == null
             ? "-"
             : res2.data.getTestEvents[0].balance_score;

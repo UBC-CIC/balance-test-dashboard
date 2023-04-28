@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" modified="2023-04-27T20:18:00.392Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36 Edg/112.0.1722.58" etag="hhkYr8DUEcVyyTmgRBBI" version="21.2.2" type="google">
+  <diagram name="Page-1" id="pCcQmEtTJriRrNqqpRlv">
+    <mxGraphModel dx="2327" dy="830" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="aRphy9bY-q1pi7ahRkrQ-26" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="aRphy9bY-q1pi7ahRkrQ-1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-466" y="440" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="-466" y="480" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="aRphy9bY-q1pi7ahRkrQ-29" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="aRphy9bY-q1pi7ahRkrQ-1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-330" y="495.0000000000001" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="aRphy9bY-q1pi7ahRkrQ-1" value="Mobile app" style="verticalLabelPosition=bottom;html=1;verticalAlign=top;align=center;strokeColor=none;fillColor=#00BEF2;shape=mxgraph.azure.mobile;pointerEvents=1;" parent="1" vertex="1">
+          <mxGeometry x="-800" y="470" width="35" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="8r-h7H2aOM8vuCKN1t2r-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=-0.186;entryY=0.433;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="aRphy9bY-q1pi7ahRkrQ-2" target="8r-h7H2aOM8vuCKN1t2r-3">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-730" y="232.5" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="aRphy9bY-q1pi7ahRkrQ-2" value="&lt;b&gt;Make account &lt;br&gt;on dashboard&lt;/b&gt;" style="verticalLabelPosition=bottom;html=1;verticalAlign=top;align=center;strokeColor=none;fillColor=#00BEF2;shape=mxgraph.azure.computer;pointerEvents=1;" parent="1" vertex="1">
+          <mxGeometry x="-810" y="210" width="50" height="45" as="geometry" />
+        </mxCell>
+        <mxCell id="aRphy9bY-q1pi7ahRkrQ-24" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="aRphy9bY-q1pi7ahRkrQ-9" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-330" y="234" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="aRphy9bY-q1pi7ahRkrQ-9" value="Add or create patient&lt;br&gt;on dashboard" style="shape=image;html=1;verticalAlign=top;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;imageAspect=0;aspect=fixed;image=https://cdn4.iconfinder.com/data/icons/ionicons/512/icon-person-add-128.png" parent="1" vertex="1">
+          <mxGeometry x="-490" y="210" width="48" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="aRphy9bY-q1pi7ahRkrQ-31" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-299.69000000000005" y="450.0000000000001" as="targetPoint" />
+            <mxPoint x="-300" y="300" as="sourcePoint" />
+            <Array as="points">
+              <mxPoint x="-300" y="340" />
+              <mxPoint x="-300" y="340" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="aRphy9bY-q1pi7ahRkrQ-19" value="Assign test to new patient&lt;br&gt;on dashboard" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#B0084D;strokeColor=none;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;pointerEvents=1;shape=mxgraph.aws4.checklist;" parent="1" vertex="1">
+          <mxGeometry x="-319.99999999999994" y="210" width="40.62" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="aRphy9bY-q1pi7ahRkrQ-28" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-465.8099999999997" y="300" as="targetPoint" />
+            <mxPoint x="-466" y="340" as="sourcePoint" />
+            <Array as="points">
+              <mxPoint x="-466" y="330" />
+              <mxPoint x="-466" y="330" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="aRphy9bY-q1pi7ahRkrQ-25" value="Patient makes account&lt;br&gt;on mobile app" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#B0084D;strokeColor=none;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;pointerEvents=1;shape=mxgraph.aws4.organizations_account;" parent="1" vertex="1">
+          <mxGeometry x="-490" y="350" width="48.38" height="51" as="geometry" />
+        </mxCell>
+        <mxCell id="aRphy9bY-q1pi7ahRkrQ-38" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="aRphy9bY-q1pi7ahRkrQ-30" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-170" y="492.7499999999998" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="aRphy9bY-q1pi7ahRkrQ-30" value="Log into care &lt;br&gt;provider&#39;s account&lt;br&gt;on mobile app" style="shape=image;html=1;verticalAlign=top;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;imageAspect=0;aspect=fixed;image=https://cdn2.iconfinder.com/data/icons/coronavirus-innovicons-color/128/call-doctor-coronavirus-smartphone-128.png" parent="1" vertex="1">
+          <mxGeometry x="-320" y="465.5" width="54.5" height="54.5" as="geometry" />
+        </mxCell>
+        <mxCell id="Hk4H3hL1lygezlihZfVo-5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" parent="1" source="aRphy9bY-q1pi7ahRkrQ-37" target="Hk4H3hL1lygezlihZfVo-4" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="-30" y="493" />
+              <mxPoint x="-30" y="493" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Hk4H3hL1lygezlihZfVo-7" value="For every&lt;br&gt;&lt;b&gt;10&lt;/b&gt; training&amp;nbsp;&lt;br&gt;recordings with&lt;br&gt;&lt;b&gt;scores&lt;/b&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="Hk4H3hL1lygezlihZfVo-5" connectable="0" vertex="1">
+          <mxGeometry x="-0.0856" y="2" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="aRphy9bY-q1pi7ahRkrQ-37" value="Record &lt;b&gt;10&lt;/b&gt; training &lt;br&gt;recordings &lt;br&gt;with &lt;b&gt;scores&lt;/b&gt;" style="shape=image;html=1;verticalAlign=top;verticalLabelPosition=bottom;labelBackgroundColor=#ffffff;imageAspect=0;aspect=fixed;image=https://cdn4.iconfinder.com/data/icons/aiga-symbol-signs/464/aiga_waiting_room-128.png" parent="1" vertex="1">
+          <mxGeometry x="-150" y="467.75" width="50" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="Hk4H3hL1lygezlihZfVo-1" value="to&amp;nbsp;add more &lt;br&gt;training data" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.4;entryY=-0.031;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="aRphy9bY-q1pi7ahRkrQ-41" target="aRphy9bY-q1pi7ahRkrQ-37" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-120" y="460" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="255" y="380" />
+              <mxPoint x="-130" y="380" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="aRphy9bY-q1pi7ahRkrQ-41" value="Tests can be &lt;br&gt;done on &lt;br&gt;patient/care provider&lt;br&gt;accounts on &lt;br&gt;mobile app" style="dashed=0;labelPosition=center;align=center;shape=mxgraph.gmdl.checkbox;strokeColor=none;fillColor=#009587;strokeWidth=2;aspect=fixed;sketch=0;html=1;verticalLabelPosition=bottom;verticalAlign=top;" parent="1" vertex="1">
+          <mxGeometry x="240" y="477.90999999999997" width="29.69" height="29.69" as="geometry" />
+        </mxCell>
+        <mxCell id="Hk4H3hL1lygezlihZfVo-6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=-0.014;entryY=0.508;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="Hk4H3hL1lygezlihZfVo-4" target="aRphy9bY-q1pi7ahRkrQ-41" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Hk4H3hL1lygezlihZfVo-4" value="New machine&lt;br&gt;learning model&lt;br&gt;is made&lt;br&gt;5-10 min later" style="sketch=0;outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#067F68;strokeColor=none;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;pointerEvents=1;shape=mxgraph.aws4.sagemaker_model;" parent="1" vertex="1">
+          <mxGeometry x="80" y="468.74999999999994" width="48" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="8r-h7H2aOM8vuCKN1t2r-5" value="Log in&lt;br&gt;to dashboard" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="8r-h7H2aOM8vuCKN1t2r-3">
+          <mxGeometry x="-0.0042" relative="1" as="geometry">
+            <mxPoint x="-500" y="235.9999999999999" as="targetPoint" />
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="8r-h7H2aOM8vuCKN1t2r-3" value="Administrator&lt;br&gt;provides access&lt;br&gt;for this account&lt;br&gt;in Cognito" style="sketch=0;pointerEvents=1;shadow=0;dashed=0;html=1;strokeColor=none;fillColor=#505050;labelPosition=center;verticalLabelPosition=bottom;verticalAlign=top;outlineConnect=0;align=center;shape=mxgraph.office.users.administrator;" vertex="1" parent="1">
+          <mxGeometry x="-680" y="210" width="53.86" height="52" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

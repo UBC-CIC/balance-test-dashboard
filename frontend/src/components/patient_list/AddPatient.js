@@ -7,7 +7,6 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import TextField from "@mui/material/TextField";
-
 import { v4 as uuidv4, v5 as uuidv5 } from "uuid";
 import { initMovementsAssignedObj, retrieveAssignedTests } from "./ManageTests";
 
@@ -25,44 +24,14 @@ import {
 } from "../../graphql/mutations";
 Amplify.configure(awsconfig);
 
-let searchPopOutData = [
-  {
-    user_id: 19285239,
-    patient_name: "John Doe",
-    assigned_test_num: 1,
-    last_movement_tested: "Sit-to-Stand",
-    last_test_score: 65,
-  },
-  {
-    user_id: 23897593,
-    patient_name: "Jane Doe",
-    assigned_test_num: 1,
-    last_movement_tested: "Sit-to-Stand",
-    last_test_score: 45,
-  },
-  {
-    user_id: 90258044,
-    patient_name: "Robbie Mac",
-    assigned_test_num: 1,
-    last_movement_tested: "Sit-to-Stand",
-    last_test_score: 56,
-  },
-  {
-    user_id: 29235305,
-    patient_name: "Amanda Spence",
-    assigned_test_num: 1,
-    last_movement_tested: "Sit-to-Stand",
-    last_test_score: 23,
-  },
-];
 
-function createPatientInfoObj(first_name, last_name) {
-  // console.log("New Patient Name: " + last_name + ', ' + first_name);
+function createPatientInfoObj(first_name, last_name, movement_tests) {
 
   const newUserID = uuidv5(last_name + ", " + first_name, uuidv4()); //make a uuid with a name and random uuid
 
   let newPatientObj = {};
-  let movementsAssignedObj = initMovementsAssignedObj();
+
+  let movementsAssignedObj = initMovementsAssignedObj(movement_tests);
 
   newPatientObj = {
     user_id: newUserID,
@@ -317,6 +286,8 @@ function ManualAddPatient(props) {
     careProviderId,
   } = props;
 
+  const [availableTestsToAssign, setAvailableTestsToAssign] = useState([]);
+
   async function manuallyAddPatientToDatabase(first_name, last_name, user_id) {
     let sesh = await Auth.currentSession();
     let idtoken = sesh.idToken.jwtToken;
@@ -377,11 +348,22 @@ function ManualAddPatient(props) {
     }
   };
 
-  // Modify the onClick function later for Add Patient button
-  const handleAddPatientClick = () => {
+  const handleAddPatientClick = async () => {
     setAddPatientModalOpen(false);
 
-    let newPatientObj = createPatientInfoObj(inputFirstName, inputLastName);
+    let sesh = await Auth.currentSession();
+    let idtoken = sesh.idToken.jwtToken;
+
+    let responseAvailableTests = await API.graphql({
+      query: getAllAvailableTests,
+      authToken: idtoken,
+    });
+
+    setAvailableTestsToAssign(
+      responseAvailableTests.data.getAllAvailableTests.map((t) => t.test_type)
+    );
+
+    let newPatientObj = createPatientInfoObj(inputFirstName, inputLastName, availableTestsToAssign);
 
     manuallyAddPatientToDatabase(
       inputFirstName,
@@ -462,13 +444,6 @@ export default function AddPatientFullModal({
     React.useState(false);
   const [addPatientModalOpen, setAddPatientModalOpen] = React.useState(false);
   const [searchData, setSearchData] = React.useState([]);
-
-  // searchData = searchPopOutData;
-
-  // const handleOpenAddPatientModal = () => {
-  //     setSearchPatientModalOpen(false)
-  //     setAddPatientModalOpen(true);
-  // }
 
   async function retrieveAllPatients() {
     let sesh = await Auth.currentSession();
