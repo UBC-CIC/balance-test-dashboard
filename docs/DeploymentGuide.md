@@ -40,6 +40,8 @@ First, clone the GitHub repository onto your machine. To do this:
 
 1. Create a folder on your computer to contain the project code.
 
+<!-- TODO: fix this: after you clone, the git project is within another folder that's generated -->
+
 2. To find the path to a folder on a Mac, right click on the folder and press `Get Info`, then select the whole text found under `Where:` and copy with ⌘C. On Windows (not WSL), enter into the folder on File Explorer and click on the path box (located to the left of the search bar), then copy the whole text that shows up.
 
 3. For an Apple computer, open Terminal. If on a Windows machine, open Command Prompt or Windows Terminal. Enter the path of the folder you made using the command `cd path/to/folder`, where `path/to/folder` is the text you just copied.
@@ -78,7 +80,7 @@ cd ../..
 
 **Make sure Docker Desktop is open and finished with the setup process.**
 
-Before deploying the stacks, from your project root directory, to ensure you are in the **backend** directory, run the below command in your terminal:
+Before deploying the stacks, from your project root directory, to ensure you are in the **cdk** folder of the backend section, run the below command in your terminal:
 
 ```
 cd backend/cdk
@@ -88,13 +90,18 @@ In the `backend/cdk` directory, initialize the CDK stacks in the terminal (requi
 
 ```
 cdk synth --profile balance-test
-cdk bootstrap aws://YOUR_AWS_ACCOUNT_ID/YOUR_AWS_REGION --profile balance-test
 ```
 
 If the cdk synth command gives you an error, run your console as administrator and execute the following command:
 
 ```
 Set-ExecutionPolicy RemoteSigned
+```
+
+After doing `cdk synth`, enter the following:
+
+```
+cdk bootstrap aws://YOUR_AWS_ACCOUNT_ID/YOUR_AWS_REGION --profile balance-test
 ```
 
 Deploy the CDK stacks individually, you **must** deploy in the **following order**. The deployment will take about 50-60 minutes.
