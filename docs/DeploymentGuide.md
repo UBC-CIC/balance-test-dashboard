@@ -78,7 +78,7 @@ cd ../..
 
 **Make sure Docker Desktop is open and finished with the setup process.**
 
-Before deploying the stacks, from your project root directory, to ensure you are in the **backend** directory, run the below command in your terminal:
+Before deploying the stacks, from your project root directory, to ensure you are in the **balance-test-dashboard** directory, run the below command in your terminal:
 
 ```
 cd backend/cdk

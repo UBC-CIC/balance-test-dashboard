@@ -6,8 +6,8 @@
 
 | Index                                                                                        | Description                                               |
 |:---------------------------------------------------------------------------------------------|:----------------------------------------------------------| 
-| [Sign In](#Sign-In)          | Sign in to a care provider account              |
-| [Home](Home)                                                            | How to see all patients overview                            |
+| [Sign In Or Create An Account](#Sign-In-Or-Create-An-Account)          | Sign in to a care provider account              |
+| [Home](#Home)                                                            | How to see all patients overview                            |
 | [Patient Details](#Patient-Details)                                                                    | See details for a patient                                         |
 | [Test Event Details](#Test-Event-Details)  | See details for a test event                        |
 | [Add User to CareProvider Group](#Add-User-to-CareProvider-Group)  | Grant user permission to the dashboard                        |
@@ -25,7 +25,7 @@ Note: right after you create an account or if you created an account not too lon
 ![alt text](./images/user_guide/access_denied.PNG)
 
 
-## HOME
+## Home
 
 The home page displays the list of patients assigned to you. 
 ![alt text](./images/user_guide/home.PNG)
@@ -108,3 +108,34 @@ pdf:
 
 csv:
 ![alt text](./images/user_guide/download_csv.PNG)
+
+
+## Add User to CareProvider Group
+
+For this, you will need to go to the [AWS console](https://aws.amazon.com/) and sign in to the account.
+
+Search "Cognito" in the search bar, and click the first result:
+![alt text](./images/user_guide/aws_console.PNG)
+
+You will see a list of user pools. Click on the "balance-test-user-pool":
+![alt text](./images/user_guide/user_pools.PNG)
+
+Then, locate the user for whom you want to grant permission to the dashboard, Click that user:
+![alt text](./images/user_guide/user_group.PNG)
+
+This will take you to the user page. Scroll down to the "User Attributes" section:
+![alt text](./images/user_guide/user.PNG)
+
+Click Edit. This will take you to this page:
+![alt text](./images/user_guide/add_attribute.PNG)
+
+Click "Add Attribute", and then fill the fields with the following. After you are done, click "Save Changes"
+![alt text](./images/user_guide/user_type_attribute.PNG)
+
+You will be taken back to the user page. Now scroll down to the "Add User to a Group" section. Select "careProvider", then click "Add". 
+![alt text](./images/user_guide/group_list.PNG)
+
+After you do this, you will be taken back to the user page. Confirm that the user was configured correctly by checking the configurations marked in red:
+![alt text](./images/user_guide/cognito_done.PNG)
+
+Your user should have access to the dashboard now! Follow the [Sign In](#sign-in-or-create-an-account) section to proceed with the dashboard.
