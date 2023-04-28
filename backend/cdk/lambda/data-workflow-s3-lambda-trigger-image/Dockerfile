@@ -1,7 +1,9 @@
-FROM public.ecr.aws/lambda/python:3.9
+FROM --platform=linux/amd64 public.ecr.aws/lambda/python:3.9
 
 # To update for image issues
 RUN yum update nss -y && yum update libxml2 -y
+
+RUN python3.9 -m pip install awslambdaric
 
 # Install the function's dependencies using file requirements.txt
 # from your project folder.
