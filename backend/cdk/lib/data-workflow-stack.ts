@@ -11,7 +11,8 @@ import { VPCStack } from './vpc-stack';
 import { CognitoStack } from './cognito-stack';
 import { DatabaseStack } from './database-stack';
 
-export const balanceTestBucketName = 'balancetest-datastorage-bucket'
+const randomNumber = Math.random().toString().substring(2, 7);
+export const balanceTestBucketName = 'balancetest-datastorage-bucket-' + randomNumber; 
 export class DataWorkflowStack extends Stack {
 
     private readonly balanceTestBucket: s3.Bucket;
@@ -19,7 +20,6 @@ export class DataWorkflowStack extends Stack {
     private readonly deleteS3RecordLambda: lambda.Function;
     private readonly endpointName: string;
     private readonly s3LambdaTriggerSagemakerRole: iam.Role;
-    private readonly savedModelsS3Key: string;
 
     constructor(scope: App, id: string, vpcStack: VPCStack, cognitoStack: CognitoStack, databaseStack: DatabaseStack, props: StackProps) {
       super(scope, id, props);
@@ -28,7 +28,7 @@ export class DataWorkflowStack extends Stack {
       const balanceTestBucketAccessPointName = "balancetest-accesspt";
 
       //**MUST** have "sagemaker" as the **FIRST** word of the Sagemaker bucket name for training job output purposes
-      const sagemakerBucketName ='sagemaker-balancetest-bucket';
+      const sagemakerBucketName = 'sagemaker-balancetest-bucket-' + randomNumber;
       const sagemakerBucketAccessPointName = 'balancetest-sm-accesspt';
 
       const s3LambdaTriggerName = "BalanceTest-data-workflow"
@@ -40,7 +40,6 @@ export class DataWorkflowStack extends Stack {
       const sagemakerLogGroupName = "BalanceTest-SagemakerExecution-Logs";
       const endpointNameParameterName = "BalanceTest-Model-Endpoint-Param"; 
       this.endpointName = "balance-test-multimodel";
-      this.savedModelsS3Key = "saved_models";
 
       const securityGroupParameterName = "BalanceTest-VPC-DefaultSecurityGroupID";
       const privateSubnet1ParameterName = "BalanceTest-VPC-PrivateSubnet1ID";
@@ -144,13 +143,11 @@ export class DataWorkflowStack extends Stack {
       
       // create log groups
       const logGroup = new logs.LogGroup(this, logGroupName, {
-        logGroupName: `/aws/lambda/${s3LambdaTriggerName}`,
-        removalPolicy: RemovalPolicy.DESTROY
+        logGroupName: `/aws/lambda/${s3LambdaTriggerName}`
       });
 
       const sagemakerLogGroup = new logs.LogGroup(this, sagemakerLogGroupName, {
-        logGroupName: `/aws/sagemaker/${sagemakerLogGroupName}`,
-        removalPolicy: RemovalPolicy.DESTROY
+        logGroupName: `/aws/sagemaker/${sagemakerLogGroupName}`
       });
 
       //create policy document and role for Lambda trigger and Sagemaker training job
@@ -241,8 +238,7 @@ export class DataWorkflowStack extends Stack {
           sagemaker_execution_role: this.s3LambdaTriggerSagemakerRole.roleArn,
           security_group_parameter_name: securityGroupParameterName,
           private_subnet_1_parameter_name: privateSubnet1ParameterName,
-          private_subnet_2_parameter_name: privateSubnet2ParameterName,
-          saved_models_s3_key: this.savedModelsS3Key
+          private_subnet_2_parameter_name: privateSubnet2ParameterName
         },
         functionName: s3LambdaTriggerName,
         memorySize: 512, //a lower size would not be able to run the whole code
@@ -268,8 +264,7 @@ export class DataWorkflowStack extends Stack {
       
       // make log group for Lambda that generates a report
       const generateReportLambdaLogGroup = new logs.LogGroup(this, generateReportLambdaLogGroupName, {
-        logGroupName: `/aws/lambda/${generateReportLambdaName}`,
-        removalPolicy: RemovalPolicy.DESTROY
+        logGroupName: `/aws/lambda/${generateReportLambdaName}`
       });
 
       // make IAM role for Lambda that generates a report
@@ -326,8 +321,7 @@ export class DataWorkflowStack extends Stack {
 
       // make log group for Lambda that deletes files from S3
       const deleteS3RecordLambdaLogGroup = new logs.LogGroup(this, deleteS3RecordLambdaLogGroupName, {
-        logGroupName: `/aws/lambda/${deleteS3RecordLambdaName}`,
-        removalPolicy: RemovalPolicy.DESTROY
+        logGroupName: `/aws/lambda/${deleteS3RecordLambdaName}`
       });
 
       // make IAM role for Lambda that deletes files from S3
@@ -376,6 +370,11 @@ export class DataWorkflowStack extends Stack {
             subnetType: ec2.SubnetType.PRIVATE_ISOLATED
         },
         securityGroups: [securityGroup]
+      });
+
+      //output the bucket name for Amplify
+      new cdk.CfnOutput(this, 'BalanceTestBucketName', {
+        value: balanceTestBucketName
       });
     }
 

@@ -43,7 +43,6 @@ export class AthenaGlueStack extends Stack {
         }
       });
 
-      //TODO: check permissions for role, such as if the policies need to be restricted
       // make Glue permissions/role
       let glueSensorDataCrawlerPolicyDocument = new iam.PolicyDocument({
         statements: [new iam.PolicyStatement({
@@ -87,14 +86,11 @@ export class AthenaGlueStack extends Stack {
       const athenaDataCatalogName = "BalanceTestAthenaDataCatalog";
       const logGroupName = "BalanceTest-AthenaQueryS3-Logs";
 
-      //TODO: see if we want to destroy or retain log groups when deleting stack
       // create log group for Lambda that uses Athena to query S3
       const logGroup = new logs.LogGroup(this, logGroupName, {
-        logGroupName: `/aws/lambda/${athenaS3QueryLambdaName}`,
-        removalPolicy: RemovalPolicy.DESTROY
+        logGroupName: `/aws/lambda/${athenaS3QueryLambdaName}`
       });
 
-      //TODO: add the necessary restrictive IAM policy statements, and remove managed policies
       //make IAM role for Lambda to query S3
       let athenaQueryS3PolicyDocument = new iam.PolicyDocument({
         statements: [new iam.PolicyStatement({
@@ -125,7 +121,6 @@ export class AthenaGlueStack extends Stack {
 
       const cognitoUserPoolId = cognitoStack.UserPoolId;
 
-      //TODO: add other needed environment variables
       //make Lambda for Athena to query to S3
       this.athenaS3QueryLambda = new lambda.Function(this, athenaS3QueryLambdaName, {
         runtime: lambda.Runtime.PYTHON_3_9,
@@ -156,7 +151,6 @@ export class AthenaGlueStack extends Stack {
       });
     }
 
-    // todo: set athena output location
 
     public getAthenaS3QueryLambda(): lambda.Function {
       return this.athenaS3QueryLambda;
