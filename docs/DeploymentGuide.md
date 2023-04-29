@@ -129,6 +129,12 @@ cdk deploy DatabaseStack --profile balance-test
 cdk deploy DataWorkflowStack --profile balance-test
 ```
 
+After you deploy `DataWorkflowStack`, take note of the bucket name, specified as `DataWorkflowStack.BalanceTestBucketName`. This will be used during Amplify deployment. In this example, the name is `balancetest-datastorage-bucket-66006`.
+
+![alt text](/docs/images/DataWorkflowStackBucketName.JPG)
+
+Deploy one more stack before moving to Amplify deployment:
+
 ```
 cdk deploy AthenaGlueStack --profile balance-test
 ```
@@ -165,7 +171,7 @@ Select the **amplifyconsole-balancetest-backend-role** we made previously for th
 
 ```
 _LIVE_UPDATES: [{"name":"Amplify CLI","pkg":"@aws-amplify/cli","type":"npm","version":"10.7.2"}]
-AMPLIFY_STORAGE_BUCKET_NAME: balancetest-datastorage-bucket
+AMPLIFY_STORAGE_BUCKET_NAME: balancetest-datastorage-bucket-66006
 AMPLIFY_STORAGE_REGION: // region
 AMPLIFY_USERPOOL_ID: // CognitoStack.UserPoolId
 AMPLIFY_WEBCLIENT_ID: // CognitoStack.UserPoolClientId

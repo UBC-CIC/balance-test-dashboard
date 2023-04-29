@@ -159,7 +159,6 @@ export class AppsyncStack extends Stack {
             code: appsync.Code.fromAsset('appsync/AppsyncFunctions/redirect_delete_event_function.js'),
         });
         
-        //TODO: update the appsync/resolverMappingFunctions folder with any new queries/mutations
         // make resolvers by looping through each list and getting the associated code
         let deleteEventResolverNameList = ["deleteTestEventFromS3"];
         let s3DownloadResolverNameList = ["downloadTestEventDetails"];

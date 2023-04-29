@@ -159,7 +159,6 @@ export class DatabaseStack extends Stack {
         const dbProxyRole = new iam.Role(this, 'DBProxyRole', { assumedBy: new iam.AccountPrincipal(this.account) });
         this.proxy.grantConnect(dbProxyRole, 'admin'); // Grant the role connection access to the DB Proxy for database user 'admin'.
         
-        //TODO: check if we need this
         // const port = ec2.Port.tcp(this.dbPort);
         // rdsInstance.connections.securityGroups.forEach((securityGroup) => {
         //     securityGroup.addIngressRule(ec2.Peer.ipv4(vpcStack.cidrStr), port, "BalanceTest-RDS-Postgres-Ingress")
@@ -167,12 +166,10 @@ export class DatabaseStack extends Stack {
 
         // make log group for Lambda that connects to PostgreSQL RDS
         const postgresqlRDSConnectLambdaLogGroup = new logs.LogGroup(this, postgresqlRDSConnectLambdaLogGroupName, {
-            logGroupName: `/aws/lambda/${postgresqlRDSConnectLambdaName}`,
-            removalPolicy: RemovalPolicy.DESTROY
+            logGroupName: `/aws/lambda/${postgresqlRDSConnectLambdaName}`
           });
 
 
-        //TODO: change permissions to restrictive ones, and remove managed policies
         // make IAM role for Lambda that generates a report
         const postgresqlRDSConnectLambdaPolicyDocument = new iam.PolicyDocument({
             statements: [
@@ -209,7 +206,7 @@ export class DatabaseStack extends Stack {
             description: "Contains libraries for the " + postgresqlRDSConnectLambdaName + " function."
         });
         
-        //TODO: use secrets manager for pg credentials
+        
         // make Lambda to generate a PDF report for downloading in dashboard
         this.postgresqlRDSConnectLambda = new lambda.Function(this, postgresqlRDSConnectLambdaName, {
             runtime: postgresqlRDSConnectLambdaRuntime,
