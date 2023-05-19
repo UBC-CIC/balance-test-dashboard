@@ -10,11 +10,12 @@ import * as cdk from 'aws-cdk-lib';
 import { VPCStack } from './vpc-stack';
 import { CognitoStack } from './cognito-stack';
 import { DatabaseStack } from './database-stack';
+import { Aws } from 'aws-cdk-lib';
 
-const randomNumber = Math.random().toString().substring(2, 7);
-export const balanceTestBucketName = 'balancetest-datastorage-bucket-' + randomNumber; 
+
 export class DataWorkflowStack extends Stack {
 
+    public readonly balanceTestBucketName: string; 
     private readonly balanceTestBucket: s3.Bucket;
     private readonly generateReportLambda: lambda.Function;
     private readonly deleteS3RecordLambda: lambda.Function;
@@ -24,11 +25,11 @@ export class DataWorkflowStack extends Stack {
     constructor(scope: App, id: string, vpcStack: VPCStack, cognitoStack: CognitoStack, databaseStack: DatabaseStack, props: StackProps) {
       super(scope, id, props);
       
-      // const balanceTestBucketName = 'balancetest-datastorage-bucket'
+      this.balanceTestBucketName = 'balancetest-datastorage-bucket-' + Aws.ACCOUNT_ID;
       const balanceTestBucketAccessPointName = "balancetest-accesspt";
 
       //**MUST** have "sagemaker" as the **FIRST** word of the Sagemaker bucket name for training job output purposes
-      const sagemakerBucketName = 'sagemaker-balancetest-bucket-' + randomNumber;
+      const sagemakerBucketName = 'sagemaker-balancetest-bucket-' + Aws.ACCOUNT_ID;
       const sagemakerBucketAccessPointName = 'balancetest-sm-accesspt';
 
       const s3LambdaTriggerName = "BalanceTest-data-workflow"
@@ -66,8 +67,8 @@ export class DataWorkflowStack extends Stack {
       }
 
       //must ensure that this is a PRIVATE/BLOCK_ALL public access bucket!
-      this.balanceTestBucket = new s3.Bucket(this, balanceTestBucketName, {
-        bucketName: balanceTestBucketName,
+      this.balanceTestBucket = new s3.Bucket(this, 'BalanceTestDataStorage', {
+        bucketName: this.balanceTestBucketName,
         removalPolicy: RemovalPolicy.RETAIN,
         blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
         publicReadAccess: false,
@@ -92,7 +93,7 @@ export class DataWorkflowStack extends Stack {
         }
       });
 
-      const sagemakerBucket = new s3.Bucket(this, sagemakerBucketName, {
+      const sagemakerBucket = new s3.Bucket(this, 'SageMakerBucket', {
         bucketName: sagemakerBucketName,
         removalPolicy: RemovalPolicy.RETAIN,
         blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
@@ -178,11 +179,11 @@ export class DataWorkflowStack extends Stack {
   
         }), new iam.PolicyStatement({ 
             actions: ["s3:ListBucket"],
-            resources: [this.balanceTestBucket.bucketArn + "/private/*", this.balanceTestBucket.bucketArn, sagemakerBucket.bucketArn, sagemakerBucket.bucketArn + "/*"]
+            resources: [this.balanceTestBucket.bucketArn + "/recording_data/*", this.balanceTestBucket.bucketArn, sagemakerBucket.bucketArn, sagemakerBucket.bucketArn + "/*"]
 
         }), new iam.PolicyStatement({
             actions: ["s3:GetObject"],
-            resources: [this.balanceTestBucket.bucketArn + "/private/*"]
+            resources: [this.balanceTestBucket.bucketArn + "/recording_data/*"]
 
         }), new iam.PolicyStatement({
             actions: ["logs:CreateLogStream", "logs:CreateLogGroup", "logs:PutLogEvents", "logs:DescribeLogStreams", "logs:GetLogEvents"],
@@ -257,7 +258,7 @@ export class DataWorkflowStack extends Stack {
         s3.EventType.OBJECT_CREATED,
         new s3notif.LambdaDestination(s3LambdaTrigger),
         {
-          prefix: "private/",
+          prefix: "recording_data/",
           suffix: ".json"
         }
       );
@@ -279,7 +280,7 @@ export class DataWorkflowStack extends Stack {
                   "s3:GetObject",
                   "s3:DeleteObject"
               ],
-              resources: ['arn:aws:s3:::'+balanceTestBucketName+'/*'],
+              resources: ['arn:aws:s3:::'+this.balanceTestBucketName+'/*'],
             })]
       });
       const generateReportLambdaRole = new iam.Role(this, generateReportLambdaRoleName, {
@@ -374,8 +375,32 @@ export class DataWorkflowStack extends Stack {
 
       //output the bucket name for Amplify
       new cdk.CfnOutput(this, 'BalanceTestBucketName', {
-        value: balanceTestBucketName
+        value: this.balanceTestBucketName
       });
+
+      cognitoStack.authenticatedRole.addToPolicy(new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        actions: [
+            "s3:PutObject",
+            "s3:GetObject",
+            "s3:DeleteObject"
+        ],
+        resources: ['arn:aws:s3:::'+this.balanceTestBucketName+'/parquet_data/patient_tests/user_id=${cognito-identity.amazonaws.com:sub}/*',
+                'arn:aws:s3:::'+this.balanceTestBucketName+'/recording_data/patientID=${cognito-identity.amazonaws.com:sub}/*'],
+    }));
+    cognitoStack.authenticatedRole.addToPolicy(new iam.PolicyStatement({
+        effect: iam.Effect.ALLOW,
+        actions: [
+            "s3:PutObject",
+            "s3:GetObject",
+            "s3:DeleteObject"
+        ],
+        resources: [`arn:aws:s3:::${this.balanceTestBucketName}/*`],
+        conditions:{
+        'StringEquals':{"aws:PrincipalTag/user_type": "careProvider"}
+        }
+    }));
+
     }
 
     public getS3BucketName(): string {

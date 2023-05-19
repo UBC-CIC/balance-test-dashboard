@@ -52,19 +52,11 @@ def lambda_handler(event, context):
     # getting timestamps and IMU data only
     df_json_select = df_json[['ts', 'ax', 'ay', 'az', 'gx', 'gy', 'gz', 'mx', 'my', 'mz']]
 
-    # to organize json data by training or not training
-    if (training_bool == True):
-        path_json = "json_data/patient_tests" + "/user_id=" + region + ":" + str(user_id) + "/movement=" + movement_str + "/training/"
-
-    else:
-        path_json = "json_data/patient_tests" + "/user_id=" + region + ":" + str(user_id) + "/movement=" + movement_str + "/year=" + str(start_year) + "/month=" + str(start_month) + "/day=" + str(start_day) + "/test_event_id=" + str(test_event_id) + "/"
-
     # if path_parquet is modified, there is a path in another service that needs to be modified for range graphs
-    path_parquet = "parquet_data/patient_tests" + "/user_id=" + region + ":" + str(user_id) + "/movement=" + movement_str + "/year=" + str(start_year) + "/month=" + str(start_month) + "/day=" + str(start_day) + "/test_event_id=" + str(test_event_id) + "/"
-    path_csv = "csv_data/patient_tests" + "/user_id=" + region + ":" + str(user_id) + "/movement=" + movement_str + "/year=" + str(start_year) + "/month=" + str(start_month) + "/day=" + str(start_day) + "/test_event_id=" + str(test_event_id) + "/"
+    path_parquet = "parquet_data/patient_tests" + "/user_id=" + str(user_id) + "/movement=" + movement_str + "/year=" + str(start_year) + "/month=" + str(start_month) + "/day=" + str(start_day) + "/test_event_id=" + str(test_event_id) + "/"
+    path_csv = "csv_data/patient_tests" + "/user_id=" + str(user_id) + "/movement=" + movement_str + "/year=" + str(start_year) + "/month=" + str(start_month) + "/day=" + str(start_day) + "/test_event_id=" + str(test_event_id) + "/"
     
     # send json to the new organized folder in S3; convert to parquet/csv and send to another folder
-    copy_json_to_s3(bucket + "/" + key, bucket, path_json, test_event_id) # to ensure that the json data is organized by patients, and not include care providers
     convert_json_to_parquet(df_json_select, bucket, path_parquet, test_event_id)
     convert_json_to_csv(df_json_select, bucket, path_csv, test_event_id)
     
@@ -251,31 +243,6 @@ def convert_json_to_csv(dataframe, bucket, output_s3_path, test_event_id):
     except Exception as e:
         print(e)
         print('In JSON to CSV file format conversion function. Error putting object into bucket {}. Make sure the object exists and your bucket is in the same region as this function.'.format(bucket))
-        raise e
-
-
-"""
-This function gets the path of the json file, and copies it into the specified bucket name at the specified path string
-
-
-json_s3_path: the string representing the path of the json file to copy
-bucket: the string representing the bucket name
-output_s3_path: the string representing the path to the folder for storing in the bucket
-test_event_id: the string representing the test event id
-"""
-
-def copy_json_to_s3(json_s3_path, bucket, output_s3_path, test_event_id):
-    
-    json_file_name = "test_event_" + str(test_event_id) + ".json"
-    output_s3_path = output_s3_path + json_file_name
-
-    try:
-        copy_response = s3.copy_object(CopySource=json_s3_path, Bucket=bucket, Key=output_s3_path)
-        print("Copy: ", copy_response)
-        
-    except Exception as e:
-        print(e)
-        print('Error copying object into bucket {}. Make sure the object exists and your bucket is in the same region as this function.'.format(bucket))
         raise e
 
 
@@ -529,7 +496,7 @@ def launch_training_job(bucket, training_folder_key, role, training_job_location
         py_version="py37",  # python version
         code_location=training_job_location_prefix_s3_uri, # S3 location for training job output file storage
         output_path=training_job_location_prefix_s3_uri, # S3 location for training job file storage
-        base_job_name=f'{user_id}',  # Modifying the training job name
+        base_job_name=f'{user_id.split(":")[1]}',  # Modifying the training job name
         subnets=[private_subnet_1_parameter_value, private_subnet_2_parameter_value], # VPC subnet IDs
         security_group_ids=[security_group_parameter_value], # VPC security group ID
     )

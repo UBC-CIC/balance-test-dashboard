@@ -6,10 +6,10 @@ import * as lambda from "aws-cdk-lib/aws-lambda";
 import * as logs from "aws-cdk-lib/aws-logs";
 import * as ssm from "aws-cdk-lib/aws-ssm";
 import * as ec2 from "aws-cdk-lib/aws-ec2";
-import { balanceTestBucketName, DataWorkflowStack } from './data-workflow-stack';
 import { VPCStack } from "./vpc-stack";
 import * as cdk from 'aws-cdk-lib';
 import { CognitoStack } from './cognito-stack';
+import { DataWorkflowStack } from './data-workflow-stack';
 
 export class AthenaGlueStack extends Stack {
 
@@ -103,7 +103,7 @@ export class AthenaGlueStack extends Stack {
                 "s3:GetObject",
                 "s3:DeleteObject"
             ],
-            resources: ['arn:aws:s3:::'+balanceTestBucketName+'/*'],
+            resources: ['arn:aws:s3:::'+dataWorkflowStack.balanceTestBucketName+'/*'],
           })]
       });
       let athenaQueryS3Role = new iam.Role(this, athenaQueryS3RoleName, {

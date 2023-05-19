@@ -51,7 +51,6 @@ def handler(event, context):
     if ('s3key' in event['payload']):
         key = event['payload']['s3key']
         # s3key: `parquet_data/patient_tests/user_id =${patient_id}/movement =${test_type}/year =${year}/month =${month}/day =${day}/test_event_id =${test_event_id}/test_event_${test_event_id}.parquet`,
-        key = insert_region(key, 'user_id=')
         measurement = event['payload']['measurement']
         sql = "SELECT ts, "+measurement+" FROM s3object s"
         res = s3.select_object_content(
@@ -82,7 +81,6 @@ def handler(event, context):
         return {"status": 200, "body": object_returned}
     elif ('athena_query' in event['payload']):
         query_string = event['payload']['athena_query']
-        query_string = insert_region(query_string, "user_id='")
 
         res1 = athena.start_query_execution(
             QueryString=query_string,
@@ -182,9 +180,3 @@ def handler(event, context):
         # print('res3', res3)
 
 
-def insert_region(key, start):
-    index = key.find(start)
-    if (index != -1):
-        return key[:index+len(start)]+region+':'+key[index+len(start):]
-    else:
-        return key

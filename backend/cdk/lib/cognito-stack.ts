@@ -5,11 +5,11 @@ import * as logs from "aws-cdk-lib/aws-logs";
 import * as ssm from "aws-cdk-lib/aws-ssm";
 import * as cognito from 'aws-cdk-lib/aws-cognito';
 import * as cdk from 'aws-cdk-lib';
-import { balanceTestBucketName, DataWorkflowStack } from './data-workflow-stack';
 import { BooleanAttribute, StringAttribute } from 'aws-cdk-lib/aws-cognito';
 
 export class CognitoStack extends Stack {
     public readonly UserPoolId: string;
+    public readonly authenticatedRole: iam.Role;
 
     constructor(scope: App, id: string, props?: StackProps) {
         super(scope, id, props);
@@ -224,7 +224,7 @@ export class CognitoStack extends Stack {
         );
 
         // Authenticated Role
-        const authenticatedRole = new iam.Role(
+        this.authenticatedRole = new iam.Role(
             this,
             "BalanceTest_Website_Authenticated_Role",
             {
@@ -243,8 +243,8 @@ export class CognitoStack extends Stack {
                 )
             }
         );
-        if (authenticatedRole.assumeRolePolicy){
-            authenticatedRole.assumeRolePolicy.addStatements(
+        if (this.authenticatedRole.assumeRolePolicy){
+            this.authenticatedRole.assumeRolePolicy.addStatements(
                 new iam.PolicyStatement({
                     principals: [
                     new iam.FederatedPrincipal('cognito-identity.amazonaws.com', {
@@ -256,30 +256,8 @@ export class CognitoStack extends Stack {
                 })
             )
         }
-        authenticatedRole.addToPolicy(new iam.PolicyStatement({
-            effect: iam.Effect.ALLOW,
-            actions: [
-                "s3:PutObject",
-                "s3:GetObject",
-                "s3:DeleteObject"
-            ],
-            resources: ['arn:aws:s3:::'+balanceTestBucketName+'/parquet_data/patient_tests/user_id=${cognito-identity.amazonaws.com:sub}/*',
-                    'arn:aws:s3:::'+balanceTestBucketName+'/private/${cognito-identity.amazonaws.com:sub}/*'],
-        }));
-        authenticatedRole.addToPolicy(new iam.PolicyStatement({
-            effect: iam.Effect.ALLOW,
-            actions: [
-                "s3:PutObject",
-                "s3:GetObject",
-                "s3:DeleteObject"
-            ],
-            resources: [`arn:aws:s3:::${balanceTestBucketName}/*`],
-            conditions:{
-            'StringEquals':{"aws:PrincipalTag/user_type": "careProvider"}
-            }
-        }));
-        authenticatedRole.addManagedPolicy(iam.ManagedPolicy.fromManagedPolicyArn(this, 'athenaManagedPolicy', 'arn:aws:iam::aws:policy/AmazonAthenaFullAccess'));
-        authenticatedRole.addToPolicy(new iam.PolicyStatement({
+        this.authenticatedRole.addManagedPolicy(iam.ManagedPolicy.fromManagedPolicyArn(this, 'athenaManagedPolicy', 'arn:aws:iam::aws:policy/AmazonAthenaFullAccess'));
+        this.authenticatedRole.addToPolicy(new iam.PolicyStatement({
             effect: iam.Effect.ALLOW,
             actions: [
                 "mobileanalytics:PutEvents",
@@ -297,7 +275,7 @@ export class CognitoStack extends Stack {
                 identityPoolId: identityPool.ref,
                 roles: {
                     unauthenticated: unauthenticatedRole.roleArn,
-                    authenticated: authenticatedRole.roleArn
+                    authenticated: this.authenticatedRole.roleArn
                 },
                 roleMappings:{
                     
