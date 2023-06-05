@@ -167,18 +167,35 @@ After connecting your Github account this window should appear.
 
 ![alt text](/docs/images/amplify_settings.PNG)
 
-Select the **amplifyconsole-balancetest-backend-role** we made previously for the deployment role. Expand the "Environment variables" section and edit the environment variables to the following settings, replace the values starting with `//` with the output that you saved from previous. Make sure to replace the `us-east-1` with your region.
+Select the **amplifyconsole-balancetest-backend-role** we made previously for the deployment role. 
+
+Expand the "Environment variables" section and edit the environment variables to the following settings, replace the values starting with `//` with the output that you saved from previous. Make sure to replace the `region` with the region you are deploying in.
 
 ```
 _LIVE_UPDATES: [{"name":"Amplify CLI","pkg":"@aws-amplify/cli","type":"npm","version":"10.7.2"}]
-AMPLIFY_STORAGE_BUCKET_NAME: balancetest-datastorage-bucket-66006
-AMPLIFY_STORAGE_REGION: // region
-AMPLIFY_USERPOOL_ID: // CognitoStack.UserPoolId
-AMPLIFY_WEBCLIENT_ID: // CognitoStack.UserPoolClientId
-AMPLIFY_NATIVECLIENT_ID: // CognitoStack.UserPoolClientId
-AMPLIFY_IDENTITYPOOL_ID: // / CognitoStack.IdentityPoolId
-
 ```
+```
+AMPLIFY_STORAGE_BUCKET_NAME: balancetest-datastorage-bucket-[AWS Account ID]
+```
+The full bucket name can be found in the Amazon S3 console on AWS. Please fill in the full name of the balancetest-datastorage-bucket with the appended account ID. 
+```
+AMPLIFY_STORAGE_REGION: // region
+```
+This is the region that your project is being deployed in.
+```
+AMPLIFY_USERPOOL_ID: // CognitoStack.UserPoolId
+```
+The Cognito User Pool ID can be found in the AWS Cognito console under `User Pools > balance-test-user-pool > User Pool Overview > User pool ID`
+```
+AMPLIFY_WEBCLIENT_ID: // CognitoStack.UserPoolClientId
+
+AMPLIFY_NATIVECLIENT_ID: // CognitoStack.UserPoolClientId
+```
+The Cognito User Pool Client ID can be found in the AWS Cognito console under `User Pools > balance-test-user-pool > App Integration > App client list > App clients and analytics > Client ID`
+```
+AMPLIFY_IDENTITYPOOL_ID: // / CognitoStack.IdentityPoolId
+```
+The Cognito Identity Pool ID can be found in the AWS Cognito console under `Identity Pools > BalanceTestIdentityPool > Edit identity pool > Identity pool ID`
 
 ![alt text](/docs/images/cognito_output.PNG)
 ![alt text](/docs/images/amplify_env.PNG)

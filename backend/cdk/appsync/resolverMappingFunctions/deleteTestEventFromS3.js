@@ -21,7 +21,7 @@ export function request(ctx) {
   } = ctx;
   return {
     payload: {
-      pathToPrivate: `private/${patient_id}/movement=${test_type}/year=${year}/month=${month}/day=${day}/test_event_id=${test_event_id}.json`,
+      pathToPrivate: `recording_data/patientID=${patient_id}/movement=${test_type}/year=${year}/month=${month}/day=${day}/test_event_id=${test_event_id}.json`,
       pathToParquet: `parquet_data/patient_tests/user_id=${patient_id}/movement=${test_type}/year=${year}/month=${month}/day=${day}/test_event_id=${test_event_id}/test_event_${test_event_id}.parquet`,
       pathToCsv: `csv_data/patient_tests/user_id=${patient_id}/movement=${test_type}/year=${year}/month=${month}/day=${day}/test_event_id=${test_event_id}/test_event_${test_event_id}.csv`,
       pathToPdf: `pdf_reports/user_id=${patient_id}/test_event_${test_event_id}.pdf`,

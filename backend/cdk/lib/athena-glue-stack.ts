@@ -70,10 +70,10 @@ export class AthenaGlueStack extends Stack {
         name: glueSensorDataCrawlerName,
         description: "For crawling parquet data within the S3 bucket for Athena querying",
         recrawlPolicy: {
-          recrawlBehavior: "CRAWL_NEW_FOLDERS_ONLY"
+          recrawlBehavior: "CRAWL_EVERYTHING"
         },
         schemaChangePolicy: {
-          updateBehavior: "LOG",
+          updateBehavior: "UPDATE_IN_DATABASE",
           deleteBehavior: "LOG"
         },
         schedule:{scheduleExpression:'cron(0 0 * * ? *)'},
