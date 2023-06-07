@@ -62,7 +62,7 @@ For 1), steps starting with A indicate request flow initiated from the dashboard
 
 20. This delivery of a JSON file triggers a Lambda function, which receives the event information and gets the JSON file from the bucket.
 
-21. The Lambda function code, which is made using a Docker image, will first convert the JSON data into CSV and parquet files using the Pandas library, and then store the JSON, CSV, and parquet files in three different folders of the same S3 bucket. The JSON folder is for patient test organization purposes.
+21. The Lambda function code, which is made using a Docker image, will first convert the JSON data into CSV and parquet files using the Pandas library, and then store the JSON, CSV, and parquet files in two different folders of the same S3 bucket.
 
     - The Lambda function code comes from an image in Elastic Container Registry, which was made during the solution deployment.
 
